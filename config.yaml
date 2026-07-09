@@ -25,3 +25,60 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: shipnoise-hf
+      description: 在水声信号如船舰噪声中利用高频信息做识别的文章
+      enabled: true
+      paper_sources:
+        - arxiv
+      keywords:
+        - keyword: high frequency ship noise
+          keyword_cn: 高频船舰噪声
+          query: high frequency components in ship noise for recognition
+        - keyword: underwater acoustic target recognition
+          keyword_cn: 水声目标识别
+          query: underwater acoustic target recognition using high frequency features
+        - keyword: vessel noise classification
+          keyword_cn: 船舶噪声分类
+          query: vessel noise classification with high frequency cues
+        - keyword: high frequency acoustic features
+          keyword_cn: 高频声学特征
+          query: high frequency acoustic features for ship noise recognition
+        - keyword: ship radiated noise
+          keyword_cn: 船舶辐射噪声
+          query: ship radiated noise high frequency recognition
+        - keyword: underwater acoustic signal processing
+          keyword_cn: 水声信号处理
+          query: underwater acoustic signal processing for high frequency target recognition
+      intent_queries:
+        - query: high frequency ship noise recognition methods
+          query_cn: 高频船舰噪声识别方法
+          enabled: true
+          source: manual
+          note: ''
+        - query: using high frequency acoustic features for underwater target classification
+          query_cn: 利用高频声学特征进行水下目标分类
+          enabled: true
+          source: manual
+          note: ''
+        - query: ship radiated noise high frequency components for identification
+          query_cn: 船舶辐射噪声高频成分用于识别
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-07-09T08:19:01.944Z'
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
