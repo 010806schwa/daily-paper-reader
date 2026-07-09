@@ -1,16 +1,60 @@
 {
   "mode": "standard",
-  "generated_at": "2026-07-09T08:23:24.538722+00:00",
+  "generated_at": "2026-07-09T09:38:52.509022+00:00",
   "stats": {
     "mode": "standard",
     "tag_count": 1,
     "deep_divecandidates": 0,
     "deep_cap": 6,
     "deep_selected": 0,
-    "quick_candidates": 0,
+    "quick_candidates": 1,
     "quick_skim_target": 11,
-    "quick_selected": 0
+    "quick_selected": 1
   },
   "deep_dive": [],
-  "quick_skim": []
+  "quick_skim": [
+    {
+      "id": "2607.01974v1",
+      "source": "arxiv",
+      "title": "A Multi-Branch Hierarchy-Aware Framework for Heterogeneous Audio Classification",
+      "abstract": "This technical report describes our system for Task 1 of the DCASE 2026 Challenge, which aims to classify heterogeneous audio recordings according to the Broad Sound Taxonomy (BST). The task requires both accurate second-level prediction and consistency with the top-level taxonomy. Our system is built on CLAP-based audio-text representations and is improved along three strategies: expanding the training set with a filtered subset of BSD35k, enhancing acoustic modeling with feature-specific branches, and refining predictions using hierarchy-aware classifiers and KNN-based post-processing. Among the acoustic features considered, the log-STFT branch provides the strongest single-model performance. With KNN-based post-processing, our best single system achieves a hierarchical F1 score (Hier. F1) of 80.84% on the BSD10k-v1.2 set under the same evaluation protocol as the baseline. We further construct ensemble systems by combining models with complementary acoustic features and classification heads, achieving Hier. F1 scores of 81.25% and 81.18%, respectively.",
+      "authors": [
+        "Beile Ning",
+        "Jiayi Yu",
+        "Zitong Wang",
+        "Yufei Hu",
+        "Wenjun Xu",
+        "Yuanhang Qian",
+        "Zhongxin Bai",
+        "Gongping Huang"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI"
+      ],
+      "published": "2026-07-02T10:08:24+00:00",
+      "link": "https://arxiv.org/pdf/2607.01974v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Heterogeneous audio classification framework using log-STFT features, applicable to ship noise high-frequency feature extraction",
+      "llm_evidence_cn": "使用log-STFT特征的异构音频分类框架，可用于船噪声高频特征提取",
+      "llm_evidence": "使用log-STFT特征的异构音频分类框架，可用于船噪声高频特征提取",
+      "canonical_evidence": "使用log-STFT特征的异构音频分类框架，可用于船噪声高频特征提取",
+      "llm_tldr_en": "Proposes multi-branch hierarchy-aware audio classification system for DCASE 2026 Task 1, using CLAP features and log-STFT branches, achieving strong performance; methods transferable to ship noise recognition.",
+      "llm_tldr_cn": "本文提出一种多分支层次感知框架用于DCASE 2026挑战赛的异构音频分类任务。系统基于CLAP音频文本表示，引入log-STFT等声学特征分支，结合层次感知分类器和KNN后处理，在Broad Sound Taxonomy上取得优异成绩。其中log-STFT分支能有效捕获高频信息，该框架可直接应用于船噪声的高频成分分析与识别任务。",
+      "llm_tldr": "本文提出一种多分支层次感知框架用于DCASE 2026挑战赛的异构音频分类任务。系统基于CLAP音频文本表示，引入log-STFT等声学特征分支，结合层次感知分类器和KNN后处理，在Broad Sound Taxonomy上取得优异成绩。其中log-STFT分支能有效捕获高频信息，该框架可直接应用于船噪声的高频成分分析与识别任务。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
 }
