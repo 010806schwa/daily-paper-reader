@@ -6,22 +6,24 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-10
-- 运行时间：2026-07-10 20:22:24 UTC
+- 最新运行日期：2026-07-11
+- 运行时间：2026-07-11 21:09:45 UTC
 - 运行状态：成功
-- 本次总论文数：0
+- 本次总论文数：1
 - 精读区：0
-- 速读区：0
+- 速读区：1
 
 ### 今日简报（AI）
-> 今日无新推荐，系统未产出可展示论文。
-- 详情：[/202607/10/README](/202607/10/README)
+今日聚焦端到端音频模型的频率表示瓶颈问题。研究发现现有模型在频率表征上存在结构性限制，可能影响音高与音色感知的准确性。下一步可关注新型架构如何突破这些瓶颈，提升音频理解的精细度。
+- 详情：[/202607/11/README](/202607/11/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Structural Bottlenecks on Frequency Representation in End-to-End Audio Models](/202607/11/2607.08545v1-structural-bottlenecks-on-frequency-representation-in-end-to-end-audio-models)  
+   标签：评分：6.0/10、query:shipnoise-hf
+   evidence：分析了音频模型中频率表示的瓶颈，与高频特征提取相关
 
 
 <div class="dpr-home-promo-card">
