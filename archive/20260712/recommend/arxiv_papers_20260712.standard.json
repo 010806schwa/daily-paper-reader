@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-12T21:03:40.089759+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.05953v1",
+      "source": "arxiv",
+      "title": "Few-Shot Class-Incremental Audio Classification Using Pseudo-Incrementally Trained Embedding Learner and Continually Updated Stochastic Classifier",
+      "abstract": "Few-shot Class-incremental Audio Classification (FCAC) aims to progressively recognize incremental classes with few tagged samples and meanwhile memorize base classes. To achieve satisfactory FCAC performance, the model needs to have high stability (memorizing base classes) and strong plasticity (adapting to incremental classes). In this work, we design a model which can be decoupled into two independent modules, namely an embedding learner and a stochastic classifier. The former is the backbone of a residual convolutional network, while the latter is composed of distributions and each distribution consists of a mean vector and a variance vector for representing one class. After being trained in the base session, the embedding learner is not updated in each incremental session and thus can memorize the knowledge of base classes. To make the embedding learner possess strong representation ability for incremental classes, we propose a strategy to pseudo-incrementally train the embedding learner using data augmentation in the base session. On the other hand, the stochastic classifier is continually updated in each incremental session and thus can adapt to incremental classes. Our model which consists of a pseudo-incrementally trained embedding learner and a continually updated stochastic classifier can increasingly identify incremental classes without forgetting base classes. Three datasets (FSC-89, NSynth-100 and LS-100) are used to verify the effectiveness of our method. Experiments show that our method exceeds the comparison methods in accuracy, and has lower complexity than most of the comparison methods. The code is at https://github.com/vinceasvp/PITEL-CUSC.",
+      "authors": [
+        "Yanxiong Li",
+        "Wenchang Cao",
+        "Jiaxin Tan",
+        "Qianqian Li",
+        "Guoqing Chen"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS"
+      ],
+      "published": "2026-07-07T07:53:54+00:00",
+      "link": "https://arxiv.org/pdf/2607.05953v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "few-shot incremental audio classification method transferable to ship noise recognition",
+      "llm_evidence_cn": "可迁移至船舶噪声识别的少样本增量音频分类方法",
+      "llm_evidence": "可迁移至船舶噪声识别的少样本增量音频分类方法",
+      "canonical_evidence": "可迁移至船舶噪声识别的少样本增量音频分类方法",
+      "llm_tldr_en": "A decoupled embedding learner and stochastic classifier with pseudo-incremental training achieves strong plasticity and stability for few-shot class-incremental audio classification.",
+      "llm_tldr_cn": "针对少样本增量音频分类中模型稳定性与可塑性的冲突，提出解耦的嵌入学习器和随机分类器架构。嵌入网络通过伪增量训练保持特征通用性，随机分类器以分布形式表示类别并持续更新，兼顾旧类记忆与新增类适应。在多个音频基准上取得最优结果，可直接应用于船舶噪声的增量识别。",
+      "llm_tldr": "针对少样本增量音频分类中模型稳定性与可塑性的冲突，提出解耦的嵌入学习器和随机分类器架构。嵌入网络通过伪增量训练保持特征通用性，随机分类器以分布形式表示类别并持续更新，兼顾旧类记忆与新增类适应。在多个音频基准上取得最优结果，可直接应用于船舶噪声的增量识别。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

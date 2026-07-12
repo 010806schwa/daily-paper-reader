@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-12",
+  "date": "2026-07-12",
+  "generated_at": "2026-07-12T21:04:18",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/12/2607.05953v1-few-shot-class-incremental-audio-classification-using-pseudo-incrementally-trained-embedding-learner-and-continually-updated-stochastic-classifier",
+      "section": "quick",
+      "title_en": "Few-Shot Class-Incremental Audio Classification Using Pseudo-Incrementally Trained Embedding Learner and Continually Updated Stochastic Classifier",
+      "authors": "Yanxiong Li, Wenchang Cao, Jiaxin Tan, Qianqian Li, Guoqing Chen",
+      "date": "2026-07-07",
+      "pdf": "https://arxiv.org/pdf/2607.05953v1",
+      "score": "7.0",
+      "evidence": "可迁移至船舶噪声识别的少样本增量音频分类方法",
+      "tldr": "少样本类增量音频分类（FCAC）要求模型在逐步学习新类的同时保持对旧类的记忆。本文提出解耦模型，包含伪增量训练的嵌入学习器和连续更新的随机分类器。嵌入学习器在基会话中通过数据增强进行伪增量训练后固定，以保留基类知识；随机分类器在各增量会话中更新以适配新类。在三个音频数据集上，该方法准确率优于对比方法，且计算复杂度更低，代码已开源。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Few-shot Class-incremental Audio Classification (FCAC) aims to progressively recognize incremental classes with few tagged samples and meanwhile memorize base classes. To achieve satisfactory FCAC performance, the model needs to have high stability (memorizing base classes) and strong plasticity (adapting to incremental classes). In this work, we design a model which can be decoupled into two independent modules, namely an embedding learner and a stochastic classifier. The former is the backbone of a residual convolutional network, while the latter is composed of distributions and each distribution consists of a mean vector and a variance vector for representing one class. After being trained in the base session, the embedding learner is not updated in each incremental session and thus can memorize the knowledge of base classes. To make the embedding learner possess strong representation ability for incremental classes, we propose a strategy to pseudo-incrementally train the embedding learner using data augmentation in the base session. On the other hand, the stochastic classifier is continually updated in each incremental session and thus can adapt to incremental classes. Our model which consists of a pseudo-incrementally trained embedding learner and a continually updated stochastic classifier can increasingly identify incremental classes without forgetting base classes. Three datasets (FSC-89, NSynth-100 and LS-100) are used to verify the effectiveness of our method. Experiments show that our method exceeds the comparison methods in accuracy, and has lower complexity than most of the comparison methods. The code is at https://github.com/vinceasvp/PITEL-CUSC.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
