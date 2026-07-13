@@ -1,0 +1,573 @@
+Title: Structural Bottlenecks on Frequency Representation in End-to-End Audio Models
+
+URL Source: https://arxiv.org/pdf/2607.08545v1
+
+Published Time: Fri, 10 Jul 2026 01:01:01 GMT
+
+Number of Pages: 20
+
+Markdown Content:
+# Structural Bottlenecks on Frequency Representation in End-to-End Audio Models 
+
+Nicole Cosme-Clifford 
+
+Yale University New Haven, CT 
+
+nicole.cosme@yale.edu 
+
+## Abstract 
+
+End-to-end neural audio models achieve high-fidelity compression and generation. We might read that performance as evidence they directly represent interpretable features such as pitch and timbre, but a model can produce plausible outputs without doing so. A model may encode these features in any reachable basis, but regardless of which, the features are well described as compositions of time-frequency-localized primitives. Whether state-of-the-art encoders preserve access to these primitives, and thus to compositions of them, remains unclear. Through theoretical analysis and controlled experiments, we show that several state-of-the-art strided convolutional encoders impose two structural bottlenecks, both predictable from architecture and signal structure, on access to these primitives: (1) they collapse primitives into alias equivalence classes, establishing a bound on representational capacity, and (2) they limit the frequency resolution available to learned filters, restricting separability. For well structured data, we find col-lapse rates of 31-35% and filter bandwidths 9-35x above the theoretical resolution bound, confirming that both bottlenecks arise under realistic signal conditions. We then introduce Gabor Latent Refactorization (GLRF), a lightweight post-hoc inter-vention that re-expresses encoder latents in a frequency-localized basis, reducing filter bandwidths from 10–35x to 1.5–3x of the theoretical resolution bound while preserving reconstruction fidelity and improving control over attributes like pitch. These results show that the encoders in question predictably degrade access to frequency-localized primitives, entangling the features that depend on them, and that a lightweight, retraining-free intervention can recover much of that access, improving steerability and interpretability. 
+
+## 1 Introduction 
+
+Modern neural audio systems achieve state-of-the-art performance across compression and generation, with scaling consistently improving empirical results Défossez et al. [2022], Kumar et al. [2023], Evans et al. [2024, 2025]. It is tempting to read that strong performance as evidence that interpretable features like pitch and timbre are directly encoded in these systems’ learned representations. Yet, interpretability studies have largely not recovered them Singh et al. [2025], Beguš and Zhou [2022], Lee et al. [2017], Vu et al. [2024], Muckenhirn et al. [2019]. Have these models learned interpretable time-frequency structure, or can strong performance exist without it? We argue the latter: state-of-the-art encoders foreclose access to the primitives that underlie these features, and the features do not reappear in some alternative learned form. Many physical sound-generating systems are, over short timescales, well described by normal modes Oppenheim et al. [1999], Morse and Ingard [1986]. Sound can then be locally approximated as a superposition x(t) = P 
+
+> i
+
+ci(t), where each ci(t) is a narrowband oscillation centered at a distinct frequency, fi. Human auditory perception exploits this structure, as human-meaningful features (e.g., 
+
+> Preprint. arXiv:2607.08545v1 [cs.SD] 9 Jul 2026
+
+pitch, timbre) follow from relationships between these time-frequency-localized primitives Bregman [1994]. Whether artificial systems preserve access to these primitives (and compositions of them) is determined in part by encoder architecture. State-of-the-art models increasingly operate end-to-end over raw waveforms, using strided convolu-tional encoders to compress high-dimensional signals into compact latents Défossez et al. [2022], Kumar et al. [2023], Evans et al. [2024, 2025], Zeghidour et al. [2021a], Dhariwal et al. [2020]. We show that this class of encoders exhibits two structural bottlenecks on structured control of frequency-localized primitives and that both are architecturally determined. The first, injectivity failure, causes distinct frequency components in the input signal to collapse into indistinguishable proxy components in the encoder’s representation space due to downsampling-induced aliasing; we derive an analytical bound on how many components can survive this collapse and confirm it empirically across three state-of-the-art models with correlation r ≈ 0.99 between predicted and observed collapse rates. The second, separability failure, occurs when components survive collapse but remain inseparable by learned filters, preventing independent manipulation; we show that learned filters operate 10 − 35 × above the theoretical resolution limit set by the encoder’s receptive field. This corroborates findings from recent interpretability studies on end-to-end neural audio models, which rarely recover frequency-localized primitives or superpositions of them from learned represen-tations Singh et al. [2025], Beguš and Zhou [2022], Lee et al. [2017], Vu et al. [2024], Muckenhirn et al. [2019]. It is also consistent with the observation that architectures with explicit frequency structure tend to produce more interpretable representations Zeghidour et al. [2021b], Ravanelli and Bengio [2018], Bruna and Mallat [2013], Andén and Mallat [2014], Caillon and Esling [2021]. There are practical stakes for this. Structured frequency control could enable music generation systems to manipulate pitch and timbre independently, speech synthesis models to modify prosody without affecting speaker identity, and scientific audio tools to isolate and intervene on specific signal components. However, if the representational interface between the encoder and downstream modules does not permit control over frequency structure, downstream components may not recover it, making the encoder’s representational geometry a fundamental constraint on capability. This work is situated within a growing research program asking how to better utilize the repre-sentational budget that existing architectures already provide. Recent work has asked analogous questions of attention mechanisms in LLMs Chen et al. [2026], Yuan et al. [2025]. In mechanistic interpretability, a parallel tradition asks whether learned representations can be re-expressed in bases that expose interpretable structure without compromising the underlying model Elhage et al. [2022], Bricken et al. [2023]. We ask the same kind of question about strided convolutional audio encoders: given a fixed architecture with a fixed parameterization, is available capacity spent exposing human-meaningful structure? We focus on end-of-encoder latents, as these constitute the interface available to downstream modules. We show that the answer is largely no: the structure is often implicitly present in the representation but inaccessible. Our contributions are as follows: 
+
+Predictive framework. We identify two structural conditions on primitive accessibility — an injectivity condition governing representational collapse under downsampling, and a separability condition governing frequency resolution — and show that both are predictable from architectural parameters prior to training. We also show that three state-of-the art models (EnCodec, DAC, and Stable Audio) violate both conditions under realistic signal settings. • Injectivity. Given signal structure and stride schedule, the number of injectively repre-sentable components can be computed via a forward model. Collapse rates predicted by this model correlate with observed rates at r ≈ 0.99 across 643 signal configurations. Low factor-complexity sampling rates (22.05, 44.1 kHz) substantially reduce collapse compared to highly composite rates; injectivity failure cannot be corrected post-hoc and requires upstream stride schedule design. • Separability. The receptive field sets a hard upper bound on achievable filter resolution, and a second forward model predicts where learned filters land relative to that bound from kernel geometry alone, without access to learned weights. 
+
+Intervention for separability. We introduce Gabor Latent Refactorization (GLRF), a lightweight post-hoc method that re-expresses encoder latents in a frequency-localized basis without retraining, 2reducing filter bandwidths to 1.5–3 × the resolution limit while preserving reconstruction fidelity and improving frequency-structured representational control. All pretrained models are publicly available, and implementation details are in the appendix. 
+
+## 2 Injectivity 
+
+We model the encoder as a mapping E : x(t) 7 → z ∈ Rd that compresses the time-domain input into a lower-dimensional latent via a composition of convolutional layers, nonlinearities, and strided downsampling. While defined in the time domain, this transformation induces a corresponding transformation over frequency-localized signal components, mapping approximately narrowband components ci(t) to latent responses li(t). For a narrowband component ci centered at frequency 
+
+fi, we define its latent proxy li as the latent response associated with ci under spectral analysis of encoder outputs. An encoder is injective with respect to a component set if distinct components map to single, distinguishable proxies. This definition provides a consistent object for evaluating whether component structure is preserved or entangled in the representation. 
+
+2.1 Theoretical Injectivity Bound 
+
+Injectivity is largely constrained by the encoder’s downsampling operations, which reduce the effective sampling rate and induce equivalence classes over component frequencies. 
+
+Assumption 1 (Narrowband components) . Each component ci(t) is sufficiently narrowband that its behavior under downsampling is determined by its dominant center frequency fi.
+
+Classical aliasing treats downsampling as a local phenomenon: a frequency f folds to f mod fs
+
+under downsampling at rate fs Oppenheim et al. [1999]. This framing is sufficient for isolated components but obscures the global structure that emerges when multiple components are present simultaneously. We extend this view to characterize the collective behavior of a component set under stacked downsampling. 
+
+Definition 1 (Encoder-induced alias class) . Let E be an encoder with effective latent sampling rate 
+
+fs and let {fi}ni=1 be the center frequencies of a narrowband component set. The encoder induces a map ϕ : fi 7 → fi mod fs via cumulative downsampling. Components ci and cj belong to the same encoder-induced alias class if ϕ(fi) = ϕ(fj ). The number of distinct alias classes intersecting 
+
+{fi}ni=1 is denoted q ≤ n.
+
+Proposition 1 (Injectivity limit under downsampling) . Under Assumption 1, at most q components from {fi}ni=1 can be injectively represented. When n > q , at least two components share an alias class (Definition 1) and become indistinguishable in the latent representation. Proof sketch. When n > q , the pigeonhole principle guarantees at least two components share an alias class and therefore map to the same latent frequency under ϕ. Full proof in Appendix A.1. The value of q depends on the arithmetic relationship between fi and fs. For a single component at frequency fi, downsampling at rate fs maps fi to fi mod fs. For a harmonic signal with fundamental 
+
+f0, the harmonics kf 0 each fold independently under this map, generating a sequence of folded frequencies kf 0 mod fs. When f0/f s is rational with denominator r in lowest terms, this sequence is periodic with period r, so all harmonics partition into at most r equivalence classes, yielding q ≤ r. A small denominator forces many harmonics into few classes and collapse is heavy; a large denominator spreads them out. When fi/f s is irrational the sequence does not repeat and the components remain distinct. A third regime arises in practice: when fi/f s is close to a rational with small denominator (i.e., slightly detuned harmonic stacks), the orbit does not close mathematically, but folded proxies may land indistinguishably close (this becomes a separability problem). Therefore, near-harmonic stacks may approximate the collapse behavior of harmonic stacks. All regimes are common in practice and injectivity is studied empirically in Section 2.2. 
+
+2.2 Empirical Validation of Injectivity Bound Models We evaluate whether the collapse predicted by Proposition 1 occurs in practice across three state-of-the-art architectures spanning compression and generation (EnCodec, DAC, and Stable Au-dio), each employing a strided convolutional encoder to compress raw audio to latent representations. 3We assume these encoders do not learn effective anti-aliasing Zhang [2019] prior to downsampling. None of the three architectures constrain or explicitly implement it Défossez et al. [2022], Evans et al. [2025], Kumar et al. [2023]. Our empirical results directly support this: if anti-aliasing were active, observed proxies would not match theoretical predictions, yet we find r ≈ 0.99 between predicted and observed collapse rates, consistent with classical downsampling theory. 
+
+Data We construct input signals composed of controlled sets of narrowband components with known center frequencies fi (see Appendix A.2). In Experiment 1, we vary the arithmetic relationship between fi and fs, letting signals span the range of harmonicity and commensurability. In Experiment 2, we fix a single dataset of musically realistic stacks and perform a greedy search over stride schedules, allowing commensurability to vary naturally relative to the local sampling rates induced by these schedules. All experiments use synthetic signals, as measuring collapse requires ground truth component frequencies. Theoretical bounds are independent of this assumption and should hold for real audio. However, empirical results on natural signals may differ due to inharmonicity and broadband content. 
+
+Metrics To approximate the encoder-induced equivalence classes, we analyze the spectral structure of encoder outputs. For each output, we compute the magnitude spectrum per latent channel via FFT and identify dominant peaks via a fixed peak detection procedure (threshold, prominence, and width criteria are detailed in Appendix A.2; results are stable across a range of detection hyperparameters). Each detected peak is treated as a latent proxy corresponding to one or more input components. This provides an approximation of equivalence classes, and consistency across metrics (defined below) indicates that detected proxies correspond to genuine structural features of the representation. We estimate q directly from the input frequencies and compare it to the number of detected proxies. Then we quantify empirical injectivity via the collapse rate, defined as the fraction of input components that map to shared latent proxies. A collapse rate of zero indicates that each component is assigned to a distinct proxy, while higher values indicate increasing violations of injectivity. We additionally report (i) mode recovery, the fraction of input components whose frequencies are recovered within very small tolerance, and (ii) energy concentration, measuring the fraction of total energy captured by detected proxies. Note that energy concentration does not approach 1.0, as the encoder introduces additional spectral content through nonlinearities, and this is not accounted for in the predicted alias set. This energy does not affect the validity of the collapse rate metric, which measures only whether predicted components map to distinct proxies. 
+
+Results Collapse rates are well-predicted by stride schedule and signal frequency structure, in-dependently of learned weights. Across all models and 643 signal configurations, predicted and observed collapse rates correlate at r ≈ 0.99 (Table 1), with residual error attributable to spectral leakage near the peak detector’s resolution limit. Results are deterministic given fixed inputs and models; variability in the mode recovery metric arises only from signal configuration, which we control explicitly. As predicted by Section 2.1, harmonic and near-harmonic configurations with high commensurability exhibit high collapse rates consistent with small q, while strongly inharmonic or incommensurate configurations show near-zero collapse. This dependence is directly actionable: highly composite rates (e.g., multiples of 8 kHz) yield substantially higher collapse than rates such as 22.05 kHz or 44.1 kHz, whose factor structure produces fewer alias collisions for typical harmonic signals (Appendix A.2). Therefore, given stride schedule S and signal frequencies {fi}, the number of injectively representable components q is computed per signal analytically via Proposition 1, yielding total predicted collapse rates ˆQ = n−qn , independent of learned weights. 
+
+## 3 Separability 
+
+3.1 Theoretical separability 
+
+An encoder E is separable with respect to a component set {ci} if the latent proxy for each component 
+
+ci can be accessed independently. Variations in ci should induce changes in a localized subset of latent coordinates, with minimal interference from others. While injectivity failure is irreversible, separability failure means components remain present but inaccessible, preventing independent 4Model Eff. SR ˆQ Q r Mode Rec. Energy Conc. EnCodec 150.00 0.311 0.349 0.990 0.962 ± 0.103 0.640 ± 0.043 
+
+DAC 86.13 0.280 0.312 0.991 0.984 ± 0.072 0.577 ± 0.046 
+
+Stable Audio 21.53 0.286 0.320 0.989 0.984 ± 0.079 0.446 ± 0.165 
+
+Table 1: Injectivity analysis across models. ˆQ: collapse rate predicted analytically from stride schedule and signal structure alone. Q: empirically observed collapse rate. Pearson r measures per-signal correlation across all signal configurations ( n = 643 ). Mode recovery and energy concentration measure spectral alignment quality (mean ± SD). manipulation. Classical signal processing provides two bounds on the frequency resolution required for separability at the level of a single filter Oppenheim et al. [1999], Morse and Ingard [1986]. First, a single filter of kernel size K at sampling rate fs resolves frequencies on the order of 
+
+∆f = fs/K . This bound applies to filters treated as isolated operators. However, we show in Section 3.2 that learned filters for all models achieve finer resolution than this bound predicts alone. This motivates a second, tighter bound. A latent feature cannot depend on input samples outside its receptive field, so the cumulative receptive field of the encoder sets a bound on the temporal support of any feature the encoder can compute. By the uncertainty principle Oppenheim et al. [1999], Morse and Ingard [1986], temporal support R
+
+implies frequency resolution no finer than 
+
+∆f = fs
+
+R . (1) In linear systems, stacked convolutions accumulate resolution toward this bound with receptive field expansion [Oppenheim et al., 1999]. For the nonlinear systems studied here, we treat this as an upper bound on achievable resolution. So, the receptive field sets the ceiling, but internal operations determine what is realized within it. 
+
+Assumption 2 (Receptive field resolution bound) . The maximum frequency resolution of a learned filter in a strided convolutional encoder is bounded by ∆f = fs/R , where R is the cumulative receptive field. 
+
+Definition 2 (Separability ratio) . Let B denote the bandwidth of a learned filter and ∆c the spacing between adjacent component frequencies. The separability ratio ρ = ∆ c/B measures whether adjacent components fall within the filter’s resolution limit. Under Assumption 2, when ρ < 1
+
+adjacent components cannot be independently accessed, regardless of injectivity. 
+
+Predictive model for effective filter bandwidth. We provide a lightweight model to ballpark, before training, where an encoder’s most selective single-lobe filters can land, as these filters are most likely to be selective for individual frequency components. The model uses only kernel sizes, dilations, and stride schedules, with no learned weights and no fitted parameters. Each selectivity-carrying layer (kernel size k > 1) is modeled as a tractable minimum-uncertainty filter: a Gaussian-tapered impulse response of effective extent (kl − 1) dl + 1 (full definition in Appendix A.3). Responses are accumulated by sequential convolution. At each strided stage the response is decimated and re-expressed at the new local sampling rate, so stride contributes through grid rescaling rather than attenuation. Snake activations (used in DAC and StableAudio) are non-saturating and therefore apply no meaningful net attenuation, leaving the main-lobe bandwidth effectively unchanged (validated in Appendix A.3). ELU (used in EnCodec) saturates and contributes a small, bounded broadening (Appendix A.3), although we omit this broadening here to report the purely geometric prediction. This is an intentionally simplified structural approximation meant to help anticipate a practical separability ceiling at design time. The results suggest the approximation reliably captures the dominant sources of bandwidth variation: predicted best-case bandwidths fall within 2 Hz of the empirically measured values across all three architectures (Table 2). We will devote future work to tightening this model. 5Model K Best BW (Hz) Best/RF Pred. (Hz) Err. (Hz) EnCodec 7 14.16 10 × 16.031 1.871 DAC 3 8.30 35 × 8.248 0.052 Stable Audio 3 1.47 31 × 2.063 0.593 Table 2: Separability analysis. K: final-layer kernel size. Best BW: narrowest measured filter bandwidth among smooth filters. Best/RF: ratio to receptive field bound. Predicted BW: simulated bandwidth from kernel geometry alone. Err: error between simulated bandwidth and measured bandwidth. 0.0 0.1 0.2 0.3 0.4 0.5 
+
+> Gap / Nyquist
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> CCDF
+> EnCodec
+> DAC
+> StableAudio
+
+Figure 1: CCDF of filter bandwidths relative to the receptive field resolution limit ∆f = fs/R .For typical harmonic signals, adjacent component spacings fall well within these bandwidths ( ρ =∆c/B < 1), indicating that frequency-adjacent primitives cannot be independently accessed even when injectivity is preserved. 
+
+3.2 Empirical Separability 
+
+We evaluate separability by comparing learned filter bandwidths to the resolution limits implied by Section 3.1. For each model, we estimate the frequency response of filters in the encoder’s final convolutional layer and measure their bandwidth B, restricting analysis to smooth filters with a single dominant lobe (see Appendix A.4). This provides a conservative estimate of achievable resolution. Across all models, observed bandwidths fall far above the theoretical receptive field limit, yet they settle near the limit predicted by the structural bandwidth model (Appendix A.3; Table 2), confirming the underutilization predicted by Assumption 2. Filters do improve upon the single-kernel bound 
+
+∆f = fs 
+
+> K
+
+, confirming that stacking accumulates some resolution, but the gap to the receptive field bound remains large. As a result, a significant fraction of adjacent components satisfy ρ = ∆cB < 1,indicating they cannot be independently accessed even when injectivity is preserved. 
+
+## 4 Intervention 
+
+Sections 2 and 3 propose two structural limitations on primitive accessibility: injectivity failure due to downsampling, and limited separability due to insufficient frequency resolution. Injectivity failure depends on the sampling rate and likely cannot be corrected post hoc, so the appropriate fix is upstream stride schedule design. Separability, however, can be improved by re-expressing the latent representation in a frequency-localized basis. Purpose-built frequency-structured front ends address both bottlenecks by design Choi et al. [2016, 2017], Kong et al. [2020], Ravanelli and Bengio [2018], Zeghidour et al. [2021b], Bruna and Mallat [2013], Caillon and Esling [2021]. However, these require retraining or significant architectural modification and are not the dominant approach. We instead ask what structured control can be recovered from an existing trained encoder without touching its weights or making significant architectural modifications, which is a practically relevant question for deployed systems. The 6proposed intervention is intended as a proof of concept: we only claim that it recovers meaningful structure within the existing parameter space and provides a concrete starting point for future work. 
+
+4.1 Methods Gabor Latent Refactorization. We apply a fixed Gabor filterbank to encoder latents z ∈ RC×T ,parameterized to match the theoretical frequency resolution implied by the receptive field ∆f = fs 
+
+> R
+
+.The filterbank channels are localized in frequency and tile the frequency spectrum up to Nyquist at the resolution permitted by the receptive field. This produces a decomposition ˜z ∈ RC×2F ×T ,where the factor of 2 indexes real and imaginary components. Prior to filterbank application, latents are normalized per-channel by temporal mean and variance. We then learn a channel-wise linear mapping 
+
+M : RC×2F ×T 7 → RC×T (2) such that z ≈ M ˜z by minimizing 
+
+∥z − M ˜z∥2 , (3) fit via closed-form ridge regression on a set of synthetic signals. This acts as a change of basis that exposes frequency-localized components without significantly altering the underlying representation. Full filterbank parameters are given in Appendix A.5; computational cost scales linearly with latent size and is negligible relative to the cost of training the encoder and decoder (Appendix A.7). 
+
+Controllability evaluation. We evaluate controllability via targeted component substitution, replacing one frequency component in a mixture while holding all others fixed. This is a stricter test of independent component access than interpolation or reconstruction: a representation that only preserves components in entangled form can fail this test even if reconstruction quality is high. For a source component fa and target component fb embedded in a mixture, we ask whether an intervention can be identified that reliably (a) reduces energy at the latent proxy for fa and (b) increases energy at the latent proxy for fb, across varying mixture contexts. We evaluate this across 200 mixture contexts per operation, constructed to avoid latent-frequency collisions between filler components and the source or target component (Appendix A.5). In the Gabor-refactorized space, relevant bins are identified analytically from fa and fb via the injectivity folding map φ, and a signed energy change at each bin is read directly from the decompo-sition. This is meaningful for two reasons. First, the Gabor basis is interpretable by construction: each axis corresponds to a specific narrowband frequency region, so interventions have analytically predictable effects on signal components, subject to the injectivity constraints of Section 2, which bound when components remain distinguishable. Second, manipulations in the Gabor basis propagate to the decoded audio via M : since M reconstructs the original latent with cosine similarity ≥ 0.97 ,the decoder receives a latent very close to those within its trained distribution, and the decoded signal reflects the intended spectral change. Together, these properties mean that GLRF enables structured control over audible full-signal attributes through the existing decoder, without retraining or out-of-distribution perturbation. This amounts to more utilization of signal structure within the existing architecture’s parameter space. In the original latent, no equivalent control procedure exists. An analysis of DAC, for example, reveals that 825 of 1024 channels are broadband and multimodal, with mean main-lobe bandwidth 8.30 Hz (35 × the receptive field bound). This makes it unlikely to identify a small set of channels that reliably tracks a single pitch component independently of its neighbors. Therefore, including all channels in a similarity measure artificially inflates the score since broadband channels activate consistently regardless of which component is present; more sophisticated baselines such as sparse regression face the same problem, as any linear combination remains contaminated by broadband responses. As a baseline, we identify the top-k channels ( k = 5 ) most responsive to fa and fb in isolation and measure whether their energy moves in the correct direction under substitution. A trial is correct if source-associated channels decrease and target-associated channels increase; full details in Appendix A.5. 
+
+4.2 Results Result 1: Improved Separability. After re-factorization, filter bandwidths approach the receptive-field bound across all models (Table 3), reducing the gap from 10 −35 × in the original representations to approximately 1.5 − 3×. Reconstruction fidelity is preserved throughout, with low log-mel error 7Model Log-mel ↓ Latent Cosine ↑ Min BW (Hz) ↓ Min BW / RF ↓ Valid (%) ↑
+
+EnCodec 0.62 0.98 6.93 1.62 × 48% DAC 0.37 0.98 4.64 2.21 × 95% Stable Audio 0.55 0.97 2.12 1.48 × 94% 
+
+Table 3: Reconstruction and separability after Gabor refactorization. Log-mel measures perceptual reconstruction error; latent cosine measures fidelity of the linear mapping to the original latent. Min BW is the narrowest recovered filter bandwidth; Min BW/RF reports its ratio to the theoretical receptive-field resolution limit. Valid (%) is the fraction of filters satisfying the smoothness criterion. Note that after refactorization, the relevant resolution bound is determined by the Gabor kernel size 
+
+KGabor rather than the original encoder receptive field, since GLRF extends the encoder with an additional fixed filterbank layer. This is the finest resolution the combined encoder-plus-Gabor system can achieve. 0 200 400 600 800 1000         
+
+> Channel index
+> 10
+> 0
+> 10
+> Signed  energy
+> (a)
+> Orig latent: signed channel delta
+> EF# (349 channels carry 80%)
+> 10 20 30 40
+> Gabor bin centre (Hz at latent SR)
+> 5
+> 0
+> 5
+> Signed  energy
+> (b)
+> Gabor: signed bin delta
+> EF# (3 bins carry 80%)
+> EF# substitution: distributed vs localised representation
+
+Figure 2: Signed energy delta across latent channels (left) and Gabor bins (right) for a representative frequency substitution. In the Gabor-refactorized space, 80% of the delta concentrates in 3 bins aligned with the source and target frequencies; in the original latent it is distributed across 349 channels with no identifiable structure. This localization is what enables reliable targeted manipulation in the Gabor space but not in the original latent. and high latent cosine similarity, indicating that the learned mapping enables the model to accurately decode the original signal. That a fixed linear mapping reconstructs the original latent with cosine similarity ≥ 0.97 also implies the encoder’s representation is approximately linearly organized with respect to frequency, but not aligned to a basis that supports independent access. GLRF makes this organization explicit. To confirm that detected proxies correspond to signal components rather than filterbank atom centers, we also examine the distance between the latent spectral peaks and the nearest Gabor atom center. If GLRF were simply recovering its own discretization grid, peaks would cluster near atom centers. Instead, 91.9% of peaks fall more than 1 Hz from the nearest atom center, confirming that the Gabor decomposition is tracking signal-determined components, not filterbank artifacts. Additional results, including interpolation, are in Appendix A.5. 
+
+Result 2: Improved controllability. We focus on DAC as the strongest case for observing fine-grained frequency control: it exhibits the lowest injectivity failure under typical acoustic signals, the highest proportion of valid frequency-selective filters after refactorization (95%), and the finest theoretical resolution limit relative to local fs, making it the model where GLRF’s bins are potentially most selective and targeted manipulation most interpretable. Figure 2 illustrates a representative substitution in both spaces. In the Gabor space the delta is concentrated in 3 bins aligned with the source and target frequencies; in the original latent it is distributed across 349 channels with no identifiable structure. We observe control through two mechanisms. First, latent interpolation between synthetic mixture contexts differing by a single frequency produces clean, crossing trajectories in decoded audio band energy across 300 mixture contexts ( std = 0 .02 –0.05 , vs. 0.240 –0.270 in the original latent space), confirming that Gabor-space manipulation has predictable audible consequences in controlled settings. Second, latent interpolation between real acoustic string recordings (NSynth, n = 1 ,037 pitch pairs across 48 pitches) produces correct F0 transfer direction in 97 .3% of pairs, with correct direction rate increasing from 96% for small intervals (3–5 semitones) to 99% for large intervals (>2 octaves). This is consistent with the separability analysis in Section 3.2: larger pitch intervals are spaced by 8more Gabor bins and are more reliably distinguished in the refactorized space. Linear interpolation additionally produces perceptually consistent pitch transitions across all three models (Appendix A.5), confirming that structured representational geometry is not specific to DAC. 
+
+Does GLRF enable targeted substitution? Unlike interpolation-based methods, targeted substitution in the Gabor-refactorized space does not require a paired target endpoint; we can access individual components directly, independently of mixture context. In the Gabor-refactorized space for DAC, substitution succeeds in 200/200 contexts ( 100% ), with the delta vector concentrating 72% of its energy in 5 of 41 bins; the two dominant bins correspond precisely to the source frequency being removed and the target being added. In the original latent, the analogous procedure succeeds in just 60/200 contexts ( 30% , 95% CI [0 .24 , 0.37] ), below the 50% chance baseline. The below-chance rate reflects active interference from context contamination, which we measure directly in Appendix A.5. This confirms that the most frequency-responsive channels are not stably tuned, with their response to a given frequency shifting depending on what other components are present, making them unreliable handles for targeted manipulation. 
+
+Is the substitution direction stable or context-dependent? Analogous substitution directions are ap-proximately consistent across mixture contexts in the Gabor space (mean cosine similarity 0.88 ±0.09 ,
+
+n = 200 ), confirming they correspond to global directions rather than context-specific perturbations. Consistency is substantially lower in the original latent (mean cosine similarity 0.61 ± 0.24 ), with higher variance confirming that the delta vector shifts significantly depending on mixture context. 
+
+Is the substitution direction frequency-specific or generic? The Gabor space discriminates between the same operation at different transpositions (intra-cross = +0 .98 ), while the original latent largely does not ( +0 .31 ), confirming that Gabor delta vectors are frequency-specific while latent delta vectors are generally not; the latter tend to capture a global response to change rather than a response to a particular frequency component. These results show that encoders preserve linearly separable frequency components in entangled forms but largely do not expose them, and that Gabor-space manipulation produces predictable audible consequences across synthetic signals, real instrument signals, and multiple mixture signals. 
+
+## 5 Conclusion 
+
+We show that several state-of-the-art strided convolutional encoders impose two structural bottlenecks on access to frequency-localized signal primitives: injectivity failure from downsampling-induced alias collapse, and separability failure from insufficient frequency resolution. Both are systematic con-sequences of architectural design and signal structure, making failure modes analytically predictable before training. These results suggest that stride schedule is a design decision with measurable representational consequences computable in advance: effective latent sampling rates with low factor complexity (e.g., 22.05 or 44.1 kHz, whose factor structures produce few alias collisions for typical harmonic signals) substantially reduce collapse compared to highly composite rates (e.g., 16, 24, or 48 kHz). Gabor Latent Refactorization demonstrates that recovering frequency structure post-hoc is cheap and effective. Future work includes formally developing GLRF into a general-purpose method evaluated across diverse signal domains (e.g., speech, environmental audio, transient-rich content), exploring archi-tectural modifications that jointly address both bottlenecks at design time, and investigating safety applications that utilize the above findings. To the last point, one primary risk, which is present whenever generative audio improves, is that finer control over perceptual attributes could enhance malicious use cases, like voice cloning or deepfakes. Potential mitigations include signal-dependent watermarking via frequency-localized channels and detection tools grounded in the analytical predictability of the failure modes identified here. 
+
+Limitations Our analysis assumes signals are locally well-approximated as sums of narrowband components. For signals with high component density relative to the effective latent sampling rate or broadband signals, alias classes may grow larger and collapse rates may increase. This may push the model into a regime where the injectivity bound predicts degraded access even before separability is considered. Selectivity works best when the model’s receptive field allows the Gabor layer to be selective enough such that most signal component proxies land in different Gabor channels, which makes the results signal-dependent and model-dependent. Most experiments use controlled synthetic 9signals, since measuring collapse requires ground truth frequencies; empirical rates on real audio may differ, though theoretical bounds should hold regardless. We do not analyze the interaction between injectivity and separability failures, nor test models with explicitly frequency-selective front ends (e.g., LEAF, SincNet). The refactorization addresses separability but not injectivity. Controllability is demonstrated through trajectory-based manipulation and is most consistent in DAC. GLRF is a proof of concept and does not exhaust the space of possible interventions. The linear mapping is fit on simple signals; generalization to broadband or transient-rich content (e.g., percussion, environmental sounds) is not quantitatively assessed and may require mixed training data. 
+
+## References 
+
+Joakim Andén and Stéphane Mallat. Deep scattering spectrum. IEEE Transactions on Signal Processing , 62(16):4114–4128, 2014. Gašper Beguš and Alan Zhou. Interpreting intermediate convolutional layers of generative cnns trained on waveforms. IEEE/ACM transactions on audio, speech, and language processing , 30: 3214–3229, 2022. Albert S Bregman. Auditory scene analysis: The perceptual organization of sound . MIT press, 1994. Trenton Bricken, Adly Templeton, Joshua Batson, Brian Chen, Adam Jermyn, Tom Conerly, Nick Turner, Cem Anil, Carson Denison, Amanda Askell, Robert Lasenby, Yifan Wu, Shauna Kravec, Nicholas Schiefer, Tim Maxwell, Nicholas Joseph, Zac Hatfield-Dodds, Alex Tamkin, Karina Nguyen, Brayden McLean, Josiah E Burke, Tristan Hume, Shan Carter, Tom Henighan, and Christopher Olah. Towards monosemanticity: Decomposing language models with dictionary learning. Transformer Circuits Thread , 2023. URL https://transformer-circuits.pub/ 2023/monosemantic-features/index.html .Joan Bruna and Stéphane Mallat. Invariant scattering convolution networks. IEEE transactions on pattern analysis and machine intelligence , 35(8):1872–1886, 2013. Antoine Caillon and Philippe Esling. Rave: A variational autoencoder for fast and high-quality neural audio synthesis. arXiv preprint arXiv:2111.05011 , 2021. Guangyu Chen, Yu Zhang, Jianlin Su, Weixin Xu, Siyuan Pan, Yaoyu Wang, Yucheng Wang, Guanduo Chen, Bohong Yin, et al. Attention residuals. arXiv preprint arXiv:2603.15031 , 2026. Keunwoo Choi, George Fazekas, and Mark Sandler. Automatic tagging using deep convolutional neural networks. arXiv preprint arXiv:1606.00298 , 2016. Keunwoo Choi, György Fazekas, Mark Sandler, and Kyunghyun Cho. Convolutional recurrent neural networks for music classification. In 2017 IEEE International conference on acoustics, speech and signal processing (ICASSP) , pages 2392–2396. IEEE, 2017. Alexandre Défossez, Jade Copet, Gabriel Synnaeve, and Yossi Adi. High fidelity neural audio compression. arXiv preprint arXiv:2210.13438 , 2022. Prafulla Dhariwal, Heewoo Jun, Christine Payne, Jong Wook Kim, Alec Radford, and Ilya Sutskever. Jukebox: A generative model for music. arXiv preprint arXiv:2005.00341 , 2020. Nelson Elhage, Tristan Hume, Catherine Olsson, Nicholas Schiefer, Tom Henighan, Shauna Kravec, Zac Hatfield-Dodds, Robert Lasenby, Dawn Drain, Carol Chen, et al. Toy models of superposition. 
+
+arXiv preprint arXiv:2209.10652 , 2022. Jesse Engel, Cinjon Resnick, Adam Roberts, Sander Dieleman, Mohammad Norouzi, Douglas Eck, and Karen Simonyan. Neural audio synthesis of musical notes with WaveNet autoencoders. In 
+
+International Conference on Machine Learning , 2017. Zach Evans, CJ Carr, Josiah Taylor, Scott H Hawley, and Jordi Pons. Fast timing-conditioned latent audio diffusion. In Forty-first International Conference on Machine Learning , 2024. Zach Evans, Julian D Parker, CJ Carr, Zack Zukowski, Josiah Taylor, and Jordi Pons. Stable audio open. In ICASSP 2025-2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) , pages 1–5. IEEE, 2025. 10 Qiuqiang Kong, Yin Cao, Turab Iqbal, Yuxuan Wang, Wenwu Wang, and Mark D Plumbley. Panns: Large-scale pretrained audio neural networks for audio pattern recognition. IEEE/ACM Transac-tions on Audio, Speech, and Language Processing , 28:2880–2894, 2020. Rithesh Kumar, Prem Seetharaman, Alejandro Luebs, Ishaan Kumar, and Kundan Kumar. High-fidelity audio compression with improved rvqgan. Advances in Neural Information Processing Systems , 36:27980–27993, 2023. Jongpil Lee, Taejun Kim, Jiyoung Park, and Juhan Nam. Raw waveform-based audio classification using sample-level cnn architectures. arXiv preprint arXiv:1712.00866 , 2017. Philip McCord Morse and K Uno Ingard. Theoretical acoustics . Princeton university press, 1986. Hannah Muckenhirn, Vinayak Abrol, Mathew Magimai-Doss, and Sébastien Marcel. Understanding and visualizing raw waveform-based cnns. In Interspeech , pages 2345–2349, 2019. Alan V. Oppenheim, Ronald W. Schafer, and John R. Buck. Discrete-Time Signal Processing .Prentice-hall Englewood Cliffs, second edition, 1999. Mirco Ravanelli and Yoshua Bengio. Interpretable convolutional filters with sincnet. arXiv preprint arXiv:1811.09725 , 2018. Rob Robinson. libsoxr: The SoX resampler library, 2013. URL https://sourceforge.net/ projects/soxr/ .Nikhil Singh, Manuel Cherep, and Pattie Maes. Discovering interpretable concepts in large generative music models. arXiv preprint arXiv:2505.18186 , pages arXiv–2505, 2025. Linh Vu, Thu Tran, Wern-Han Lim, and Raphael Phan. Toward end-to-end interpretable convolutional neural networks for waveform signals. arXiv preprint arXiv:2405.01815 , 2024. Jingyang Yuan, Huazuo Gao, Damai Dai, Junyu Luo, Liang Zhao, Zhengyan Zhang, Zhenda Xie, Yuxing Wei, Lean Wang, Zhiping Xiao, et al. Native sparse attention: Hardware-aligned and natively trainable sparse attention. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 23078–23097, 2025. Neil Zeghidour, Alejandro Luebs, Ahmed Omran, Jan Skoglund, and Marco Tagliasacchi. Sound-stream: An end-to-end neural audio codec. IEEE/ACM Transactions on Audio, Speech, and Language Processing , 30:495–507, 2021a. Neil Zeghidour, Olivier Teboul, Félix De Chaumont Quitry, and Marco Tagliasacchi. Leaf: A learnable frontend for audio classification. arXiv preprint arXiv:2101.08596 , 2021b. Richard Zhang. Making convolutional networks shift-invariant again. In International conference on machine learning , pages 7324–7334. PMLR, 2019. 
+
+## A Technical appendices and supplementary material 
+
+A.1 Proof of Proposition 1 Setup. Let x(t) be a signal composed of n approximately narrowband components 
+
+x(t) = 
+
+> n
+
+X
+
+> i=1
+
+ci(t),
+
+where each component ci has dominant center frequency fi. Let E be an encoder containing strided downsampling operations with cumulative downsampling factor s, yielding an effective latent sampling rate fs. Under Assumption 1, each component is sufficiently narrowband that its dominant frequency determines its behavior under downsampling. 11 Encoder-induced equivalence classes. The downsampling operations induce an equivalence relation ∼E over component frequencies, where 
+
+fi ∼E fj
+
+if components centered at fi and fj become indistinguishable after the encoder’s downsampling operations. Equivalently, fi and fj belong to the same encoder-induced alias class. This relation is reflexive, symmetric, and transitive by construction: every component is indistinguish-able from itself; indistinguishability is symmetric; and if two components are each indistinguishable from a third under the same encoder mapping, they are indistinguishable from each other. Therefore, 
+
+∼E partitions the frequency domain into equivalence classes. 
+
+Orbit structure under commensurability. Consider a component with frequency f , and let the effective sampling rate be fs. Repeated application of the aliasing operation induced by downsampling generates a sequence of frequencies 
+
+f, f ± fs, f ± 2fs, . . . 
+
+modulo the representable frequency range. If the ratio f /f s is rational, i.e., f /f s = p/r in lowest terms, then this sequence is periodic with period r. Thus, the component lies in a finite orbit of size at most r, and only a bounded number of distinct frequencies can be distinguished within this class. In contrast, if f /f s is irrational, the sequence does not repeat, and the orbit does not close, so components remain distinct under repeated aliasing operations. This explains why commensurate (e.g., harmonic) signals yield a small number of equivalence classes, while incommensurate signals yield a larger number. 
+
+Counting bound. Let q be the number of distinct equivalence classes intersecting the set of com-ponent frequencies {fi}ni=1 . Since all components within the same class are indistinguishable after encoding, the encoder can assign at most one distinguishable latent proxy to each class. Therefore, the number of distinguishable component proxies is upper bounded by q.If n > q , then by the pigeonhole principle, at least two components must lie in the same equivalence class. These components cannot be distinguished in the latent representation, so the encoder is not injective with respect to the component set. Thus, at most q components can be injectively represented, proving Proposition 1. 
+
+Relation to classical aliasing. In the special case of single-stage uniform downsampling, ∼E
+
+reduces to the standard aliasing relation induced by the reduced sampling rate. The formulation above generalizes this view by treating the equivalence classes induced by stacked downsampling as global objects over a multi-component signal, which allows us to count how many components can remain distinguishable. 
+
+A.2 Injectivity Analysis 
+
+Signal construction. Experiments use five signal configuration types designed to span the harmonic and inharmonic regimes relevant to structured audio. • Harmonic commensurate signals are generated exhaustively: for each (p, q ) with q ∈
+
+1, 2, 3, 5, 10 , 15 , 20 and 1 ≤ p < q , a fundamental f0 = pq . fs is generated and a harmonic stack of n ∈ 3, 5, 8, 12 , 15 , 18 , 20 components built as fk = f0k. This exhaustively covers configurations where the fundamental is a rational multiple of fs with small denominator. • Harmonic random uses f0 ∼ Uniform [50 , 1000] Hz, n ∼ Uniform {3, . . . , 10 }, components at fk = f0k.• Near-harmonic uses f0 = fs( pq + δ), q ∈ { 2, 3, 5, 10 , 20 }, with p drawn uniformly from 
+
+{1, . . . , q − 1} and δ ∼ Uniform [−10 −3, 10 −3], constrained to f0 ∈ [50 , 1000] Hz, with 
+
+n ∼ Uniform {3, . . . , 12 }.12 0.92 0.94 0.96 0.98 1.00                    
+
+> 0
+> 50
+> 100
+> 150
+> 200
+> 0.92 0.94 0.96 0.98 1.00 0.92 0.94 0.96 0.98 1.00 0.92 0.94 0.96 0.98 1.00 0.92 0.94 0.96 0.98 1.00
+> Mean preservation
+> Density
+
+Figure 3: Mean preservation distributions (density) across stride schedules. High factor-complexity rates (16, 24, 48 kHz) exhibit bimodal collapse, while low-complexity rates (22.05, 44.1 kHz) concentrate near perfect preservation. • Inharmonic uses the standard stretched harmonic series f0k√1 + Bk 2 where B ∼
+
+Uniform [10 −4, 5 × 10 −3] and f0 ∼ Uniform [50 , 1000] Hz, with n ∼ Uniform {3, . . . , 10 }.• Mixture combines 2–3 sub-stacks of randomly selected types with total n ∼
+
+Uniform {6, . . . , 20 } distributed by multinomial sampling. The harmonic commensurate class is generated exhaustively to ensure complete coverage of all orbit sizes. All signals use base sampling rate 24 kHz, duration 3 s, amplitude normalized by n. Alias computation uses tolerance 0.0 (exact aliasing), making collapse rate estimates conservative. 
+
+Activation extraction. Signals are passed through the full encoder and activations extracted at the end-of-encoder layer. The magnitude spectrum is computed via FFT per latent channel with DC removal. The effective latent sampling rate is tracked through the encoder by accumulating stride factors layer by layer. 
+
+Alias prediction. For each input frequency fi, the predicted alias is ϕ(fi) = fi mod fs, where fs
+
+is the effective latent sampling rate. Frequencies within tolerance τtheory = max(10 −6, δf / 2) of each other are treated as coincident, where δf is the FFT frequency resolution ( δf is a fraction of 1 Hz for all models). The number of distinct predicted aliases q is then computed from the resulting equivalence classes, and collapse rate is defined as n−qn .
+
+Mode recovery and energy concentration. A predicted alias frequency is considered recovered if spectral energy within 2δf of that frequency exceeds 20% of the maximum alias energy ( α = 0 .2). 
+
+δf is a fraction of 1 Hz for all models. Mode recovery is the fraction of predicted aliases meeting this criterion. Energy concentration is the fraction of total spectral energy falling within 2δf of any predicted alias frequency. 
+
+Reported statistics. Mode recovery and energy concentration are reported as mean ± SD across signal configurations within each model. Collapse rate is a deterministic function of input frequencies and effective sampling rate, reported as a point estimate per model. 
+
+Stability. Results are stable across detection tolerances from 0.5δf to 4δf and energy thresholds 
+
+α ∈ [0 .1, 0.3] .
+
+A.3 Separability Simulation Overview We simulate the effective filter bandwidth of each encoder’s convolutional stack using only kernel sizes, dilations, and stride schedules, with no access to learned weights. The simulation tracks how frequency selectivity accumulates through residual units and is re-expressed at each downsampling stage. Predicted bandwidths are compared against empirically measured best-case filter bandwidths from the sweep described in Appendix A.4. 
+
+Filter Model Given an encoder with L stages, let layer ℓ have kernel size kℓ, dilation dℓ, and stride sℓ. Pointwise layers ( kℓ = 1 ) are flat in frequency and act as identity hℓ = δ. However, each selectivity-carrying layer ( kℓ > 1) is assigned a best-case impulse response: a Gaussian sampled at 13 Figure 4: Evolution of filter bandwidth throughout simulated encoder across models. the kℓ dilated tap positions, 
+
+hℓ[n] = exp 
+
+
+
+− (n − μℓ)2
+
+2σ2
+
+> ℓ
+
+
+
+, n ∈ { 0, d ℓ, 2dℓ, . . . , (kℓ−1) dℓ}, (4) with extent Eℓ = ( kℓ−1) dℓ +1 , center μℓ = ( Eℓ−1) /2, and width σℓ = Eℓ/6 (the ±3σ convention); 
+
+hℓ is zero at non-tap positions and ℓ2-normalized. The cumulative response is built by convolving through the stack, decimating by the stride at each strided stage: 
+
+g0 = h0, gℓ =  gℓ−1 ∗ hℓ
+
+ ↓sℓ , (5) where ↓s denotes keeping every s-th sample. The local sampling rate is tracked alongside, fℓ =
+
+fℓ−1/s ℓ, so that decimation rescales the frequency grid without altering the accumulated main-lobe shape. The predicted best-case bandwidth is the −3,dB main-lobe width of the final response gL,measured against the final local rate fL:
+
+ˆB = BW −3dB 
+
+ |F{ gL}| , f L
+
+, (6) where BW −3dB measures bandwidth at the half-power point of the dominant peak. 
+
+Nonlinearities Snake is treated as bandwidth-preserving: Table 4 shows main-lobe bandwidth ratios of 1.000 between Snake and linear stacks at every encoder stage. ELU introduces a small rectification broadening; we omit it to report the purely geometric prediction. EnCodec is the only architecture of the three to use ELU, and including a broadening term required post hoc fitting but only slightly improved the estimate. We also note that EnCodec’s LSTM acts on the latent sequence near the end of the convolutional stack and is not modeled. 14 Table 4: Bandwidth at each encoder stage for Snake vs. linear stacks on DAC’s architecture. Ratios of 1.000 throughout validate treating Snake as not inhibiting frequency accumulation. Results for Stable Audio are identical and omitted for brevity. Stage Snake BW (Hz) Linear BW (Hz) Ratio Input conv 5512.500 5512.500 1.000 B1 residuals 602.930 602.930 1.000 B1 ×2 602.930 602.930 1.000 B2 residuals 301.465 301.465 1.000 B2 ×4 279.932 279.932 1.000 B3 residuals 75.366 75.366 1.000 B3 ×8 75.366 75.366 1.000 B4 residuals 9.421 9.421 1.000 B4 ×8 9.421 9.421 1.000 Final conv 9.421 9.421 1.000 Table 5: Architecture parameters used in the simulation. Residual unit dilations are listed as tuples. EnCodec residual units use no dilation beyond d = 1 .Model Input SR Strides Stride kernels Res. unit (k, d ) Act. DAC 44100 2,4,8,8 4,8,16,16 (7 , 1) , (7 , 3) , (7 , 9) Snake Stable Audio 44100 2,4,4,8,8 4,8,8,16,16 (7 , 1) , (7 , 3) , (7 , 9) Snake EnCodec 48000 2,4,5,8 4,8,10,16 (3 , 1) , (1 , 1) ELU 
+
+Reproducibility The simulation requires only numpy and scipy and runs in under one minute on a standard CPU. No GPU or pretrained model weights are needed. Code is included in the supplementary material. Architecture parameters used are listed in Table 5. 
+
+A.4 Separability analysis 
+
+Filter sweep. Frequency selectivity is measured by sweeping single-frequency sinusoidal inputs through each encoder and measuring the response of each latent channel. These inputs were chosen as a reliable baseline for selectivity in the most pure signal case. For each model, 300 frequencies are swept linearly from 1 Hz to the Nyquist frequency of the effective latent sampling rate fs 
+
+> 2
+
+. Input signals are generated at the model’s native sampling rate with duration 2 seconds. Responses are measured as mean squared activation per channel, producing a frequency response curve per channel. 
+
+Bandwidth computation. Frequency responses are folded to the local frequency axis via f mod fs
+
+with reflection at fs 
+
+> 2
+
+to account for aliasing. Each folded response curve is lightly smoothed with a Gaussian filter ( σ = 2 bins) to suppress noise before peak detection. Bandwidth is measured at the half-power point (-3 dB, ‘frac=0.5‘) of the dominant peak, defined as the tallest peak with prominence exceeding 30% of the maximum response and width of at least 3 bins. Edge bins (3 on each side) are excluded from peak detection to avoid boundary artifacts. Bandwidth is reported in Hz normalized by fs.
+
+Filter validity criterion. A filter is considered valid (and included in the Best BW statistic) if its folded response has exactly one dominant peak with peak dominance exceeding 0.7, where dominance is defined as the height of the tallest peak divided by the sum of all peak heights. This criterion selects filters with unimodal, frequency-selective responses and excludes broadband or multimodal filters that do not admit a meaningful bandwidth measurement. The Valid (%) column in Table 2 reports the fraction of filters meeting this criterion per model. 
+
+Resolution bounds. The single-kernel bound is ∆f = fs 
+
+> K
+
+, where K is the kernel size of the final convolutional layer. The receptive field bound is ∆f = fs 
+
+> R
+
+, where R is the cumulative receptive field computed as R = 1 + PLℓ=1 (kℓ − 1) Qℓ−1 
+
+> j=1
+
+sj , with kℓ the kernel size and sj the stride at layer j
+
+(Eq. 1). Best BW is the minimum bandwidth observed among valid filters. and Best/RF report the ratios of Best BW to the single-kernel and receptive field bounds respectively. 15 Model fs (Hz) Freq. Range (Hz) Spacing (Hz) Kernel Size EnCodec 150 1–75 5 35 DAC 86.13 1–45 3 41 Stable Audio 21.53 1–11 2 15 
+
+Table 6: Parameters for Gabor intervention across models. 
+
+Reported statistics. Best BW, Best/RF, and Valid (%) are deterministic given fixed model weights and sweep parameters, reported as point estimates per model. 
+
+A.5 Intervention details 
+
+Gabor filterbank. A fixed Gabor filterbank is applied to the encoder latents z ∈ RC×T . The filterbank consists of complex Gabor filters with center frequencies spaced linearly. Each filter uses a Hann-windowed sinusoid with kernel size K samples, producing real and imaginary components. Filterbank center frequencies, spacing, and kernel size are tuned per model to match the effective latent sampling rate of each encoder; parameters for each model are listed in Table 6. These were chosen with respect to the encoder’s full receptive field and its given selectivity bound, ∆f = fs
+
+> R
+
+1. Center frequencies are normalized to [0 , 0.5] by dividing by fs. Filters are ℓ2 normalized before application. The filterbank output ˜z ∈ RC×2F ×T concatenates real and imaginary responses, where 
+
+F is the number of filter frequencies. 
+
+Latent normalization. Prior to filterbank application, latents are normalized per-channel: z ←
+
+(z − μ)/(σ + 10 −6), where μ and σ are the temporal mean and standard deviation of each channel. This ensures the linear mapping operates on a consistent scale across models. 
+
+Linear mapping. A channel-wise linear mapping ∈ RC×2F (Eq. 2) is learned to reconstruct the original latent from the Gabor decomposition, minimizing ∥z − M ˜z∥2 (Eq. 3) per channel via ridge regression: 
+
+wc = ( X⊤ 
+
+> c
+
+Xc + λI )−1X⊤ 
+
+> c
+
+zc (7) where Xc ∈ RN T ×2F is the Gabor decomposition for channel c stacked across all N training signals, 
+
+zc ∈ RN T is the corresponding concatenated latent activations, and λ = 10 −4 is the ridge penalty. This is a closed-form solution requiring no iterative optimization. 
+
+Training signals. The mapping is fit on 1000 harmonic signals with fundamental frequencies spaced linearly from 100 to 500 Hz, each with 4 harmonics, at the model’s native sampling rate with duration 2 seconds. Signals are peak-normalized before encoding. 
+
+Reconstruction evaluation. Reconstructed latents ˆz = M ˜z are passed through the model’s quantizer and decoder to produce audio. Reconstruction fidelity is measured via log-mel distance computed with an 80-band mel spectrogram (FFT size 1024, hop length 256, sample rate 44100 Hz) and latent cosine similarity between z and ˆz.
+
+Separability evaluation after refactorization. The combined Gabor-plus-linear model is treated as a new encoder and analyzed using the same bandwidth sweep procedure described in Appendix A.4. Filter validity, Best BW, and Best/RF are computed identically to the baseline analysis, allowing direct comparison. 
+
+A.5.1 Controllability evaluation details 
+
+Dataset construction. We test on synthetic musical data, which provides a range of easily testable compositions of frequency components with clear semantic meaning. Mixture contexts are constructed by building three-component harmonic stacks over a two-octave chromatic root grid (C4–B5). A context is retained only if every component aliases to a Gabor bin at least 2 bins away from both the source and target bin under the folding map ϕ. This collision exclusion ensures that filler components do not contaminate the source or target frequency proxies. For each operation, 200 contexts are sampled; where fewer unique clean contexts exist, sampling with replacement is used and noted. Operations are additionally required to have source and target bins separated by at least 2 bins; operations failing this criterion are excluded entirely. 16 0.0 0.2 0.4 0.6 0.8 1.0 
+
+> (0 = source, 1 = target)
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Normalised energy
+
+(a)       
+
+> Gabor: src ( ) and tgt (- -)
+> mean ± std, n=50 contexts
+> src (std=0.006)
+> tgt (std=0.007)
+> 0.0 0.2 0.4 0.6 0.8 1.0
+> (0 = source, 1 = target)
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 1.2
+> Normalised energy
+
+(b)  
+
+> Orig latent: src ( ) and tgt (- -)
+> mean ± std, n=50 contexts
+> src (std=0.270)
+> tgt (std=0.241)
+
+E F# substitution trajectory across harmonic contexts 
+
+narrow band = consistent across contexts Figure 5: Normalized source and target energy cross smoothly along the substitution trajectory in Gabor space, but not in latent space. 0.0 0.5 1.0 
+
+(0 = source, 1 = target) 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Normalised band energy
+> (decoded audio)
+
+E5 F#4 
+
+> src (659 Hz, std=0.049)
+> tgt (370 Hz, std=0.023)
+
+0.0 0.5 1.0 
+
+(0 = source, 1 = target) 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Normalised band energy
+> (decoded audio)
+
+A4 G4 
+
+> src (440 Hz, std=0.033)
+> tgt (392 Hz, std=0.035)
+
+0.0 0.5 1.0 
+
+(0 = source, 1 = target) 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Normalised band energy
+> (decoded audio)
+
+C4 D4 
+
+> src (262 Hz, std=0.040)
+> tgt (294 Hz, std=0.034)
+> Decoded audio band energy under latent interpolation
+> across pitch operations and harmonic contexts
+
+Figure 6: Normalized source and target energy crossing smoothly in latent space translates to smooth motion along the substitution trajectory in output space. 
+
+Targeted substitution procedure. For each context, a source chord and target chord are synthesized as sums of pure sinusoids, peak-normalized. Both are passed through the DAC encoder. In the Gabor-refactorized space, the signed energy delta at each bin is computed as ∆eb = etgt  
+
+> b
+
+− esrc  
+
+> b
+
+, where 
+
+eb is mean bin energy over time. A trial is correct if ∆ebs < 0 and ∆ebt > 0, where bs and bt are the bins nearest the folded source and target frequencies respectively. In the original latent, the top-k channels most responsive to the source and target frequencies in isolation ( k = 5 ) are identified by encoding single-frequency sinusoids. A trial is correct if the mean signed energy change over source-associated channels is negative and over target-associated channels is positive. 
+
+Consistency evaluation. Profile cosine similarity is computed pairwise across all 200 context delta vectors within each space, using the full-dimensional signed delta profile (all 41 Gabor bins or all 1024 latent channels). Mean and standard deviation are reported over all  200 2
+
+ = 19 ,900 pairs. Transposition discrimination is computed by generating a matched transposed dataset (source and target frequencies multiplied by 5/4, contexts collision-checked independently), computing mean intra-group cosine for original and transposed operations separately, and reporting the difference between mean intra-group and mean cross-group cosine. 17 0.0 0.2 0.4 0.6 0.8 1.0 
+
+> (0 = source, 1 = target)
+> 0.0
+> 0.5
+> 1.0
+> Normalised band energy
+> (decoded audio)
+
+F0 transfer: mean ± std 
+
+NSynth strings, n=1037 pairs      
+
+> Source pitch (std=0.111)
+> Target pitch (std=0.145)
+> 0.0 0.2 0.4 0.6 0.8 1.0
+> (0 = source, 1 = target)
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+> Normalised band energy
+
+Individual trajectories (sample) 
+
+and mean 
+
+> Mean src (1009/1037 correct)
+> Mean tgt (706/1037 monotone)
+> Latent interpolation produces consistent pitch transfer
+> on real acoustic string recordings (NSynth, VHQ resampling)
+
+Figure 7: F0 transfer under latent interpolation on NSynth acoustic string recordings ( n = 1 ,037 
+
+pitch pairs, 48 pitches, MIDI 36–84). Left: Mean ± std of normalised band energy trajectories. Right: 
+
+Individual pair trajectories (sample of 100) with mean overlaid. Correct F0 transfer direction is achieved in 97.3% of pairs. 
+
+A.6 Decoded Audio Controllability Synthetic chord evaluation. Figure 5 shows normalized source and target energy along the substitution trajectory, with mean ± std across contexts. Gabor bins show tight, consistent crossing trajectories: energy smoothly disappears from the source bin while smoothly appearing in the target bin across all transformation contexts. Original latent channels show high variance and failure to differentiate source from target energy: both trajectories follow the same u-shape and variance is high, meaning the representation mounts a global signal response to the transformation rather than a change in one component alone. To confirm that Gabor-space manipulation produces predictable audible consequences, we evaluate latent interpolation between chord contexts differing by a single pitch component across three pitch operations (C4 →D4, A4 →G4, E5 →F#4) and 100 harmonic contexts each. For each context, we encode source and target chords through DAC, interpolate linearly between their latents ( α ∈
+
+[0 , 1] ), decode each interpolated latent, and measure band energy around the source and target pitch frequencies in the decoded audio. Figure 6 shows that source pitch energy decreases monotonically while target pitch energy increases across all three operations, with standard deviations of 0.02 –0.05 
+
+— substantially below those of the original latent space ( 0.24 –0.27 , Fig. 5). This confirms that the structured geometry of the Gabor-refactorized space propagates faithfully through the decoder to the audible signal. 
+
+Real acoustic recordings. To evaluate generalization beyond synthetic signals, we test latent interpolation on real acoustic string instrument recordings from the NSynth dataset Engel et al. [2017]. We select acoustic string samples in the pitch range MIDI 36–84, retaining one recording per pitch and excluding the highest pitches where FFT-based F0 estimation is unreliable. This yields 48 pitches; all pairs with a minimum gap of 3 semitones are evaluated, giving 1,037 pitch pairs. Recordings are natively 16 kHz and resampled to 44.1 kHz using SoXR very-high-quality resampling Robinson [2013]; resampling introduces no measurable F0 error relative to scipy-based resampling (mean error < 1 Hz on all samples). For each pair, we encode source and target recordings through DAC, interpolate linearly between their latents, decode each step, and measure band energy around each pitch’s fundamental frequency. A trial is classified as correct if source-pitch energy at α = 1 is lower than at α = 0 and target-pitch energy at α = 1 is higher than at α = 0 .Results are shown in Table 7 and Figure 7. Correct F0 transfer direction is achieved in 97 .3% of pairs. The correct direction rate increases monotonically with interval size, from 96% for small intervals (3–5 semitones) to 99% for large intervals ( >2 octaves). This is consistent with the separability 18 Table 7: Correct F0 transfer direction by interval size across 1,037 NSynth acoustic string pitch pairs. Correct direction rate increases with interval size, consistent with larger intervals spanning more Gabor bins and being more reliably distinguished in the refactorized space.                              
+
+> Interval Pairs Correct direction 3–5 semitones 129 124/129 (96%) 6–11 semitones 231 226/231 (98%) 12–23 semitones 359 344/359 (96%)
+> >24 semitones 318 315/318 (99%) Total 1037 1009/1037 (97.3%) Model Monotone CV Endpoint Distance EnCodec True 0.289 1.3984 DAC True 0.242 2.0346 Stable Audio True 0.277 1.4068
+
+Table 8: Interpolation results across models. All three models achieve monotone trajectories. CV measures uniformity of latent step sizes (lower = more linear). Endpoint distance measures the distance from start to end. analysis in Section 3: larger pitch intervals span more Gabor bins and are more reliably distinguished in the refactorized space, while small intervals near the Gabor resolution limit are harder to separate. The 28 incorrect-direction pairs are concentrated in the smallest interval category, further supporting this interpretation. 
+
+A.6.1 Interpolation 
+
+Linear interpolation between two tones (440 Hz and 660 Hz) in the Gabor-refactorized space produces smooth, perceptually consistent pitch transitions after decoding across all three models (Table 8). Trajectories are monotone in perceptual distance from each endpoint and approximately uniform in latent step size. These results confirm that the refactorized space supports structured trajectories, though we note that interpolation acts on the whole signal and does not require component-level separability; it is provided as a sanity check on representational continuity rather than as a controllability result. 
+
+A.7 Compute Resources 
+
+All experiments were conducted on a single NVIDIA A100 40GB GPU. No large-scale model training was performed; the only learned component is the GLRF linear mapping, which is fit via closed-form ridge regression. Runtimes were as follows. Injectivity analysis required approximately 1–4 minutes per model depending on architecture (total across all models: ∼7 minutes). Separability analysis required approximately 17 seconds to 4 minutes per model (total: ∼6 minutes). GLR fitting required under 1 minute total across all models. Evaluation required ∼15 minutes. All experiments combined required under 30 minutes of GPU time. Pretrained model weights were downloaded from public repositories; download times are not in-cluded above. Preliminary experiments to create datasets, validate parameters and Gabor filterbank parameterization required approximately 3-4 additional hours of exploratory compute. Given the minimal compute requirements described here, the environmental impact of this work is negligible: by avoiding retraining with GLRF, we save environmental cost. 
+
+A.8 Assets and Licenses 
+
+Pretrained models. The following pretrained encoder models are used in our analysis: 19 Model Version License URL EnCodec 48 kHz MIT github.com/facebookresearch/encodec DAC 44.1 kHz MIT github.com/descriptinc/descript-audio-codec Stable Audio 44.1 kHz Community License Agreement https://huggingface.co/stabilityai/stable-audio-open-1.0 
+
+Table 9: Pretrained models used in this work, with versions and licenses. 
+
+Released assets. Code released with this paper is provided under the MIT License. The synthetic signal datasets used in our experiments are fully reproducible from the generation code included in the repository and require no additional data access. 20
