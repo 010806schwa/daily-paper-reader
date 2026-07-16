@@ -1,0 +1,95 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-16T20:40:12.040522+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.13840v1",
+      "source": "arxiv",
+      "title": "From Continuous Deployment to Queryable Dataset: Terabyte-Scale AIS-Aligned Passive Acoustic Labelling",
+      "abstract": "Long-duration passive acoustic deployments produce large archives of recordings that are not linked to vessel tracks or encounter structure, leaving range and contact conditions unavailable as variables and requiring manual selection for analysis. To address this limitation, we propose a database-native workflow that aligns hydrophone recordings with Automatic Identification System (AIS) position reports to produce distance-resolved data. Fixed-duration recording windows and AIS messages are stored as persistent geospatial tables and associated through an indexed spatiotemporal join, replacing in-memory nested iteration with a single scalable set-based database process capable of handling continuous, multi-year, million-window archival deployments without exhausting available memory. In this study, the approach processes approximately 9.5x10e5 recording windows and 6.9x10e6 AIS position reports, producing a structured table that separates no-contact, single-contact, and two-contact windows, with the closest point of approach computed directly where applicable and background conditions characterized via deterministic spectral ranking. This formulation enables a GeoAI framework in which spatially indexed, queryable data become directly usable for machine learning. The resulting data product reveals predominantly noise-dominated conditions, with vessel contributions emerging mainly at shorter ranges, indicating that the task lies in extracting structure under background-limited regimes. Spectrogram and quantitative analyses show weak tonal signatures embedded in noise and a consistent decay of signal-to-noise ratio with distance, supporting the use of this representation for scalable machine learning, similarity analysis, and predictive acoustic modelling in real maritime environments.",
+      "authors": [
+        "Wayne Renaud",
+        "Priyanka Aravindan",
+        "Gabriel Spadon"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.DB"
+      ],
+      "published": "2026-07-15T13:47:56+00:00",
+      "link": "https://arxiv.org/pdf/2607.13840v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "AIS-aligned passive acoustic labelling for ship noise",
+      "llm_evidence_cn": "利用AIS对齐被动声学数据标注舰船噪声",
+      "llm_evidence": "利用AIS对齐被动声学数据标注舰船噪声",
+      "canonical_evidence": "利用AIS对齐被动声学数据标注舰船噪声",
+      "llm_tldr_en": "Proposes a database-native workflow to align long-duration hydrophone recordings with AIS position reports, creating distance-resolved labelled data for ship noise analysis, enabling queryable dataset without manual selection.",
+      "llm_tldr_cn": "该工作提出一种数据库本地化流程，将长时间水听器记录与自动识别系统（AIS）位置报告对齐，生成距离分辨的标签数据。通过空间时间索引替代内存迭代，可处理连续多年百万级记录的数据集。该方法消除了手动选择的需求，为舰船噪声分析提供了可查询的大规模标注数据，有助于后续基于高频特征的识别任务。",
+      "llm_tldr": "该工作提出一种数据库本地化流程，将长时间水听器记录与自动识别系统（AIS）位置报告对齐，生成距离分辨的标签数据。通过空间时间索引替代内存迭代，可处理连续多年百万级记录的数据集。该方法消除了手动选择的需求，为舰船噪声分析提供了可查询的大规模标注数据，有助于后续基于高频特征的识别任务。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.13555v1",
+      "source": "arxiv",
+      "title": "Greedy Volume Maximization of Gradient Embeddings for Long-Tailed Frame-Level Bioacoustic Active Learning",
+      "abstract": "Bioacoustic call-type classification relies on costly expert annotation. Active learning can reduce this burden by selecting a small batch of segments for expert annotation and using the labeled segments for training the classifier. The setting is hard: the target calls are extremely sparse and the call-type distribution is long-tailed, so a tight budget must be spent on the few rare, informative segments. We propose BADGE-Greedy-DPP, a deterministic batch selector that greedily adds the segment whose BADGE gradient embedding most enlarges the volume spanned by the batch; because this log-volume objective is submodular, the greedy rule guarantees a batch value at least a (1-1/e) fraction of the optimum of this objective, a guarantee not provided by BADGE's existing k-means++ and MCMC DPP sampling heuristics. There is also a temporal granularity mismatch in the task. The acquisition function scores whole segments, yet the informative frames inside them are few. Uniform averaging therefore washes them out. We show that the BADGE construction naturally addresses this mismatch when applied frame-wise, as prediction residuals weight the aggregated pseudo-gradient, so confidently predicted no-call frames contribute little while a single uncertain rare-call frame can still set the segment's direction. Across 10 runs on a sparse, imbalanced hyena call-type dataset, BADGE-Greedy-DPP achieves the best overall and rare-call-type performance among all compared query strategies, including MFFT, the strongest non-BADGE baseline, and the two vanilla BADGE traversals.",
+      "authors": [
+        "Shiqi Zhang",
+        "Marius Faiß",
+        "Ariana Strandburg-Peshkin",
+        "Tuomas Virtanen"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS",
+        "cs.AI",
+        "cs.SD"
+      ],
+      "published": "2026-07-15T07:59:54+00:00",
+      "link": "https://arxiv.org/pdf/2607.13555v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "active learning for acoustic call-type classification using gradient embeddings; transferable to ship noise recognition",
+      "llm_evidence_cn": "基于梯度嵌入的声学呼叫类型主动学习；可迁移至船舰噪声识别",
+      "llm_evidence": "基于梯度嵌入的声学呼叫类型主动学习；可迁移至船舰噪声识别",
+      "canonical_evidence": "基于梯度嵌入的声学呼叫类型主动学习；可迁移至船舰噪声识别",
+      "llm_tldr_en": "Proposes BADGE-Greedy-DPP for bioacoustic active learning, selecting informative audio segments greedily, achieving near-optimal batch selection for long-tailed rare calls.",
+      "llm_tldr_cn": "本文针对生物声学呼叫分类中专家标注成本高、稀有叫声稀疏长尾的问题，提出BADGE-Greedy-DPP确定性批次选择器，通过贪婪添加使梯度嵌入体积最大化的样本，实现接近最优的批次选择。该方法可减少标注成本，且其思想可迁移至船舰噪声识别中稀有高频信号样本的主动标注。",
+      "llm_tldr": "本文针对生物声学呼叫分类中专家标注成本高、稀有叫声稀疏长尾的问题，提出BADGE-Greedy-DPP确定性批次选择器，通过贪婪添加使梯度嵌入体积最大化的样本，实现接近最优的批次选择。该方法可减少标注成本，且其思想可迁移至船舰噪声识别中稀有高频信号样本的主动标注。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

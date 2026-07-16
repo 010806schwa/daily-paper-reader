@@ -1,0 +1,230 @@
+Title: Greedy Volume Maximization of Gradient Embeddings for Long-Tailed Frame-Level Bioacoustic Active Learning
+
+URL Source: https://arxiv.org/pdf/2607.13555v1
+
+Published Time: Thu, 16 Jul 2026 00:42:35 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+Submitted to Detection and Classification of Acoustic Scenes and Events 2026 Under reviewing 
+
+# Greedy Volume Maximization of Gradient Embeddings for Long-Tailed Frame-Level Bioacoustic Active Learning 
+
+## Shiqi Zhang 1,2, Marius Faiß 2,3,4, Ariana Strandburg-Peshkin 2, Tuomas Virtanen 11Audio Research Group, Tampere University, Tampere, Finland 
+
+## {shiqi.zhang, tuomas.virtanen }@tuni.fi 
+
+> 2
+
+## Department for the Ecology of Animal Societies, Max Planck Institute of Animal Behavior 
+
+> 3
+
+## International Max Planck Research School for Quantitative Behavior, Ecology and Evolution 
+
+> 4
+
+## Department of Biology, University of Konstanz Konstanz, Germany 
+
+## {mfaiss, astrandburg }@ab.mpg.de 
+
+Abstract —Bioacoustic call-type classification relies on costly expert annotation. Active learning can reduce this burden by selecting a small batch of segments for expert annotation and using the labeled segments for training the classifier. The setting is hard: the target calls are extremely sparse and the call-type distribution is long-tailed, so a tight budget must be spent on the few rare, informative segments. We propose BADGE-Greedy-DPP, a deterministic batch selector that greedily adds the segment whose BADGE gradient embedding most enlarges the volume spanned by the batch; because this log-volume objective is submodular, the greedy rule guarantees a batch value at least a (1 − 1/e )
+
+fraction of the optimum of this objective, a guarantee not provided by BADGE’s existing k-means++ and MCMC DPP sampling heuristics. There is also a temporal granularity mismatch in the task. The acquisition function scores whole segments, yet the informative frames inside them are few. Uniform averaging therefore washes them out. We show that the BADGE construction naturally addresses this mismatch when applied frame-wise, as prediction residuals weight the aggregated pseudo-gradient, so confidently predicted no-call frames contribute little while a single uncertain rare-call frame can still set the segment’s direction. Across 10 runs on a sparse, imbalanced hyena call-type dataset, BADGE-Greedy-DPP achieves the best overall and rare-call-type performance among all compared query strategies, including MFFT, the strongest non-BADGE baseline, and the two vanilla BADGE traversals. 
+
+Index Terms —active learning, determinantal point process, frame-level audio classification, bioacoustics, imbalanced classes 
+
+1. INTRODUCTION 
+
+Manual annotation of bioacoustic datasets is expensive, espe-cially when recordings need temporally strong annotations with onset and offset rather than only clip-level tags [1]. Active learning can reduce this effort by selecting a small batch of unlabeled audio segments for expert annotation before retraining the classifier [2]–[9]. The difficulty in bioacoustics is that the pool is both sparse and long-tailed. Most frames contain no target sound, and the call types are imbalanced. Studies under long-tailed labels further show that minority categories stay poorly covered at tight label budgets [10]–[16], so a useful query strategy must keep finding the few segments that carry rare, informative content rather than re-sampling the abundant background. Most acquisition functions score a candidate by prediction uncertainty, by disagreement among a committee of models, by coverage of the feature space, or by explicit batch diversity [17]–[27]. Batch active learning by diverse gradient embed-dings (BADGE) instead unifies uncertainty and diversity by representing each candidate with a single gradient embedding built from the model prediction [28]. These methods usually assume that each query candidate can be represented by one vector. Frame-level audio classification breaks this granularity assumption: the learner queries a whole segment, but each segment contains many frames, most of which are silent, non-target, or confidently predicted, while only a few remain uncertain. Directly averaging them into a segment vector lets the many uninformative frames wash out the few informative ones, diluting the frame-level feature that should drive acquisition. Our first contribution is a deterministic traversal for BADGE gradient-space batch selection. Original BADGE constructs each batch with either k-means++ seeding or finite-scan Markov chain Monte Carlo sampling from a fixed-size determinantal point process (MCMC k-DPP) [29], [30]. Both rules tend to select diverse samples with large gradient-embedding norms, but they are sampling heuristics and do not give a worst-case lower bound on the quality of the selected batch. We instead use greedy selection to maximize the regularized log-determinant of the selected segment embeddings, which is actually the volume they span in gradient space [31], [32]. Because this log-volume objective is monotone and submodular, at a fixed batch size the greedy traversal returns a batch whose value is at least a 
+
+(1 − 1/e ) fraction of the optimum for this uncertainty-diversity proxy objective [33]. Our second contribution adapts the BADGE pseudo-gradient representation to frame-level audio active learning. Instead of uniformly averaging frame features, we construct and aggregate frame-wise pseudo-gradients weighted by prediction residuals. This maps each segment into BADGE gradient space. Because residual magnitudes are large near the decision boundary and close to zero on confidently predicted no-call frames, a few uncertain frames, even a single uncertain rare-call frame, arXiv:2607.13555v1 [eess.AS] 15 Jul 2026 Submitted to Detection and Classification of Acoustic Scenes and Events 2026 Under reviewing can determine the segment’s gradient direction. The resulting representation aggregates frames by informativeness rather than by frame count, so it is better suited to sparse, long-tailed frame-level queries. We evaluate on an extremely sparse and imbalanced spotted-hyena frame-level call-type classification dataset [34]. All methods use fixed animal2vec embeddings [35] and a 2-layer MLP head. Across 10 independent runs, BADGE-Greedy-DPP achieves the best overall and rare-call-type active-learning quality among all compared strategies, including the strongest non-BADGE baseline, mismatch-first farthest traversal (MFFT) [36], [37], and two vanilla BADGE traversals. Its margin is largest on the rarest classes, consistent with the exploration hypothesis behind the greedy volume objective. 
+
+2. METHOD 2.1. Active-Learning Framework and BADGE Embeddings 
+
+We work in a standard pool-based active-learning loop. Let Lr
+
+be the labeled set of audio segments and Ur the unlabeled pool at annotation round r. Each segment is a 10 s clip divided into 
+
+T fixed-length frames, and each frame may carry any subset of 10 call-type labels (multi-label). A classifier trained on Lr
+
+predicts these frame labels. The query rule ranks the unlabeled segments in Ur , and the top B segments (the per-round budget) are labeled by an expert at the frame level and moved from 
+
+Ur to Lr+1 . A useful query rule prioritizes segments whose labels should improve the next classifier, either because the current prediction is uncertain or because the segment covers a poorly represented region. For segment i and frame t, the classifier produces aposterior vector pit ∈ [0 , 1] 10 and a penultimate-layer feature vector hit . Following BADGE [28], we form a pseudo label (termed a hallucinated label in the original BADGE study) by thresholding the current prediction as 
+
+ˆyit = I [pit > 0.5] , (1) where I[·] is the element-wise indicator, equal to one where the posterior exceeds 0.5 and zero otherwise. This pseudo label only builds the query representation; it is not a training target. We use it as the temporary label in a frame-wise pseudo binary-cross-entropy loss and take the gradient with respect to the final classification-layer weights. For a sigmoid multi-label head, this frame-wise gradient has the form (pit − ˆyit ) ⊗ hit .We aggregate these frame-wise gradient embeddings as 
+
+Gi = 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+(pit − ˆyit ) ⊗ hit , (2) where ⊗ is the outer product. We flatten Gi into a vector 
+
+ϕi = vec( Gi), the segment representation used for selection. Unlike a segment-wise gradient built from a pooled segment feature and a segment-presence pseudo label, which assigns one residual to the whole segment and is blind to where frame-level uncertainty occurs, (2) keeps a separate residual for each frame. The residual pit − ˆyit is largest near the decision threshold, and hit records where that uncertainty sits in feature space, so each frame enters the sum in (2) weighted by its own residual magnitude. The aggregation over frames is therefore uncertainty-weighted rather than a uniform mean. Boundary frames dominate Gi, while frames the model predicts confidently (residual near zero), including the abundant no-call ones, contribute almost nothing. A segment with only a few informative frames thus keeps a distinctive embedding direction. The factor 1/T scales every frame alike and serves only to keep the log-determinant objective (3) in a stable numerical range; it does not change the relative weighting among frames. Acquisition then operates on these per-segment embeddings to bound query-stage compute and candidate-embedding storage, while predictions and supervision stay frame-level. We change only the traversal rule applied to these embeddings. 
+
+2.2. Greedy DPP Traversal in Gradient Space 
+
+The traversal aims to select a batch of unlabeled segments whose gradient embeddings span a large volume. For a candidate selected set S, let ΦS be the matrix whose rows are the vectors {ϕj : j ∈ S}. We score the selected set with the regularized log-determinant objective 
+
+F (S) = log det  λI + Φ⊤ 
+
+> S
+
+ΦS
+
+ , (3) where λ > 0 is a small regularizer. Up to a constant, F (S) is the volume spanned by the selected gradient embeddings, the quantity a DPP rewards [31]. We build the batch greedily, at each step adding 
+
+i⋆ = arg max  
+
+> i / ∈S
+
+∆( i | S), (4) with marginal gain 
+
+∆( i | S) = F (S ∪ { i}) − F (S)= log 
+
+
+
+1 + ϕ⊤
+
+> i
+
+ λI + Φ⊤ 
+
+> S
+
+ΦS
+
+−1 ϕi
+
+
+
+, (5) obtained from the matrix determinant lemma. Equation (5) is the volume increase from adding candidate 
+
+i to the current batch. It has a direct geometric reading: a candidate scores high when its gradient still has a large component outside the span of the already selected gradients, measured by the quadratic form ϕ⊤
+
+> i
+
+ λI + Φ⊤ 
+
+> S
+
+ΦS
+
+−1 ϕi. The selector therefore favors segments that expand the span of the selected gradients over those that reinforce directions already well covered. We call this behavior exploration in BADGE gradient space . In addition, F is monotone and submodular in the selected set [32], [33], [38]; at a fixed batch size, deterministic greedy selection therefore achieves a (1 − 1/e ) lower bound on the optimum of this regularized log-volume proxy for batch uncertainty and diversity. What’s more, BADGE already encodes uncertainty through the pseudo-gradient construction [28], we do not need to introduce an additional weight between uncertainty and exploration. At each active-learning round, we train the classifier with the same architecture on the current labeled set, compute (2) for all unlabeled segments, select B segments greedily with (5) , and request their labels. Submitted to Detection and Classification of Acoustic Scenes and Events 2026 Under reviewing 300 600 900 1200 1500 1800 2100 2400 2700 3000 
+
+> Labeled segments
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> Test macro mAP
+> Full supervised mean
+> Random
+> Entropy
+> Farthest Traversal
+> Disagreement
+> MFFT
+> Vanilla BADGE (KMeans++)
+> Vanilla BADGE (MCMC DPP)
+> BADGE Greedy DPP (proposal)
+> Fig. 1 : Active-learning curves on the hyena frame-level call-type task. Lines show mean test mAP across 10 runs. Colored bands show min-max ranges across runs, not confidence intervals. The dashed black line and gray band show the mean and min-max range of the separate full-supervised reference.
+> Table 1 : Train-pool prevalence of 10 call types, sorted by segment prevalence. Segment prevalence is the fraction of 10 s segments with at least one frame of the type; frame prevalence is the fraction of 0.5 s frames carrying it.
+
+Call type Segment (%) Frame (%) feeding (fed) 8.267 5.887 regular groan (grn) 4.194 1.204 other (oth) 3.978 0.676 whoop (whp) 2.398 0.935 squeal (sql) 1.847 0.413 giggle (gig) 1.408 0.259 alarm rumble (rum) 1.273 0.303 squitter (str) 0.771 0.219 snore (snr) 0.444 0.247 growl (gwl) 0.425 0.072 
+
+3. EXPERIMENTAL SETUP 
+
+We evaluate on a hyena frame-wise multi-label call-type clas-sification task built from preliminary version of the HyenaSET dataset [34]. The data are tracking-collar recordings from a spotted hyena clan of 19 spotted hyenas ( Crocuta crocuta ) in the Masai Mara National Reserve in Kenya, collected by the Mara Hyena Project, Michigan State University, and the Max Planck Institute of Animal Behavior, and contain significant collar and environmental noise. We use the fully annotated sections, where call type, onset, and offset are marked, giving about 205 hours of audio with 10 call types. The recordings are cut into non-overlapping 10 s segments, each split into 20 frames of 0.5 s. The task is sparse and long-tailed. Under 10% of frames contain an annotated call. Table 1 reports the segment and frame prevalence of every call type; both span a strong long tail, from the most common type down to the three rarest, growl ( gwl ), snore ( snr ), and squitter ( str ). We split the segments into train, validation, and test sets in a 70/15/15 ratio, stratified by segment-level call-type label. Each method is evaluated over 10 independent runs with different random seeds. A run starts from a randomly sampled seed set of 300 labeled segments and adds nine active-learning rounds of B = 300 segments each, reaching a final labeled budget of 3000 segments. 
+
+3.1. Representation, Model, and Compared Methods 
+
+Following common active-learning practice, we freeze the audio representation and vary only the query strategy. All methods use fixed animal2vec embeddings [35] and a 2-layer MLP head. This isolates the selection rule from representation-learning effects. The classifier is trained with binary cross-entropy loss and Adam, with model selection and early stopping on validation macro average precision (mAP). The compared query strategies are Random, Entropy, Farthest Traversal, Disagreement, MFFT [36], [37], vanilla BADGE (k-means++) [28], [29], vanilla BADGE (MCMC DPP) [28], [30], and BADGE-Greedy-DPP. Entropy, Farthest Traversal, and Disagreement operate on the same frame-level predictions, and MFFT applies mismatch-first farthest traversal. All BADGE variants use the same pseudo-gradient embedding construction in (2) ; they differ only in the traversal step, which selects a batch by k-means++, MCMC DPP, or our greedy log-det rule. For BADGE-Greedy-DPP, we fix the regularizer to λ = 10 −6
+
+as a small ridge term for invertibility and numerical stability. We also train a full-supervised reference model that uses the same protocol (data splits, animal2vec representation, MLP head, loss, optimizer, early-stopping rule, and test metric). 
+
+3.2. Metrics 
+
+Our primary metric is N -AULC, which summarizes the whole learning curve instead of only the last labeled budget. We compute N-AULC as 
+
+N -AU LC = 1
+
+b9 − b09X
+
+> k=1
+
+(bk − bk−1) mk + mk−1
+
+2 , (6) where bk = 300 + k · 300 is the cumulative labeled budget after round k for k = 0 , . . . , 9, and mk is the test mAP at round k. Thus, N -AULC is the budget-averaged test mAP over the learning curve and the higher the better. We compute Submitted to Detection and Classification of Acoustic Scenes and Events 2026 Under reviewing                                                                                                                                                                                           
+
+> Table 2 : Main active-learning results over 10 runs; metrics are defined in Section 3.2. N -AULC, Rare -N-AULC, F-mAP, and F-rmAP are percentages, and QT is in seconds. ‘*’ averages reaching runs only, and ‘–’ means no run reached the reference. Bold marks the best effectiveness values, highest FS-Rch, and lowest FS-Bud. Method N-AULC Rare-N-AULC F-mAP F-rmAP R-Enr FS-Bud FS-Rch QT Random 41.3 ±1.8 24.5 ±2.9 48.3 ±2.2 33.5 ±3.2 1.03 ±0.09 –0% 0.00 ±0.00 Entropy 52.1 ±1.2 38.0 ±3.2 60.3 ±1.1 50.7 ±2.5 4.57 ±0.21 –0% 115.60 ±19.65 Farthest Traversal 49.9 ±0.5 38.5 ±0.6 55.9 ±0.7 44.3 ±1.6 2.32 ±0.09 –0% 125.16 ±3.60 Disagreement 54.9 ±0.7 40.9 ±2.3 62.4 ±0.8 53.7 ±2.0 8.59 ±0.17 2880 ±164* 50% 355.32 ±19.51 MFFT 55.5 ±0.7 43.6 ±2.2 63.2 ±0.6 55.4 ±2.0 8.72 ±0.24 2533 ±339* 90% 427.46 ±78.40 Vanilla BADGE (KMeans++) 54.2 ±1.0 43.7 ±1.8 62.3 ±0.4 55.5 ±1.1 5.74 ±0.33 2880 ±164* 50% 125.30 ±40.12 Vanilla BADGE (MCMC DPP) 53.0 ±1.8 40.9 ±3.2 61.7 ±1.2 53.8 ±2.8 5.36 ±0.64 2925 ±150* 40% 768.99 ±17.86
+> BADGE Greedy DPP (proposal) 56.7 ±0.9 47.4 ±1.7 64.3 ±0.6 58.6 ±1.3 10.41 ±0.26 2040 ±126 100% 141.96 ±9.77 Random Entropy Farthest Traversal Disagreement MFFT BADGE
+> (KMeans++)
+> BADGE
+> (MCMC DPP)
+> BADGE
+> (Greedy DPP)
+> 0
+> 2
+> 4
+> 6
+> 8
+> 10
+> 12
+> 14
+> 16
+> Segment-level (selection) enrichment
+> Rare call type
+> GWL SNR STR
+> Fig. 2 : Final segment-level enrichment of the three rare call types relative to their train-pool prevalences, compared across all query strategies. The dashed line at 1.0 corresponds to prevalence-matched selection. Error bars show standard deviation over 10 runs.
+
+Rare -N -AULC analogously by applying the same formula to the rare-call-type mAP over {gwl , snr , str }.At 3000 labeled segments, final mAP (F-mAP) and final rare-call-type mAP (F-rmAP) summarize endpoint performance. Rare macro enrichment (R-Enr) averages, over gwl , snr , and 
+
+str , the ratio between selected-set and train-pool segment prevalence. FS-Bud records the first cumulative labeled budget when a run reaches the mean test mAP of the same-protocol full-supervised reference, and FS-Rch records the fraction of runs that do so. FS-Bud means and standard deviations use reaching runs only. QT sums the total query-stage wall-clock time over the nine active-learning rounds. 
+
+4. RESULTS 
+
+Table 2 and Fig. 1 show that BADGE-Greedy-DPP is the best active learner among the methods compared here. It attains the highest N - AULC ( 56 .7% ± 0.9% ), final mAP ( 64 .3% ± 0.6% ), and rare-call-type metrics. The closest competitor is MFFT; BADGE-Greedy-DPP exceeds it by +1 .2 points in N - AULC, 
+
++3 .8 points in Rare-N-AULC, and +1 .1 points in final mAP. For reference, same-protocol full-supervised runs reach 
+
+62 .2% ± 1.5% final mAP. Under Holm-corrected exact permu-tation tests [39], BADGE-Greedy-DPP improves over MFFT, vanilla BADGE (k-means++), and vanilla BADGE (MCMC DPP) by +1 .2, +2 .5, and +3 .7 points in N -AULC (corrected 
+
+p = 1 .60 × 10 −3, 4.87 × 10 −5, and 3.79 × 10 −5), and by 
+
++3 .8, +3 .7, and +6 .5 points in Rare -N - AULC (corrected 
+
+p = 3 .57 × 10 −4, 3.57 × 10 −4, and 3.79 × 10 −5). 
+
+4.1. Rare Call-Type Performance 
+
+The rare-class gains reflect more than stronger overall per-formance. In Table 2, BADGE-Greedy-DPP has the highest Rare -N -AULC, final rare-call-type mAP, rare macro enrichment, and final count of selected segments carrying at least one rare-call-type label ( 496 .8 ± 11 .3). Figure 2 shows the per-class pattern. Disagreement and MFFT over-sample gwl and str (mean enrichments of 
+
+14 .00 × and 9.97 × for Disagreement, 13 .51 × and 10 .19 × for MFFT) but stay weak on snr , with mean snr enrichments of only 1.81 × and 2.46 ×. BADGE-Greedy-DPP is more balanced across the tail, with 12 .24 ×, 9.23 ×, and 9.76 × enrichment for gwl , snr , and str ; this is consistent with rewarding underrepresented directions in BADGE gradient space. 
+
+4.2. Full-Supervised Reference and Efficiency Trade-Off 
+
+Table 2 also reports FS-Bud and FS-Rch, which quantify label efficiency and reliability against the full-supervised reference. BADGE-Greedy-DPP is the only method that reaches the mean reference in all 10 runs, doing so after 2040 ± 126 labeled segments ( 3.94% ± 0.24% of the full train set); MFFT reaches it in 90% of runs at 2533 ± 339 segments ( 4.89% ± 0.66% ). BADGE-Greedy-DPP is only moderately slower than BADGE (KMeans++) ( 141 .96 ± 9.77 s versus 125 .30 ± 40 .12 s) and much faster than BADGE (MCMC DPP) ( 768 .99 ± 17 .86 s). 
+
+5. CONCLUSION 
+
+We introduced BADGE-Greedy-DPP for active learning on long-tailed, frame-level bioacoustic classification. It brings BADGE’s gradient embedding to the frame level, where residual-weighted aggregation lets a few uncertain frames set each segment’s selection direction. It then builds the query batch by deterministic greedy maximization of the spanned volume, a monotone submodular rule with an approximation guarantee. On the hyena task it delivers the best overall and rare-call-type active-learning quality, with the largest margins on the rarest classes. Submitted to Detection and Classification of Acoustic Scenes and Events 2026 Under reviewing 
+
+REFERENCES 
+
+[1] D. Stowell, “Computational bioacoustics with deep learning: a review and roadmap,” PeerJ , vol. 10, p. e13152, 2022. [2] Z. Shuyang, T. Heittola, and T. Virtanen, “Active learning for sound event detection,” IEEE/ACM Trans. Audio, Speech, Lang. Process. , vol. 28, pp. 2895–2905, 2020. [3] J. Martinsson, O. Mogren, M. Sandsten, and T. Virtanen, “From weak to strong sound event labels using adaptive change-point detection and active learning,” in Proc. 32nd Eur. Signal Process. Conf. (EUSIPCO) ,2024, pp. 902–906. [4] Y. Wang, M. Cartwright, and J. P. Bello, “Active few-shot learning for sound event detection,” in Proc. Interspeech , 2022, pp. 1551–1555. [5] S. Shishkin, D. Hollosi, S. Doclo, and S. Goetze, “Active learning for sound event classification using monte-carlo dropout and PANN embeddings,” in Proc. Detection and Classification of Acoustic Scenes and Events Workshop (DCASE) , 2021, pp. 150–154. [6] S. Shishkin, D. Hollosi, S. Goetze, and S. Doclo, “Active learning for sound event classification using bayesian neural networks with gaussian variational posterior,” in Proc. IEEE Int. Conf. Acoust., Speech Signal Process. (ICASSP) , 2024, pp. 896–900. [7] M. Lindsey, A. Shah, F. Kubala, and R. M. Stern, “Online active learning for sound event detection,” arXiv preprint arXiv:2309.14460 , 2023. [8] B. McEwen, K. Soltero, S. Gutschmidt, A. Bainbridge-Smith, J. Atlas, and R. Green, “Active few-shot learning for rare bioacoustic feature annotation,” Ecol. Inform. , vol. 82, p. 102734, 2024. [9] R. Lindholm, O. Marklund, O. Mogren, and J. Martinsson, “Aggregation strategies for efficient annotation of bioacoustic sound events using active learning,” in Proc. 33rd Eur. Signal Process. Conf. (EUSIPCO) , 2025, pp. 955–959. [10] K. Tomanek and U. Hahn, “Reducing class imbalance during active learning for named entity annotation,” in Proc. 5th Int. Conf. Knowl. Capture , 2009, pp. 105–112. [11] J. Choi, K. M. Yi, J. Kim, J. Choo, B. Kim, J. Chang, Y. Gwon, and H. J. Chang, “VaB-AL: Incorporating class imbalance and difficulty with variational Bayes for active learning,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR) , 2021, pp. 6749–6758. [12] Y. Cui, M. Jia, T. Lin, Y. Song, and S. Belongie, “Class-balanced loss based on effective number of samples,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR) , 2019, pp. 9268–9277. [13] J. Z. Bengar, J. van de Weijer, L. L. Fuentes, and B. Raducanu, “Class-balanced active learning for image classification,” in Proc. IEEE/CVF Winter Conf. Appl. Comput. Vis. (WACV) , 2022, pp. 3707–3716. [14] Y. Zhang, P. Zhao, J. Cao, W. Ma, J. Huang, Q. Wu, and M. Tan, “Online adaptive asymmetric active learning for budgeted imbalanced data,” in 
+
+Proc. 24th ACM SIGKDD Int. Conf. Knowl. Discovery Data Mining (KDD) , 2018, pp. 2768–2777. [15] M. Zhu, C. Fan, H. Chen, Y. Liu, W. Mao, X. Xu, and C. Shen, “Generative active learning for long-tailed instance segmentation,” in 
+
+Proc. 41st Int. Conf. Mach. Learn. (ICML) , ser. Proc. Mach. Learn. Res., vol. 235, 2024, pp. 62 349–62 368. [16] Y. Zhang, B. Kang, B. Hooi, S. Yan, and J. Feng, “Deep long-tailed learning: A survey,” IEEE Trans. Pattern Anal. Mach. Intell. , vol. 45, no. 9, pp. 10 795–10 816, 2023. [17] D. D. Lewis and W. A. Gale, “A sequential algorithm for training text classifiers,” in Proc. 17th Annu. Int. ACM SIGIR Conf. Res. Develop. Inf. Retr. Springer, 1994, pp. 3–12. [18] B. Settles, Active Learning , ser. Synth. Lect. Artif. Intell. Mach. Learn. Morgan and Claypool Publishers, 2012. [19] H. S. Seung, M. Opper, and H. Sompolinsky, “Query by committee,” in 
+
+Proc. 5th Annu. Workshop Comput. Learn. Theory , 1992, pp. 287–294. [20] Y. Freund, H. S. Seung, E. Shamir, and N. Tishby, “Selective sampling using the query by committee algorithm,” Mach. Learn. , vol. 28, no. 2–3, pp. 133–168, 1997. [21] T. F. Gonzalez, “Clustering to minimize the maximum intercluster distance,” Theor. Comput. Sci. , vol. 38, pp. 293–306, 1985. [22] O. Sener and S. Savarese, “Active learning for convolutional neural networks: A core-set approach,” in Proc. Int. Conf. Learn. Represent. (ICLR) , 2018. [23] Y. Gal, R. Islam, and Z. Ghahramani, “Deep Bayesian active learning with image data,” in Proc. 34th Int. Conf. Mach. Learn. (ICML) , ser. Proc. Mach. Learn. Res., vol. 70, 2017, pp. 1183–1192. [24] W. H. Beluch, T. Genewein, A. N ¨urnberger, and J. M. K ¨ohler, “The power of ensembles for active learning in image classification,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR) , 2018, pp. 9368–9377. [25] A. Kirsch, J. van Amersfoort, and Y. Gal, “BatchBALD: Efficient and diverse batch acquisition for deep Bayesian active learning,” in Proc. Adv. Neural Inf. Process. Syst. (NeurIPS) , vol. 32, 2019. [26] G. Citovsky, G. DeSalvo, C. Gentile, L. Karydas, A. Rajagopalan, A. Rostamizadeh, and S. Kumar, “Batch active learning at scale,” in Proc. Adv. Neural Inf. Process. Syst. (NeurIPS) , vol. 34, 2021, pp. 11 933– 11 944. [27] E. Bıyık, K. Wang, N. Anari, and D. Sadigh, “Batch active learning using determinantal point processes,” arXiv preprint arXiv:1906.07975 ,2019. [28] J. T. Ash, C. Zhang, A. Krishnamurthy, J. Langford, and A. Agarwal, “Deep batch active learning by diverse, uncertain gradient lower bounds,” in Proc. Int. Conf. Learn. Represent. (ICLR) , 2020. [29] D. Arthur and S. Vassilvitskii, “k-means++: the advantages of careful seeding,” in Proc. 18th Annu. ACM-SIAM Symp. Discrete Algorithms (SODA) , 2007, pp. 1027–1035. [30] N. Anari, S. O. Gharan, and A. Rezaei, “Monte Carlo Markov chain algorithms for sampling strongly Rayleigh distributions and determinantal point processes,” in Proc. 29th Annu. Conf. Learn. Theory , ser. Proc. Mach. Learn. Res., vol. 49, 2016, pp. 103–115. [31] A. Kulesza and B. Taskar, “Determinantal point processes for machine learning,” Found. Trends Mach. Learn. , vol. 5, no. 2–3, pp. 123–286, 2012. [32] A. Krause, A. Singh, and C. Guestrin, “Near-optimal sensor placements in Gaussian processes: Theory, efficient algorithms and empirical studies,” 
+
+J. Mach. Learn. Res. , vol. 9, no. 8, pp. 235–284, 2008. [33] G. L. Nemhauser, L. A. Wolsey, and M. L. Fisher, “An analysis of approximations for maximizing submodular set functions - I,” Math. Program. , vol. 14, no. 1, pp. 265–294, 1978. [34] J. M. Woerner, C. Angonin, A. S. Gersick, K. E. Holekamp, F. H. Jensen, M. P. Johnson, M. H. M. Onsare, M. O. Pioon, J. C. Sch ¨afer-Zimmermann, A. Strandburg-Peshkin, and E. D. Strauss, “HyenaSET: Hyena sound event transcripts and benchmark animal2vec performance for parsing animal communication,” bioRxiv , p. 2026.06.14.732108, 2026. [35] J. C. Sch ¨afer-Zimmermann, V. Demartsev, B. Averly, K. L. Dhanjal-Adams, M. Duteil, G. Gall, M. Faiß, L. Johnson-Ulrich, D. Stowell, M. B. Manser, M. A. Roch, and A. Strandburg-Peshkin, “animal2vec and meerkat: A self-supervised transformer for rare-event raw audio input and a large-scale reference dataset for bioacoustics,” Methods Ecol. Evol. , vol. 17, no. 3, pp. 875–888, 2026. [36] Z. Shuyang, T. Heittola, and T. Virtanen, “An active learning method using clustering and committee-based sample selection for sound event classification,” in Proc. 16th Int. Workshop Acoust. Signal Enhancement (IWAENC) , 2018, pp. 116–120. [37] S. Zhang and T. Virtanen, “Hybrid disagreement-diversity active learning for bioacoustic sound event detection,” in Proc. 33rd Eur. Signal Process. Conf. (EUSIPCO) , 2025, pp. 131–135. [38] K. Wei, R. Iyer, and J. Bilmes, “Submodularity in data subset selection and active learning,” in Proc. 32nd Int. Conf. Mach. Learn. (ICML) , ser. Proc. Mach. Learn. Res., vol. 37, 2015, pp. 1954–1963. [39] S. Holm, “A simple sequentially rejective multiple test procedure,” Scand. J. Stat. , vol. 6, no. 2, pp. 65–70, 1979.

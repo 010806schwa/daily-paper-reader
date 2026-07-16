@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-16",
+  "date": "2026-07-16",
+  "generated_at": "2026-07-16T20:41:42",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/16/2607.13840v1-from-continuous-deployment-to-queryable-dataset-terabyte-scale-ais-aligned-passive-acoustic-labelling",
+      "section": "deep",
+      "title_en": "From Continuous Deployment to Queryable Dataset: Terabyte-Scale AIS-Aligned Passive Acoustic Labelling",
+      "authors": "Wayne Renaud, Priyanka Aravindan, Gabriel Spadon",
+      "date": "2026-07-15",
+      "pdf": "https://arxiv.org/pdf/2607.13840v1",
+      "score": "8.0",
+      "evidence": "利用AIS对齐被动声学数据标注舰船噪声",
+      "tldr": "长时间被动声学监测产生与船舶轨迹脱节的录音数据，限制了距离和接触条件的分析。本研究提出数据库原生工作流，利用索引时空连接将水听器录音与AIS报告对齐，生成距离解析数据集。该方法处理了95万录音窗口和690万AIS报告，产生可查询表，分离不同接触场景并计算最近接近点，发现噪音主导而信号随距离衰减。此工作构建了GeoAI框架，使大规模空间索引数据可直接用于机器学习、相似性分析和预测声学建模。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Long-duration passive acoustic deployments produce large archives of recordings that are not linked to vessel tracks or encounter structure, leaving range and contact conditions unavailable as variables and requiring manual selection for analysis. To address this limitation, we propose a database-native workflow that aligns hydrophone recordings with Automatic Identification System (AIS) position reports to produce distance-resolved data. Fixed-duration recording windows and AIS messages are stored as persistent geospatial tables and associated through an indexed spatiotemporal join, replacing in-memory nested iteration with a single scalable set-based database process capable of handling continuous, multi-year, million-window archival deployments without exhausting available memory. In this study, the approach processes approximately 9.5x10e5 recording windows and 6.9x10e6 AIS position reports, producing a structured table that separates no-contact, single-contact, and two-contact windows, with the closest point of approach computed directly where applicable and background conditions characterized via deterministic spectral ranking. This formulation enables a GeoAI framework in which spatially indexed, queryable data become directly usable for machine learning. The resulting data product reveals predominantly noise-dominated conditions, with vessel contributions emerging mainly at shorter ranges, indicating that the task lies in extracting structure under background-limited regimes. Spectrogram and quantitative analyses show weak tonal signatures embedded in noise and a consistent decay of signal-to-noise ratio with distance, supporting the use of this representation for scalable machine learning, similarity analysis, and predictive acoustic modelling in real maritime environments.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/16/2607.13555v1-greedy-volume-maximization-of-gradient-embeddings-for-long-tailed-frame-level-bioacoustic-active-learning",
+      "section": "quick",
+      "title_en": "Greedy Volume Maximization of Gradient Embeddings for Long-Tailed Frame-Level Bioacoustic Active Learning",
+      "authors": "Shiqi Zhang, Marius Faiß, Ariana Strandburg-Peshkin, Tuomas Virtanen",
+      "date": "2026-07-15",
+      "pdf": "https://arxiv.org/pdf/2607.13555v1",
+      "score": "6.0",
+      "evidence": "基于梯度嵌入的声学呼叫类型主动学习；可迁移至船舰噪声识别",
+      "tldr": "生物声学分类中标注成本高，主动学习可降低需求，但目标调用稀疏且类别分布长尾。提出BADGE-Greedy-DPP，通过贪婪选择最大化梯度嵌入体积的片段，基于子模性保证近似最优。帧级应用自然解决时间粒度不匹配，优选罕见帧。在稀疏不平衡数据集上，该方法在整体和稀有类性能上均超越现有策略。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Bioacoustic call-type classification relies on costly expert annotation. Active learning can reduce this burden by selecting a small batch of segments for expert annotation and using the labeled segments for training the classifier. The setting is hard: the target calls are extremely sparse and the call-type distribution is long-tailed, so a tight budget must be spent on the few rare, informative segments. We propose BADGE-Greedy-DPP, a deterministic batch selector that greedily adds the segment whose BADGE gradient embedding most enlarges the volume spanned by the batch; because this log-volume objective is submodular, the greedy rule guarantees a batch value at least a (1-1/e) fraction of the optimum of this objective, a guarantee not provided by BADGE's existing k-means++ and MCMC DPP sampling heuristics. There is also a temporal granularity mismatch in the task. The acquisition function scores whole segments, yet the informative frames inside them are few. Uniform averaging therefore washes them out. We show that the BADGE construction naturally addresses this mismatch when applied frame-wise, as prediction residuals weight the aggregated pseudo-gradient, so confidently predicted no-call frames contribute little while a single uncertain rare-call frame can still set the segment's direction. Across 10 runs on a sparse, imbalanced hyena call-type dataset, BADGE-Greedy-DPP achieves the best overall and rare-call-type performance among all compared query strategies, including MFFT, the strongest non-BADGE baseline, and the two vanilla BADGE traversals.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
