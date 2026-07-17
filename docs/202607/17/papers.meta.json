@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-17",
+  "date": "2026-07-17",
+  "generated_at": "2026-07-17T20:21:03",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/17/2607.13840v1-from-continuous-deployment-to-queryable-dataset-terabyte-scale-ais-aligned-passive-acoustic-labelling",
+      "section": "deep",
+      "title_en": "From Continuous Deployment to Queryable Dataset: Terabyte-Scale AIS-Aligned Passive Acoustic Labelling",
+      "authors": "Wayne Renaud, Priyanka Aravindan, Gabriel Spadon",
+      "date": "2026-07-15",
+      "pdf": "https://arxiv.org/pdf/2607.13840v1",
+      "score": "9.0",
+      "evidence": "将水听器录音与AIS数据对齐以标注船辐射噪声",
+      "tldr": "被动声学记录常与船舶轨迹脱节，限制变量可用性。本研究提出数据库原生工作流，通过索引时空连接将水听器录音与AIS位置报告对齐，处理约95万录音窗口和690万AIS报告，生成结构化表格并分离接触类型。结果显示噪声主导，船舶贡献多在短距离，信噪比随距离衰减。该方法实现了GeoAI框架，支持可扩展机器学习和预测声学建模。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Long-duration passive acoustic deployments produce large archives of recordings that are not linked to vessel tracks or encounter structure, leaving range and contact conditions unavailable as variables and requiring manual selection for analysis. To address this limitation, we propose a database-native workflow that aligns hydrophone recordings with Automatic Identification System (AIS) position reports to produce distance-resolved data. Fixed-duration recording windows and AIS messages are stored as persistent geospatial tables and associated through an indexed spatiotemporal join, replacing in-memory nested iteration with a single scalable set-based database process capable of handling continuous, multi-year, million-window archival deployments without exhausting available memory. In this study, the approach processes approximately 9.5x10e5 recording windows and 6.9x10e6 AIS position reports, producing a structured table that separates no-contact, single-contact, and two-contact windows, with the closest point of approach computed directly where applicable and background conditions characterized via deterministic spectral ranking. This formulation enables a GeoAI framework in which spatially indexed, queryable data become directly usable for machine learning. The resulting data product reveals predominantly noise-dominated conditions, with vessel contributions emerging mainly at shorter ranges, indicating that the task lies in extracting structure under background-limited regimes. Spectrogram and quantitative analyses show weak tonal signatures embedded in noise and a consistent decay of signal-to-noise ratio with distance, supporting the use of this representation for scalable machine learning, similarity analysis, and predictive acoustic modelling in real maritime environments.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

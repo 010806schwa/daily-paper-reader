@@ -1,0 +1,54 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-17T20:20:19.073514+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2607.13840v1",
+      "source": "arxiv",
+      "title": "From Continuous Deployment to Queryable Dataset: Terabyte-Scale AIS-Aligned Passive Acoustic Labelling",
+      "abstract": "Long-duration passive acoustic deployments produce large archives of recordings that are not linked to vessel tracks or encounter structure, leaving range and contact conditions unavailable as variables and requiring manual selection for analysis. To address this limitation, we propose a database-native workflow that aligns hydrophone recordings with Automatic Identification System (AIS) position reports to produce distance-resolved data. Fixed-duration recording windows and AIS messages are stored as persistent geospatial tables and associated through an indexed spatiotemporal join, replacing in-memory nested iteration with a single scalable set-based database process capable of handling continuous, multi-year, million-window archival deployments without exhausting available memory. In this study, the approach processes approximately 9.5x10e5 recording windows and 6.9x10e6 AIS position reports, producing a structured table that separates no-contact, single-contact, and two-contact windows, with the closest point of approach computed directly where applicable and background conditions characterized via deterministic spectral ranking. This formulation enables a GeoAI framework in which spatially indexed, queryable data become directly usable for machine learning. The resulting data product reveals predominantly noise-dominated conditions, with vessel contributions emerging mainly at shorter ranges, indicating that the task lies in extracting structure under background-limited regimes. Spectrogram and quantitative analyses show weak tonal signatures embedded in noise and a consistent decay of signal-to-noise ratio with distance, supporting the use of this representation for scalable machine learning, similarity analysis, and predictive acoustic modelling in real maritime environments.",
+      "authors": [
+        "Wayne Renaud",
+        "Priyanka Aravindan",
+        "Gabriel Spadon"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.DB"
+      ],
+      "published": "2026-07-15T13:47:56+00:00",
+      "link": "https://arxiv.org/pdf/2607.13840v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "AIS-aligned passive acoustic labelling for vessel noise identification",
+      "llm_evidence_cn": "将水听器录音与AIS数据对齐以标注船辐射噪声",
+      "llm_evidence": "将水听器录音与AIS数据对齐以标注船辐射噪声",
+      "canonical_evidence": "将水听器录音与AIS数据对齐以标注船辐射噪声",
+      "llm_tldr_en": "Proposes a database-native workflow to align hydrophone recordings with AIS data, creating distance-resolved labeled datasets for vessel noise recognition, scalable to terabyte archives.",
+      "llm_tldr_cn": "针对长期被动声学部署中录音与船舶轨迹脱节的问题，提出一种基于数据库的工作流，将水听器录音与自动识别系统(AIS)位置报告对齐，生成距离解析数据。通过时空索引连接固定时长录音窗口和AIS消息，替代内存迭代，实现可扩展的持续多标注。该方法为舰船辐射噪声的高频识别提供了大规模标注数据集，是后续识别任务的基础设施。",
+      "llm_tldr": "针对长期被动声学部署中录音与船舶轨迹脱节的问题，提出一种基于数据库的工作流，将水听器录音与自动识别系统(AIS)位置报告对齐，生成距离解析数据。通过时空索引连接固定时长录音窗口和AIS消息，替代内存迭代，实现可扩展的持续多标注。该方法为舰船辐射噪声的高频识别提供了大规模标注数据集，是后续识别任务的基础设施。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "ship radiated noise high frequency components for identification",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
