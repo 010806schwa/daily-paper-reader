@@ -6,23 +6,19 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-17
-- 运行时间：2026-07-17 20:20:57 UTC
+- 最新运行日期：2026-07-18
+- 运行时间：2026-07-18 20:47:15 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：1
+- 本次总论文数：0
+- 精读区：0
 - 速读区：0
 
 ### 今日简报（AI）
-今天精读了一篇高分论文，展示如何将连续部署的声学数据转化为可查询数据集。
-最值得关注的是利用AIS对齐实现太字节级被动声学标注，突破大规模海洋数据分析瓶颈。
-建议读者重点关注数据集构建流程，可直接用于海洋生态监测与船舶交通分析。
-- 详情：[/202607/17/README](/202607/17/README)
+> 今日无新推荐，系统未产出可展示论文。
+- 详情：[/202607/18/README](/202607/18/README)
 
 ### 精读区论文标签
-1. [From Continuous Deployment to Queryable Dataset: Terabyte-Scale AIS-Aligned Passive Acoustic Labelling](/202607/17/2607.13840v1-from-continuous-deployment-to-queryable-dataset-terabyte-scale-ais-aligned-passive-acoustic-labelling)  
-   标签：评分：9.0/10、query:shipnoise-hf
-   evidence：将水听器录音与AIS数据对齐以标注船辐射噪声
+- 本次无精读推荐。
 
 ### 速读区论文标签
 - 本次无速读推荐。
