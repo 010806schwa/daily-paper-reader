@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-21",
+  "date": "2026-07-21",
+  "generated_at": "2026-07-21T21:38:22",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/21/2607.17308v1-an-enhanced-mnomp-for-line-spectrum-estimation-and-detection",
+      "section": "quick",
+      "title_en": "An Enhanced MNOMP for Line Spectrum Estimation and Detection",
+      "authors": "Yulin Jiang, Jiang Zhu, Fengzhong Qu, Yonina C. Eldar",
+      "date": "2026-07-19",
+      "pdf": "https://arxiv.org/pdf/2607.17308v1",
+      "score": "7.0",
+      "evidence": "用于高频成分提取的线谱估计方法",
+      "tldr": "针对多快照线谱估计中MNOMP算法基于DFT网格近似GLRT导致检测性能损失的问题，提出增强MNOMP（EMNOMP）。该方法在连续频率域精确求解GLRT，利用卡方随机场理论推导了虚警概率的闭式阈值。理论分析与仿真表明，EMNOMP相比MNOMP具有显著的SNR增益，实现了更高精度的线谱估计与检测。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Multisnapshot Newtonized orthogonal matching pursuit (MNOMP) incorporates Newton's method into OMP to avoid the off-grid issues, achieve high accuracy, high resolution and fast line spectrum estimation with multiple measurement vectors. It employs the generalized likelihood ratio test (GLRT) with a constant false alarm rate (CFAR) criterion to determine the number of sinusoids. In this paper, we develop an enhanced MNOMP (EMNOMP) by analyzing the statistical distribution of the exact GLRT statistic. In contrast to MNOMP, which approximates the GLRT by restricting the search to discrete Fourier transform (DFT) grid frequencies, EMNOMP instead solves the GLRT over the continuous frequency domain. The key technical novelty is the derivation of the false alarm probability for this continuous-domain GLRT using chi-squared random field theory and the resulting closed-form threshold via the Lambert W function. The signal-to-noise ratio (SNR) gain of EMNOMP relative to MNOMP is derived and analyzed in depth. Numerical simulations validate the theoretical analysis and the effectiveness of EMNOMP compared to MNOMP.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/21/2607.13368v1-fine-grained-open-set-fault-diagnosis-via-metric-guided-time-frequency-configuration-selection-and-class-specific-autoencoders",
+      "section": "quick",
+      "title_en": "Fine-Grained Open-Set Fault Diagnosis via Metric-Guided Time-Frequency Configuration Selection and Class-Specific Autoencoders",
+      "authors": "Youngjae Jeon, Dongjin Lee",
+      "date": "2026-07-15",
+      "pdf": "https://arxiv.org/pdf/2607.13368v1",
+      "score": "6.0",
+      "evidence": "时频配置选择方法可迁移至水下声学特征提取",
+      "tldr": "现有开集故障诊断方法难以实现细粒度严重程度诊断，且依赖启发式时频配置和全局类边界。本文提出度量引导的STFT配置选择（MGDC）结合类特定自编码器（CSAE），先筛选最优时频表示，再学习类特定流形，推理时用双准则拒绝未知样本。在CWRU和PU轴承数据集上H-score达0.9924和0.9509，MGDC仅评估少量候选即找到最优，选择成本降低5.69-29.87倍。实现了高精度开集细粒度诊断且大幅降低配置选择成本。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Reliable fault diagnosis of rotating machinery is essential for the safe and stable operation of industrial systems. Although deep learning methods perform well under closed-set conditions, real machinery may encounter previously unseen fault states. Existing open-set fault diagnosis (OSFD) methods remain limited in fine-grained severity diagnosis because they often rely on coarse type levels, heuristically selected Short-Time Fourier Transform (STFT) settings, and global class boundaries. We propose a fine-grained OSFD method that combines metric-guided data-centric (MGDC) STFT configuration selection with class-specific autoencoder (CSAE)-based anomaly rejection. MGDC screens candidate STFT configurations using the Silhouette score computed from spectrogram representations, identifying promising time-frequency representations before network training. The diagnostic model then uses a bank of CSAEs to learn compact class-specific manifolds for known degradation states. During inference, reconstruction-error-based class affinity identifies known classes, while a dual-criteria mechanism based on latent dimension-wise boundaries and class-specific reconstruction error rejects unknown samples. Experiments on the Case Western Reserve University (CWRU) and Paderborn University (PU) bearing datasets show that the proposed method achieves H-scores of 0.9924 and 0.9509 for fine-grained fault severity diagnosis. MGDC also identifies the best-performing configuration found by exhaustive search while evaluating only 9 of 38 candidates on CWRU and 2 of 39 candidates on PU, reducing the selection cost by factors of 5.69 and 29.87, respectively. These results indicate that the proposed method supports accurate open-set severity diagnosis with substantially lower configuration-selection cost.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/21/2607.16688v1-nabeats-noise-aware-audio-representation-learning",
+      "section": "quick",
+      "title_en": "NABEATs: Noise-Aware Audio Representation Learning",
+      "authors": "Takuya Fujimura, Yoshiki Masuyama, Gordon Wichern, Christoph Boeddeker, Julius Richter, Jonathan Le Roux",
+      "date": "2026-07-18",
+      "pdf": "https://arxiv.org/pdf/2607.16688v1",
+      "score": "6.0",
+      "evidence": "噪声感知音频表示学习用于水下目标识别中的鲁棒特征提取",
+      "tldr": "现有音频自监督学习模型在噪声条件下无法有效聚焦目标声音，导致性能下降。本文提出噪声感知音频SSL框架NABEATs，通过引入辅助参考噪声输入，训练模型从混合音频中估计干净表示。实验表明，NABEATs在多种下游任务上显著提升噪声条件下的性能，并能泛化到未见噪声类型。该工作为音频表示学习提供了噪声感知思路，增强了实际应用鲁棒性。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "We propose the concept of noise-aware audio self-supervised learning (SSL), whose goal is to encode audio mixtures while suppressing undesired noise, and present Noise-Aware BEATs (NABEATs) as a BEATs-based realization of this framework. Audio SSL models are designed to handle a wide range of audio signals. Consequently, under noisy conditions, they cannot effectively focus on the target sounds relevant to a downstream task, resulting in degraded performance. To address this issue, NABEATs is trained to estimate clean BEATs representations from a noisy audio signal with an auxiliary reference noise input. This reference noise enables the model to account for specific noise characteristics at inference time, thereby achieving better generalization across operating environments. Our experimental evaluations demonstrate that NABEATs significantly improves performance of various downstream tasks under noisy conditions and also generalizes well to unseen noise types.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,1588 @@
+Title: An Enhanced MNOMP for Line Spectrum Estimation and Detection
+
+URL Source: https://arxiv.org/pdf/2607.17308v1
+
+Published Time: Tue, 21 Jul 2026 01:11:55 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+> 1
+
+# An Enhanced MNOMP for Line Spectrum Estimation and Detection 
+
+Yulin Jiang, Jiang Zhu, Fengzhong Qu and Yonina C. Eldar 
+
+Abstract —Multisnapshot Newtonized orthogonal matching pursuit (MNOMP) incorporates Newton’s method into OMP to avoid the off-grid issues, achieve high accuracy, high resolution and fast line spectrum estimation with multiple measurement vectors. It employs the generalized likelihood ratio test (GLRT) with a constant false alarm rate (CFAR) criterion to determine the number of sinusoids. In this paper, we develop an enhanced MNOMP (EMNOMP) by analyzing the statistical distribution of the exact GLRT statistic. In contrast to MNOMP, which approximates the GLRT by restricting the search to discrete Fourier transform (DFT) grid frequencies, EMNOMP instead solves the GLRT over the continuous frequency domain. The key technical novelty is the derivation of the false alarm probability for this continuous-domain GLRT using chi-squared random field theory and the resulting closed-form threshold via the Lambert W function. The signal-to-noise ratio (SNR) gain of EMNOMP relative to MNOMP is derived and analyzed in depth. Numerical simulations validate the theoretical analysis and the effectiveness of EMNOMP compared to MNOMP. 
+
+Index Terms —Line spectrum estimation and detection, New-tonized OMP, generalized likelihood ratio test, constant false alarm rate, chi-squared random fields. 
+
+I. I NTRODUCTION 
+
+Line spectrum estimation and detection (LSE&D) aims to extract the frequencies of sinusoids from their mixture, arising in applications such as direction-of-arrival (DOA) estimation, range and velocity estimation in millimeter-wave radar, etc. Classical spectral estimation methods include periodogram [1] and subspace-based approaches [2]. Compressed sensing (CS) algorithms exploit the sparsity of sources in the spatial domain and have been widely used for DOA estimation, avoiding the need for good initialization [3], while achieving super-resolution. In [4], an ℓ1-norm penalty is introduced to promote sparsity. However, since DOAs are continuous-valued parameters, CS-based methods suffer from model mismatch when the parameter space is discretized onto a finite grid [5]. To overcome this issue, grid refinement and gridless approaches have been proposed. Newtonized orthogonal matching pursuit (NOMP) [6] and atomic norm minimization (ANM) [7], [8] are two represen-tative methods. NOMP is a greedy algorithm that sequentially 
+
+Yulin Jiang, Jiang Zhu and Fengzhong Qu are with the State Key Lab-oratory of Ocean Sensing, Ocean College & ZJU-Hangzhou Global Scien-tific and Technological Innovation Center, Zhejiang University, Hangzhou 310000, China, and are also with the Zhejiang Key Laboratory of R&D and Application of Cutting-edge Scientific Instruments, Ocean College, Zhejiang University, Zhoushan 316021, China (email: {jyulin, jiangzhu16, jimqufz }@zju.edu.cn). Yonina C. Eldar is with the Faculty of Electrical and Computer Engineering, Northeastern University, Boston, MA 02115 USA (email: y.eldar@northeastern.edu). This work was supported by the National Natural Science Foundation of China under Grant 62371420 and 61901415. 
+
+estimates frequencies and achieves high estimation accuracy through Newton refinement and super-resolution capability, while determining the model order via constant false alarm rate (CFAR) detection. The multisnapshot NOMP (MNOMP) further addresses the LSE&D problem in multiple measure-ment vector (MMV) scenario [9]. In contrast, ANM performs gridless estimation by solving a semidefinite program (SDP), which is computationally expensive. Although ANM enjoys strong theoretical guarantees, such as exact recovery in the noiseless case under sufficient frequency separation, it requires careful selection of the regularization parameter [7]. Note that most existing methods focus on frequency estimation, whereas NOMP also incorporates CFAR-based detection. Motivated by the high estimation accuracy and CFAR property of MNOMP, we propose an enhanced MNOMP (EMNOMP) algorithm. EMNOMP is identical to MNOMP except that the detection step uses the exact continuous-domain generalized likelihood ratio test (GLRT) rather than the discrete Fourier transform (DFT) grid approximation. This replacement provides an additional SNR gain and improves weak signal detection performance while maintaining the same false alarm probability. To enable practical implementation, the false alarm probability is characterized via the appli-cation of Lemma 1, a well-known result from the statistic literature [10], to the MNOMP detection problem, and in particular the derivation of Λmin (31) via the phase-factor reparameterization trick, which tightens the bound relative to a naive application of Lemma 1. Secondly, compared with the detector in MNOMP, the advantage of the proposed GLRT in EMNOMP is quantitatively analyzed, revealing a theoretical maximum signal-to-noise ratio (SNR) gain of 3.92 dB under additive white Gaussian noise (AWGN). Finally, numerical simulations are conducted to validate the theoretical results and demonstrate the effectiveness of the proposed method. II. P ROBLEM SETUP AND A BRIEF REVIEW OF MNOMP The multisnapshot LSE&D model is 
+
+y(t) = 
+
+> K
+
+X
+
+> k=1
+
+a(ωk)xk(t) + w(t), t = 1 , 2, . . . , T, (1) where y(t) ∈ CN denotes the measurement vector at the 
+
+tth snapshot, N is the number of measurements, T is the number of snapshots, and K is the number of sinusoids. The parameters ωk ∈ [0 , 2π) and xk(t) ∈ C denote the angular arXiv:2607.17308v1 [eess.SP] 19 Jul 2026 2
+
+frequency and complex amplitude at the tth snapshot of the 
+
+kth sinusoid, respectively. The array manifold vector is 
+
+a(ω) = 
+
+h
+
+1, ejω , . . . , ej( N −1) ω iT
+
+. (2) The noise w(t) ∼ CN (0, σ 2IN ) represents AWGN, inde-pendent across snapshots, where σ2 is assumed known. The objective is to determine K and estimate the corresponding frequencies and amplitudes. A brief review of MNOMP is provided. MNOMP is a greedy approach that performs LSE&D by successively re-moving the contributions of previously estimated sinusoids. Let P = {(ˆ ωl, {ˆxl(t)}Tt=1 ), l = 1 , . . . , k } denote a set of estimates of the parameters of the sinusoids in the mixture. The residual measurement is defined as 
+
+y\P (t) = y(t) −
+
+> k
+
+X
+
+> l=1
+
+ˆxl(t)a(ˆ ωl), (3) where P denotes the set of estimated sinusoidal parameters, and the notation \P indicates that the corresponding sinusoids have been removed. At the first iteration, P = ∅, and MNOMP detects the strongest signal component while ignoring the presence of other components. The residual signal is y\P (t) = 
+
+y(t). Based on the residual signal y\P (t), we determine whether an additional target is present by formulating the following binary hypothesis testing (BHT) problem 
+
+(
+
+H0 : y\P (t) = z(t), t = 1 , · · · , T, 
+
+H1 : y\P (t) = a(ω0)x0(t) + z(t), t = 1 , · · · , T, (4) where z(t) ∼ CN (0, σ 2IN ), and ω0 and x0(t) denote the unknown frequency and amplitude, respectively. A GLRT is then employed to determine whether a sinusoid is present. If the GLRT statistic is below the detection threshold, we fail to reject H0, indicating that no additional target is present, and the algorithm terminates. If the GLRT statistic exceeds the detection threshold, we decide H1, indicating the presence of a target. The parameters of the detected component are then estimated, and its contribution is removed from the measurements, i.e., the set P and the residual signal y\P (t)
+
+are updated. Based on the updated residual signal, a new BHT problem similar to (4) is formulated together with its corresponding GLRT detector, and the above detection and estimation procedure is repeated. For model (4), the GLRT statistic is given by 
+
+max 
+
+> ω, {x(t)}Tt=1
+> T
+
+X
+
+> t=1
+
+ln p(y\P (t)|H 1)
+
+p(y\P (t)|H 0)= 1
+
+σ2
+
+> T
+
+X
+
+> t=1
+
+ 2ℜ x∗(t)aH(ω)y\P (t) − N |x(t)|2 . (5) For a fixed ω, the optimal x(t) achieving the maximum is ˆx(t) = aH(ω)y\P (t)/N . Substituting ˆx(t) into (5) and simplifying yields 
+
+TGLRT = max 
+
+> ωT
+
+X
+
+> t=1
+
+r 2
+
+N σ 2 aH(ω)y\P (t)
+
+> 2
+
+. (6) For simplicity, define nt(ω) =
+
+q 2 
+
+> N σ 2
+
+aH(ω)y\P (t) and 
+
+L\P (ω) = PTt=1 |nt(ω)|2. For a fixed ω, nt(ω) follows 
+
+CN (0 , 2) under H0, and CN (
+
+q 2Nσ2 φ(ω0 − ω)x(t), 2) under 
+
+H1, where 
+
+φ(ω) = e j (N −1) 2 ω sin 
+
+ N ω 
+
+2
+
+
+
+/
+
+
+
+N sin 
+
+ ω
+
+2
+
+ 
+
+. (7) Since nt(ω) is independent across snapshots, the statistic 
+
+L\P (ω) follows 
+
+(
+
+H0 : L\P (ω) ∼ χ22T ,
+
+H1 : L\P (ω) ∼ χ′22T (ψ), (8) where χ22T denotes the chi-squared distribution with 2T de-grees of freedom, and χ′22T (ψ) denotes the noncentral chi-squared distribution with 2T degrees of freedom and noncen-trality parameter ψ. The noncentrality parameter ψ is given by 
+
+ψ = 2Nσ2 |φ(ω0 − ω)|2
+
+> T
+
+X
+
+> t=1
+
+x(t) 2 = 2 β SNR int , (9) where β = |φ(ω0 − ω)|2 denotes the frequency mismatch coefficient and SNR int = N PTt=1 |x(t)|2/σ 2 denotes the integrated SNR. The false alarm probability is defined as the probability that the detector TGLRT = max ω L\P (ω) exceeds the detection threshold τ under the null hypothesis H0, i.e., 
+
+PFA = Pr 
+
+
+
+max  
+
+> ω
+
+L\P (ω) > τ ; H0
+
+
+
+. (10) For a prescribed false alarm probability, the corresponding detection threshold can be determined, and the GLRT detector in (6) achieves CFAR detection over the continuous frequency domain. Under the alternative hypothesis H1, the target is successfully detected if L\P (ω) > τ at the true frequency 
+
+ω = ω0. In this case, φ(0) = 1 , β = 1 and ψ = 2 SNR int 
+
+according to (7) and (9). Therefore, the detection probability of this target achieved by the GLRT detector in (6) is defined as 
+
+PD = Pr  L\P (ω0) > τ ; H1
+
+ , (11) which corresponds to the right-tail probability of the noncen-tral chi-squared distribution and is given by 
+
+PD = QT
+
+p ψ, √τ
+
+
+
+= QT
+
+p 2 SNR int , √τ
+
+
+
+, (12) where QT denotes the Marcum Q-function. For MNOMP, the GLRT is implemented approximately by replacing the maximum over the continuous frequency interval with the DFT grids, i.e., 
+
+TMNOMP = max  
+
+> ωg∈ΩDFT
+
+L\P (ωg ). (13) where ΩDFT = {0, 2π/N, 2 × 2π/N, (N − 1) × 2π/N }.Similarly, for a fixed ωg , the statistic L\P (ωg ) follows 
+
+(
+
+H0 : L\P (ωg ) ∼ χ22T ,
+
+H1 : L\P (ωg ) ∼ χ′22T (ψg ), (14) 3
+
+where the noncentrality parameter ψg is given by 
+
+ψg = 2Nσ2 |φ(ω0 − ωg )|2
+
+> T
+
+X
+
+> t=1
+
+x(t) 2 = 2 βg SNR int . (15) Here, the frequency mismatch coefficient is given by 
+
+βg = |φ(ω0 − ωg )|2
+
+= sin 
+
+ N (ω0 − ωg )2
+
+
+
+/
+
+
+
+N sin 
+
+ ω0 − ωg
+
+2
+
+ 2
+
+. (16) For MNOMP, the false alarm probability under the null hypothesis H0 can be expressed as 
+
+P MFA = Pr 
+
+
+
+max    
+
+> g=0 ,··· ,N −1
+
+L\P (ωg ) > τ M; H0
+
+
+
+= 1 − Pr 
+
+
+
+max    
+
+> g=0 ,··· ,N −1
+
+L\P (ωg ) ≤ τ M; H0
+
+
+
+= 1 − Pr  L\P (ωg ) ≤ τ M; H0
+
+N
+
+= 1 − F Nχ22T
+
+(τ M), (17) where the superscript M denotes MNOMP, Fχ22T (·) denotes the cumulative distribution function (CDF) of the chi-squared dis-tribution with 2T degrees of freedom, L\P (ωg ) and L\P (ωg′ )
+
+are independent for g̸ = g′ [9]. For a given P MFA , the detection threshold can be determined to achieve CFAR detection, expressed as 
+
+τ M = F −1
+
+> χ22T
+
+
+
+(1 − P MFA ) 1
+
+> N
+
+
+
+, (18) where F −1
+
+> χ22T
+
+(·) denotes the inverse function of Fχ22T (·). Un-der the alternative hypothesis H1, the target is successfully detected if L\P (ωg∗ ) > τ , where ωg∗ denotes the DFT grid frequency closest to the true frequency ω0, i.e., ωg∗ =argmin  
+
+> ωg∈ΩDFT
+
+|ω0 − ωg |. In this case, βg∗ = |φ(ω0 − ωg∗ )|2 and 
+
+ψg∗ = 2 βg∗ SNR int . Therefore, the detection probability of this target using approximate GLRT detector (13) is 
+
+P MD = Pr  L\P (ωg∗ ) > τ M; H1
+
+
+
+= QT
+
+pψg∗ , √τ M
+
+
+
+= QT
+
+p2βg∗ SNR int ,
+
+r
+
+F −1
+
+> χ22T
+
+
+
+(1 − P MFA ) 1
+
+> N
+
+!
+
+.
+
+(19) For a specified false alarm probability, the detection thresh-old can be determined. If TMNOMP does not exceed the threshold, the null hypothesis H0 is decided and the algorithm terminates; otherwise, the presence of a sinusoid is declared. MNOMP then performs a search over the oversampled grid 
+
+Ω = 
+
+ 2πn γos N n = 0 , . . . , γ os N − 1
+
+
+
+, (20) where γos denotes the oversampling factor, to obtain coarse estimates, i.e., ˆω = argmax 
+
+> ω∈Ω
+
+L\P (ω) and 
+
+ˆx(t) = aH(ˆ ω)y\P (t)/N . Newton refinement is then applied to mitigate the off-grid effect and improve the estimation accuracy. Specifically, define S(ω, {x(t)}Tt=1 ) = 
+
+> 1
+> σ2
+
+PTt=1 
+
+ 2ℜ x∗(t)aH(ω)y\P (t) − N |x(t)|2 according to (5). The frequency and amplitude are updated as ˆω′ = ˆω − ˙S(ˆ ω, {ˆx(t)}Tt=1 )/ ¨S(ˆ ω, {ˆx(t)}Tt=1 ) and 
+
+ˆx′(t) = aH(ˆ ω′)y\P (t)/N , where ˙S and ¨S denote the first- and second-order derivatives of S(ω, {x(t)}Tt=1 ) with respect to ω, respectively. This refinement can be repeated Rs
+
+times to further improve the estimation accuracy. Let ˆω1 and 
+
+ˆx1(t) denote the frequency and amplitude estimates obtained at the first iteration. The parameter set is then updated as 
+
+P = {(ˆ ω1, {ˆx1(t)}Tt=1 )}, and the residual signal is updated as 
+
+y\P (t) = y(t) − ˆxl(t)a(ˆ ωl). The above procedure is repeated until TMNOMP falls below the threshold. For completeness, the entire MNOMP is summarized in Algorithm 1. For further details, please refer to [6], [9]. 
+
+Algorithm 1 MNOMP Algorithm  
+
+> 1:
+
+Input: {y(t)}Tt=1 , σ 2, P FA , R s, R c, γ os  
+
+> 2:
+
+Initialize: τ M, m ← 0, P0 ← {} , 
+
+> 3:
+
+{y\P 0 (t)}Tt=1 ← { y(t)}Tt=1 , 
+
+> 4:
+
+ΩDFT =  2πn N n = 0 , . . . , N − 1 
+
+> 5:
+
+Ω = 
+
+n 2πn γos N n = 0 , . . . , γ os N − 1
+
+o 
+
+> 6:
+
+while max ω∈ΩDFT L\P m (ω) > τ M do  
+
+> 7:
+
+m ← m + 1  
+
+> 8:
+
+ˆω = argmax 
+
+> ω∈Ω
+
+L\P m−1 (ω) 
+
+> 9:
+
+ˆx(t) ← aH(ˆ ω)y\P m−1 (t)/N , for t = 1 , . . . , T  
+
+> 10:
+
+P′ 
+
+> m
+
+← P m−1 ∪ { (ˆ ω, {ˆx(t)}Tt=1 )} 
+
+> 11:
+
+Single Refinement: Refine (ˆ ω, {ˆx(t)}Tt=1 ) using sin-gle frequency Newton update algorithm (Rs Newton steps) to obtain improved estimates (ˆ ω′, {ˆx′(t)}Tt=1 ). 
+
+> 12:
+
+P′′  
+
+> m
+
+← P m−1 ∪ { (ˆ ω′, {ˆx′(t)}Tt=1 )} 
+
+> 13:
+
+Cyclic Refinement: Refine parameters in P′′  
+
+> m
+
+one at a time: For each (ω, {x(t)}Tt=1 ) ∈ P ′′ 
+
+> m
+
+, we define a subset excluding this specific element, denoted as D =
+
+P′′  
+
+> m
+
+\ { (ω, {x(t)}Tt=1 )}. we treat y\D (t) as the measure-ment y(t), and apply single frequency Newton update algorithm. We perform Rc rounds of cyclic refinements. Let P′′′  
+
+> m
+
+denote the new set of parameters.  
+
+> 14:
+
+Update: update all amplitudes in P′′′  
+
+> m
+
+by least squares: 
+
+A ≜ [a(ω1), . . . , a(ωm)] , {ωl} are the frequencies in P′′′  
+
+> m
+
+.And [x1(t), . . . , x m(t)] T = A+y(t), t = 1 , . . . , T , where 
+
+A+ denotes the pseudoinverse of A. 
+
+> 15:
+
+Let Pm denote the new set of parameters.  
+
+> 16:
+
+end while  
+
+> 17:
+
+Return: Pm
+
+III. T HE ENHANCED MNOMP AND ITS COMPARISON WITH MNOMP The EMNOMP algorithm follows the same framework as MNOMP, except that it implements the GLRT in (6) exactly. However, analyzing the false alarm probability of the GLRT in (6) is challenging. Gaussian random field and chi-squared random field theories provide useful tools for asymptoti-cally characterizing the false alarm probability in continuous-parameter detection problems [11]–[13]. In particular, when the underlying Gaussian random fields satisfy identical regu-larity conditions over a compact parameter space, asymptotic 4
+
+expressions for the excursion probability of the associated chi-squared random field are available [10]. Applying this result, we derive an asymptotic upper bound (AUB) on the false alarm probability of the GLRT in (6). To facilitate the subsequent derivations, the following lemma is first introduced. 
+
+Lemma 1 ( [10, Corollary 3.4] ) . Let u1(κ), · · · , u 2T (κ) be independent, identically distributed, homogeneous, real-valued Gaussian random fields on a compact domain S ∈ RQ with zero mean and unit variance. Define the chi-squared field L(κ)
+
+as 
+
+L(κ) = 
+
+> 2T
+
+X
+
+> t=1
+
+u2 
+
+> t
+
+(κ), κ = [ κ1, · · · , κ Q]T ∈ S , (21) 
+
+whose marginal distribution at each κ is χ22T with 2T degrees of freedom. The asymptotic upper bound for the probability of global maximum above the threshold value τ is 
+
+Pr 
+
+
+
+max  
+
+> κ
+
+L(κ) ≥ τ
+
+
+
+∼ μ(S) det( Λ) 12 τ T − Q 
+
+> 2
+
+e− τ
+
+> 2
+
+(2 π) Q 
+
+> 2
+
+2T −1Γ( T ) τ Q−1
+
+=
+
+Z
+
+> S
+
+det( Λ) 12 τ T − Q 
+
+> 2
+
+e− τ
+
+> 2
+
+(2 π) Q 
+
+> 2
+
+2T −1Γ( T ) τ Q−1dκ, as τ → ∞ , (22) 
+
+where μ(S) is the Lebesgue measure of the set S, Γ( ·) denotes the Gamma function, and Λ = var( ∂u t(κ)/∂ κ) is the Q × Q
+
+covariance matrix of the partial derivatives of ut(κ) with the 
+
+(i, j )-th element λij = cov( ∂u t(κ)/∂κ i, ∂u t(κ)/∂κ j ).
+
+In our case, Q = 1 , κ = ω belongs to the compact set 
+
+S = [0 , 2π], and the chi-squared random field is 
+
+L\P (ω) = 
+
+> T
+
+X
+
+> t=1
+
+|nt(ω)|2 =
+
+> T
+
+X
+
+> t=1
+
+ℜ2{nt(ω)} +
+
+> T
+
+X
+
+> t=1
+
+ℑ2{nt(ω)},
+
+(23) where nt(ω) is a circularly symmetric complex Gaussian random variable satisfying nt(ω) ∼ CN (0 , 2) under H0.Consequently, the real and imaginary parts of nt(ω) are independent and identically distributed zero-mean real-valued Gaussian random variables with unit variance. Since differ-entiation with respect to the real parameter ω is a linear operator, the first-order partial derivative ∂n t(ω)/∂ω remains a circularly symmetric complex Gaussian random variable. As a result, the real and imaginary parts of ∂n t(ω)/∂ω are also independent zero-mean real-valued Gaussian random variables with equal variance, each being half of the total variance. Therefore, the parameter Λ( ω) = det( Λ) in Lemma 1 is given by 
+
+Λ( ω) = var 
+
+ ∂ℜ{ nt(ω)}
+
+∂ω ; H0
+
+
+
+= var 
+
+ ∂ℑ{ nt(ω)}
+
+∂ω ; H0
+
+
+
+= 12 var 
+
+ ∂n t(ω)
+
+∂ω ; H0
+
+
+
+. (24) Based on the above configuration, a generic AUB can be obtained by directly applying Lemma 1. However, for the problem considered here, a tighter bound can be achieved by minimizing the Λ( ω) via the specific structure of the under-lying random field. To this end, we introduce a frequency-dependent phase factor ejωr , with r ∈ R, into the complex Gaussian random field and define 
+
+˜nt(ω) = e jωr nt(ω) = 
+
+r 2
+
+N σ 2 ˜aH(ω)y\P (t), (25) where ˜a(ω) = e −jωr a(ω). With this reparameterization, the chi-squared random field L\P (ω) admits the equivalent repre-sentation 
+
+L\P (ω) = 
+
+> T
+
+X
+
+> t=1
+
+|˜nt(ω)|2 . (26) Here, the free parameter r is introduced so that Λ( ω) in (24) can be minimized with respect to r via the reparameterized 
+
+˜nt(ω), thereby yielding a tighter bound. From another perspective, this reparameterization is equiva-lent to transforming the original multisnapshot LSE&D model in (1) as 
+
+y(t) = 
+
+> K
+
+X
+
+> k=1
+
+a(ωk)xk(t) + w(t)=
+
+> K
+
+X
+
+> k=1
+
+ e−jωr a(ωk)  ejωr xk(t) + w(t)=
+
+> K
+
+X
+
+> k=1
+
+˜a(ωk)˜ xk(t) + w(t), t = 1 , 2, . . . , T, (27) where ˜xk(t) = e jωr xk(t). Based on this transformed model, the GLRT and the associated AUB of the false alarm proba-bility can be derived using the modified array manifold ˜a(ω).In essence, this procedure is equivalent to optimizing the reference point of the array via the parameter r, and the resulting manifold ˜a(ω) corresponds to an optimal choice that leads to a tighter bound. According to (24), the first-order partial derivative of ˜nt(ω)
+
+with respect to ω is affected by this reparameterization and is given by 
+
+∂ ˜nt(ω)
+
+∂ω = −j
+
+r 2
+
+N σ 2 ˜aH(ω)( DN − rIN )y\P (t), (28) where DN = diag(0 , 1, · · · , N − 1) . Substituting (28) in (24), 
+
+Λ( ω) can be expressed as 
+
+Λ( ω) = 1
+
+N ˜aH(ω)( DN − rIN )2 ˜a(ω)= 1
+
+N 
+
+> N−1
+
+X
+
+> i=0
+
+(i − r)2
+
+= r2 − (N − 1) r + (N − 1)(2 N − 1) 6 , (29) which is independent of ω. When r = 0 , it follows that 
+
+Λgeneric (ω) = (N − 1)(2 N − 1) 6 , (30) which leads to a generic AUB. The quadratic function (29) attains its minimum at ro = ( N − 1) /2, yielding 
+
+Λmin (ω) = N 2 − 112 , (31) 5
+
+which leads to a tighter AUB. The resulting manifold ˜a(ω) = e−jωr o a(ω) corresponds to centering the array manifold a(ω).The following theorem summarizes the resulting tighter AUB of the false alarm probability for the GLRT (6). 
+
+Theorem 1. The tighter AUB of the false alarm probability for the GLRT (6) under null hypothesis H0 is 
+
+Pr 
+
+
+
+max  
+
+> ω
+
+L\P (ω) > τ ; H0
+
+
+
+∼ PFA 
+
+=
+
+r N 2 − 112 
+
+√2πτ T − 12 e− τ
+
+> 2
+
+2T −1Γ( T ) , as τ → ∞ . (32) 
+
+Proof. Substituting Q = 1 , S = [0 , 2π], Λmin (ω) (31) into (22), (32) can be obtained. Theorem 1 establishes an asymptotic relationship between the false alarm probability and the detection threshold. To achieve the CFAR detection, it is necessary to solve the detection threshold from the transcendental equation (32). To this end, we transform (32) into a mathematically tractable form. Starting from (32), we first isolate the τ -dependent terms as 
+
+τ T − 12 e− τ 
+
+> 2
+
+= 2 T − 12 ξP FA , (33) where ξ = ( T −1)! 
+
+q 3(N 2−1) π due to Γ( T ) = ( T −1)! . Taking the natural logarithm yields 
+
+ T − 12
+
+ ln τ − τ
+
+2 = ln(2 T − 12 ξP FA ). (34) Dividing both sides by T − 12 gives 
+
+ln τ − τ
+
+2T − 1 = ln( ξP FA )
+
+T − 12
+
++ ln 2 . (35) Exponentiating both sides, we obtain 
+
+τ e τ 
+
+> 1−2T
+
+= 2e ln( ξP FA )/(T − 12 ). (36) Finally, by introducing the change of variable x = τ 
+
+> 1−2T
+
+, the above equation can be rewritten into the canonical form 
+
+xex = −eln( ξP FA )/(T − 12 )
+
+T − 12
+
+, (37) which leads directly to the closed-form solution via the Lam-bert W function. The inverse of the function f (x) = xex is the Lambert 
+
+W function, which possesses two real branches, namely the principal branch W0(·), which is monotonically increasing, and the −1 branch W−1(·), which is monotonically decreas-ing [14], as shown in Fig. 1. Accordingly, the solutions to the equation xex = f (x) are given by x = W0(f (x)) 
+
+and x = W−1(f (x)) . Since the detection threshold τ is monotonically decreasing with respect to the false alarm probability PFA , the correct solution must lie on the branch for which x = τ 
+
+> 1−2T
+
+is monotonically decreasing with respect to f (x) = −eln( ξP FA )/(T − 12 )  
+
+> T−1/2
+
+. This condition is satisfied by the 
+
+−1 branch W−1(·). Therefore, the solution for τ is 
+
+τ = (1 − 2T )W−1
+
+−eln( ξP FA )/(T − 12 )
+
+T − 12
+
+!
+
+. (38) According to (32) and (12), the false alarm probability and the detection probability using TGLRT (6) are 
+
+P EFA =
+
+r N 2 − 112 
+
+√2π(τ E)T − 12 e− τ E2
+
+2T −1(T − 1)! , (39a) 
+
+P ED = QT
+
+p ψ, √τ E
+
+
+
+= QT
+
+p2 SNR int ,
+
+vuut(1 − 2T )W−1
+
+−eln( ξP FA )/(T − 12 )
+
+T − 12
+
+! ,
+
+(39b) where the superscript E denotes the Enhanced MNOMP. 1 
+
+> f(x)
+
+-3 -2 -1 1
+
+> x
+
+## ! 1e          
+
+> x=W0(f(x))
+> x=W!1(f(x))
+> Fig. 1. Real values of the Lambert W function. The solid curve is the principal branch W0(·), and the dashed curve is the −1branch W−1(·)
+
+.
+
+A. EMNOMP Algorithm 
+
+The derived detection threshold in (38) enables CFAR de-tection in the continuous domain, thereby improving MNOMP and leading to the proposed EMNOMP. The EMNOMP proce-dure is summarized in Algorithm 2. In practice, the maximiza-tion over the continuous domain, i.e., TGLRT = max  
+
+> ω
+
+L\P (ω),cannot be performed exactly. Therefore, a coarse frequency estimate is first obtained over the oversampled grid, i.e., ˆω =argmax 
+
+> ω∈Ω
+
+L\P (ω) with Ω defined in (20), followed by Newton refinement to mitigate the off-grid effect. Finally, the detection statistic evaluated at the refined frequency ˆω′ is used for line spectral detection, resulting in a practical implementation that approximates CFAR detection in the continuous domain. 
+
+B. Comparison between EMNOMP and MNOMP 
+
+We now analyze the SNR gain of EMNOMP, compared to MNOMP. Eq. (19) and (39b) establish the relationship between the detection probability, the detection threshold, and the required SNR of MNOMP and EMOMP, respectively. For a specified false alarm probability P spec FA and detection probability P spec D for both MNOMP and EMNOMP, e.g., 
+
+P spec FA = 10 −2 and P spec D = 0.5, the required integrated SNRs SNR Mint and SNR Eint can be determined accordingly. 6
+
+Algorithm 2 EMNOMP Algorithm  
+
+> 1:
+
+Input: {y(t)}Tt=1 , σ 2, P FA , R s, R c, γ os  
+
+> 2:
+
+Initialize: τ E, m ← 0, P0 ← {} , 
+
+> 3:
+
+{y\P 0 (t)}Tt=1 ← { y(t)}Tt=1 , 
+
+> 4:
+
+Ω = 
+
+n 2πn γos N n = 0 , . . . , γ os N − 1
+
+o 
+
+> 5:
+
+while True do  
+
+> 6:
+
+m ← m + 1  
+
+> 7:
+
+ˆω = argmax 
+
+> ω∈Ω
+
+L\P m−1 (ω) 
+
+> 8:
+
+ˆx(t) ← aH(ˆ ω)y\P m−1 (t)/N , for t = 1 , . . . , T  
+
+> 9:
+
+P′ 
+
+> m
+
+← P m−1 ∪ { (ˆ ω, {ˆx(t)}Tt=1 )} 
+
+> 10:
+
+Single Refinement: Same as MNOMP. Obtain the refined ˆω′. 
+
+> 11:
+
+if L\P m−1 (ˆ ω′) ≤ τ E then  
+
+> 12:
+
+return Pm−1 
+
+> 13:
+
+end if  
+
+> 14:
+
+P′′  
+
+> m
+
+← P m−1 ∪ { (ˆ ω′, {ˆx′(t)}Tt=1 )} 
+
+> 15:
+
+Cyclic Refinement: Same as MNOMP.  
+
+> 16:
+
+Update: Same as MNOMP.  
+
+> 17:
+
+Let Pm denote the new set of parameters.  
+
+> 18:
+
+end while 
+
+We define the inverse function Q−1 
+
+> T
+
+(PD, √τ ) such that 
+
+QT (Q−1 
+
+> T
+
+(PD, √τ ), √τ ) = PD. As a result, the required integrated SNRs for MNOMP and EMNOMP are given by 
+
+SNR Mint = 12βg∗
+
+
+
+Q−1 
+
+> T
+
+(P spec D , √τ M)
+
+2
+
+, (40a) 
+
+SNR Eint = 12
+
+
+
+Q−1 
+
+> T
+
+(P spec D , √τ E)
+
+2
+
+. (40b) Accordingly, the SNR gain of EMNOMP relative to MNOMP can be expressed as 
+
+SNR gain = 10 log SNR Mint 
+
+SNR Eint 
+
+= 20 log 
+
+Q−1
+
+> T
+
+
+
+P spec D , √τ M
+
+
+
+Q−1
+
+> T
+
+
+
+P spec D , √τ E
+
+| {z }
+
+> Threshold-bias Term
+
++ 10 log 1
+
+βg∗
+
+| {z }
+
+> Frequency-mismatch Term
+
+,
+
+(41) where τ M and τ E are the detection threshold of MNOMP and EMNOMP for the same false alarm probability P spec FA , which can be calculated by (18) and (38). It is also worth noting that the SNR gain in (41) consists of two terms with clear physical interpretations. The first term (threshold-bias term) arises from the detection threshold bias induced by the different CFAR processing strategies. The second term (frequency-mismatch term) is due to the frequency mismatch inherent in MNOMP. Specifically, MNOMP employs the approximate GLRT detec-tor in (13), which performs detection over the discrete DFT grid ΩDFT , whereas the true frequency lies in the continuous parameter space [0 , 2π]. This mismatch introduces a loss factor 
+
+βg∗ , as reflected in (15). In contrast, EMNOMP uses the exact GLRT detector in (6) and performs detection directly over the continuous frequency domain, thereby eliminating the frequency mismatch and achieving an additional SNR gain over MNOMP. According to the definition of the test statistic of MNOMP and EMNOMP, to obtain the same P spec FA , one must have 
+
+τ E > τ M. We could prove it by contradiction. Suppose that τ E < τ M. Then the probability of TEMNOMP =max 
+
+> ω∈[0 ,2π)
+
+L\P (ω) > τ E must be greater than that of TMNOMP =max  
+
+> ωg∈ΩDFT
+
+L\P (ωg ) > τ M, which contradicts that the two events have the same P spec FA . Using the above fact, we obtain a bound for the SNR gain .
+
+Proposition 1. The SNR gain SNR gain is upper bounded by 
+
+SNR gain < 10 log 1
+
+βg∗
+
+, (42) 
+
+where 
+
+βg∗ = sin 
+
+ N ∆ω
+
+2
+
+
+
+/
+
+
+
+N sin 
+
+ ∆ω
+
+2
+
+ 2
+
+(43) 
+
+with 1 
+
+> βg∗
+
+∈ 1, N 2 sin 2( π 
+
+> 2N
+
+), and ∆ω = |ω0 − ωg∗ | ∈ [0 , πN ].Proof. The SNR gain SNR gain is (41). Note that QT (a, b )
+
+is strictly increasing in a for all a ≥ 0 and b, T > 0, and is strictly decreasing in b for all a, b ≥ 0 and T > 0 [15]. Therefore Q−1
+
+> T
+
+
+
+P spec D , √τ M
+
+
+
+< Q −1
+
+> T
+
+
+
+P spec D , √τ E
+
+
+
+, which can be proved by contradiction, and (42) can be obtained. Due to ∆ω = |ω0 − ωg∗ | ∈ 0, πN
+
+ and the monotonic decreasing property of | sin( x)/(N sin( x/N )) |2 for x ∈ (0 , π/ 2] , one has 
+
+βg∗ ∈
+
+h 1/ N sin   π
+
+> 2N
+
+ 2 , 1
+
+i
+
+.Proposition 1 establishes a fundamental upper bound on the achievable SNR gain between EMNOMP and MNOMP under the same specified false alarm probability for any finite N .Notably, this bound depends solely on the frequency mismatch coefficient βg∗ . It is expected that as N → ∞ , i.e., as the DFT grid becomes increasingly dense and the approximate detec-tor of MNOMP approaches the exact GLRT of EMNOMP, the detection thresholds of MNOMP and EMNOMP become asymptotically identical, causing the threshold-induced SNR difference to vanish. Consequently, the dominant performance gap is attributed to the frequency mismatch caused by the grid discretization. For the worst frequency mismatch case, i.e., ∆ω = πN , as N → ∞ , the SNR gain of EMNOMP approaches its theoretical maximum 
+
+lim   
+
+> N→∞
+
+SNR gain = lim   
+
+> N→∞
+
+10 log 1
+
+βg∗
+
+= lim   
+
+> N→∞
+
+10 log 
+
+
+
+N 2 sin 2  π
+
+2N
+
+ 
+
+= 10 log π2
+
+4 ≈ 3.92 dB . (44) This quantifies the maximal improvement obtained by per-forming CFAR detection over the continuous frequency do-main using exact detector (6), as opposed to CFAR detection restricted to a discretized DFT grid with the approximate de-tector (13). Meanwhile, it should be noted that the theoretical maximum SNR gain of 3.92 dB at ∆ω = πN is merely an asymptotic limit and is not practically attainable. It is also worth noting that SNR gain can be less than 0 dB in certain settings, implying that EMNOMP requires a higher 7
+
+SNR than MNOMP for the same detection probability. When the true frequency is very close to a DFT grid point, MNOMP incurs almost no mismatch loss, but EMNOMP still requires a higher threshold (because it guards against the full continuous interval), resulting in net negative gain. A particular case is that when the frequency lies on the DFT grid exactly, no loss incurs due to the detection, but the detection threshold calculated by the specified false alarm probability of EMNOMP is larger, compared to MNOMP, according to (41), SNR gain < 0 dB. When QT (√ψ, √τ ) = 0 .5 and √ψτ is large, it follows that 
+
+ψ ≈ τ [16]. Using this property and Eqs. (19) and (39b), the required integrated SNRs for MNOMP and EMNOMP can be approximated as 
+
+SNR Mint ≈ τ M
+
+2βg∗
+
+, (45a) 
+
+SNR Eint ≈ τ E
+
+2 . (45b) The resulting SNR gain can be approximated as 
+
+SNR gain = 10 log SNR Mint 
+
+SNR Eint 
+
+≈ 10 log τ M
+
+τ E
+
+| {z }
+
+> Threshold-bias Term (approx.)
+
++ 10 log 1
+
+βg∗
+
+| {z }
+
+> Frequency-mismatch Term
+
+,
+
+(46) which decomposes the SNR gain into a approximate threshold-bias term and a frequency-mismatch term. The approximate threshold-bias term arises from the gap in detection thresholds under the same false alarm probability, whereas the frequency-mismatch term can be explained as the gap between the de-tection statistics. In particular, the signal excess of EMNOMP can be calculated as the gap between the output of its detection statistic in the signal part and its threshold. Substituting 
+
+y\P (t) = a(ω0)x(t) into TGLRT (6) and TMNOMP (13) yield the detection statistics in the signal part, which are given by 
+
+T ′ 
+
+> GLRT
+
+= max 
+
+> ωT
+
+X
+
+> t=1
+
+r 2
+
+N σ 2 aH(ω)a(ω0)x(t)
+
+> 2
+
+= 2Nσ2
+
+> T
+
+X
+
+> t=1
+
+|x(t)|2, (47) 
+
+T ′ 
+
+> MNOMP
+
+= max  
+
+> ωg∈ΩDFT
+> T
+
+X
+
+> t=1
+
+r 2
+
+N σ 2 aH(ωg )a(ω0)x(t)
+
+> 2
+
+= βg∗
+
+2Nσ2
+
+> T
+
+X
+
+> t=1
+
+|x(t)|2. (48) The gap between T ′ 
+
+> GLRT
+
+and T ′ 
+
+> MNOMP
+
+is 10 log T ′ 
+
+> GLRT
+
+−
+
+10 log T ′ 
+
+> MNOMP
+
+= 10 log 1 
+
+> βg∗
+
+, which is consistent with the frequency-mismath term. Then, the signal excess of EMNOMP is 
+
+SE E = 10 log T ′ 
+
+> GLRT
+
+− 10 log τ E. (49) Similarly, the signal excess of MNOMP can be calculated as 
+
+SE M = 10 log T ′ 
+
+> MNOMP
+
+− 10 log τ M. (50) The gap between the signal excess of EMNOMP and MNOMP is 
+
+SE E − SE M = 10 log τ M
+
+τ E + 10 log 1
+
+βg∗
+
+, (51) which is consistent with the SNR gain in (46), thereby providing an intuitive explanation of the SNR gain. In the following, we use the detection statistics, i.e., TGLRT 
+
+and TMNOMP , rather than their signal part, i.e., T ′ 
+
+> GLRT
+
+and 
+
+T ′
+
+> MNOMP
+
+, to approximately calculate the signal excesses in the ensuing numerical simulation. It is expected that when the SNR of the single snapshot is high, the detection statistics explain the SNR gain well using the SE. We conduct several numerical simulations to verify the above analysis. Under both high-SNR and low-SNR conditions, we conduct numerical simulations for two scenarios: the target frequency located midway between DFT grid frequencies and the tar-get frequency located close to a DFT grid frequency. The parameters are set as follows: N = 16 , T = 16 , K = 1 ,and PFA = 10 −3. According to (18) and (38), the detection thresholds of MNOMP and EMNOMP are 10 log τ M = 18 .58 
+
+dB and 10 log τ E = 18 .84 dB, respectively. Accordingly, the threshold-bias term in (46) is 10 log τ M  
+
+> τE
+
+= −0.26 dB. In the high-SNR case with SNR int = 30 dB (the per-snapshot integrated SNR is 30 − 10 log T = 30 − 10 log 16 = 18 dB), as show in Fig. 2(a), the true frequency is ω0 = π+ πN ,which lies midway between the grid frequencies π and π + 2πN .Hence, ∆ω = πN , and the frequency-mismatch term in (46) is 10 log 1 
+
+> βg∗
+
+= 3 .91 dB. The detection statistics are 
+
+TGLRT = 32 .81 dB for EMNOMP and TMNOMP = 28 .85 dB for MNOMP. The resulting SNR gain, interpreted as the gap between the signal excesses of EMNOMP and MNOMP, is approximately −0.26 + 32 .81 − 28 .85 = 3 .70 dB, which is close to the theoretical value −0.26+3 .91 = 3 .65 dB predicted by (46). As shown in Fig. 2(b), the true frequency is ω0 =
+
+π + 0.1πN , which is close to the DFT grid frequency ωg∗ = π,yielding ∆ω = 0.1πN . In this case, the frequency-mismatch term is 10 log 1 
+
+> βg∗
+
+= 0 .04 dB. The detection statistics are 
+
+TGLRT = 32 .98 dB and TMNOMP = 32 .95 dB. The resulting SNR gain is about −0.26 + 32 .98 − 32 .95 = −0.23 dB, which agrees well with the theoretical value −0.26 + 0 .04 = −0.22 
+
+dB. This is because, when the per-snapshot integrated SNR is high, the signal component dominates the detection statistics, and thus the gap between the detection statistics closely matches that between their signal parts. In the low-SNR case with SNR int = 16 dB (the per-snapshot integrated SNR is 18 − 10 log T = 18 − 10 log 16 = 6 dB), as shown in Fig. 2(c), the detection statistics are 
+
+TGLRT = 21 .85 dB and TMNOMP = 19 .70 dB, yielding an SNR gain of approximately −0.26 + 21 .85 − 19 .70 = 1 .89 dB, which deviates from the theoretical value 3.65 dB calculated before. However, when the target frequency is close to a DFT grid frquency, as show in Fig. 2(d), the SNR gain is about 
+
+−0.26 + 20 .24 − 20 .22 = −0.24 dB, which is consistent with the theoretical value −0.22 dB calculated before. There results indicate that, when the per-snapshot integrated SNR is low, especially when the target frequency is far from the DFT 80 :=2 : 3:=2 2:                          
+
+> Frequencies, !(rad)
+> 15 20 25 30 35
+> PTt=1  jnt(!)j2(dB)
+> (:+:
+> N, 32.81 dB) (:, 28.85 dB)
+> PTt=1 jnt(!)j2
+> True, !0=:+:
+> N
+> Grid, !g$=:
+> Threshold =E
+> Threshold =M
+> DFT grids
+> 00.5 11.5 18.5 18.6 18.7 18.8 18.9 =E= 18.84 dB
+> =M= 18.58 dB
+> 3.96 dB 0.26 dB
+
+(a) SNR int = 30 dB, ω0 = π + πN0 :=2 : 3:=2 2:                           
+
+> Frequencies, !(rad)
+> 15 20 25 30 35
+> PTt=1  jnt(!)j2(dB)
+> (:+0:1:
+> N, 32.98 dB) (:, 32.95 dB)
+> PTt=1 jnt(!)j2
+> True, !0=:+0:1:
+> N
+> Grid, !g$=:
+> Threshold =E
+> Threshold =M
+> DFT grids
+> 00.5 11.5 18.5 18.6 18.7 18.8 18.9 =E= 18.84 dB
+> =M= 18.58 dB
+> 0.03 dB 0.26 dB
+
+(b) SNR int = 30 dB, ω0 = π + 0.1πN0 :=2 : 3:=2 2:                          
+
+> Frequencies, !(rad)
+> 15 16 17 18 19 20 21 22
+> PTt=1  jnt(!)j2(dB)
+> (:+:
+> N, 21.85 dB) (:, 19.70 dB)
+> PTt=1 jnt(!)j2
+> True, !0=:+:
+> N
+> Grid, !g$=:
+> Threshold =E
+> Threshold =M
+> DFT grids
+> 00.5 11.5 18.5 18.6 18.7 18.8 18.9 =E= 18.84 dB
+> =M= 18.58 dB
+> 2.15 dB 0.26 dB
+
+(c) SNR int = 16 dB, ω0 = π + πN0 :=2 : 3:=2 2:                           
+
+> Frequencies, !(rad)
+> 15 16 17 18 19 20 21
+> PTt=1  jnt(!)j2(dB)
+> (:+0:1:
+> N, 20.24 dB) (:, 20.22 dB)
+> PTt=1 jnt(!)j2
+> True, !0=:+0:1:
+> N
+> Grid, !g$=:
+> Threshold =E
+> Threshold =M
+> DFT grids
+> 00.5 11.5 18.5 18.6 18.7 18.8 18.9 =E= 18.84 dB
+> =M= 18.58 dB
+> 0.02 dB 0.26 dB
+
+(d) SNR int = 16 dB, ω0 = π + 0.1πN
+
+Fig. 2. Detection results of EMNOMP and MNOMP and their detection thresholds. Parameters: N = 16 , T = 16 , K = 1 , and PFA = 10 −3.
+
+grid, the above straightforward and intuitive interpretation is no longer accurate. IV. N UMERICAL SIMULATION 
+
+Numerical simulations are conducted to validate the theoret-ical analysis and demonstrate the effectiveness of EMNOMP. First, we examine the validity of the tighter AUB for the false alarm probability. Then, we investigate the impact of the number of measurements, the number of snapshots, the false alarm probability, and the detection probability on the threshold-bias term in (41). The convergence behaviors of the threshold-bias term and the frequency-mismatch term with respect to N are further analyzed. Finally, we evaluate the performance of EMNOMP in terms of the empirical false alarm probability and detection probability. 
+
+A. Analysis of AUB 
+
+To validate the derived tighter AUB, the empirical false alarm probability, the AUB (i.e., generic AUB based on 
+
+Λgeneric (ω) (30)), and the tighter AUB (as given in Theorem 1 based on Λmin (ω) (31)) are examined as functions of the detection threshold, as shown in Fig. 3. The exact GLRT detector TGLRT in (6) is used, where the observations consist of noise only, i.e., y\P (t) = w(t) with w(t) being additive white Gaussian noise of variance σ2 = 1. A false alarm event is declared when TGLRT > τ . The empirical false alarm probability is estimated as the proportion of false alarm events over 10 7 Monte Carlo (MC) trials for each threshold. Specifically, the empirical false alarm probability and the theoretical tighter AUB are plotted for fixed T = 8 with 
+
+N = 32 , 128 , 512 , and for fixed N = 32 with T = 1 , 32 , 64 ,as shown in Fig. 3(a) and Fig. 3(b), respectively. The results show that, for PFA < 10 −1, which covers the typical operating range of practical false alarm probabilities, the empirical false alarm probabilities closely match the corresponding tighter AUB, thereby validating the theoretical derivation. 
+
+B. Analysis of SNR Gain 
+
+As shown in Fig. 4(a) and Fig. 4(b), for PFA = 10 −3 and 
+
+T = 8 , the threshold-bias term (the first term of SNR int (41)) and the proportion of the negative-gain region are evaluated versus N under three detection probabilities. The results show that the threshold-bias term increases monotonically with N
+
+and tends to 0 dB as N → ∞ . However, the convergence is extremely slow. Even at N = 10 10 , it remains at −0.19 dB for PD = 0 .9, and the rate of improvement further diminishes as N increases. Meanwhile, the proportion of the negative-gain region within [0 , π/N ] gradually decreases with N and tends to 0% as N → ∞ , also with a very slow convergence rate. Increasing PD improves the threshold-bias term and reduces the proportion of the negative-gain region, but the improvement is limited. For fixed PFA and PD, the number of snapshots T affects the detection threshold and thus the threshold-bias term, as shown in Fig. 4(c). Increasing T improves the threshold-bias term; however, the gain becomes marginal when T > 50 .925 30 35 40 45 50 55 60 65 70     
+
+> Detection threshold, =
+> 10 -4
+> 10 -3
+> 10 -2
+> 10 -1
+> 10 0
+> PFA
+> N=32 (AUB) N=32 (Tighter AUB) N=32 (Simulated) N=128 (AUB) N=128 (Tighter AUB) N=128 (Simulated) N=512 (AUB) N=512 (Tighter AUB) N=512 (Simulated)
+
+(a) T = 8 20 40 60 80 100 120 140 160 180 200 220        
+
+> Detection threshold, =
+> 10 -4
+> 10 -2
+> 10 0
+> 10 2
+> PFA
+> T=1 (AUB) T=1 (Tighter AUB) T=1 (Simulated) T=32 (AUB) T=32 (Tighter AUB) T=32 (Simulated) T=64 (AUB) T=64 (Tighter AUB) T=64 (Simulated)
+> 16 18 20 0.015 0.02 0.025
+
+(b) N = 32 
+
+Fig. 3. Empirical false alarm probability and the theoretical tighter AUB versus the detection threshold. Each simulated curve is obtained using MC = 10 7
+
+Monte Carlo trials. 10 2 10 4 10 6 10 8 10 10    
+
+> N
+> -1 -0.8 -0.6 -0.4 -0.2 0
+> Threshold-bias term (dB)
+> PD= 0 :01
+> PD= 0 :5
+> PD= 0 :99 Theoretical limit (0 dB)
+
+(a) PFA = 10 −3, T = 8 10 2 10 4 10 6 10 8 10 10     
+
+> N
+> 20 25 30 35 40 45 50 55
+> Proportion of the negative gain region (%)  PD= 0 :01
+> PD= 0 :5
+> PD= 0 :99
+
+(b) PFA = 10 −3, T = 8 0 20 40 60 80 100 120       
+
+> Number of snapshots, T
+> -0.5 -0.45 -0.4 -0.35 -0.3 -0.25 -0.2 -0.15
+> Threshold-bias term (dB)
+> N= 128
+> N= 512
+> N= 2048
+> N= 8192
+> N= 10 10
+
+(c) PFA = 10 −3, PD = 0 .510 -4 10 -3 10 -2 10 -1        
+
+> False alarm Probability, PFA
+> -0.6 -0.55 -0.5 -0.45 -0.4 -0.35 -0.3 -0.25 -0.2
+> Threshold-bias term (dB)
+> N= 128
+> N= 512
+> N= 2048
+> N= 8192
+> N= 10 10
+
+(d) PD = 0 .5, T = 8 
+
+Fig. 4. Threshold-bias term versus the number of measurements, number of snapshots and false alarm probability. 
+
+Fig. 4(d) illustrates the effect of PFA . For practical values of N
+
+(N ≤ 8192 ), reducing PFA improves the threshold-bias term, but the improvement diminishes as N increases and becomes negligible especially for N = 10 10 . These results indicate that, for finite N and typical configurations of PFA , PD, and 
+
+T , the threshold-bias term can approach but hardly attain the theoretical limit of 0 dB. According to Proposition 1, the SNR gain is therefore difficult to approach its upper bound due to the slow convergence of the threshold-bias term. As shown in Fig. 5(a), we further examine the convergence of the frequency-mismatch term (the second term of SNR int 
+
+(41)) with respect to N for a given normalized grid frequency mismatch error ∆ω/ (π/N ). The results indicate that the frequency-mismatch term approaches its theoretical limit when 
+
+N ≥ 15 . Specifically, for N = 15 and ∆ω = π/N , we have 
+
+10 log 1
+
+βg∗ = 3 .91 dB, which is very close to the theoretical limit of 3.92 dB. As shown in Fig. 5(b), with PFA = 10 −3,
+
+PD = 0 .5, and T = 8 , the SNR gain and its upper bound are plotted versus the normalized grid frequency mismatch error for N = 128 and N = 10 10 . For N ≫ 15 , the corresponding upper bounds nearly coincide, and the negative-gain region shrinks as N increases. However, due to the slow convergence of the threshold-bias term with respect to N , an extremely large N is required for the SNR gain to approach its upper bound. These results show that as the DFT grid becomes increasingly dense, the SNR gain of EMNOMP over MNOMP approaches the theoretical upper bound, and the region of negative gain shrinks. 10 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1         
+
+> Normalized grid frequency mismatch error "!= (:=N )
+> 00.5 11.5 22.5 33.5 44.5
+> Frequency-mismatch term (dB)
+> N= 2
+> N= 3
+> N= 15
+> N= 128
+> N= 10 10
+> Reference line (3.92 dB)
+> 0.98 11.02 3.86 3.88 3.9 3.92
+
+(a) Frequency-mismatch term 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1           
+
+> Normalized grid frequency mismatch error "!= (:=N )
+> -0.5 00.5 11.5 22.5 33.5 44.5
+> SNR gain  (dB)
+> N= 128
+> N= 128 (Upper bound)
+> N= 10 10
+> N= 10 10 (Upper bound) Reference line (3.92 dB) Reference line (0 dB)
+> 0.98 0.99 11.01 3.6 3.8 4
+
+(b) PFA = 10 −3, PD = 0 .5, T = 8 
+
+Fig. 5. Frequency-mismatch term and SNR gain versus the normalized grid frequency mismatch error. 6 8 10 12 14 16 18 20         
+
+> SNR int
+> 10 -4
+> 10 -3
+> 10 -2
+> 10 -1
+> PFA
+> MNOMP (PFA = 10 !2)EMNOMP ( PFA = 10 !2)nominal ( PFA = 10 !2)MNOMP (PFA = 10 !3)EMNOMP ( PFA = 10 !3)nominal ( PFA = 10 !3)
+
+(a) False alarm probability PFA 2 4 6 8 10 12 14 16 18 20              
+
+> SNR int
+> 00.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+> PD
+> MNOMP (PFA = 10 !2,Theo.) EMNOMP( PFA = 10 !2,Theo.) MNOMP (PFA = 10 !2,Sim.) EMNOMP( PFA = 10 !2,Sim.) MNOMP (PFA = 10 !3,Theo.) EMNOMP( PFA = 10 !3,Theo.) MNOMP (PFA = 10 !3,Sim.) EMNOMP( PFA = 10 !3,Sim.)
+
+(b) Detection probability PD
+
+Fig. 6. False alarm probability and empirical/theoretical detection probabilities of the first target as functions of the integrated SNR. Parameters: N = 128 ,
+
+T = 8 , σ2 = 1 , K = 3 , [ω1, ω 2, ω 3] = [3 .16 , 2.95 , 4.72] , and the number of MC trials is MC = 100 /P FA . The integrated SNR of the first target varies from 6 to 20 dB, while those of the other two targets are fixed at 20 dB. Both MNOMP (Algorithm 1) and EMNOMP (Algorithm 2) use the same algorithmic parameters: γos = 8 , Rs = 1 , and Rc = 2 .
+
+C. Detection Probability versus Integrated SNR 
+
+We evaluate the performance of EMNOMP in terms of the empirical false alarm probability and detection probability. A false alarm is declared when the minimum wrap-around distance between an estimated frequency and all true frequen-cies exceeds π/N . The empirical false alarm probability is computed as the ratio of the total number of false alarms to the number of MC trials. The simulation parameters are set as follows: N = 128 , T = 8 , K = 3 , ω = [3 .16 , 2.95 , 4.72] 
+
+and σ2 = 1 . The first frequency ω1 = 3 .16 is closest to the 65 th DFT grid, with a distance of ∆ω = 0 .4 × 2πN . The integrated SNR of the first target varies from 6 dB to 20 dB, while the integrated SNRs of the other two targets are fixed at 20 dB. The noise variance is σ2 = 1 . MC simulations are conducted for PFA = 10 −2 and PFA = 10 −3. The theoretical detection probability of the first target is evaluated assuming perfect knowledge of the remaining sinusoids. The empirical false alarm probability and the empirical/theoretical detection probability are shown in Fig. 6, where each point is obtained from 100 /P FA MC trials. As shown in Fig. 6(a), the empirical false alarm probabilities closely match the nominal values, demonstrating the end-to-end CFAR property of EMNOMP and MNOMP. As shown in Fig. 6(b), the empirical detec-tion probabilities of both closely agree with the theoretical prediction. For a given PFA and fixed integrated SNR, EM-NOMP achieves a significantly higher detection probability than MNOMP, demonstrating the excellent performance of EMNOMP. From the simulation results in Fig. 6(b), to achieve a detection probability of PD = 0 .5, the integrated SNRs required by MNOMP and EMNOMP are 14 .28 dB and 12 .31 
+
+dB for PFA = 10 −2, respectively, and 15 .12 dB and 13 .09 
+
+dB for PFA = 10 −3, respectively. Therefore, the resulting SNR gains are SNR ′
+
+gain ,1 = 14 .28 − 12 .31 = 1 .97 dB and 
+
+SNR ′
+
+gain ,2 = 15 .12 − 13 .09 = 2 .03 dB. These values are close to the theoretical results, i.e., SNR gain ,1 = 1 .94 dB for 
+
+PFA = 10 −2 and SNR gain ,2 = 2 .01 dB for PFA = 10 −3, ob-tained from (41). These simulation results agree well with the theoretical analysis and further demonstrate the performance advantage of EMNOMP over MNOMP. 
+
+D. Detection Probability versus Number of Snapshots 
+
+When T = 1 , the proposed EMNOMP reduces to a new al-gorithm, termed enhanced NOMP (ENOMP), for the LSE&D problem in the single-snapshot scenario. Since EMNOMP accommodates multiple measurement vectors, it is of interest to examine the impact of the number of snapshots on its performance. To this end, the per-snapshot integrated SNRs, defined as N |x(t)|2/σ 2, are fixed, and the empirical false alarm and detection probability versus the number of snapshots are evaluated, as shown in Fig. 7. The parameters are set as 11 0 20 40 60 80 100 120 140 160          
+
+> Number of snapshots, T
+> 10 -4
+> 10 -3
+> 10 -2
+> 10 -1
+> PFA
+> MNOMP (PFA = 10 !2)EMNOMP ( PFA = 10 !2)nominal ( PFA = 10 !2)MNOMP (PFA = 10 !3)EMNOMP ( PFA = 10 !3)nominal ( PFA = 10 !3)
+
+(a) False alarm probability PFA 0 20 40 60 80 100 120 140 160               
+
+> Number of snapshots, T
+> 00.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+> PD
+> MNOMP (PFA = 10 !2,Theo.) EMNOMP( PFA = 10 !2,Theo.) MNOMP (PFA = 10 !2,Sim.) EMNOMP( PFA = 10 !2,Sim.) MNOMP (PFA = 10 !3,Theo.) EMNOMP( PFA = 10 !3,Theo.) MNOMP (PFA = 10 !3,Sim.) EMNOMP( PFA = 10 !3,Sim.)
+
+(b) Detection probability PD
+
+Fig. 7. False alarm probability and empirical/theoretical detection probabilities of the first target as functions of the number of snapshots. Parameters: 
+
+N = 128 , σ2 = 1 , K = 3 , [ω1, ω 2, ω 3] = [3 .16 , 2.95 , 4.72] , the per-snapshot integrated SNRs, defined as N |x(t)|2/σ 2, are fixed at [1 , 5, 5] dB for the corresponding targets for all T , and the number of MC trials is MC = 100 /P FA . Both MNOMP (Algorithm 1) and EMNOMP (Algorithm 2) use the same algorithmic parameters: γos = 8 , Rs = 1 , and Rc = 2 .
+
+follows: N = 128 , σ2 = 1 , K = 3 , ω = [3 .16 , 2.95 , 4.72] , the per-snapshot integrated SNRs are fixed at [1 , 5, 5] dB for the corresponding targets for all T , and MC = 100 /P FA Monte Carlo trials are conducted for PFA = 10 −2 and PFA = 10 −3.Similarly to Fig. 6, the false alarm and detection probabilities of the first target are evaluated. As shown in Fig. 7(a), the empirical false alarm probabilities closely match the nominal values, further verifying the CFAR property of EMNOMP and MNOMP. As shown in Fig. 7(b), increasing the number of snapshots improves the detection performance, and EMNOMP consistently outperforms MNOMP. Specifically, EMNOMP achieves a detection probability close to one at T = 60 ,whereas MNOMP requires at least T = 120 to reach the same level, implying approximately twice the data resource. These results further demonstrate the superiority of EMNOMP over MNOMP in terms of detection performance. V. C ONCLUSION 
+
+This paper develops an EMNOMP algorithm that not only inherits the advantages of MNOMP, such as superresolution, high estimation accuracy, and CFAR-based detection, but also improves weak signal detection performance. The asymptotic upper bound of the false alarm probability for the continuous-domain GLRT is derived using chi-squared random field theory, and a corresponding closed-form threshold is obtained via the Lambert W function. The SNR gain of EMNOMP relative to MNOMP is quantitatively analyzed, revealing a the-oretical maximum gain of 3.92 dB under AWGN. Numerical simulations validate the theoretical analysis and demonstrate the effectiveness of EMNOMP. REFERENCES [1] P. Stoica and R. L. Moses, Spectral Analysis of Signals . Upper Saddle River, NJ, USA: Prentice-Hall, 2005. [2] R. Schmidt, “Multiple emitter location and signal parameter estimation,” 
+
+IEEE Trans. Antennas Propag. , vol. 34, no. 3, pp. 276–280, 1986. [3] D. Starer and A. Nehorai, “Newton algorithms for conditional and unconditional maximum likelihood estimation of the parameters of exponential signals in noise,” IEEE Trans. Signal Process. , vol. 40, no. 6, pp. 1528–1534, 1992. [4] D. Malioutov, M. Cetin and A.S. Willsky, “A sparse signal reconstruction perspective for source localization with sensor arrays,” IEEE Trans. Signal Process. , vol. 53, no. 8, pp. 3010–3022, 2005. [5] Y. Chi, L. L. Scharf, A. Pezeshki and A. R. Calderbank, “Sensitivity to basis mismatch in compressed sensing,” IEEE Trans. Signal Process. ,vol. 59, no. 5, pp. 2182–2195, 2011. [6] B. Mamandipoor, D. Ramasamy and U. Madhow, “Newtonized orthog-onal matching pursuit: Frequency estimation over the continuum,” IEEE Trans. Signal Process. , vol. 64, no. 19, pp. 5066–5081, 2016. [7] Z. Yang, J. Li, P. Stoica and L. Xie, “Sparse methods for direction-of-arrival estimation,” Academic Press Library in Signal Processing , vol. 7, pp. 509–581, 2018. [8] B. N. Bhaskar, G. Tang, and B. Recht, “Atomic norm denoising with applications to line spectral estimation,” IEEE Trans. Signal Process. ,vol. 61, no. 23, pp. 5987–5999, 2013. [9] J. Zhu, L. Han, R. S. Blum and Z. Xu, “Multi-snapshot Newtonized orthogonal matching pursuit for line spectrum estimation with multiple measurement vectors,” Signal Processing , vol. 165, pp. 175–185, 2019. [10] K. J. Worsley, “Local maxima and the expected euler characteristic of excursion sets of χ2, F and t fields,” Adv. Appl. Probab. , vol. 26, no. 1, pp. 13–42, 1994. [11] B. Nadler and A. Kontorovich, “Model selection for sinusoids in noise: Statistical analysis and a new penalty term,” IEEE Trans. Signal Process. , vol. 59, no. 4, pp. 1333–1345, 2011. [12] S. Trottier and J. Bosse, “A relationship between the false alarm probability and the atomic norm denoising regularization parameter for line spectral estimation,” IEEE Signal Process. Lett. , vol. 31, pp. 2410– 2414, 2024. [13] S. Grebien, E. Leitinger, K. Witrisal, and B. H. Fleury, “Super-resolution estimation of UWB channels including the dense component — an SBL-inspired approach,” IEEE Trans. Wireless Commun. , vol. 23, no. 8, pp. 10301–10318, 2024. [14] F. Chapeau-Blondeau and A. Monir, “Numerical evaluation of the Lam-bert W function and application to generation of generalized gaussian noise with exponent 1/2,” IEEE Trans. Signal Process. , vol. 50, no. 9, pp. 2160–2165, 2002. [15] Y. Sun, ´ A. Baricz, and S. Zhou, “On the monotonicity, log-concavity, and tight bounds of the generalized Marcum and Nuttall Q-functions,” 
+
+IEEE Trans. Inf. Theory , vol. 56, no. 3, pp. 1166–1186, 2010. [16] N. M. Temme, “Asymptotic and numerical aspects of the noncentral chi-square distribution,” Computers & Mathematics with Applications ,vol. 25, no. 5, pp. 55–63, 1993.
