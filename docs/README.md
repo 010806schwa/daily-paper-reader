@@ -6,30 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-21
-- 运行时间：2026-07-21 21:38:16 UTC
+- 最新运行日期：2026-07-22
+- 运行时间：2026-07-22 20:24:55 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：1
 - 精读区：0
-- 速读区：3
+- 速读区：1
 
 ### 今日简报（AI）
-今日速读3篇论文，重点关注线谱估计、开放集故障诊断与噪声感知音频表示。其中《An Enhanced MNOMP for Line Spectrum Estimation and Detection》得分最高（7.0/10），值得优先阅读。建议先精读该文，把握增强MNOMP方法的实现细节，其余可作为背景补充。
-- 详情：[/202607/21/README](/202607/21/README)
+今日速读一篇针对稀疏非均匀阵列AFDM ISAC系统的约束张量分解目标感知论文。
+核心方向：利用张量分解提升非均匀阵列下的联合感知与通信性能。
+下步建议：若对ISAC感兴趣，可先了解传统阵列设计，再评估该方法的实际增益。
+- 详情：[/202607/22/README](/202607/22/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [An Enhanced MNOMP for Line Spectrum Estimation and Detection](/202607/21/2607.17308v1-an-enhanced-mnomp-for-line-spectrum-estimation-and-detection)  
-   标签：评分：7.0/10、query:shipnoise-hf
-   evidence：用于高频成分提取的线谱估计方法
-2. [Fine-Grained Open-Set Fault Diagnosis via Metric-Guided Time-Frequency Configuration Selection and Class-Specific Autoencoders](/202607/21/2607.13368v1-fine-grained-open-set-fault-diagnosis-via-metric-guided-time-frequency-configuration-selection-and-class-specific-autoencoders)  
+1. [Constrained Tensor Decomposition-Based Target Sensing for Sparse Non-Uniform Array-Enabled AFDM ISAC Systems](/202607/22/2607.17589v1-constrained-tensor-decomposition-based-target-sensing-for-sparse-non-uniform-array-enabled-afdm-isac-systems)  
    标签：评分：6.0/10、query:shipnoise-hf
-   evidence：时频配置选择方法可迁移至水下声学特征提取
-3. [NABEATs: Noise-Aware Audio Representation Learning](/202607/21/2607.16688v1-nabeats-noise-aware-audio-representation-learning)  
-   标签：评分：6.0/10、query:shipnoise-hf
-   evidence：噪声感知音频表示学习用于水下目标识别中的鲁棒特征提取
+   evidence：利用约束张量分解处理高频AFDM信号进行目标参数估计，与水下高频目标识别相关
 
 
 <div class="dpr-home-promo-card">

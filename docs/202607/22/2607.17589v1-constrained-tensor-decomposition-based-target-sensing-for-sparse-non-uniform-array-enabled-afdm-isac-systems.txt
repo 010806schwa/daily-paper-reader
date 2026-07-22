@@ -1,0 +1,654 @@
+Title: Constrained Tensor Decomposition-Based Target Sensing for Sparse Non-Uniform Array-Enabled AFDM ISAC Systems
+
+URL Source: https://arxiv.org/pdf/2607.17589v1
+
+Published Time: Tue, 21 Jul 2026 01:30:45 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+> 1
+
+# Constrained Tensor Decomposition-Based Target Sensing for Sparse Non-Uniform Array-Enabled AFDM ISAC Systems 
+
+Linchu Chen, Zhendong Li, Lin Chen, Zhou Su, Wenjie Wang and Wen Chen 
+
+Abstract —Sparse non-uniform array-enabled affine frequency division multiplexing (AFDM) is a promising candidate for inte-grated sensing and communication (ISAC), while its performance critically depends on accurate target parameter estimation. In this paper, we propose a constrained tensor decomposition-based sensing framework for delay, Doppler, and angle estimation. Specifically, a manifold-constrained alternating least squares (ALS) algorithm is developed by exploiting the sparse array geometry structure, enabling robust factor matrix extraction and direct angle estimation. From the decomposed factor matrices, we further apply an iterative one dimensional golden section search to refine delay and Doppler shift. Simulation results demonstrate that the proposed algorithm nearly attains Cram´ er-Rao bound (CRB) and significantly outperforms unconstrained ALS and conventional methods, validating its effectiveness for sparse non-uniform array-enabled AFDM ISAC systems. 
+
+Index Terms —Sparse non-uniform array, ISAC, AFDM, con-strained tensor decomposition, CRB. 
+
+I. I NTRODUCTION 
+
+# INTEGRATED sensing and communication (ISAC) has emerged as a key enabler for future wireless systems, with particularly important applications in high-mobility scenarios such as vehicular networks [1], [2]. In such environments, doubly dispersive channels with concurrent multipath delay and Doppler spread pose severe challenges. Orthogonal fre-quency division multiplexing (OFDM) suffers from significant intercarrier interference due to broken subcarrier orthogonality, which drastically degrades both communication and sensing performance [3]. These limitations motivate the exploration of novel waveforms resilient to doubly dispersive channels. Affine frequency division multiplexing (AFDM) has re-cently been proposed as a chirp-based multicarrier waveform [4], [5]. Unlike OFDM which uses sinusoidal subcarriers, AFDM employs linear chirp signals as orthogonal basis functions via the discrete affine Fourier transform (DAFT). This chirp structure enables explicit decoupling of delay and Doppler shifts in the DAFT domain, where they man-ifest as positional shifts and phase rotations, respectively. 
+
+Linchu Chen, Zhendong Li and Wenjie Wang are with the School of In-formation and Communication Engineering, Xi’an Jiaotong University, Xi’an 710049, China (email: chenlinchu@stu.xjtu.edu.cn; lizhendong@xjtu.edu.cn; wjwang@xjtu.edu.cn). Lin Chen is with the Department of Electrical and Computer Engineering, Stevens Institute of Technology, Hoboken, NJ 07030, USA (e-mail: lchen53@stevens.edu). Zhou Su is with the School of Cyber Science and Engineering, Xi’an Jiaotong University, Xi’an 710049, China (email: zhousu@ieee.org). Wen Chen is with the Department of Electronic Engineering, Shanghai Jiao Tong University, Shanghai 200240, China (e-mail: wenchen@sjtu.edu.cn). (Corresponding author: Zhendong Li) 
+
+Consequently, AFDM achieves full diversity gain in doubly dispersive channels and allows low-complexity equalization [4]. Compared with orthogonal time-frequency space (OTFS) modulation, AFDM attains comparable error performance with significantly lower complexity and pilot overhead [5]. Moreover, its chirp basis inherently exhibits radar-like proper-ties similar to frequency-modulated continuous-wave signals, making AFDM particularly attractive for ISAC without requir-ing dedicated sensing waveforms [6]. While AFDM exhibits remarkable adaptability to doubly dispersive channels at the waveform level, its potential for high-resolution sensing and massive connectivity still requires synergy with spatial-domain design to be fully unleashed. Conventional compact uniform linear arrays with half-wavelength spacing in AFDM ISAC systems face severe bottlenecks as element count grows: excessive hardware cost, power consumption, and mutual coupling [7]. Non-uniform sparse antenna arrays, employing aperiodic spacing exceeding half a wavelength, achieve comparable apertures with far fewer elements, delivering superior spatial resolution and angle estimation accuracy while effectively suppressing grating lobes [8]. Their integration with AFDM enables natural complemen-tarity between delay-Doppler domain sparsity and array geom-etry domain sparsity, jointly supporting better communication and sensing under low hardware overhead. To fully leverage advantages of sparse non-uniform array enabled AFDM ISAC system, accurate target parameter infor-mation is a prerequisite and a critical factor. Specifically, the receiver must estimate delay, Doppler shift, angle-of-arrival (AoA) and angle-of-departure (AoD). However, these param-eters are highly coupled in the high-dimensional received signal [9], causing conventional estimation algorithms to suffer from error accumulation and limited precision. Tensor decom-position provides a powerful framework for addressing this coupled high-dimensional problem. This is because tensors naturally preserve multi-dimensional signal structures, and the CANDECOMP/PARAFAC (CP) decomposition has proven effective in multiple-input multiple-output (MIMO) radar and communication systems [10]. Recent studies have investigated tensor decomposition-based parameter estimation for AFDM ISAC. A tensor-based angle-delay-Doppler estimation scheme for AFDM-ISAC system in hybrid field scenarios is proposed in [11]. Nevertheless, existing tensor-based parameter estima-tion methods are not applicable to sparse non-uniform arrays, as the irregular spatial sampling fundamentally violates the structured array assumptions underlying current tensor models. arXiv:2607.17589v1 [eess.SP] 20 Jul 2026 2Communication Users            
+
+> …
+> 1d2d3d2Nd−1Nd−
+> / 2 id
+> λ>
+> Base Station
+> Target 1
+> Target r
+> Target R
+> Scatters
+> Sparse non-uniform array
+> AFDM ISAC signals Echo signals f
+> tNt∆
+> m-th Chirp subcarrier
+> 1
+> t∆
+> 1 st Chirp subcarrier
+> 0
+> mNt∆
+> …
+
+Fig. 1. Sparse non-uniform array-enabled AFDM ISAC systems. 
+
+Motivated by this, we investigate target sensing parameter estimation in sparse non-uniform array-enabled AFDM ISAC systems via constrained tensor decomposition based on the sparse non-uniform array geometry and signal structures. First, we formulate the received signal as a high-order tensor. Subsequently, a constrained alternative least square (CALS) algorithm is performed to extracts the delay, Doppler and angular parameters independently from the factor matrices of their respective dimensions. Finally, theoretical analysis and simulations validate the proposed algorithm advantages. II. S YSTEM MODEL 
+
+As shown in Fig. 1, we consider a sparse non-uniform array-enabled AFDM ISAC system that performs sensing of R surrounding targets while simultaneously supporting communication with several users in the vicinity of the base station. The base station is equipped with linear sparse non-uniform arrays at both the transmit and receive sides, with Nt
+
+and Nr antenna elements, respectively. The system bandwidth 
+
+B is divided into K chirp subcarriers, with the subcarrier spacing satisfying ∆f = B/K . The sampling interval is Ts,and the symbol duration Ta satisfies ∆f = 1 /T a. The ISAC base station considered in this work is equipped with linear sparse non-uniform antenna arrays at both the transmitter and receiver. Such sparse arrays can achieve sidelobe suppression and other functionalities through specific placement of antenna positions, while realizing a larger array aperture for a given number of antenna elements. To fully characterize the posi-tion properties of the sparse non-uniform antenna array, let 
+
+t = [ xt
+
+> 1
+
+, x t
+
+> 2
+
+, · · · , x tNt ] ∈ R1×Nt denote the transmit antenna position coordinates, and r = [ xr
+
+> 1
+
+, x r
+
+> 2
+
+, · · · , x rNr ] ∈ R1×Nr
+
+denote the receive antenna position coordinates. Then the transmit array steering vector is given by 
+
+a(t; θ) = [ ej 2πλ ρ(xt
+
+> 1;θ)
+
+, · · · , e j 2πλ ρ(xtNt ;θ)]T , (1) and the receive array steering vector is given by 
+
+a(r; ϕ) = [ ej 2πλ ρ(xr 
+
+> 1;ϕ)
+
+, · · · , e j 2πλ ρ(xrNr ;ϕ)]T , (2) where ρ(x; θ) = x cos θ denotes the phase difference between an antenna located at position x and the reference position. Let x ∈ CN ×1 denote the information symbols in the discrete affine Fourier domain. After AFDM modulation, the transmitted signal is given by s[n] = PN −1 
+
+> m=0
+
+x[m]Φ n[m],where Φn[m] = 1√N ej2π(c1n2+c2m2+mn/N ) denotes the affine Fourier basis function, with c1 and c2 being the AFDM parameters. By appropriately setting these two parameters, full diversity gain can be achieved. The matrix representation of the above transform is given by s = AH x = ΛHc1 FH Λc1 x,where Λc = diag (1 , e −j2πc , · · · , e −j2πcn 2
+
+). In AFDM ISAC systems, to combat inter-symbol interference caused by mul-tipath delay, a chirp period prefix (CPP) of length LCPP can be introduced as s[n] = s[N + n]e−j2πc 1(N 2+2 N n ), where 
+
+n = −LCPP , · · · , −1. By exploiting the periodicity of the exponential factor, the chirp period prefix is equivalent to the conventional cyclic prefix in OFDM when 2N c 1 is an integer and N is even. After serial-to-parallel conversion, the information symbols 
+
+x are transmitted from the transmit antenna array and reach the receiver after propagating through the channel. The time-domain channel impulse response is expressed as 
+
+hn[l] = 
+
+> R
+
+X
+
+> i=1
+
+βr e−j2πnf d  
+
+> iTs
+
+δ[l − τr ], (3) where f d denotes the Doppler shift caused by mobility, and 
+
+τ denotes the normalized integer delay τ = τ /T s, with 
+
+LCPP ≥ max {τr }. Similarly, for notational convenience, the normalized Doppler frequency is defined as νr = N f d 
+
+> r
+
+Ts =
+
+αr + ar , where α and a represent the integer and fractional parts of the Doppler shift, respectively. After removing the chirp period prefix at the receiver, the matrix representation of the time-domain received signal is given by r = Hs + w, where w denotes the noise vector, and 
+
+H =
+
+> R
+
+X
+
+> r=1
+
+βr ΓCPP r ∆f d 
+
+> r
+
+Πτr , (4) where Π ∈ CN ×N is the forward cyclic shift matrix and ∆f d = diag(1 , e −j2πf d
+
+, e −j2πf d2, · · · , e −j2πf dn), while 
+
+ΓCPP r ∈ CN ×N is defined as 
+
+ΓCPP r = diag 
+
+ (
+
+e−j2πc 1(N 2−2N (τr −n)) , n < τ r ,
+
+1, n ≥ τr ,
+
+
+
+.
+
+(5) When 2N c 1 is an integer and N is even, the chirp period prefix becomes equivalent to the cyclic prefix in OFDM systems, in which case ΓCPP r = I.At the receiver, AFDM demodulation is performed on the received signal r as y[m] = PN −1 
+
+> n=0
+
+r[n]Φ ∗[m], where Φ∗ and 
+
+Φ form a discrete affine Fourier transform pair. The matrix representation of the demodulated signal can be written as 
+
+y = Ar =
+
+> R
+
+X
+
+> r=1
+
+βr AΓ CPP r ∆f d 
+
+> r
+
+Πτr AH x + ˜ w, (6) where ˜w = Aw . Since A is unitary, the statistical properties of w remain unchanged. Define the effective channel matrix for the r-th path as Heff r = βr AΓ CPP r ∆f d 
+
+> r
+
+Πτr AH . To clearly illustrate the relationship between the modulated symbols x
+
+and the demodulated symbols y, the entry of Heff r can be expressed as 
+
+Heff r [p, q ] = 1
+
+N ej 2πN
+
+ N c 1τ 2  
+
+> r−qτ r+N c 2(q2−p2)
+
+
+
+Fr (p, q ), (7) 3
+
+where 
+
+Fr (p, q ) =  
+
+> N−1
+
+X
+
+> n=0
+
+e−j 2πN
+
+ (p−q+νr +2 N c 1τr )n
+
+
+
+, (8) which reflects the impact of delay and frequency shift on the channel matrix. Defining loc r = ( αr + 2 N c 1τr )N , the following propert can be derived from (7) 
+
+|Heff r [p, q ]| = 1
+
+N ej 2πN
+
+ N c 1τ 2  
+
+> r−qτ r+N c 2(q2−p2)
+
+
+
+Fr (p, q )
+
+= |F r (p, q )/N | = |sin( N Θ) /N sin(Θ) | ,
+
+(9) with Θ = πN (p − q + loc r + ar ). It can be observed that 
+
+Fr (p, q ) attains its maximum magnitude at q = ( p + loc r )N
+
+and decreases as q moves away from loc r [4]. This provides mathematical support for AFDM systems to achieve signal separation in the delay-Doppler domain. Considering the steer-ing vectors of the receive and transmit antennas in MIMO system, the received signal in this system can be expressed as 
+
+Y =
+
+> R
+
+X
+
+> r=1
+> Nt
+
+X
+
+> nt=1
+
+βr a(r; ϕr )[ a(t; θr )] nt (Heff r x)T + ˜W. (10) The received signal can be further represented as a tensor 
+
+Y ∈ CNr ×N ×Nt = Z + W, (11) where W denotes the corresponding noise in the DAF domain, and Z is the noise-free signal component. Its CP decomposi-tion is given by 
+
+Z = [[ A, B, C]] = X
+
+> r
+
+a(r; ϕr ) ◦ b(τr , ν r ) ◦ a(t; θr ), (12) where ◦ denotes the outer product, and 
+
+b(τr , ν r ) = Heff r x = βr AΓ CPP r ∆f d 
+
+> r
+
+Πτr AH x. (13) The matrices 
+
+A = [ a(r; ϕ1), · · · , a(r; ϕR)] , (14) 
+
+B = [ b(τ1, ν 1), · · · , b(τR, ν R)] , (15) 
+
+C = [ a(t; θ1), · · · , a(t; θR)] (16) are the factor matrices of the tensor signal. These factor ma-trices carry the structural information of the high-dimensional received signal, with each of them containing physical parame-ters corresponding to different dimensions. By extracting these factor matrices via tensor decomposition, the loss of structural information caused by dimensionality flattening is avoided. III. C ONSTRAINED TENSOR DECOMPOSITION -B ASED 
+
+TARGET SENSING ALGORITHM 
+
+This section outlines a constrained tensor decomposition-based algorithm for parameter estimation. First, we propose a manifold-constrained alternating least squares (ALS) al-gorithm to estimate factor matrices as specified in (12). Subsequently, the relevant sensing parameters of interest are extracted from the factor matrices which are yielded by the preceding steps. The problem of factor matrices extraction for tensor signals can be formulated as 
+
+min   
+
+> ˆar,ˆbr,ˆcr
+
+Y − 
+
+> R
+
+X
+
+> r=1
+
+ˆar ◦ ˆbr ◦ ˆcr
+
+> 2
+> F
+
+. (17) The ALS scheme stands as one of the most well-established approaches for solving (17), operating by iteratively mini-mizing the data fitting error through sequential optimization of each factor matrix while holding the other two fixed, until convergence is attained [12]. Nevertheless, ALS treats the factor matrices as unstructured random variables rather than leveraging their inherent structural properties, thereby overlooking valuable prior information and consequently un-dermining both estimation accuracy and algorithmic efficiency. To overcome the above drawbacks, and based on the mani-fold knowledge of the sparse non-uniform array, we introduce an additional constraint into (17) and thereby propose the CALS algorithm. After introducing this constraint, problem (17) is transformed into 
+
+min   
+
+> ˆA,ˆB,ˆC
+
+[[ ˆA, ˆB, ˆC]] − Y 2
+
+> F
+
+, s.t. ˆA ∈ Γ1, ˆC ∈ Γ2, (18) where Γ1 denotes the set of matrices whose column vectors have the structure shown in (2), and the definition of Γ2 is similar to that of Γ1. The optimization of (18) can be achieved via the ALS framework within Niter iterations until conver-gence. The k-th iteration of ALS includes three subproblems with respect to variables A, B and C, respectively. The A-subproblem is also a constrained LS problem as 
+
+ˆAk+1 = argmin 
+
+> ˆA
+
+∥ ˆA(Ck ⊙ Bk)T−Y(1) ∥2 
+
+> F
+
+, s.t. ˆA ∈ Γ1,
+
+(19) where Y(i) denotes the mode-i unfolding of tensor Y. It is challenging to obtain the closed-form and optimal solution to (19) due to the nonconvex constraint. Alternatively, we obtain its approximate solution in two steps. In the first step, an intermediate variable ˜Ak+1 is obtained via an LS problem (20) without considering the constraint A ∈ Γ1. This constraint is considered in the second step to refine ˜Ak+1 via (21) 
+
+
+
+˜Ak+1 = arg min  
+
+> A
+
+∥A(Ck ⊙ Bk)T − Y(1) ∥2 
+
+> F
+
+, (20) 
+
+Ak+1 = arg min  
+
+> A
+
+∥ ˜Ak+1 − A∥2 
+
+> F
+
+s.t. A ∈ Γ1. (21) Problem (21) can be efficiently solved column-by-column via a correlation-based scheme as [Ak+1 ]:,r = λk+1  
+
+> r
+
+a(t, ˆθk+1  
+
+> r
+
+),where the angular parameter θk+1  
+
+> r
+
+and the scalars λk+1 
+
+> r
+
+calculated by [12] 
+
+θk+1  
+
+> r
+
+= arg max 
+
+> θr
+
+∥[ ˜Ak+1 ]H
+
+> :,l
+
+a(t, ˆθk+1  
+
+> r
+
+)∥∥[ ˜Ak+1 ]:,l ∥2∥a(t, ˆθk+1  
+
+> r
+
+)∥2
+
+, (22) 
+
+λk+1  
+
+> r
+
+= [ ˜Ak+1 ]T 
+
+> :,r
+
+a(t, ˆθk+1  
+
+> r
+
+)
+
+∥a(t, ˆθk+1  
+
+> r
+
+)∥22
+
+. (23) After obtaining ˆA(k+1) , the factor matrix ˆB can be obtained by solving a least-squares problem 
+
+ˆB(k+1) = arg min 
+
+> ˆB
+
+Y(2) − ˆB(C(t) ⊙ A(t+1) )T 2
+
+> F
+
+, (24) 4
+
+and the factor matrix ˆCk+1 is obtained by solving a problem analogous to (18) 
+
+ˆCk+1 = argmin 
+
+> ˆC
+
+∥ ˆC(Bk ⊙ Ak)T−Y(3) ∥2 
+
+> F
+
+, s.t. ˆC ∈ Γ2.
+
+(25) Following the recovery of the factor matrices, we process the extraction of the sensing parameters. It should be pointed out that solving problems (19) and (25) yields the estimates of the angle parameters θ and ϕ. The extraction of delay and Doppler parameters from the complex AFDM signal model is sophisticated. Based on the pulse compression principle, we first adopt a parameter estimation scheme analogous to matched filtering to perform coarse estimation of the integer delay. Recall the vector representation in (13), the q-th entry of b(τr , ν r ) can be expressed as 
+
+br [q] = 1
+
+N 
+
+> N−1
+
+X
+
+> q′=0
+
+x[q′]ej2π    
+
+> 
+> −τr q ′
+> N+c1τ2
+> r+c2(q′2−q2)
+> 
+
+× 
+
+> N−1
+
+X
+
+> p=0
+
+ej 2πp N (q′−q−loc r )Fr [q, q ′].
+
+(26) Since c2 is set to be a number sufficiently smaller than 
+
+(1 /2Nc) [11], the value of Ncc2(q′2 − q2) is approximately approach zero, which can be ignored. It is worth noting that 
+
+Fr [q, q ′] in (26) simplifies to ej 2πN (q′−q−locr )    
+
+> ej2πN(q′−q−locr )−1
+
+.
+
+Algorithm 1 Iterative One Dimensional Golden Section Search Method  
+
+> 1:
+
+Input: Factor matrix ˆB, transmit symbol vector x, esti-mated ˆτr , ˆαr from (28).  
+
+> 2:
+
+Initialize η = √5−12 . 
+
+> 3:
+
+for r = 1 to R do  
+
+> 4:
+
+l(0) = ˆ τr , α(0) = ˆ αr , t = 1 . 
+
+> 5:
+
+while t ≤ Titer do  
+
+> 6:
+
+al = α(t−1) − 1, au = α(t−1) + 1 . 
+
+> 7:
+
+repeat  
+
+> 8:
+
+g1 = au − η(au − al), g2 = al + η(au − al). 
+
+> 9:
+
+Substituting gl, gu into (29) yields f1,f2. 
+
+> 10:
+
+if f1 ≤ f2 then  
+
+> 11:
+
+al = g1, g1 = g2. 
+
+> 12:
+
+end if  
+
+> 13:
+
+if f1 > f 2 then  
+
+> 14:
+
+au = g2, g2 = g1. 
+
+> 15:
+
+end if  
+
+> 16:
+
+until Stopping criteria is met  
+
+> 17:
+
+α(t) = ( al + au)/2. 
+
+> 18:
+
+Obtaining l(t) = bl+bu 
+
+> 2
+
+by following steps similar to Steps 6–17 and update t = t + 1 . 
+
+> 19:
+
+end while  
+
+> 20:
+
+ˆτr = l(T ), ˆνr = α(T ). 
+
+> 21:
+
+end for  
+
+> 22:
+
+Output: ˆτr and ˆνr .Let ur denotes the vector for target r after one dimensional pulse compression, which can be given as 
+
+ur [q] =  
+
+> N−1
+
+X
+
+> m=0
+
+ˆb∗ 
+
+> r
+
+[m]x[( m − q)N ]e−j 2πN ⌊ N +1 −q  
+
+> 2N c 1⌋]( m−q)N
+
+. (27) The integer components of normalized delay and Doppler shift information can be obtained unambiguously from loc r by 
+
+ˆτr =
+
+ loc r
+
+2N c 1
+
+
+
+, ˆαr = 2 N c 1 ˆτr − loc r . (28) Next, we need to perform an off-grid search based on the integer components by employing an iterative one dimensional golden section search method. The objective function used to evaluate candidate parameters in the search can be written as 
+
+f =
+
+
+
+Λg ΠlS
+
+H
+
+yr
+
+> 2
+
+, yr = ΛHc2 FH ΛHc1
+
+ˆbr . (29) The algorithm alternately optimizes ν with τ fixed and op-timizes τ with ν fixed, thereby gradually approaching the parameter combination that maximizes the objective function 
+
+f . The delay and Doppler shift estimation scheme can be summarized in Algorithm 1. Next, we conduct a theoretical analysis of the proposed algorithm. The computational complexity of the proposed two-stage algorithm is composed of that of the CALS stage and the parameter estimation stage. Specifically, the complexity of the CALS stage is given by O{ Niter (3 NtNr N R + R2(NtN +
+
+Nr N + NtNr ) + RT iter (Nt + Nr )) }, where Titer denotes the number of grid points used in solving subproblem (21). The dominant term in the complexity of the parameter estimation stage is O{ T RN log N }. Then, we further presents the brief derivation of the Cram´ er-Rao bound (CRB), the theoretical lower limit for the variance of any unbiased estimator, which is used to assess the estimation results. For ease of exposition, let 
+
+p ≜ [ν, τ , Θ, Φ]T ∈ C4R×1 denote the estimation parameter vector. Thus, the log-likelihood function of p is expressed as 
+
+L(p) = NrKN t − 1/σ 2 A(C ⊙ B)T − Y(1) 2
+
+> F
+
+= NrKN t − 1/σ 2 B(C ⊙ A)T − Y(2) 2
+
+> F
+
+= NrKN t − 1/σ 2 C(B ⊙ A)T − Y(3) 2
+
+> F
+
+.
+
+The complex Fisher information matrix for p is defined as 
+
+Ω(p) = E
+
+h
+
+( ∂L (p)
+
+∂p )H ( ∂L (p)
+
+∂p )
+
+i
+
+. (30) Detailed derivation of the partial derivatives of the Fisher matrix with respect to the estimated parameters can be found in [10]. Hence, the CRB can be obtained by calculating the inverse of the matrix Ω(p), i.e., CRB (p) = Ω(p)−1.IV. N UMERICAL SIMULATIONS 
+
+This section provides numerical simulations to assess the accuracy of the proposed algorithm. We consider a scenario where an ISAC base station is equipped with Nt = 8 and 
+
+Nr = 8 linear sparse non-uniform antenna arrays, whose maximum normalized antenna aperture is set to 20. The system carrier frequency is fc = 28 GHz, the transmission bandwidth is B = 100 MHz, and it is divided into K = 128 chirp subcarriers. The number of targets is set to R = 5, and the target parameters to be estimated are randomly generated within reasonable ranges. The maximum normalized delay and Doppler shift are τmax = 8 and νmax = 2, respectively. 5
+
+AFDM parameters can be set with c1 = 7/256 and c2 = 0, and Titer in Algorithm 1 is set to be 10. Multiple signal classification (MUSIC) algorithm and ALS with no constrain are selected to be the baseline, and we choose the normalized mean square error (NMSE) as the metric for evaluating the estimation performance, defined as NMSE X = ∥X− ˆX∥2
+
+> F
+> ∥X∥2
+> F
+
+.
+
+Fig. 2. NMSE of the AoD (left) and AoA (right). 
+
+First, the estimation performance of the proposed algorithm for the angular parameters of the sensing targets is evaluated. It is observed that the proposed algorithm achieves the best estimation performance and approaches the CRB. Compared with the conventional unconstrained ALS, the proposed al-gorithm exhibits relatively higher estimation accuracy, with a more pronounced advantage particularly in the low signal-to-noise ratio regime. This is attributed to the fact that the proposed algorithm exploits the position information of the sparse non-uniform antenna arrays in the spatial domain. By utilizing the antenna manifold as a constraint, the iteration is rendered more stable, which enables the factor matrices A and 
+
+C to be decomposed more accurately toward their true values. Consequently, the overall constrained tensor decomposition framework becomes more precise, thereby leading to superior estimation accuracy. 
+
+Fig. 3. NMSE of time delay (left) and Doppler shift (right). 
+
+Then, we evaluate the estimation performance for the nor-malized delay and Doppler shift parameters of the received signal. These two parameters correspond to the position and velocity of the sensing targets, and are of particular importance in AFDM systems. As can be observed from the figure, the proposed algorithm still achieves the best estimation accuracy. Moreover, both tensor decomposition based estimation algo-rithms outperform the conventional MUSIC algorithm. This is because MUSIC fails to exploit the high-dimensional structural information inherent in the received signal. Instead, it simply flattens the received signal into a matrix for parameter extrac-tion, thereby discarding the structural information contained in the factor matrices. Consequently, its estimation accuracy is inferior to that of the proposed algorithm. V. C ONCLUSION 
+
+In this paper, we developed a constrained tensor decomposition-based sensing framework for delay, Doppler, and angle estimation in sparse non-uniform array-enabled AFDM ISAC systems. To fully exploit the inherent multi-dimensional structure of the received echo signals, a ten-sor model was first established by jointly characterizing the time, frequency, and spatial domains. Based on this model, a manifold-constrained ALS algorithm was proposed to ex-plicitly incorporate the sparse array geometry into the tensor decomposition, enabling robust factor matrix extraction and direct angle estimation. The delay and Doppler shifts were subsequently refined through an iterative one dimensional golden section search using the decomposed factor matrices. Simulation results demonstrated that the proposed algorithm nearly achieved the CRB and consistently outperformed base-line algorithms. REFERENCES [1] Z. Wei, H. Qu, Y. Wang, X. Yuan, H. Wu, Y. Du, K. Han, N. Zhang, and Z. Feng, “Integrated sensing and communication signals toward 5G-A and 6G: A survey,” IEEE Internet Things J. , vol. 10, no. 13, pp. 11 068– 11 092, Jul. 2023. [2] D. C. Nguyen, M. Ding, P. N. Pathirana, A. Seneviratne, J. Li, D. Niyato, O. Dobre, and H. V. Poor, “6G Internet of things: A comprehensive survey,” IEEE Internet Things J. , vol. 9, no. 1, pp. 359–383, Jan. 2022. [3] Y. Li, J. Chuang, and N. Sollenberger, “Transmitter diversity for OFDM systems and its impact on high-rate data wireless networks,” IEEE J. Sel. Areas Commun. , vol. 17, no. 7, pp. 1233–1243, Jul. 1999. [4] Bemani, Ali and Ksairi, Nassar and Kountouris, Marios, “Affine fre-quency division multiplexing for next generation wireless communica-tions,” IEEE Trans. Wireless Commun. , vol. 22, no. 11, pp. 8214–8229, Nov. 2023. [5] A. Bemani, N. Ksairi, and Kountouris, Marios, “AFDM: A full diversity next generation waveform for high mobility communications,” in 2021 IEEE International Conference on Communications Workshops (ICC Workshops) , Jun. 2021, pp. 1–6. [6] Bemani, Ali, N. Ksairi, and M. Kountouris, “Integrated sensing and communications with affine frequency division multiplexing,” IEEE Wireless Commun. Lett. , vol. 13, no. 5, pp. 1255–1259, May 2024. [7] Z. Yang, W. Wang, B. Ding, B. Rao, and D. Song, “Sparse antenna array synthesis method for higher efficiency and lower cost via adaptive multipoint mutation genetic algorithm,” IEEE Trans. Green Commun. Netw. , vol. 10, pp. 2190–2205, Feb. 2026. [8] S. Yang, W. Lyu, Z. Zhang, and C. Yuen, “Enhancing near-field sensing and communications with sparse arrays: Potentials, challenges, and emerging trends,” arXiv e-prints , 2023. [Online]. Available: https://arxiv.org/abs/2309.08681 [9] R. Zhang, L. Cheng, S. Wang, Y. Lou, Y. Gao, W. Wu, and D. W. K. Ng, “Integrated sensing and communication with massive MIMO: A unified tensor approach for channel and target parameter estimation,”

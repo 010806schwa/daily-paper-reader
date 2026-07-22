@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-22",
+  "date": "2026-07-22",
+  "generated_at": "2026-07-22T20:25:01",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/22/2607.17589v1-constrained-tensor-decomposition-based-target-sensing-for-sparse-non-uniform-array-enabled-afdm-isac-systems",
+      "section": "quick",
+      "title_en": "Constrained Tensor Decomposition-Based Target Sensing for Sparse Non-Uniform Array-Enabled AFDM ISAC Systems",
+      "authors": "Linchu Chen, Zhendong Li, Lin Chen, Zhou Su, Wenjie Wang, Wen Chen",
+      "date": "2026-07-20",
+      "pdf": "https://arxiv.org/pdf/2607.17589v1",
+      "score": "6.0",
+      "evidence": "利用约束张量分解处理高频AFDM信号进行目标参数估计，与水下高频目标识别相关",
+      "tldr": "针对稀疏非均匀阵列AFDM ISAC系统中目标参数估计精度关键问题，提出基于约束张量分解的感知框架。通过流形约束交替最小二乘算法利用阵列几何结构，实现鲁棒的因子矩阵提取和直接角度估计；再结合一维黄金分割搜索精细估计时延与多普勒。仿真表明该方法几乎达到克拉美罗界，性能显著优于无约束ALS及传统方法，验证了其在稀疏非均匀阵列AFDM ISAC中的有效性。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Sparse non-uniform array-enabled affine frequency division multiplexing (AFDM) is a promising candidate for integrated sensing and communication (ISAC), while its performance critically depends on accurate target parameter estimation. In this paper, we propose a constrained tensor decomposition-based sensing framework for delay, Doppler, and angle estimation. Specifically, a manifold-constrained alternating least squares (ALS) algorithm is developed by exploiting the sparse array geometry structure, enabling robust factor matrix extraction and direct angle estimation. From the decomposed factor matrices, we further apply an iterative one dimensional golden section search to refine delay and Doppler shift. Simulation results demonstrate that the proposed algorithm nearly attains Cramér-Rao bound (CRB) and significantly outperforms unconstrained ALS and conventional methods, validating its effectiveness for sparse non-uniform array-enabled AFDM ISAC systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
