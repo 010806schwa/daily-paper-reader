@@ -1,0 +1,524 @@
+Title: DMSNet: Cross-Band Learning for Multi-Target Sensing in Multi-Band ISAC
+
+URL Source: https://arxiv.org/pdf/2607.17655v1
+
+Published Time: Tue, 21 Jul 2026 01:35:35 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+> 1
+
+# DMSNet: Cross-Band Learning for Multi-Target Sensing in Multi-Band ISAC 
+
+Haotian Liu, Graduate Student Member, IEEE, Zhiqing Wei, Member, IEEE, Quanjiang Zhao, Lin Wang, Graduate Student Member, IEEE, Yunxin Geng, Graduate Student Member, IEEE, 
+
+Xingwang Li, Senior Member, IEEE, Zhiyong Feng, Senior Member, IEEE 
+
+Abstract —Multi-band integrated sensing and communication (ISAC) offers complementary high- and low-frequency echo information for multi-target sensing. However, existing dual-band ISAC sensing methods have a limited ability to exploit deep complementary information across heterogeneous bands and often incur high computational costs. To address these limitations, we propose a Dual-Band Multi-Target Sensing Neural Network (DMSNet) for joint target number and parameter estimation. Un-der representative simulation conditions, DMSNet outperforms the best baseline in target number estimation, increasing count accuracy from 89.01% to 91.74% and Macro-F1 from 90.80% to 93.07%. For parameter estimation, compared with the best baselines, DMSNet reduces the median absolute errors of range, velocity, and angle by 82.2%, 56.9%, and 73.2%, respectively. Moreover, DMSNet reduces runtime by 68.7% relative to the fastest existing dual-band ISAC sensing method. 
+
+Index Terms —Integrated sensing and communication (ISAC), multi-band sensing, multi-target sensing, high- and low-frequency cooperation, deep learning. 
+
+I. I NTRODUCTION 
+
+Emerging scenarios such as low-altitude economy and intel-ligent transportation require ISAC-enabled wireless networks to provide reliable multi-target sensing capabilities [1]. How-ever, single-band ISAC is constrained by limited spectrum re-sources and the frequency-dependent characteristics of sensing targets and propagation environments, making it difficult to fully adapt to complex sensing scenarios [2]. High- and low-frequency bands exhibit significant differences in resolution capability, propagation characteristics, and target scattering responses, and thus offer complementary sensing potential [2]. Therefore, high- and low-frequency cooperative sensing in multi-band ISAC has attracted increasing attention [3]–[6]. For multi-target sensing, the sensing task involves both target number estimation and target parameter estimation. In 2024, Wei et al. first investigated a single-target OFDM sce-nario, where traditional fast Fourier transform (FFT) and com-pressive sensing were used to fuse high- and low-frequency sensing echoes and estimate the range and velocity of the target [3]. Furthermore, Zhang et al. proposed an improved 
+
+Haotian Liu, Zhiqing Wei, Quanjiang Zhao, Lin Wang, Yunxin Geng, and Zhiyong Feng are with the Key Laboratory of Universal Wireless Communi-cation, Ministry of Education, Beijing University of Posts and Telecommu-nications, Beijing 100876, China (emails: {haotian liu; weizhiqing; qjzhao; wlwl; gengyx; fengzy }@bupt.edu.cn). Corresponding authors: Zhiqing Wei, Zhiyong Feng. 
+
+Xingwang Li is with the School of Physics and Electronic Information Engineering, Henan Polytechnic University, Jiaozuo 454000, China (e-mail: lixingwangbupt@gmail.com). 
+
+FFT method to achieve the fusion of multi-band sensing information as well as target parameter estimation [4]. In 2025, Liu et al. extended the study to multi-target MIMO-OFDM scenarios and proposed data-level and symbol-level fusion methods for joint angle, range, and velocity estimation [5]. More recently, Cai et al. further extracted multidimensional target features through CANDECOMP/PARAFAC (CP) de-composition and performed cross-band factor fusion for target parameter estimation [6]. However, existing methods largely rely on handcrafted fusion rules, making it difficult to exploit deep complementary information from heterogeneous high-and low-frequency signals. Moreover, iterative reconstruction, matrix decomposition, and extensive spectral search often lead to high computational costs, while most methods [3], [4], [6] do not consider target number estimation. Recently, learning-based ISAC sensing has been increas-ingly applied to complex multi-target sensing tasks. As a representative approach, CSIYOLO learns multi-scale target features through neural networks to achieve multi-target num-ber and parameter estimation [7]. However, existing learning-based methods have not considered the multi-band ISAC scenarios. Therefore, how to deeply exploit and adaptively fuse complementary high- and low-frequency sensing information for joint target number and parameter estimation remains an open problem. To this end, we propose, for the first time, a Dual-Band Multi-Target Sensing Neural Network (DMSNet) for coopera-tive ISAC over heterogeneous high- and low-frequency bands, which jointly estimates the target number as well as range, velocity, and angle parameters. DMSNet first estimates the number of targets through the target number estimation mod-ule, whose output guides the subsequent parameter estimation process. The designed coarse and fine parameter estimation modules then progressively refine the range, velocity, and angle estimates for multiple targets. In all three modules, high- and low-frequency features are adaptively fused to effec-tively exploit the complementary sensing information across heterogeneous frequency bands. Simulation results show that, at a representative SNR of 0 dB, DMSNet improves Count Accuracy from 89.01% to 91.74% and Macro-F1 from 90.80% to 93.07%, while reducing MAE by 25.8%. Compared with the best baselines, it further reduces the median absolute errors of range, velocity, and angle estimation by 82.2%, 56.9%, and 73.2%, respectively, while reducing runtime by 68.7% relative to the fastest conventional dual-band pipeline [6]. 
+
+Notations: Vectors and matrices are written in bold letters arXiv:2607.17655v1 [eess.SP] 20 Jul 2026 2
+
+and in capital bold letters, respectively. C and R denote the set of complex and real numbers. | · | and ⊙ denote the absolute operator and Hadamard product, respectively. II. S YSTEM MODEL 
+
+We consider a multi-band ISAC base station (BS) for multi-target sensing. The multi-band ISAC signal aggregates B non-contiguous frequency bands for communication and sensing based on carrier aggregation technology [3], [5]. In the sensing stage, each band b ∈ B = {1, 2, · · · , B } occupies N b
+
+c
+
+subcarriers and M b
+
+s known OFDM pilot symbols. Based on the 3GPP standard, each non-contiguous frequency band employs an independent RF chain and a per-band uniform linear array (ULA) antenna [8], where the numbers of transmit and receive antennas are N b
+
+t and N b
+
+r . We assume that there are at most 
+
+Lmax targets in the region of interest, and the actual number of targets is L ≤ Lmax .
+
+A. Multi-band ISAC Sensing Echo Model 
+
+The l ∈ { 1, 2, · · · , L }-th target is described by its range rl,radial velocity vl, and angle θl. For the b-th band, the received echo vector at the n-th subcarrier and the m-th OFDM symbol can be expressed as [5] 
+
+ybn,m =pPbsbn,m LX
+
+l=1 
+
+s
+
+λ2
+
+b
+
+(4 π)3r4
+
+l
+
+ρb,l ejϕ b,l χb,l ab (θl)
+
+× e−j2πn ∆fbτl ej2πmT bf b
+
+d,l + zbn,m ,
+
+(1) where Pb is the transmit power, sbn,m is the known pilot sym-bol, and zbn,m ∈ CN b
+
+r ×1 denotes the additive white Gaussian noise (AWGN); λb = c0
+
+f b
+
+c
+
+is the wavelength, where c0 and f b
+
+c
+
+represent the speed of light and carrier frequency, respectively; 
+
+ρb,l is the frequency-selective complex scattering coefficient, and the corresponding radar cross section (RCS) is denoted by ξb,l = |ρb,l |2 [9]. This indicates that a target weakly visible in one band may still be detectable in another band, which provides a key motivation for multi-band target detection [9]; 
+
+ϕb,l is the band-dependent phase offset, and χb,l denotes the beamforming gain; τl = 2 rl/c 0 and f b
+
+d,l = 2 f b
+
+c vl/c 0 denote the delay and Doppler shift, respectively; ∆fb and Tb represent the subcarrier spacing and total symbol duration, respectively; 
+
+ab (·) is the receive steering vector, expressed as 
+
+ab (·) = 
+
+
+
+1, e j2π dbλb sin( ·), · · · , e j2(N b
+
+r −1)π dbλb sin( ·)
+
+T
+
+, (2) After pilot removal and power normalization, all elements across subcarriers, symbols, and antennas are stacked into a tensor Xb ∈ CN b
+
+c ×M b
+
+s ×N b
+
+r , and its (n, m, k )-th element is expressed as 
+
+[Xb]n,m,k =
+
+LX
+
+l=1 
+
+s
+
+λ2
+
+b
+
+(4 π)3r4
+
+l
+
+ρb,l ejϕ b,l χb,l e−j2πn ∆fbτl
+
+× ej2πmT bf b
+
+d,l ej2πk dbλb sin( θl) + ˜ zbn,m,k 
+
+(3) High- and low-frequency cooperation is a representative yet challenging multi-band ISAC case, where high-frequency 3D FFT processing, logarithmic scaling and normalization                        
+
+> High-band complex echo tensor hX
+> hhhcsr2NMN×××
+> Low-band complex echo tensor lX
+> lllcsr2NMN×××
+> 3D CNN Encoder
+> 3D CNN Encoder
+> (3D Conv Blocks + Projection)
+> (3D Conv Blocks + Projection)
+> Flatten Flatten
+> High-band Tokens
+> Low-band Tokens
+> Multi-Head Cross-Band Attention
+> 3D Positional Embedding
+> Low-Band
+> Embedding
+> High-Band
+> Embedding
+> Multi-Band Feature Fusion
+> MLP Projection
+> Count Tokens
+> Global Pooling
+> Count Head
+> Loss Function
+> Ⅰ
+> 3D CNN Encoder
+> 3D CNN Encoder
+> (3D Conv Blocks + Projection)
+> (3D Conv Blocks + Projection)
+> Flatten Flatten
+> Multi-Band Feature Fusion
+> MLP Projection
+> Spectrum Localization Tokens
+> hˆX
+> 3D FFT processing and complex feature construction  3D CNN Encoder
+> 3D CNN Encoder
+> (3D Conv Blocks + Projection)
+> (3D Conv Blocks + Projection)
+> Flatten Flatten
+> Multi-Band Feature Fusion
+> MLP Projection
+> Complex Velocity Tokens
+> Construct Memory Tokens
+> Construct Object Queries
+> Transformer Decoder
+> (Multi-head Self-Attention + Multi-head Cross-Attention + FFN)
+> Velocity cross-attention
+> Objectness Head
+> Objectness Scores obj p
+> Range Bin Head
+> Range Bin Logits rL
+> Velocity Bin Head
+> Angle Bin Head
+> Velocity Bin Logits vL
+> Angle Bin Logits
+> θL
+> Loss Function
+> Ⅱ
+> Counting Results
+> ˆL
+
+② Coarse Parameter Estimation Module 
+
+① Target Number Estimation Module 
+
+③ Fine Parameter Estimation Module    
+
+> Top-K Selection
+> obj prLvL
+> θLˆL
+> 3D FFT + Local Patch Extraction
+> Dual-Band Patch Concatenation
+> sel C
+> sel Qsel C
+> Patch Encoder
+> (Conv3D + Res-Blocks)
+> Target-Conditioned Feature Fusion
+> Axis Heatmap Head
+> Direct Offset Head
+> heatmap-based offset
+> direct regression offset
+> Gated Fusion
+> Final Estimates
+> sel CLoss Function
+> Ⅲ
+> Final Estimated Multi-Target Parameters Set
+
+( ){ } ˆ1ˆˆ ˆ, , Lq q q qr v 
+
+> θ=
+> ( ) arg max  ⋅
+> Count  Logits  Lp
+> 3D Positional Embedding
+> Hungarian Matching
+
+Overall Data Flow:   
+
+> High-band complex echo tensor
+> Low-band complex echo tensor
+> Target Number Estimation Module Coarse Parameter Estimation Module
+> Fine Parameter Estimation Module
+> Counting Results
+> Final Estimated Multi-Target Parameters
+> lˆX
+> hˆX
+> lˆX
+> hX
+> lX
+> hXlX
+
+Fig. 1: The illustration of the proposed DMSNet. bands provide finer resolution and low-frequency bands offer more reliable observations [3]–[6]. However, their hetero-geneous signal structures, array responses, Doppler scales, phase offsets, and scattering responses hinder deep fusion. Therefore, we design a neural network to exploit cross-band complementary features for joint multi-target number and parameter estimation from {X b}b∈{ h,l}.III. P ROPOSED DUAL -B AND MULTI -T ARGET SENSING 
+
+NEURAL NETWORK (DMSN ET )As shown in Fig. 1, DMSNet consists of three cascaded modules for target number estimation, coarse parameter esti-mation, and fine parameter estimation. 
+
+A. Overall Architecture 
+
+DMSNet follows a coarse-to-fine inference pipeline. Its inputs are the high- and low-band complex echo tensors 
+
+{Xb ∈ R2×N b
+
+c ×M b
+
+s ×N b
+
+r }b∈{ h,l}, where the first dimension contains the real and imaginary channels. The target number module first estimates ˆL ∈ { 0, . . . , L max }. The coarse module then converts multi-target parameter estimation into classifica-tion over discretized parameter grids, producing coarse target candidates. Around these candidates, the fine module extracts local dual-band spectral patches and estimates residual offsets through local feature regression. Finally, DMSNet outputs 
+
+{(ˆ rp, ˆvp, ˆθp)}ˆLp=1 . Throughout DMSNet, the two bands are encoded separately and fused at the feature level to preserve band-specific information. 
+
+B. Target Number Estimation Module 
+
+Each complex echo tensor Xb is converted into a normal-ized range-velocity-angle power spectrum ˆXb through three-dimensional (3D) FFT processing, logarithmic scaling, and normalization, followed by a 3D CNN encoder. Different from conventional multi-band fusion using hand-crafted or SNR-based weights [3]–[6], this module adaptively learns cross-band complementarity at the feature level. The encoded features are flattened into high- and low-band tokens 3
+
+{Tb ∈ R512 ×128 }b∈{ h,l}, and multi-head cross-band atten-tion [10] is expressed as 
+
+¯Tb = Tb + MHA( Tb, T¯b, T¯b), b ∈ { h, l}, (4) where ¯b denotes the other band. The enhanced tokens are further fused as 
+
+Unum =  ¯Th, ¯Tl, | ¯Th − ¯Tl|, ¯Th ⊙ ¯Tl
+
+ , (5) where | · | and ⊙ denote element-wise absolute value and the Hadamard product, respectively; the four terms preserve single-band features and characterize cross-band discrepancy and consistency. The count tokens are obtained as Tnum =MLP( Unum ) ∈ R512 ×128 . After pooling and a count head, the module outputs pL ∈ RLmax +1 and estimates ˆL =arg max 
+
+> l
+
+[pL]l.
+
+C. Coarse Parameter Estimation Module 
+
+The coarse module uniformly divides each parameter do-main [dmin , d max ], d ∈ { r, v, θ }, into Gd bins and predicts a fixed number of candidate targets. This classification-based design avoids direct continuous regression, alleviates target-order ambiguity, and provides reliable candidates for fine refinement. As shown in Fig. 1, three complementary token types are exploited: the count tokens Tnum provide target-number context, the spectrum localization tokens Tspec ∈ R512 ×192 
+
+characterize coarse range-velocity-angle peak structures, and the complex velocity tokens Tvel ∈ R512 ×192 retain Doppler-related phase cues weakened in power-spectrum features. After dimension alignment, Tnum and Tspec construct the memory tokens, while pL is used to generate object queries. A Transformer decoder extracts target-wise features from the memory tokens and object queries, which further interact with Tvel through velocity cross-attention. The resulting query features Zcoarse ∈ RLmax ×192 are fed into four prediction heads: 
+
+{pobj (p), Lr (p), Lv (p), Lθ (p)}Lmax  
+
+> p=1
+
+, (6) where pobj (p) ∈ [0 , 1] is the objectness score and Ld(p) ∈
+
+RGd is the bin-logit vector for d ∈ { r, v, θ }. The query features obtained by the velocity cross-attention module are retained for fine refinement. 
+
+D. Fine Parameter Estimation Module 
+
+According to ˆL, the top- ˆL candidates are selected by their objectness scores, and their predicted bins are converted into physical coarse centers {cp}ˆLp=1 .Instead of directly regressing continuous parameters from the full echo tensors, the fine module performs coarse-guided local refinement. The high- and low-band echoes are indepen-dently transformed by 256 × 256 × 256 3D FFT, and local spectral patches are extracted around each coarse center using band-specific physical mappings. The dual-band patches are then concatenated to exploit complementary local magnitude and phase structures. The concatenated patches are encoded by a patch encoder and further fused with the selected query features Qsel and coarse-center information Csel through target-conditioned fea-ture fusion. An axis heatmap head and a direct offset head estimate axis-wise peak locations and coupled 3D residual information, respectively. Their outputs are adaptively fused as 
+
+ˆδd,p = (1 − gd,p )δhm  
+
+> d,p
+
++ gd,p δdir 
+
+> d,p
+
+, d ∈ { r, v, θ }, (7) where δhm  
+
+> d,p
+
+and δdir  
+
+> d,p
+
+denote the heatmap-based and direct regression offsets, respectively, and gd,p ∈ [0 , 1] is the learned fusion gate. The final estimate is 
+
+ˆsd,p = cd,p + ∆ d ˆδd,p , d ∈ { r, v, θ }, (8) where ∆d = ( dmax − dmin )/G d is the grid interval along dimension d.
+
+E. Training Objective 
+
+Since the discrete target-number decision, top- ˆL selection, and coarse-bin indexing interrupt cross-module gradient prop-agation, DMSNet is trained module-wise and cascaded during inference. For target number estimation, let πL = softmax( pL). The count loss is 
+
+Lnum = −
+
+> Lmax
+
+X
+
+> k=0
+
+yLk log πL,k , (9) where yLk = I(L = k) is the one-hot target-number label and 
+
+I(·) denotes the indicator function. For coarse estimation, Hungarian matching [11] associates the unordered ground-truth targets with candidate queries. Let 
+
+M denote the set of matched query indices, yobj  
+
+> p
+
+∈ { 0, 1}
+
+the objectness label of query p, and bgt  
+
+> d,p
+
+the ground-truth bin index of its matched target along dimension d ∈ { r, v, θ }. The coarse loss is            
+
+> Lcoarse =−λobj
+> Lmax X
+> p=1
+> h
+> yobj
+> plog pobj (p) + (1 −yobj
+> p) log  1−pobj (p)i
+> −λbin
+> X
+> p∈M
+> X
+> d∈{ r,v,θ }
+> log [softmax( Ld(p))] bgt
+> d,p
+> .
+
+(10) For fine estimation, the normalized ground-truth offset is 
+
+δgt  
+
+> d,p
+
+= ( sgt  
+
+> d,p
+
+− cd,p )/∆d. Let πhm  
+
+> d,p
+
+= softmax( hd,p ) denote the predicted axis-wise probability distribution and yhm  
+
+> d,p
+
+its Gaussian soft label centered at δgt 
+
+> d,p
+
+. The fine loss combines heatmap supervision and Smooth-L1 offset regression [12]: 
+
+Lfine = − λhm 
+
+X
+
+> p∈M
+
+X
+
+> d∈{ r,v,θ }
+
+X
+
+> j
+
+yhm  
+
+> d,p
+
+(j) log πhm  
+
+> d,p
+
+(j)+ λoff 
+
+X
+
+> p∈M
+
+X
+
+> d∈{ r,v,θ }
+
+SmoothL1 
+
+ˆδd,p , δ gt 
+
+> d,p
+
+
+
+.
+
+(11) IV. S IMULATION RESULTS AND ANALYSIS 
+
+A. Simulation Setup 
+
+As shown in Fig. 2, a dual-band UAV sensing dataset is generated in a 1:1 3D digital twin of the Beijing University of Posts and Telecommunications (BUPT) campus using Sionna RT [13]. 4UAV 
+
+> Multi-band ISAC BS
+> UAV
+
+Fig. 2: The 3D digital twin of the Beijing University of Posts and Telecommunications (BUPT) campus. The low- and high-band carrier frequencies are 3.5 and 28 GHz, respectively, with N b
+
+c = 64 . Their (∆ f b, M b
+
+s , N b
+
+r ) are 
+
+(30 kHz , 14 , 4) and (240 kHz , 112 , 32) , respectively [5], [8]. Each scene contains L ∈ { 0, . . . , 5} UAVs with r ∈ [50 , 300] 
+
+m, v ∈ [−30 , 30] m/s, and θ ∈ [−π/ 3, π/ 3] . Training SNRs range from −10 to 20 dB in 5-dB steps. The dataset contains 50 , 000 samples with an 80%/20% training-validation split and an independent test set of 2000 
+
+samples. The three modules are trained using Adam with batch size 48 and learning rate 10 −4. Experiments are conducted using PyTorch 2.4.1 on an NVIDIA RTX 4090 GPU. 
+
+Baselines and evaluation protocol: For target enumera-tion, in addition to the traditional cell-averaging constant false alarm rate (CA-CFAR) scheme used in an existing dual-band sensing method [5], we further compare DMSNet with advanced signal-processing and learning-based meth-ods, including ADVI-CFAR [14], CFARNet [15], Eigenvalue-1D-CNN [16], and CSIYOLO-based. For parameter es-timation, five existing dual-band methods are considered and, for brevity, are denoted according to their principal processing mechanisms as Peak-level [3], Data-level [5], Symbol-level [5], Subspace-based [4], and CP-based [6]. The CSIYOLO-based method is also included for compar-ison. CSIYOLO-based denotes a dual-band adaptation of CSIYOLO [7], where band-specific features are aligned and fused while preserving its original multi-scale detection and parameter-regression mechanisms. For overall runtime com-parison, CA-CFAR is prepended to dual-band methods [3], [4], [6] without native enumeration, with its latency included. 
+
+B. Target Enumeration Performance 
+
+Table I compares the target enumeration performance at a representative SNR of 0 dB using exact count accuracy, MAE, and Macro-F1, where Macro-F1 averages the class-wise harmonic mean of precision and recall [7]. Compared with the strongest baseline, DMSNet improves Count Acc. from 89.01% to 91.74% and Macro-F1 from 90.80% to 93.07%, while reducing MAE by 25.8%. To further evaluate robustness across different sensing con-ditions, Fig. 3 presents the exact count accuracy from −20 to 
+
+30 dB. DMSNet achieves the highest accuracy from −20 to 0
+
+dB and degrades gracefully below the training SNR range. Its performance also remains stable above 20 dB, demonstrating good generalization to unseen SNRs. 
+
+TABLE I: Target enumeration performance at SNR = 0 dB. 
+
+Method Count Acc. Macro-F1 MAE Traditional CA-CFAR 0.7119 0.7383 0.2999 ADVI-CFAR 0.6546 0.6917 0.3691 CFARNet 0.7848 0.8169 0.2309 Eigenvalue-1D-CNN 0.8597 0.8831 0.1490 CSIYOLO-based 0.8901 0.9080 0.1123 Proposed DMSNet 0.9174 0.9307 0.0833 -20 -15 -10 -5 0 5 10 15 20 25 30 SNR (dB) 00.2 0.4 0.6 0.8 1Count accuracy CA-CFAR ADVI-CFAR CFARNet Eigenvalue-1D-CNN CSIYOLO-based DMSNet 
+
+Fig. 3: Target count accuracy versus SNR. The vertical dashed lines indicate the training SNR interval. 
+
+C. Parameter Estimation Performance 
+
+Fig. 4 compares the cumulative distribution functions (CDFs) of absolute range, velocity, and angle estimation errors at a representative SNR of 0 dB. DMSNet generally shifts the error distributions toward lower values and achieves the best overall performance across the three estimation tasks. Compared with the best baselines, it reduces the median abso-lute errors of range, velocity, and angle estimation by 82.2%, 56.9%, and 73.2%, respectively. This improvement benefits from the coarse-to-fine design, where coarse estimation first identifies the approximate multi-target parameters, and fine estimation subsequently exploits local dual-band information to refine them into continuous-valued estimates. 10 -4 10 -2 10 0 10 2Range Absolute Error (m) 00.2 0.4 0.6 0.8 1CDF Proposed CSIYOLO-based Data-level Symbol-level Peak-level Subspace-based CP-based    
+
+> X2 0.0110014 X1 0.0616873
+
+(a) Range estimation 10 -4 10 -3 10 -2 10 -1 10 0 10 1Velocity Absolute Error (m/s) 00.2 0.4 0.6 0.8 1CDF Proposed CSIYOLO-based Data-level Symbol-level Peak-level Subspace-based CP-based     
+
+> X2 0.0109199 X1 0.025357
+
+(b) Velocity estimation 10 -4 10 -3 10 -2 10 -1 10 0 10 1Angle Absolute Error (deg) 00.2 0.4 0.6 0.8 1CDF Proposed CSIYOLO-based Data-level Symbol-level Peak-level Subspace-based CP-based    
+
+> X2 0.00665921 X1 0.0248764
+
+(c) Angle estimation 
+
+Fig. 4: CDFs of absolute parameter estimation errors. 5
+
+TABLE II: End-to-End Runtime Comparison. 
+
+Method Runtime (ms) Data-level [5] 200.535 Symbol-level [5] 188.925 Peak-level [3] 10095.965 Subspace-based [4] 185.025 CP-based [6] 75.665 CSIYOLO-based [7] 9.740 
+
+Proposed DMSNet 23.697 
+
+TABLE III: Ablation results at a representative SNR of 0 dB. Metric High-only Low-only Naive concat. Coarse-only DMSNet Count Acc. 0.8423 0.7287 0.9092 0.9181 0.9181 
+
+R-P50 (m) 0.0109 2.1628 0.0106 2.1192 0.0110 
+
+R-P90 (m) 0.0665 24.7413 0.0551 3.9749 0.0546 
+
+V -P50 (m/s) 0.0109 0.6485 0.0121 0.4999 0.0109 
+
+V -P90 (m/s) 0.0818 3.8915 0.1075 1.0500 0.0664 
+
+A-P50 ( ◦) 0.0069 0.8230 0.0069 0.9692 0.0067 
+
+A-P90 ( ◦) 0.0255 5.7794 0.0241 1.7667 0.0230 
+
+Params (M) 9.758 9.758 14.351 11.800 14.616 FLOPs (G) 63.97 63.97 74.70 17.75 75.24 
+
+D. Runtime Comparison 
+
+Table II reports the end-to-end runtime, where conventional dual-band methods include the preceding CA-CFAR enumer-ation stage. All learning-based methods are evaluated with a batch size of one, and only synchronized forward inference is timed. DMSNet requires only 23 .697 ms, reducing runtime by 68 .7% relative to the fastest conventional pipeline, CP-based [6]. CSIYOLO-based is faster owing to its compact end-to-end architecture, whereas DMSNet sequentially executes enumeration, coarse estimation, and fine refinement. Neverthe-less, DMSNet remains substantially faster than conventional pipelines while delivering superior sensing performance. 
+
+E. Ablation Study 
+
+Table III compares single-band processing, naive feature concatenation, and the adopted cross-band fusion at a rep-resentative SNR of 0 dB. Here, P50 and P90 denote the error values below which 50% and 90% of the test samples fall, respectively, corresponding to the median and 90th-percentile errors in the CDF. Compared with high-only, DMSNet improves count accu-racy by 7.58 percentage points and reduces the P90 range, velocity, and angle errors by 17.8%, 18.8%, and 9.6%, re-spectively. Compared with naive concatenation, it reduces the velocity P90 by 38.2% with only 1.85% more parameters and 0.72% more floating-point operations (FLOPs), verifying the effectiveness of cross-band fusion. Furthermore, we evaluate the crucial role of the proposed fine parameter estimation module in Table III. Coarse-only indicates using the coarse estimate directly as the final output. Adding local 3D FFT refinement reduces the P50 range, veloc-ity, and angle errors by 99.5%, 97.8%, and 99.3%, respectively, confirming its importance for continuous parameter recovery. V. C ONCLUSION 
+
+This letter investigates multi-target sensing in heterogeneous dual-band ISAC systems and proposes DMSNet for joint target number and continuous parameter estimation. DMSNet first estimates the target number and then performs coarse multi-target parameter estimation. The coarse estimates are refined into continuous range, velocity, and angle parameters. Simula-tion results show that DMSNet increases Count Accuracy from 89.01% to 91.74% and Macro-F1 from 90.80% to 93.07%. It also reduces target-number MAE by 25.8%. For parameter estimation, the median absolute errors of range, velocity, and angle are reduced by 82.2%, 56.9%, and 73.2%, respectively. In addition, DMSNet reduces runtime by 68.7% relative to the fastest existing dual-band ISAC sensing method. REFERENCES [1] F. Liu, Y. Cui, C. Masouros, J. Xu, T. X. Han, Y. C. Eldar, and S. Buzzi, “Integrated sensing and communications: Toward dual-functional wire-less networks for 6G and beyond,” IEEE J. Sel. Areas Commun. , vol. 40, no. 6, pp. 1728–1767, Jun. 2022. [2] H. Li, K. Qu, C. Sun, S. Wang, X. Wang, Y. Zhang, B. Priyanto, and H. Zhang, “Multi-node multi-band cooperative integrated sensing and communications: State-of-the-art, challenges and opportunities,” IEEE Wirel. Commun. , vol. 32, no. 4, pp. 180–188, Aug. 2025. [3] Z. Wei, H. Liu, X. Yang, W. Jiang, H. Wu, X. Li, and Z. Feng, “Carrier aggregation enabled integrated sensing and communication signal design and processing,” IEEE Trans. Veh. Technol. , vol. 73, no. 3, pp. 3580– 3596, Mar. 2024. [4] J. Zhang, Z. Chao, F. Xia, X. Wang, J. Huang, and Z. Fei, “Range and velocity estimation in carrier-aggregation OFDM ISAC systems,” in 
+
+2024 IEEE International Conference on Signal, Information and Data Processing (ICSIDP) , Zhuhai, China, Feb. 2024, pp. 1–5. [5] H. Liu, Z. Wei, J. Piao, H. Wu, X. Li, and Z. Feng, “Carrier aggregation enabled MIMO-OFDM integrated sensing and communication,” IEEE Trans. Wireless Commun. , vol. 24, no. 6, pp. 4532–4548, Jun. 2025. [6] Q. Cai and C. Li, “Tensor-based carrier aggregation ISAC for urban low-altitude airspace: clutter suppression,” in 2025 IEEE 25th International Conference on Communication Technology (ICCT) , Shenyang, China, Feb. 2025, pp. 757–762. [7] X. Zhang, J. Tan, Z. Ren, J. Wang, Y. Ma, and J. Song, “CSIYOLO: An intelligent CSI-based scatter sensing framework for integrated sensing and communication systems,” arXiv preprint arXiv:2509.19335 , 2025. [8] 3GPP, “NR; NR and NG-RAN overall description; stage-2,” 3rd Generation Partnership Project (3GPP), Technical Specification 3GPP TS 38.300 V19.0.0, Oct. 2026. [Online]. Available: https://www.3gpp. org/ftp/Specs/archive/38 series/38.300/ [9] Y. Zhang, J. Zhang, H. Gong, X. Hu, J. Zhang, H. Xing, S. Luo, Y. Xiong, L. Yu, Z. Yuan, G. Liu, and T. Jiang, “A unified RCS modeling of typical targets for 3GPP ISAC channel standardization and experimental analysis,” IEEE J. Sel. Areas Commun. , vol. 44, pp. 702– 716, 2026. [10] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin, “Attention is all you need,” Advances in neural information processing systems , vol. 30, 2017. [11] N. Carion, F. Massa, G. Synnaeve, N. Usunier, A. Kirillov, and S. Zagoruyko, “End-to-end object detection with Transformers,” in 
+
+European Conference on Computer Vision , 2020, pp. 213–229. [12] R. Girshick, “Fast R-CNN,” in Proceedings of the IEEE International Conference on Computer Vision (ICCV) , 2015, pp. 1440–1448. [13] J. Hoydis, F. A. Aoudia, S. Cammerer, M. Nimier-David, N. Binder, G. Marcus, and A. Keller, “Sionna RT: Differentiable ray tracing for radio propagation modeling,” in 2023 IEEE Globecom Workshops (GC Wkshps) , 2023, pp. 317–321. [14] F. Tian, T. Wei, W. Fu, and S. Wang, “Research on target detection al-gorithm for complex traffic scenes based on ADVI-CFAR,” Electronics ,vol. 14, no. 7, p. 1474, Apr. 2025. [15] Q. Liang, Y. Cai, J. Mo, and M. Tao, “CFARNet: Learning-based high-resolution multi-target detection for rainbow beam radar,” in 
+
+2025 IEEE/CIC International Conference on Communications in China (ICCC) , Shanghai, China, Aug. 2025, pp. 1–6. [16] B. Deng, J. Bai, L. Liu, F. Zhao, Z. Xie, M. Li, Y. Wang, and F. Shu, “DNN-based methods of jointly sensing number and directions of targets via a green massive H 2AD MIMO receiver,” IEEE Internet Things J. ,vol. 13, no. 8, pp. 17 180–17 193, Apr. 2026.
