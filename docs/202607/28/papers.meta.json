@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-28",
+  "date": "2026-07-28",
+  "generated_at": "2026-07-28T21:41:44",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/28/2607.17655v1-dmsnet-cross-band-learning-for-multi-target-sensing-in-multi-band-isac",
+      "section": "deep",
+      "title_en": "DMSNet: Cross-Band Learning for Multi-Target Sensing in Multi-Band ISAC",
+      "authors": "Haotian Liu, Zhiqing Wei, Quanjiang Zhao, Lin Wang, Yunxin Geng, Xingwang Li, Zhiyong Feng",
+      "date": "2026-07-20",
+      "pdf": "https://arxiv.org/pdf/2607.17655v1",
+      "score": "8.0",
+      "evidence": "利用高、低频回波信息进行多目标感知",
+      "tldr": "多频段ISAC面临异构频段互补信息利用不足和高计算开销的挑战。提出的DMSNet通过交叉频带学习实现多目标联合感知，同时估计目标数量和参数。仿真结果显示，目标计数准确率从89.01%提升至91.74%，距离、速度、角度中位绝对误差分别降低82.2%、56.9%、73.2%，运行时间减少68.7%。该方法显著提升了多目标感知的性能与效率。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Multi-band integrated sensing and communication (ISAC) offers complementary high- and low-frequency echo information for multi-target sensing. However, existing dual-band ISAC sensing methods have a limited ability to exploit deep complementary information across heterogeneous bands and often incur high computational costs. To address these limitations, we propose a Dual-Band Multi-Target Sensing Neural Network (DMSNet) for joint target number and parameter estimation. Under representative simulation conditions, DMSNet outperforms the best baseline in target number estimation, increasing count accuracy from 89.01 % to 91.74 % and Macro-F1 from 90.80 % to 93.07 %. For parameter estimation, compared with the best baselines, DMSNet reduces the median absolute errors of range, velocity, and angle by 82.2%, 56.9%, and 73.2%, respectively. Moreover, DMSNet reduces runtime by 68.7 % relative to the fastest existing dual-band ISAC sensing method.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

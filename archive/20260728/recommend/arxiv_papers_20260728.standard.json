@@ -1,0 +1,57 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-28T21:41:04.523267+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2607.17655v1",
+      "source": "arxiv",
+      "title": "DMSNet: Cross-Band Learning for Multi-Target Sensing in Multi-Band ISAC",
+      "abstract": "Multi-band integrated sensing and communication (ISAC) offers complementary high- and low-frequency echo information for multi-target sensing. However, existing dual-band ISAC sensing methods have a limited ability to exploit deep complementary information across heterogeneous bands and often incur high computational costs. To address these limitations, we propose a Dual-Band Multi-Target Sensing Neural Network (DMSNet) for joint target number and parameter estimation. Under representative simulation conditions, DMSNet outperforms the best baseline in target number estimation, increasing count accuracy from 89.01 % to 91.74 % and Macro-F1 from 90.80 % to 93.07 %. For parameter estimation, compared with the best baselines, DMSNet reduces the median absolute errors of range, velocity, and angle by 82.2%, 56.9%, and 73.2%, respectively. Moreover, DMSNet reduces runtime by 68.7 % relative to the fastest existing dual-band ISAC sensing method.",
+      "authors": [
+        "Haotian Liu",
+        "Zhiqing Wei",
+        "Quanjiang Zhao",
+        "Lin Wang",
+        "Yunxin Geng",
+        "Xingwang Li",
+        "Zhiyong Feng"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-07-20T08:06:48+00:00",
+      "link": "https://arxiv.org/pdf/2607.17655v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "uses both high and low frequency echo info for multi-target sensing",
+      "llm_evidence_cn": "利用高、低频回波信息进行多目标感知",
+      "llm_evidence": "利用高、低频回波信息进行多目标感知",
+      "canonical_evidence": "利用高、低频回波信息进行多目标感知",
+      "llm_tldr_en": "DMSNet leverages complementary high- and low-frequency echo information from multi-band ISAC for joint target number estimation and parameter estimation, achieving improved accuracy with reduced error.",
+      "llm_tldr_cn": "针对现有双频段ISAC感知方法难以充分利用跨频段深层互补信息且计算成本高的问题，本文提出了DMSNet（双频段多目标感知神经网络）。该方法通过跨频段学习机制高效融合高低频回波特征，实现目标数量与参数的联合估计。在仿真条件下，DMSNet在目标数量估计准确率上达到91.74%，参数估计中位绝对误差相比最优基线降低，验证了融合高频信息对提升感知性能的有效性。",
+      "llm_tldr": "针对现有双频段ISAC感知方法难以充分利用跨频段深层互补信息且计算成本高的问题，本文提出了DMSNet（双频段多目标感知神经网络）。该方法通过跨频段学习机制高效融合高低频回波特征，实现目标数量与参数的联合估计。在仿真条件下，DMSNet在目标数量估计准确率上达到91.74%，参数估计中位绝对误差相比最优基线降低，验证了融合高频信息对提升感知性能的有效性。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
