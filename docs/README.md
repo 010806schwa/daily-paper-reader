@@ -6,26 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-28
-- 运行时间：2026-07-28 21:41:38 UTC
+- 最新运行日期：2026-07-29
+- 运行时间：2026-07-29 20:11:36 UTC
 - 运行状态：成功
 - 本次总论文数：1
-- 精读区：1
-- 速读区：0
+- 精读区：0
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读一篇多频段ISAC跨频段学习实现多目标感知的高分论文（8.0/10）。  
-其核心结论是：跨频段学习能融合不同频段互补特性，显著提升多目标感知的精度与鲁棒性。  
-建议下一步关注多频段协同感知在6G通信感知一体化中的实际部署与算法轻量化方向。
-- 详情：[/202607/28/README](/202607/28/README)
+今日聚焦一篇噪声鲁棒频率估计方法，通过过零点拟合提升抗噪性。  
+该论文提出重叠采样间隔零交叉拟合技术，在噪声环境下实现更准确的频率估计。  
+建议关注该方法的实际应用效果，例如在工业信号处理或通信系统中的抗噪表现。
+- 详情：[/202607/29/README](/202607/29/README)
 
 ### 精读区论文标签
-1. [DMSNet: Cross-Band Learning for Multi-Target Sensing in Multi-Band ISAC](/202607/28/2607.17655v1-dmsnet-cross-band-learning-for-multi-target-sensing-in-multi-band-isac)  
-   标签：评分：8.0/10、query:shipnoise-hf
-   evidence：利用高、低频回波信息进行多目标感知
+- 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Noise-Robust Frequency Estimation via Overlapped Sampling-Intervals Zero-Crossing Fitting](/202607/29/2607.22096v1-noise-robust-frequency-estimation-via-overlapped-sampling-intervals-zero-crossing-fitting)  
+   标签：评分：6.0/10、query:shipnoise-hf
+   evidence：频率估计方法可应用于船舰噪声高频特征提取
 
 
 <div class="dpr-home-promo-card">

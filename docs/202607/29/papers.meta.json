@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-29",
+  "date": "2026-07-29",
+  "generated_at": "2026-07-29T20:11:42",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/29/2607.22096v1-noise-robust-frequency-estimation-via-overlapped-sampling-intervals-zero-crossing-fitting",
+      "section": "quick",
+      "title_en": "Noise-Robust Frequency Estimation via Overlapped Sampling-Intervals Zero-Crossing Fitting",
+      "authors": "Phichai Youplao, Nithiroth Pornsuwancharoen, Yusaku Fujii",
+      "date": "2026-07-24",
+      "pdf": "https://arxiv.org/pdf/2607.22096v1",
+      "score": "6.0",
+      "evidence": "频率估计方法可应用于船舰噪声高频特征提取",
+      "tldr": "传统过零频率估计在动态噪声环境下受限于噪声平均与时间分辨率的权衡。本文提出重叠采样间隔过零拟合方法（OS-ZFM），通过结构化重叠回归框架解耦两者，并采用确定性闭式解实现统一偏差-方差分析。在10 dB信噪比下，该方法中位估计误差比传统过零拟合降低60%以上，比基本过零检测降低90%，且优于希尔伯特变换方法。实验证实其能重建平滑物理轨迹，具有低计算复杂度和确定性公式，适用于资源受限系统的实时频率与加速度跟踪。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "The trade-off between noise averaging and temporal resolution fundamentally limits conventional zero-crossing frequency estimators under dynamic and noisy conditions. This paper presents an overlapped sampling-intervals zero-crossing fitting method (OS-ZFM), which introduces a structured overlapping regression framework that decouples noise averaging from temporal update rate. The method adopts a deterministic closed-form formulation, enabling a unified bias-variance analysis to characterize the statistical behavior of the estimator and clarify the role of structured data reuse. Numerical results under intensity and background noise at a signal-to-noise ratio (SNR) of 10 dB show that OS-ZFM reduces median estimation error by more than 60\\% compared to conventional zero-crossing fitting methods at the same temporal resolution. It further achieves up to 90\\% reduction relative to basic zero-crossing detection and consistently yields lower estimation errors than Hilbert-transform-based estimators. Experimental validation utilizing impact-induced transient motion measured by laser Doppler interferometry demonstrates that OS-ZFM reconstructs smooth and physically consistent trajectories with improved temporal fidelity. Owing to its low computational complexity and deterministic formulation, the proposed method enables accurate real-time frequency and acceleration tracking in resource-constrained measurement systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,55 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-29T20:10:54.973868+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.22096v1",
+      "source": "arxiv",
+      "title": "Noise-Robust Frequency Estimation via Overlapped Sampling-Intervals Zero-Crossing Fitting",
+      "abstract": "The trade-off between noise averaging and temporal resolution fundamentally limits conventional zero-crossing frequency estimators under dynamic and noisy conditions. This paper presents an overlapped sampling-intervals zero-crossing fitting method (OS-ZFM), which introduces a structured overlapping regression framework that decouples noise averaging from temporal update rate. The method adopts a deterministic closed-form formulation, enabling a unified bias-variance analysis to characterize the statistical behavior of the estimator and clarify the role of structured data reuse. Numerical results under intensity and background noise at a signal-to-noise ratio (SNR) of 10 dB show that OS-ZFM reduces median estimation error by more than 60\\% compared to conventional zero-crossing fitting methods at the same temporal resolution. It further achieves up to 90\\% reduction relative to basic zero-crossing detection and consistently yields lower estimation errors than Hilbert-transform-based estimators. Experimental validation utilizing impact-induced transient motion measured by laser Doppler interferometry demonstrates that OS-ZFM reconstructs smooth and physically consistent trajectories with improved temporal fidelity. Owing to its low computational complexity and deterministic formulation, the proposed method enables accurate real-time frequency and acceleration tracking in resource-constrained measurement systems.",
+      "authors": [
+        "Phichai Youplao",
+        "Nithiroth Pornsuwancharoen",
+        "Yusaku Fujii"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP",
+        "physics.app-ph"
+      ],
+      "published": "2026-07-24T08:47:06+00:00",
+      "link": "https://arxiv.org/pdf/2607.22096v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "frequency estimation method applicable to ship noise high-frequency feature extraction",
+      "llm_evidence_cn": "频率估计方法可应用于船舰噪声高频特征提取",
+      "llm_evidence": "频率估计方法可应用于船舰噪声高频特征提取",
+      "canonical_evidence": "频率估计方法可应用于船舰噪声高频特征提取",
+      "llm_tldr_en": "Proposes OS-ZFM, a zero-crossing fitting method for robust frequency estimation under noise, useful for extracting high-frequency components from ship noise.",
+      "llm_tldr_cn": "针对噪声环境下频率估计精度与更新率的权衡问题，提出一种重叠采样间隔过零拟合方法（OS-ZFM），通过结构化重叠回归框架解耦噪声平均与时间更新率。在10dB信噪比下，该方法将中位数估计误差降低超过50%。该方法可直接应用于船舰辐射噪声的高频分量提取与识别任务。",
+      "llm_tldr": "针对噪声环境下频率估计精度与更新率的权衡问题，提出一种重叠采样间隔过零拟合方法（OS-ZFM），通过结构化重叠回归框架解耦噪声平均与时间更新率。在10dB信噪比下，该方法将中位数估计误差降低超过50%。该方法可直接应用于船舰辐射噪声的高频分量提取与识别任务。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
