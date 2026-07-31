@@ -1,0 +1,549 @@
+Title: Noise-Robust Frequency Estimation via Overlapped Sampling-Intervals Zero-Crossing Fitting
+
+URL Source: https://arxiv.org/pdf/2607.22096v1
+
+Published Time: Mon, 27 Jul 2026 00:32:55 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+> 1
+
+# Noise-Robust Frequency Estimation via Overlapped Sampling-Intervals Zero-Crossing Fitting 
+
+Phichai Youplao, Nithiroth Pornsuwancharoen, and Yusaku Fujii 
+
+Abstract —The trade-off between noise averaging and temporal resolution fundamentally limits conventional zero-crossing fre-quency estimators under dynamic and noisy conditions. This paper presents an overlapped sampling-intervals zero-crossing fitting method (OS-ZFM), which introduces a structured over-lapping regression framework that decouples noise averaging from temporal update rate. The method adopts a deterministic closed-form formulation, enabling a unified bias-variance analysis to characterize the statistical behavior of the estimator and clarify the role of structured data reuse. Numerical results under intensity and background noise at a signal-to-noise ratio (SNR) of 10 dB show that OS-ZFM reduces median estimation error by more than 60% compared to conventional zero-crossing fitting methods at the same temporal resolution. It further achieves up to 90% reduction relative to basic zero-crossing detection and consistently yields lower estimation errors than Hilbert-transform-based estimators. Experimental validation utilizing impact-induced transient motion measured by laser Doppler interferometry demonstrates that OS-ZFM reconstructs smooth and physically consistent trajectories with improved temporal fidelity. Owing to its low computational complexity and deter-ministic formulation, the proposed method enables accurate real-time frequency and acceleration tracking in resource-constrained measurement systems. 
+
+Index Terms —Doppler frequency, interferometry, parameter estimation, waveform analysis, zero-crossing. 
+
+I. I NTRODUCTION 
+
+# ACCURATE frequency estimation is a fundamental task in instrumentation and measurement and underpins a wide range of sensing applications, including vibration analysis [ 1], [2], precision displacement sensing [ 3], [ 4], dynamic force and acceleration measurement [ 5], [ 6], optical interferometric sensing [ 7], [ 8], and laser Doppler-based motion measurement [9], [ 10 ]. Recent advances in frequency estimation, such as adaptive spectral analysis and wavelet-based methods [ 12 ], [13 ], time–frequency reassignment techniques [ 11 ], state-space modeling [ 14 ], and statistically optimal estimators [ 15 ], have demonstrated excellent performance under well-controlled conditions when sufficient computational resources and ac-curate signal models are available. In practical measurement systems, however, frequency estimation must satisfy perfor-mance requirements beyond estimation accuracy. Embedded and real-time instrumentation, particularly laser Doppler inter-ferometers used for dynamic motion and force measurements, demands low computational complexity, minimal latency, ro-bustness to amplitude fluctuations and background noise, and 
+
+This is the accepted version of the article published in IEEE Transac-tions on Instrumentation and Measurement. The final version is available at https://doi.org/10.1109/TIM.2026.3693432. © 2026 IEEE. 
+
+transparent estimation mechanisms. Moreover, measurement-oriented applications require predictable noise behavior and in-terpretability to support uncertainty analysis and metrological traceability—requirements that are not always readily met by highly sophisticated or model-intensive estimation techniques. Although modern frequency estimation approaches exhibit strong theoretical performance, many—including dense spec-tral processing, iterative optimization, phase-based estimation, and model-intensive regression—may degrade under non-stationary conditions, amplitude modulation, and hardware-induced distortions commonly encountered in practical inter-ferometric measurements [ 16 ], [ 17 ]. In addition, their com-putational burden and parameter-tuning requirements can hin-der real-time implementation in resource-constrained systems [18 ]. Consequently, time-domain frequency estimation meth-ods that operate directly on digitized waveforms, rely on minimal assumptions, and exhibit transparent noise behavior remain of strong practical interest [ 19 ], [ 20 ]. Among such approaches, zerocrossing-based frequency es-timation—where the frequency is inferred from the esti-mated time instants at which the signal crosses zero ampli-tude—has attracted sustained attention due to its simplicity and low computational cost [ 21 ], [ 22 ]. Conventional zero-crossing methods (ZCM), which rely on only two boundary crossings per interval, are highly sensitive to noise-induced timing jitter, leading to large estimation variance under low signal-to-noise ratio (SNR) or rapidly varying frequency dy-namics. The zero-crossing fitting method (ZFM) mitigates this issue by exploiting all zero-crossing points within an observation window—the set of consecutive samples used for local frequency estimation—via closed-form least-squares regression [ 23 ], thereby improving noise robustness while maintaining computational efficiency. Nevertheless, ZFM still faces a fundamental trade-off: longer windows improve noise averaging but introduce temporal smoothing and tracking bias, whereas shorter windows enhance responsiveness at the cost of increased variance. Despite extensive studies on zero-crossing-based estima-tors, this trade-off has not been structurally resolved within the regression-based framework. Existing methods implicitly select a fixed compromise through window length selection, without decoupling temporal resolution from noise averaging. This work introduces the Overlapped Sampling-intervals Zero-crossing Fitting Method (OS-ZFM) for frequency esti-mation in interferometric measurements. By utilizing an over-lapping regression structure, OS-ZFM decouples the update interval from the observation window, enhancing temporal responsiveness while maintaining noise robustness comparable arXiv:2607.22096v1 [eess.SP] 24 Jul 2026 2                                                                                           
+
+> Signal amplitude (V)
+> Time ( s)
+> t㐴t1t2t3t4t5t6t7t8t9t10 t11
+> N= 4
+> M= 3
+> 0T㐴+P㐴1T㐴+P㐴2T㐴+P㐴3T㐴+P㐴4T㐴+P㐴
+> 0T1+P11T1+P12T1+P13T1+P14T1+P1
+> 0T2+P21T2+P22T2+P23T2+P24T2+P2
+> 0T3+P31T3+P32T3+P3
+> f㐴= 1/ T㐴
+> (at t= 2 T㐴+P㐴)
+> f1= 1/ T1
+> (at t= 2 T1+P1)
+> f2= 1/ T2
+> (at t= 2 T2+P2)
+> f3= 1/ T3
+> (at t= 2 T3+P3)
+> Fig. 1. Algorithm of the OS-ZFM, where the observation window periods are defined as N=4 and M=3.
+
+to ZFM. The method is analyzed via a bias-variance trade-off and evaluated against representative frequency- and phase-based methods, including ZCM, ZFM [ 23 ], Hilbert phase-based motion estimation (HPME) [ 19 ], and the multipoint least-squares (MPLS) method [ 20 ]. Validation is performed through numerical simulations under intensity and background noise, alongside laser Doppler interferometer experiments un-der transient impact excitation. The remainder of this paper is organized as follows. Sec-tion II describes the OS-ZFM formulation. Section III presents the modeled interferometric signals used for numerical evalua-tion. Section IV reports simulation results, Section V provides experimental validation, Section VI discusses practical impli-cations, and Section VII concludes the paper. II. OS-ZFM F ORMULATION 
+
+A. Overlapped Zero-Crossing Fitting Framework 
+
+Fig. 1 depicts the OS-ZFM algorithm. The harmonic model is segmented into intervals of N = 4 periods, with a step size of M = 3 periods between adjacent interval centers. Each seg-ment is characterized by its period Tj and phase 2 πP j /T j . The least-squares method minimizes the time differences between the zero-crossing points of the model function and those of the sampled signal. This is achieved by independently varying a collection of multiple periods Tj and Pj . Consequently, for the 
+
+j-th interval containing N +1 zero-crossings tk, the frequency 
+
+fj = 1/T j is obtained by minimizing 
+
+Cj (Tj , P j ) = 
+
+> N
+
+∑
+
+> i=0
+
+[ti+jM − (iT j + Pj )] 2 , (1) which leads to the closed-form solution 
+
+fj = 4 ∑Ni=0 i2 − N (N + 1) 
+
+4 ∑Ni=0 it i+jM − 2N ∑Ni=0 ti+jM 
+
+. (2) The zero-crossing time tk is estimated by linear interpo-lation between adjacent samples surrounding the negative-to-positive zero-crossing points. The numerator in ( 2) is a strictly positive constant for N > 1, while the denominator remains well-conditioned due to the monotonic nature of the detected zero-crossing timestamps ti. For sinusoidal signals, the max-imum interpolation-induced timing error is approximated as 
+
+∆tmax ≈ ω2T 3
+
+> s
+
+24 , (3) where ω = 2 πf and Ts is the sampling period. Under the considered conditions (e.g., f ≈ 1.5 MHz and Ts = 50 ns), this yields an error on the order of tens of picoseconds, which is negligible compared to noise-induced timing jitter. In OS-ZFM, the observation window length N governs noise averaging, while the step size M determines the temporal spacing of successive estimates. When M < N , overlapping intervals are formed, enabling improved temporal sampling without sacrificing noise robustness. For performance evaluation, conventional ZCM, ZFM [ 23 ], HPME [ 19 ], and MPLS [ 20 ] are used as representative refer-ence methods under identical simulation and noise conditions. 
+
+B. Distinction from Conventional Sliding-Window Estimation 
+
+Sliding or overlapping windows are commonly employed to increase the output rate of an estimator. In many implementa-tions, however, overlap is applied as a post-processing strategy without modifying the underlying estimator structure. In conventional zero-crossing fitting, frequency estimation is performed over a block of N signal periods, where the observation window simultaneously determines both the noise-averaging length and the temporal interval between successive estimates. As a result, increasing N improves noise robust-ness but reduces the update rate. The proposed OS-ZFM modifies this structure by introducing partially overlapping regression windows. Specifically, each frequency estimate is obtained by solving a least-squares regression problem over N
+
+consecutive signal periods defined by detected zero-crossing samples. Instead of advancing the observation window by N
+
+periods, the starting index is shifted by M < N , resulting in overlapping observation intervals. This formulation yields a sequence of regression problems, each defined over a fixed-length observation window but with shared samples between 3
+
+adjacent windows. Consequently, the observation length gov-erning noise averaging remains determined by N , while the update interval is controlled by M .In contrast to conventional sliding-window implementa-tions, the proposed approach incorporates overlap directly into the estimator construction. Each estimate is therefore the solution of a well-defined regression problem rather than an interpolated or smoothed output, representing a structural distinction from conventional approaches. This structurally distinct estimator effectively decouples noise averaging from the temporal update rate, enabling improved temporal resolu-tion while preserving noise robustness. 
+
+C. Bias–Variance Interpretation 
+
+The statistical behavior of OS-ZFM can be interpreted by examining how overlapping estimation windows modify the temporal structure of the estimates while preserving the underlying estimator. Assuming additive noise on the interferometric signal, the detected zero-crossing times are modeled as 
+
+tk = kT + ǫk, k = 0 , 1, . . . , (4) where T is the true period and ǫk denotes zero-mean timing jit-ter with variance σ2 
+
+> ǫ
+
+. The independence assumption is adopted for analytical tractability. In practice, bandlimited noise and finite receiver bandwidth may introduce weak correlations between adjacent zero-crossing timing errors. Such correlation does not introduce bias under the zero-mean assumption, but may slightly modify the variance through the covariance structure of the timing errors. Under this model, the period estimation problem in ( 1)corresponds to a linear least-squares regression between the integer index i and the measured zero-crossing times ti+jM .Since the measurement noise has zero mean, the resulting least-squares estimator remains unbiased for the signal period 
+
+T . The variance of the estimator is expressed as 
+
+Var( ˆT ) = σ2
+
+> ǫ
+
+∑Ni=0 (i − ¯i)2 , (5) where ¯i denotes the mean value of the index set {0, 1, . . . , N }.For equally spaced indices i = 0 , 1, . . . , N , the denominator in ( 5) admits the closed-form expression 
+
+> N
+
+∑
+
+> i=0
+
+(i − ¯i)2 = N (N + 1)( N + 2) 
+
+12 . (6) Substituting this result into ( 5) shows that the variance of the period estimator decreases asymptotically as 
+
+Var( ˆT ) ≈ 12 σ2
+
+> ǫ
+
+N 3 , (N ≫ 1) , (7) which scales as O(N −3) for large N . This demonstrates that increasing the observation window length improves noise averaging and reduces estimation variance. Importantly, the variance depends only on the observation length N and the jitter variance, and is independent of the tem-poral spacing between estimates. Therefore, the overlapping mechanism in OS-ZFM does not alter the bias or variance of individual estimates, as each estimate is obtained from a regression over the same sample size. Instead, the overlap modifies only the temporal spacing between estimates. By shifting the regression window by M < N , the update interval is reduced from N T to M T , thereby increasing the temporal sampling density of the estimated frequency trajectory. Since adjacent windows share samples, successive estimates are partially correlated. As a first-order approximation, the cor-relation coefficient scales with the fraction of shared samples, i.e., ρ ∝ (N − M )/N . Thus, while M ≈ N yields nearly independent estimates, a smaller M increases correlation. This affects the temporal interpretation of the estimate sequence while preserving the bias and variance of individual estimates. The classical Cram´ er-Rao lower bound (CRLB) assumes full access to the continuous waveform, which is inconsistent with zero-crossing estimators operating on discrete timing information. This limitation arises because zero-crossing es-timators operate on quantized timing events rather than con-tinuous waveform samples, thereby violating the underlying assumptions required for classical CRLB derivation. Instead, we adopt a theoretical performance baseline derived from the statistical variance of the standard non-overlapping ZFM (M = N ) with an identical window length. This analytical floor characterizes the performance limit for independent zero-crossing observations where no temporal data reuse is exploited. Given that in interferometric measurements, the target velocity v(t) is directly proportional to the Doppler frequency shift fd(t) as v(t) = (λ/ 2) fd(t). Acceleration is subsequently obtained through the temporal differentiation of the velocity trajectory. Specifically, for a non-overlapping baseline, the central-difference approximation is applied to successive velocity estimates separated by 2Tw. Thus, the baseline estimation variance is formulated as 
+
+Var(ˆ abase ) = 
+
+( λ
+
+2
+
+)2 2σ2
+
+> f
+
+(2 Tw)2 = λ2σ2
+
+> f
+
+8T 2
+
+> w
+
+, (8) where σ2 
+
+> f
+
+is the variance of a single frequency estimate, λ is the signal wavelength, and Tw is the window duration. This benchmark serves as a rigorous reference for assessing the relative performance gains of OS-ZFM. Based on this analytical baseline, the fundamental distinc-tion between the proposed structural overlap in OS-ZFM and two superficially similar data-densification approaches, output upsampling and post-filtering, can be characterized. In upsampling with a non-overlapping configuration, where the update interval Tu and window duration Tw are equal (Tu = Tw), the estimator output is interpolated to produce a denser sequence. As no new observations are introduced, the statistical content of each estimate remains unchanged, and the acceleration variance is identical to that in ( 8). In post-filtering, smoothing is applied to an already-estimated sequence, which can reduce variance but simul-taneously introduces additional bias and reduces effective bandwidth, degrading temporal responsiveness. In contrast, OS-ZFM generates each estimate by solving a distinct regression problem over a shifted observation window incorporating new observations. The resulting update interval 4
+
+Tu < T w yields a genuinely denser estimate sequence, with acceleration variance 
+
+Var(ˆ aovp ) = λ2σ2
+
+> f
+
+8T 2
+
+> u
+
+, (9) The ratio between overlapping and non-overlapping (base) configurations is thus expressed as 
+
+Var(ˆ aovp )
+
+Var(ˆ abase ) = T 2
+
+> w
+
+T 2
+
+> u
+
+= N 2
+
+M 2 , (10) which exceeds unity, reflecting the expected noise amplifi-cation from a reduced differentiation interval. However, this comparison assumes a base estimator with the same window length N . The key advantage of OS-ZFM lies not in variance reduction under this condition, but in its ability to decouple the noise-averaging window N from the update interval M . For a given temporal resolution Tu, a non-overlapping estimator must use Tw = Tu, eliminating the benefit of extended averaging and yielding 
+
+Var(ˆ abase , T u ) = λ2σ2
+
+> f
+
+8T 2
+
+> u
+
+. (11) OS-ZFM instead maintains Tw = N T > T u = M T , retain-ing the O(N −3) variance scaling while achieving the same update rate. Consequently, OS-ZFM enables lower variance at equivalent temporal resolution by maintaining a longer obser-vation window than any non-overlapping estimator, rather than by reducing the variance of individual estimates—a property not attainable via upsampling or post-filtering. In practice, N controls the noise–resolution trade-off, while 
+
+M determines the update rate. Moderate overlap improves temporal sampling while maintaining statistical performance. The induced correlation should be considered when evaluating derived quantities (e.g., velocity or acceleration), and can be mitigated by subsampling or appropriate uncertainty modeling. To systematically evaluate the performance of OS-ZFM under controlled conditions, the signal model and simulation framework are detailed in the following section. III. M ODELED SIGNALS 
+
+The simulation framework is based on a Zeeman-type heterodyne interferometer, as illustrated in Fig. 2. A target mass undergoes ideal harmonic motion, generating a Doppler-shifted beat signal. The instantaneous beat frequency is given by fb(t) = fr − fd(t), where fr = f1 − f2 is the reference frequency and fd(t) = (2 /λ )v(t) is the Doppler shift propor-tional to the target velocity v(t).The simulated measurement and reference signals, Sb(t) and 
+
+Sr (t), incorporate intensity noise Ar (t) and additive white Gaussian background noise n(t) [24 ], [ 25 ], [ 26 ], expressed respectively as: 
+
+Sb(t) = An(t) sin (2 πf rt + B sin(2 πf mt) + ϕ0) + dc Sr (t) = An(t) sin (2 πf rt + ϕ0) + dc 
+
+}
+
+(12) 
+
+Sb(t) = A sin (2 πf r t + B sin(2 πf mt) + ϕ0) + dc + n(t)
+
+Sr (t) = A sin (2 πf r t + ϕ0) + dc + n(t)
+
+}
+
+(13)                
+
+> vCC
+> CC Signal beam Reference beam
+> PBS
+> frfb
+> +f1f1
+> f2
+> f2+f df1, f 2+f d
+> f1, f 2
+> PSB: Polarizing beam splitter GTP: Glan-Thompson prism CC: Corner cube prism PD: Photodetector Frictionless guideway
+> Ideal spring
+> Digitizer
+>  
+>  
+>  
+> PD
+> GTP
+> Zeeman-type He-Ne laser
+> Base
+> d= 0 m
+> Target mass
+> Fig. 2. Simulation setup of the Zeeman-type heterodyne laser Doppler interferometer. The PBS separates the orthogonally polarized frequencies f1
+> and f2into reference and signal paths. The Doppler-shifted signal fd(t)
+> interferes with the reference at the PD to generate the beat signal fb(t)for ZCM, HPME, MPLS, ZFM, and OS-ZFM evaluations.
+
+where fm is the modulation frequency, An(t) = A + Ar (t) is the instantaneous signal amplitude that combines the nominal amplitude A and random white-noise fluctuation (intensity noise). ϕ0 denotes the initial phase, dc the direct-current offset, and B the phase-modulation amplitude (rad) corresponding to the maximum Doppler shift. The white-noise model in (13 ) is adopted for analyti-cal tractability. In practical interferometric systems, colored noise, quantization, and harmonic distortion introduce cor-relations, non-Gaussian effects, and waveform distortions in the zero-crossing timing. As OS-ZFM performs regression over multiple zero-crossings per window, these deviations are partially averaged, capturing the dominant noise behavior. Consequently, while such non-idealities may affect absolute accuracy, the fundamental estimator behavior and performance trends remain qualitatively consistent with the idealized model. The analytical displacement and acceleration are given by 
+
+ds(t) = − λB 
+
+4π sin(2 πf mt), (14) 
+
+as(t) = λπBf 2 
+
+> m
+
+sin (2 πf mt) . (15) The simulation parameters were specified as follows: A = 2 V, 
+
+B = 1000 rad, fr = 1 .5 MHz, fm = 100 Hz, ϕ0 = π/ 7,
+
+dc = 5 V, and laser wavelength λ = 632 .8 nm. The signals were sampled at fs = 20 MHz for up to 5 M samples, and the DC component was removed using a moving-average filter. The OS-ZFM observation window of N = 180 periods (≈ 120 μs at fr = 1 .5 MHz) is orders of magnitude shorter than the 10 -ms modulation period, ensuring Doppler quasi-stationarity and validating the regression-based estimation. With an update interval of M = 90 periods, this configuration balances temporal resolution and inter-estimate correlation, enabling dense frequency sampling without excessive redun-dancy. To ensure a rigorous comparison, ZCM was configured with N = 90 , consistent with the update interval of OS-ZFM ( M = 90 ). ZFM and MPLS utilized both N = 90 and 
+
+180 to examine window-length effects, while HPME employed corresponding window lengths ( Ns = 1200 and 2400 samples at fr = 1 .5 MHz and fs = 20 MHz), ensuring identical temporal support across all methods. 5                                                                          
+
+> 0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0
+> t(ms)
+> 1.35 1.40 1.45 1.50 1.55 1.60 1.65
+> f (MHz)
+> fb
+> fr
+> Frequency
+> (1) (2) (3) (4) (5)
+> 0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0
+> t(ms)
+> -40.0 -30.0 -20.0 -10.0 0.0 10.0 20.0 30.0 40.0
+> v (mm/s)
+> Velocity
+> v(t) =lfd(t)
+> 2
+> fd(t) =fr-fb(t)
+> (1) (2) (3) (4) (5)
+> 0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0
+> t(ms)
+> -60.0 -40.0 -20.0 0.0 20.0 40.0 60.0 Displacement
+> d(t) =∫ v(t)dt
+> (1) (2) (3) (4) (5)
+> 0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0
+> t(ms)
+> -30.0 -20.0 -10.0 0.0 10.0 20.0 30.0
+> a (m/s 2)
+> Acceleration
+> a(t) =dv(t) dt
+> (1) (2) (3) (4) (5)
+> -30.0 -20.0 -10.0 0.0 10.0 20.0 30.0
+> a (m/s 2)
+> -60.0 -40.0 -20.0 0.0 20.0 40.0 60.0
+> Displacement vs Acceleration
+> (1) (2) (3) (4) (5)
+> Standard quantities
+> (1) ZCM ( N= 90) (2) HPME [19] ( Ns= 1,200) (3) MPLS [20] ( N= 90) (4) ZFM [23] ( N= 90) (5) OS-ZFM ( N= 180, M= 90)
+> Fig. 3. Data processing procedure and representative estimation results under background noise (SNR = 10 dB). fband frare estimated using ZCM, HPME, MPLS, ZFM, and OS-ZFM, from which velocity is derived via Doppler shift, followed by integration and differentiation to obtain displacement and acceleration. The resulting acceleration–displacement trajectories are compared with analytical reference values to assess dynamic tracking accuracy.
+
+IV. S IMULATION RESULTS 
+
+Fig. 3 presents the signal processing sequence and repre-sentative tracking performance under background noise at 10 -dB SNR. Instantaneous frequencies fb and fr were estimated using the proposed OS-ZFM alongside the baseline methods. The 1.4–1.6 MHz modulation of fb reflects the Doppler effect induced by harmonic motion, where fb = fr denotes motion reversals and extrema coinciding with maximum velocity at zero displacement. From the Doppler frequency fd = fr − fb,the velocity v is derived, and subsequently integrated and differentiated to reconstruct displacement d and acceleration 
+
+a trajectories. The resulting acceleration–displacement plot serves as a compact indicator of dynamic tracking accuracy. Analytical references and estimates are represented by black dots and scattered points, respectively. At this low SNR level, noise-induced timing jitter causes significant dispersion in the estimated trajectories for the conventional methods. In contrast, OS-ZFM maintains close agreement with the analytical reference. This performance demonstrates that the overlapping regression framework ef-fectively enhances statistical stability through structured noise averaging while preserving the temporal resolution required to capture rapid frequency variations. Fig. 4(a) and (b) illustrate the normalized root-mean-square deviation (NRMSD) of the estimated acceleration as a function of SNR under intensity and background noise, respectively. The NRMSD is defined as NRMSD = RMS 
+
+as, max − as, min 
+
+× 100% , (16) where as, max and as, min denote the extrema of the analytical acceleration as(t), and RMS is the root-mean-square devia-tion between estimated and reference accelerations, calculated over the full time record. The maximum Doppler shift was 
+
+0.1 MHz, corresponding to a peak acceleration of 20 m/s 2
+
+based on the analytical motion model. ZCM exhibited the largest NRMSD across all SNRs due to its reliance on only two zero-crossings, making it highly sensitive to timing jitter. HPME and MPLS leverage signal structure to mitigate errors, yet they remain constrained by fixed windowing and heightened noise sensitivity during short observation intervals at low SNRs. ZFM further improved accuracy by averaging multiple zero-crossings within each estimation window. Increasing the window length from N = 90 to N = 180 enhanced noise suppression but degraded temporal responsiveness at high SNRs. By employing overlapping estimation windows, OS-ZFM combined the noise robustness of a long fitting window with improved temporal resolution through reduced update spacing. This structure effectively decoupled noise averaging from temporal resolution, yielding consistently lower NRMSD across all SNRs without introducing additional tracking bias. The Zero-crossing Lower Bound (ZCLB) is included to characterize the analytical performance floor for the NRMSD of the zero-crossing-based estimations. In Fig. 4(a), the ZCLB for intensity noise is significantly lower than that of back-ground noise, reflecting the inherent suppression of multi-plicative noise at the zero-crossing points, where the signal amplitude approaches zero. In Fig. 4(b), under background noise, it is observed that HPME (L) slightly outperforms the ZCLB at low SNRs. This is because ZCLB represents a fundamental limit specifically for estimators relying on sparse timing information from discrete zero-crossings. In contrast, HPME exploits the dense information of the entire digitized waveform within the observation window, allowing it to access phase information beyond discrete crossing instants. Notably, the proposed OS-ZFM consistently approaches the ZCLB more closely than other zero-crossing-based methods, demon-6                                     
+
+> SNR 10 dB SNR 26 dB SNR 44 dB SNR 10 dB SNR 26 dB SNR 44 dB
+> Intensity noise Background noise
+> 15 20 25 30 35 40 45 50
+> NRMSD (%)
+> (b)
+> 60
+> SNR (dB)
+> 55 10 -2
+> 10 -1
+> 10 0
+> 10 1
+> NRMSD (%)
+> (a)
+> SNR (dB)
+> 15 20 25 30 35 40 45 50 60 55
+> (c)
+> acal  - as (m/s 2)
+> 10 -3
+> 10 -2
+> 10 -1
+> 10 0
+> 10 1
+> ZCM HPME [19] MPLS [20] ZFM [23] OS-ZFM
+> SSSSS S SSSSSSSSSSSSSSS SSSLLLLLLLLLLLLLLLLLL
+> ZCM (S)
+> OS-ZFM
+> HPME [19] (S)
+> MPLS [20] (S)
+> ZFM [23] (S)
+> HPME [19] (L) MPLS [20] (L) ZFM [23] (L) ZCLB
+> 10 -2
+> 10 -1
+> 10 0
+> 10 1
+> ZCM (S)
+> OS-ZFM
+> HPME [19] (S)
+> MPLS [20] (S)
+> ZFM [23] (S)
+> HPME [19] (L) MPLS [20] (L) ZFM [23] (L) ZCLB
+> Fig. 4. Performance evaluation of acceleration estimation. (a)–(b) NRMSD versus SNR under intensity and background noise, respectively, where ZCLB is the theoretical zero-crossing lower bound. (c) Absolute error boxplots at SNRs of 10, 26, and 44 dB. ‘S’ and ‘L’ denote short ( N= 90 ) and long ( N= 180 )window lengths for ZCM, MPLS, and ZFM, with equivalent temporal supports ( Ns= 1200 ,2400 ) for HPME. The proposed OS-ZFM employs N= 180
+> and M= 90 . Central marks, box edges, and whiskers indicate medians, interquartile ranges (IQRs), and 1.5×IQR, respectively, and markers denote outliers.
+
+strating its superior statistical efficiency in utilizing available timing data while maintaining high temporal resolution. Fig. 4(c) presents boxplot distributions of the absolute ac-celeration error |acal − as| at SNRs of 10, 26, and 44 dB under both noise conditions. Each boxplot illustrates the error distri-bution for a representative realization over the full time record, where the median and interquartile range (IQR) characterize the central tendency and dispersion, respectively. At SNR = 10 dB, OS-ZFM yields significantly lower median error than all baselines for the same update interval of 90 periods. Under intensity noise, median errors are reduced from 0.089 (ZFM) and 0.146 (MPLS) to 0.032 (OS-ZFM), representing relative improvements of 64% and 78%, respectively. Similarly, under background noise, the error is mitigated from 0.569 (ZFM) and 0.549 (MPLS) to 0.197 (OS-ZFM)—an improvement of approximately 65% and 64%. Notably, OS-ZFM achieves up to a 90% reduction relative to ZCM and consistently outperforms HPME, particularly under intensity noise. For statistical validation, 1000 independent noise realiza-tions were generated for each method and noise condition. A two-sided Wilcoxon signed-rank test was performed for pair-wise comparisons between OS-ZFM and each baseline method at representative SNR levels. In all cases, the null hypothesis of equal median error was rejected with p < 0.001 , indicating statistically significant improvements. Although direct overlay of theoretical bounds is not applicable due to dimensional and differentiation effects, the observed dispersion is qualitatively consistent with the uncertainty framework in Section VI-B .Increasing SNR reduces error dispersion across all methods. ZCM exhibits the widest spread due to timing jitter, while HPME and MPLS remain susceptible at low SNRs. Although ZFM improves robustness through noise averaging, OS-ZFM consistently achieves the narrowest distributions—notably un-der intensity noise—demonstrating superior stability through overlapping-enhanced statistical efficiency without compro-mising temporal resolution. V. E XPERIMENT 
+
+To evaluate OS-ZFM under realistic conditions, experimen-tal validation employs impact-induced transient motion from a mass-rubber collision. The resulting non-harmonic, high-dynamic motion introduces time-varying frequencies and non-linear damping effects not captured in the numerical model. The impact experiment is intended as a practical transient measurement scenario to evaluate frequency estimation per-formance rather than collision mechanics. To ensure a direct comparison under identical conditions, all methods are applied to a single representative transient record. This approach effectively isolates the algorithmic response from physical test variability, ensuring that differences in the reconstructed trajec-tories stem solely from the estimator’s performance. Following the configuration in Fig. 2, the experimental setup replaces the spring-mass model with a collision-based structure as depicted in Fig. 5(a). A rigid mass of approximately 1.93 kg, guided by an aerostatic linear bearing (TAAG10A-02, NTN), achieves near-frictionless motion before impacting a 3 mm thick com-mercial rubber sheet. Signal detection and digitization utilize the same acquisition chain as in the numerical simulation. Measurement is initiated by manually accelerating the target mass leftward from the right end of the aerostatic bearing, as shown in Fig. 5 (a). Contact between the mass extension block and the fixed rubber sheet induces a transient motion. Velocity of the mass is derived from the heterodyne Doppler signal, with acceleration and displacement subsequently obtained via numerical differentiation and integration. Photodetector signals are digitized at 20 MS/s with 8–bit resolution (NI PCI-5105) for 0.25 s, totaling 5 M samples per channel. Data acquisition is triggered as the moving mass 7       
+
+> -70.0 -60.0 -50.0 -40.0 -30.0 -20.0 -10.0 0.0 -5.0 0.0 5.0 10.0 15.0 20.0 30.0
+> a (m/s 2)
+> 25.0 (d) MPLS [20]
+> 10.0 -70.0 -60.0 -50.0 -40.0 -30.0 -20.0 -10.0 0.0 -5.0 0.0 5.0 10.0 15.0 20.0 30.0
+> a (m/s 2)
+> 25.0 (f) OS-ZFM
+> 10.0
+> CC Signal beam
+> LD
+> PD
+> Base
+> ADC, DAC
+> Computer
+> Trigger signal PCI bus to Digitizer
+
+# }
+
+> Extension block
+> Guideway of aerostatic linear bearing
+> Rubber sheet
+> Target mass
+
+v +                   
+
+> (a)
+> -70.0 -60.0 -50.0 -40.0 -30.0 -20.0 -10.0 0.0 -5.0 0.0 5.0 10.0 15.0 20.0 30.0
+> a (m/s 2)
+> 25.0 (e) ZFM [23]
+> 10.0
+> -70.0 -60.0 -50.0 -40.0 -30.0 -20.0 -10.0 0.0 -5.0 0.0 5.0 10.0 15.0 20.0 30.0
+> a (m/s 2)
+> 25.0 (c) HPME [19]
+> 10.0 -70.0 -60.0 -50.0 -40.0 -30.0 -20.0 -10.0 0.0 -5.0 0.0 5.0 10.0 15.0 20.0 30.0
+> a (m/s 2)
+> 25.0 (b) ZCM
+> 10.0
+> Fig. 5. Impact-response measurement of a target mass integrated with the moving part of an aerostatic linear bearing and a rubber sheet under test, where (a) experimental setup and (b)-(f) acceleration-displacement trajectories obtained using ZCM, HPME [ 19 ], MPLS [ 20 ], ZFM [ 23 ], and the proposed OS-ZFM, respectively. In the experiment, ZCM, MPLS, and ZFM employ N=80 periods, while HPME adopts Ns=904 samples to achieve an equivalent observation window. The OS-ZFM is configured with N=500 and M=80.
+
+interrupted an optical path between a laser diode (LD) and photodiode (PD). The beat and reference frequencies are estimated using ZCM, MPLS, and ZFM with N = 80 periods (approximately 0.045 ms at fr = 1 .77 MHz), while HPME utilizes an equivalent duration of Ns = 904 samples. The OS-ZFM parameters are set to N = 500 and M = 80 
+
+at fr = 1 .77 MHz, yielding a 0.28 -ms observation window. This duration is significantly shorter than the approximately 
+
+5 ms characteristic motion scale observed in the experiment, satisfying the quasi-stationary Doppler frequency assumption. The high zero-crossing count stabilizes the least-squares es-timation through enhanced noise averaging, while M = 80 
+
+maintains a temporal resolution comparable to the baseline methods for a rigorous evaluation. Fig. 5(b)-(f) compares the acceleration-displacement tra-jectories reconstructed from the estimated Doppler frequency using different methods under impact-induced, high-dynamic motion. The initial impact velocity was estimated approxi-mately 35 mm/s. The displacement origin was defined at the impact onset, identified by a sustained acceleration increase exceeding the pre-impact noise standard deviation. ZCM exhibited dispersion and irregularities, particularly during the impact interval, due to its reliance on discrete zero-crossing events and limited fitting. Under rapid frequency variations, acceleration estimation became sensitive to timing jitter and noise, reducing trajectory smoothness. HPME produces smoother trajectories than ZCM by exploit-ing instantaneous phase information; however, residual fluctu-ations remain during the impact event, indicating sensitivity to amplitude modulation and noise amplification associated with the Hilbert transform under non-stationary conditions. Both MPLS and ZFM utilize global linear fitting over a fixed observation window but differ in their local zero-crossing esti-mation. In this study, MPLS employs three-sample local linear regression around each zero-crossing to better accommodate rapid signal variations during impact while maintaining local linearity. Despite improving timing accuracy compared with the two-point interpolation used in ZFM, MPLS trajectories remained susceptible to noise and rapid frequency shifts. OS-ZFM yields a coherent and physically consistent trajec-tory throughout the impact event. By pairing a long observa-tion window with a short sliding update interval, it suppresses noise while preserving sensitivity to rapid dynamics. No-tably, the subtle negative acceleration during the late rebound phase—reflecting the rubber’s viscoelastic response—was cap-tured with reduced fluctuation compared to baseline methods. The resulting trajectory in Fig. 5(f) provides a stable and smooth representation of the transient dynamics, demonstrat-ing robust performance under practical noise conditions. VI. D ISCUSSION 
+
+A. Behavior under Transient Motion 
+
+While the numerical simulations in Section IV demon-strate the theoretical performance of OS-ZFM under idealized harmonic conditions, the experiments in Section V validate its behavior under practical measurement conditions. The impact-induced motion introduces non-stationary dynamics and viscoelastic effects, such as hysteresis and energy dis-sipation, not captured by the harmonic model. As shown in Fig. 5, conventional methods (ZCM, ZFM, and MPLS) exhibit noticeable fluctuations and local irregularities, particularly during acceleration sign transitions, due to sensitivity to noise and timing jitter in zero-crossing detection. HPME provides comparatively smoother trajectories; however, residual fluctua-tions remain during transient intervals, reflecting sensitivity to amplitude modulation and noise. In contrast, OS-ZFM yields a smoother and more stable trajectory, capturing both the rebound phase and the associated negative acceleration dip. This improvement is consistent with enhanced noise averaging from the longer regression window. 8
+
+The smoothness of the OS-ZFM trajectories primarily re-flects enhanced statistical stability rather than absolute physi-cal validation. However, as the 0.28 ms observation window is significantly shorter than the ∼5 ms mechanical motion scale, the risk of attenuating genuine high-frequency dynamics is reduced. The stable reconstruction of the viscoelastic rebound suggests physical consistency, although quantitative verifica-tion of absolute accuracy would require an independent high-bandwidth reference measurement. 
+
+B. Noise Sensitivity and Statistical Uncertainty Analysis 
+
+The noise sensitivity and statistical uncertainty of OS-ZFM are evaluated via numerical simulations, with the rep-resentative results. In Fig. 4(c), boxplots under intensity and background noise quantify uncertainty, where the interquartile range (IQR) reflects estimation variability and outliers indicate sensitivity to noise-induced zero-crossing timing perturbations. At SNR = 10 dB, OS-ZFM shows a narrower error distri-bution than methods with similar temporal support, indicating improved statistical stability under challenging noise. Uncer-tainty is evaluated using a Type A approach consistent with GUM, where regression residuals estimate zero-crossing tim-ing variance for frequency uncertainty propagation. Accord-ingly, the statistical uncertainty of OS-ZFM is governed by the variability of zero-crossing timing within each observation window. The i-th zero-crossing time in the j-th window is modeled as 
+
+ti = iT j + Pj + ǫi, i = 0 , 1, . . . , N, (17) where Tj and Pj denote the signal period and phase offset, and ǫi denotes zero-mean timing error. After least-squares fitting, the residuals ri = ti − (i ˆTj + ˆPj )
+
+are used to estimate the timing variance as 
+
+ˆσ2 
+
+> t
+
+= 1
+
+N − 1
+
+> N
+
+∑
+
+> i=0
+
+r2 
+
+> i
+
+, (18) where the residual-based variance estimate ˆσ2 
+
+> t
+
+provides a practical approximation of the underlying timing jitter variance 
+
+σ2 
+
+> ǫ
+
+, thereby linking the empirical uncertainty evaluation with the theoretical bias–variance analysis. For linear regression of uniformly spaced zero-crossings, the standard uncertainty of the estimated period is given by 
+
+u(Tj ) = 
+
+√
+
+12 ˆ σ2
+
+> t
+
+N (N + 1)( N + 2) , (19) and the corresponding frequency uncertainty is 
+
+u(fj ) = 1
+
+T 2
+
+> j
+
+√
+
+12 ˆ σ2
+
+> t
+
+N (N + 1)( N + 2) . (20) The measured Doppler frequency fd(t) is related to the target mass velocity by v(t) = ( λ/ 2) fd(t), where λ is the optical wavelength. The corresponding acceleration is there-fore obtained by 
+
+a(t) = λ
+
+2 ˙fd(t), (21) where ˙fd(t) denotes the temporal derivative of the Doppler frequency. Following GUM-based uncertainty propagation, the associated acceleration uncertainty can be expressed as 
+
+u(a(t)) = λ
+
+2 u
+
+( ˙fd(t)
+
+)
+
+, (22) indicating its dependence on the uncertainty of the differenti-ated Doppler frequency. While zero-crossing timing variance determines instantaneous frequency uncertainty, numerical dif-ferentiation may amplify high-frequency noise in the estimated sequence. More specifically, the differentiation acts as a high-pass operation, amplifying high-frequency components in the estimated frequency. Consequently, acceleration uncertainty depends not only on zero-crossing timing variance but also on the spectral content of the estimate. From Fig. 4(c), the median acceleration error of OS-ZFM at SNR = 10 dB (background noise) is approximately 0.05 m/s 2,corresponding to a normalized error of 2.5 × 10 −3 relative to the 20 m/s 2 peak. Given the 1.4 − 1.6 MHz range as observed in Fig. 3, this phase variability implies sub-nanosecond timing jitter. Substituting N = 180 into ( 20 ) yields an instantaneous frequency uncertainty of several tens of hertz, consistent with the numerical results. 
+
+C. Practical Implementation Considerations 
+
+From an instrumentation perspective, computational effi-ciency and analytical transparency are as important as esti-mation accuracy. Unlike methods involving complex tuning or transform-domain processing, OS-ZFM applies closed-form regression directly to zero-crossing timestamps. This ensures low complexity, robustness, and predictable bias-variance be-havior, essential for metrological traceability. The consistency between numerical (Fig. 4) and experimental results (Fig. 5)demonstrates OS-ZFM as a deterministic and interpretable estimator under practical noise conditions. OS-ZFM retains the low complexity of conventional zero-crossing estimators by employing simple algebraic updates without iterative optimization or spectral processing. In con-trast to phase-based methods (e.g., HPME) that require Hilbert transforms and phase differentiation, OS-ZFM avoids transform-domain operations, reducing per-update overhead and memory demand. Although overlapping windows increase the update rate, the per-estimate computational structure re-mains unchanged, preserving implementation efficiency. The computational efficiency of OS-ZFM stems from its two-stage architecture: local interpolation and global linear regression. For N = 180 cycles, a 50% overlap ( M = 90 )enables the reuse of 91 zero-crossing timestamps, requiring only 90 new interpolations per update. Combined with a matrix-based regression using a precomputed pseudo-inverse, the total complexity is reduced to approximately 2 × 10 3
+
+operations per update. At an algorithmic update rate of 
+
+16 .67 kHz (at fr = 1 .5 MHz), the total computational demand is approximately 3.3×10 7 operations per second. For a typical ARM Cortex-M4 class microcontroller operating at 100 MHz (providing ≈ 125 DMIPS), this represents a moderate proces-sor load of approximately 33 .3% , ensuring sufficient headroom 9
+
+for simultaneous tasks such as data logging or peripheral communication. Combined with its deterministic, non-iterative formulation, OS-ZFM is well suited for smart sensing and resource-constrained IoT platforms. Its low computational and energy requirements enable integration into automated calibration and distributed monitoring systems. By relying on standard interferometry without additional hardware, it reduces im-plementation cost while providing robust noise performance and high temporal resolution without spectral processing. Consequently, OS-ZFM serves as a low-cost, general-purpose solution for measurement and embedded sensing applications. At the system level, the interferometer is part of the base-line setup, and OS-ZFM introduces no additional hardware cost. Compared to computationally intensive alternatives and commercial estimators, it reduces processing and maintenance overhead, supporting cost-effective deployment. While advanced time–frequency (e.g., synchrosqueezing or empirical wavelet transforms) and deep learning methods offer powerful representations, their higher computational cost and limited analytical transparency can limit real-time implementa-tion. This work instead adopts a low-complexity, interpretable algebraic approach on zero-crossing timestamps, ensuring deterministic performance and physical interpretability for practical instrumentation. The overlapping regression concept adopted in OS-ZFM is not restricted to zero-crossing fitting. In principle, the same framework is broadly applicable and could be extended to other time-domain methods, such as polynomial or spline-based trajectory fitting. Within these contexts, partially over-lapping observation windows would similarly decouple tempo-ral resolution from noise averaging, establishing a generalized framework for high-resolution parameter estimation in time-domain measurement systems. 
+
+D. Limitations and Future Work 
+
+While OS-ZFM improves accuracy and resolution under typical conditions, its performance involves a trade-off be-tween noise averaging and frequency tracking. Longer win-dows reduce variance but may induce temporal smoothing during abrupt Doppler transitions. At sub-zero SNR levels, noise-induced timing jitter and spurious zero-crossings can degrade estimation integrity. Furthermore, the reliance on precise zero-crossing detection makes the method susceptible to waveform distortion and fringe dropouts. These limitations motivate future research into adaptive windowing to enhance tracking under non-stationary conditions and robust detection algorithms to mitigate distortion. Recent advances in adaptive windowing [ 27 ] and low-SNR zero-crossing optimization [ 28 ]offer promising frameworks for further enhancing OS-ZFM’s resilience in extreme sensing environments. VII. C ONCLUSION 
+
+This paper has demonstrated that OS-ZFM achieves im-proved frequency estimation accuracy by decoupling the noise-averaging window from the temporal update interval through structured data reuse. The proposed closed-form formulation preserves the unbiased nature and O(N −3) variance scaling of the underlying estimator while increasing temporal sampling density. This enables consistent reduction in estimation error at equivalent temporal resolution—a capability not attainable via output upsampling or post-filtering. Experimental vali-dation on transient impact motion demonstrates its practical effectiveness in reconstructing smooth, physically consistent acceleration–displacement profiles and revealing viscoelastic responses often obscured by noise in conventional methods. Retaining the computational efficiency of algebraic regression and avoiding iterative optimization, OS-ZFM is well suited for real-time interferometric sensing and resource-constrained em-bedded systems. Future work will explore adaptive windowing strategies for tracking rapidly varying or multi-component frequency signals under more demanding dynamic conditions. REFERENCES [1] J. Li, G. Liu, P. Cui, S. Zheng and Q. Chen, “Synchronous Vibration Suppression of Magnetically Suspended Rotor System Using Improved Adaptive Frequency Estimation,” IEEE Sens. J. , vol. 20, no. 19, pp. 11212-11220, Oct. 2020, doi: 10.1109/JSEN.2020.2997046.                                                                                  
+
+> [2] C. Li, Z. Cao, S. Li and J. Dai, “Frequency Estimation of Vibration Sig-nals: A Subspace Approach for Bearing Fault Diagnosis,” IEEE Sens. J. ,vol. 24, no. 1, pp. 449-459, Jan. 2024, doi: 10.1109/JSEN.2023.3331355.
+> [3] F. Dreier, P. G¨ unther, T. Pfister, J. W. Czarske, and A. Fischer, “Interferometric Sensor System for Blade Vibration Measurements in Turbomachine Applications,” IEEE Trans. Instrum. Meas. , vol. 62, no. 8, pp. 2297-2302, Aug. 2013, doi: 10.1109/TIM.2013.2255993.
+> [4] Z. Shen, D. Guo, H. Zhao, W. Xia, H. Hao, and M. Wang, “Laser Self-Mixing Interferometer for Three-Dimensional Dynamic Displacement Sensing,” IEEE Photonics Technol. Lett. , vol. 33, no. 7, pp. 331-334, April, 2021, doi: 10.1109/LPT.2021.3062287.
+> [5] Y. Liu, Y. Xu, M. Lei, M. Gao, Z. Fang, and Y. Mao, “A Joint High-Precision Frequency and Code Phase Estimation Algorithm for Iridium NEXT Satellites’ Signals of Opportunity,” IEEE Trans. In-strum. Meas. , vol. 74, pp. 1-17, May 2025, Art no. 8508217, doi:
+> 10.1109/TIM.2025.3566829.
+> [6] P. Youplao, H. Nasbey, A. Takita, P. Nachaisit, and Y. Fujii, “An Optical Method for Evaluating the Mechanical Properties of Wires Under Impact Tensile Load,” IEEE Trans. Instrum. Meas. , vol. 73, pp. 1-11, 2024, Art no. 1001111, doi: 10.1109/TIM.2023.3332347.
+> [7] M. Horibe, S. Kon and I. Hirano, “Measurement Capability of Scanning Microwave Microscopy: Measurement Sensitivity Versus Accuracy,”
+> IEEE Trans. Instrum. Meas. , vol. 68, no. 6, pp. 1774-1780, Jun. 2019, doi: 10.1109/TIM.2018.2882937.
+> [8] P. Youplao, A. Takita, H. Nasbey, S. Mitatha, and Y. Fujii, “An Optical Heterodyne Technique for Dynamic Eddy-Current Damping Force Evaluation,” IEEE Trans. Instrum. Meas. , vol. 70, pp. 1-11, 2021, Art no. 6005011, doi: 10.1109/TIM.2021.3059112.
+> [9] Z. Xiang, Q. Wang, R. Huang, S. Jin, X. Nie, and J. Zhou, “Further Application of Pitch Independent Laser Doppler Velocimeter in Land Vehicle Autonomous Navigation,” IEEE Trans. Veh. Technol. , vol. 74, no. 7, pp. 10268-10281, July 2025, doi: 10.1109/TVT.2025.3546606.
+> [10] Y. Yang, Y. Zhang, Z. Yang, X. Dai, X. Liu, J. Zhang, K. Gui, and X. Qu, “Multidimensional parameter estimation for spatially conical precession target based on laser micro-Doppler time-frequency contour analysis,” Opt. Laser Technol. , vol 193, Part A, 2026, 114178, doi:
+> 10.1016/j.optlastec.2025.114178.
+> [11] M. Tazen, N. Sasaoka and Y. Okamoto, “Non-Contact Heart Rate Measurement Based on Adaptive Notch Filter and Elimination of Respiration Harmonics,” IEEE Access , vol. 11, pp. 46107-46119, 2023, doi: 10.1109/ACCESS.2023.3272895.
+> [12] Z. Zhao and G. Li, “Synchrosqueezing-Based Short-Time Fractional Fourier Transform,” IEEE Trans. Signal Process. , vol. 71, pp. 279-294, 2023, doi: 10.1109/TSP.2023.3244097.
+> [13] B. Sun, X. Wu, C. Zheng, et al., “A fast parameter estimation method for high-frequency oscillation based on empirical wavelet trans-form and moving least square,” Sci. Rep. , vol. 15, 599, 2025, doi:
+> 10.1038/s41598-024-84272-9. 10
+
+[14] Y. Lee, G. Lee, A. White, and Y.J. Shin, “Oscillation Parameter Estima-tion via State-Space Modeling of Synchrophasors,” IEEE Transactions on Power Systems , vol. 39, no. 3, pp. 5219-5228, May 2024, doi: 
+
+10.1109/TPWRS.2023.3332248. 
+
+[15] O. Aharon and J. Tabrikian, “Asymptotically Tight Bayesian Cram´ er-Rao Bound,” IEEE Trans. Signal Process. , vol. 72, pp. 3333-3346, 2024, doi: 
+
+10.1109/TSP.2024.3421900. 
+
+[16] Y. Liu, Y. Sun, and Z. Xiong, “An Approximate Maximum Likelihood Estimator for Instantaneous Frequency Estimation of Multicomponent Nonstationary Signals,” IEEE Trans. Instrum. Meas. , vol. 71, pp. 1-9, 2022, Art no. 6501509, doi: 10.1109/TIM.2022.3146948. 
+
+[17] Y. Luo, D. Bian, Z. Luo, D. Hou, Y. He, W. Jiang, and Y. Li, “Noise-robust multi-fringe decomposition for high-precision wavefront measurement in dual-lateral shearing interferometry,” Opt. Express , vol. 33, pp. 37146-37163, 2025, doi: 10.1364/OE.569719. 
+
+[18] H. Beˇ si´ c, A. Demir, V. Vuki´ cevi´ c, J. Steurer, and S. Schmid, “Adaptable Frequency Counter With Phase Filtering for Resonance Frequency Monitoring in Nanomechanical Sensing,” IEEE Sens. J. , vol. 24, no. 6, pp. 8094-8104, Mar. 2024, doi: 10.1109/JSEN.2024.3355026. 
+
+[19] K. Xie and L. Cheng, “A novel two-dimensional Hilbert trans-form method for structural vibration measurement and modal analy-sis,” Mech. Syst. Signal Process. , vol. 225, Feb. 2025, 112324, doi: 
+
+10.1016/j.ymssp.2025.112324. 
+
+[20] C. Tan, Q. Sun, X. Min, J. Tan, and X. Ou, “Frequency Estimation Method for Increasing Accuracy of PM by Combining Multipoint Software Zero-Crossing Recognition and Least Square Regression,” 
+
+IEEE Trans. Instrum. Meas. , vol. 73, pp. 1-12, Jul. 2024, Art no. 2005112, doi: 10.1109/TIM.2024.3436094. 
+
+[21] A. Serbes and K. Qaraqe, “A Fast Method for Estimating Frequencies of Multiple Sinusoidals,” IEEE Signal Process. Lett. , vol. 27, pp. 386-390, 2020, doi: 10.1109/LSP.2020.2970837. 
+
+[22] M.A. Benmahdjoub, M. Atallah, I. Salhi, A.V. den Bossche, A. Mezouar, and Y. Saidi, “New design of low cost galvanic sepa-rated Zero-Crossing Detector for embedded electrical network syn-chronization,” Measurement , vol. 257, Part C, Jan. 2026, 118713, doi: 
+
+10.1016/j.measurement.2025.118713. 
+
+[23] Y. Fujii and J.P. Hessling, “Frequency estimation method from digitized waveform,” Exp. Tech. , vol. 33, no. 5, pp. 64-69, Oct. 2009, doi: 
+
+10.1111/j.1747-1567.2008.00421.x. 
+
+[24] L.M. Barker and R.E. Hollenbach, “Laser interferometer for measuring high velocities of any reflecting surface,” J. Appl. Phys. , vol. 43, pp. 4669-4675, Nov. 1972, doi: 10.1063/1.1660986. 
+
+[25] Carlton M. Caves, “Quantum-mechanical noise in an interferome-ter,” Phys. Rev. D , vol. 23, no. 8, pp. 1693-1708, Apr. 1981, doi: 
+
+10.1103/PhysRevD.23.1693. 
+
+[26] R. Kowalski, S. Root, S.D. Gensemer, and P. L. Gould, “A frequency-modulated injection-locked diode laser for two-frequency genera-tion,” Rev. Sci. Instrum. , vol. 72, pp. 2532-2534, Jun. 2001, doi: 
+
+10.1063/1.1373670. 
+
+[27] Y. Yang, Y. Cheng, H. Wu, Z. Yang, and H. Wang, “Parametric Instantaneous Frequency Estimation via PWSR With Adaptive QFM Dictionary,” IEEE Signal Process. Lett. , vol. 30, pp. 738-742, Jun. 2023, doi: 10.1109/LSP.2023.3287129. 
+
+[28] L. Lian, S. Li, G. Huang, Y. Wu, and Q. Ren, “Robust Direction-of-Arrival Estimation Using Zero-Crossing-Based Time Delay Measure-ment for Navigation in GNSS-Denied Environments,” Sensors , vol. 26, no. 5, 1600, Mar. 2026, doi: 10.3390/s26051600

@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-31",
+  "date": "2026-07-31",
+  "generated_at": "2026-07-31T21:43:18",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/31/2607.22096v1-noise-robust-frequency-estimation-via-overlapped-sampling-intervals-zero-crossing-fitting",
+      "section": "quick",
+      "title_en": "Noise-Robust Frequency Estimation via Overlapped Sampling-Intervals Zero-Crossing Fitting",
+      "authors": "Phichai Youplao, Nithiroth Pornsuwancharoen, Yusaku Fujii",
+      "date": "2026-07-24",
+      "pdf": "https://arxiv.org/pdf/2607.22096v1",
+      "score": "6.0",
+      "evidence": "抗噪频率估计方法可用于从噪声船舶信号中提取高频分量",
+      "tldr": "传统过零频率估计在噪声和动态条件下难以兼顾噪声平均与时间分辨率。本文提出重叠采样间隔过零拟合方法（OS-ZFM），通过结构化重叠回归框架解耦噪声平均与更新率，并采用确定性闭式解实现偏差-方差联合分析。在10 dB信噪比下，OS-ZFM相比传统过零拟合同等时间分辨率下中值误差降低超60%，较基本过零检测最高降低90%，且优于希尔伯特变换估计。激光多普勒实验验证了其重建轨迹的平滑性与时间保真度，适用于资源受限系统的实时频率与加速度跟踪。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "The trade-off between noise averaging and temporal resolution fundamentally limits conventional zero-crossing frequency estimators under dynamic and noisy conditions. This paper presents an overlapped sampling-intervals zero-crossing fitting method (OS-ZFM), which introduces a structured overlapping regression framework that decouples noise averaging from temporal update rate. The method adopts a deterministic closed-form formulation, enabling a unified bias-variance analysis to characterize the statistical behavior of the estimator and clarify the role of structured data reuse. Numerical results under intensity and background noise at a signal-to-noise ratio (SNR) of 10 dB show that OS-ZFM reduces median estimation error by more than 60\\% compared to conventional zero-crossing fitting methods at the same temporal resolution. It further achieves up to 90\\% reduction relative to basic zero-crossing detection and consistently yields lower estimation errors than Hilbert-transform-based estimators. Experimental validation utilizing impact-induced transient motion measured by laser Doppler interferometry demonstrates that OS-ZFM reconstructs smooth and physically consistent trajectories with improved temporal fidelity. Owing to its low computational complexity and deterministic formulation, the proposed method enables accurate real-time frequency and acceleration tracking in resource-constrained measurement systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/31/2607.23770v3-a-comparison-of-data-augmentation-methods-for-training-deep-neural-networks-on-synthetic-aperture-sonar",
+      "section": "quick",
+      "title_en": "A Comparison of Data Augmentation Methods for Training Deep Neural Networks on Synthetic Aperture Sonar",
+      "authors": "C. J. Moore, Gregory D. Vetaw, Jordan Malof",
+      "date": "2026-07-26",
+      "pdf": "https://arxiv.org/pdf/2607.23770v3",
+      "score": "6.0",
+      "evidence": "利用深度神经网络进行水下声呐目标识别，研究有限数据下的数据增强方法",
+      "tldr": "合成孔径声呐(SAS)自动目标识别受限于标记样本稀缺，深度神经网络训练困难。为缓解该问题，本文系统比较了常规图像增强与基于SAS物理特性的多种增强策略，并评估其与现代Transformer架构的结合效果。实验发现数据增强普遍能提升识别精度，但收益因方法而异，并非所有增强均有益，该研究为SAS-ATR中的增强选择提供了实证指导。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "In this work we study Automatic Target Recognition (ATR) for Synthetic Aperture Sonar (SAS) data with a focus on deep neural networks (DNNs). The main challenge in training DNNs for SAS-ATR arises from the limited quantity of labeled target examples due to the significant costs and time required to collect real-world SAS data. One successful general strategy for mitigating the problem of limited training data is augmentation, which generates additional synthetic training data by introducing realistic variations to available data. Prior research has investigated a variety of augmentation strategies for SAS-ATR, including conventional image augmentations (e.g., contrast changes, cropping) as well as augmentations motivated the specific physics of SAS data. Building on prior work, we systematically compare many of these existing augmentation strategies for training DNNs for SAS-ATR. We also investigate the impact of augmentation when combined with modern DNN architectures such as transformers. The results indicate that augmentation can improve target recognition accuracy, although benefits vary, and not all augmentations are beneficial.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
