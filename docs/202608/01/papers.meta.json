@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-01",
+  "date": "2026-08-01",
+  "generated_at": "2026-08-01T21:11:09",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/01/2607.28306v1-a-distributed-acoustic-sensing-dataset-for-vessel-detection-and-localization-in-submarine-cable-protection",
+      "section": "deep",
+      "title_en": "A Distributed Acoustic Sensing Dataset for Vessel Detection and Localization in Submarine Cable Protection",
+      "authors": "Erick Eduardo Ramirez-Torres, Javier Macias-Guarasa, Daniel Pizarro, Javier Tejedor, Sira Elena Palazuelos-Cagigas, Pedro J. Vidal-Moreno, María R. Fernández-Ruiz, Sonia Martin-Lopez, Miguel Gonzalez-Herraez, Roel Vanthillo",
+      "date": "2026-07-30",
+      "pdf": "https://arxiv.org/pdf/2607.28306v1",
+      "score": "8.0",
+      "evidence": "面向船舶检测与定位的水下分布式声感数据集，直接关联船舶噪声识别",
+      "tldr": "近年来海底通信与电力电缆因意外或蓄意破坏事故频发，亟需连续、广域的监控手段。分布式声学传感可利用现有海底光缆实现此目标，但缺乏公开真实数据集。本文提出Marlinks-NS DAS数据集，基于北海28公里埋地光缆连续记录10天，构建了74,771个标注实例，每个实例含250通道光谱能量特征及AIS距离标签。数据集定义了船舶检测与到缆距离估计两个机器学习任务。开放数据与代码，为DAS海底电缆保护研究提供可复现基准。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Recent incidents of accidental damage and suspected sabotage to submarine telecommunication and power cables, particularly in the Baltic Sea, have underscored their vulnerability and the need for continuous monitoring solutions. Distributed acoustic sensing (DAS) applied to submarine optical-fiber cables enables wide-area monitoring of underwater acoustic activity.   We present the Marlinks-NS DAS dataset, comprising processed submarine DAS measurements and AIS-derived vessel information curated for cable-protection research. The dataset defines two machine-learning tasks (vessel detection and vessel-to-cable distance estimation) allowing reproducible research under realistic marine conditions.   The dataset contains 74,771 labeled data instances from ten days of continuous recording along a 2,554 m segment in a 28 km buried fiber-optic cable in the North Sea. Each instance includes spectral-energy features from 250 sensing channels, together with anonymized distance measurements and metadata from AIS information. The released HDF5 data, documentation, processing description, and example code support reproducible development and evaluation of DAS-based vessel-monitoring methods for submarine cable protection.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/01/2607.26607v1-few-shot-open-set-audio-classification-via-transductive-prototype-refinement-and-class-logit-enhancement",
+      "section": "quick",
+      "title_en": "Few-Shot Open-Set Audio Classification via Transductive Prototype Refinement and Class Logit Enhancement",
+      "authors": "Tianyan Deng, Yanxiong Li, Rui Gao, Jiahao Du",
+      "date": "2026-07-29",
+      "pdf": "https://arxiv.org/pdf/2607.26607v1",
+      "score": "7.0",
+      "evidence": "适用于水下目标识别的少样本开放集音频分类方法",
+      "tldr": "少样本开放集音频分类需在少量标注下识别已知类并拒绝未知类。标准直推更新不区分已知与未知查询样本，导致原型受污染。本文提出两阶段直推方法，先用潜在内点性加权细化原型，再利用去耦自由能评分检测未知类。在三个音频数据集上达到最优性能，显著提升开放集鲁棒性。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Few-shot Open-set audio classification requires classifying query samples from known classes with a few labeled support samples while rejecting query samples from unknown classes. Transductive inference jointly observes the full unlabeled query set to improve prototype estimation, yet standard transductive updates do not distinguish known from unknown query samples, leaving prototypes vulnerable to open-set contamination. Drawing on latent-inlierness weighting and decoupled scoring for unknown-class samples, we propose a two-phase transductive method operating over a frozen audio encoder. First, each query sample is assigned a latent inlierness score that down-weights likely unknown-class samples, so that prototype refinement is driven primarily by known-class evidence. The refined prototypes are then directly optimized on a transductive loss combining support cross-entropy, inlierness-weighted conditional entropy minimization, and inlierness-weighted marginal entropy maximization, while open-set rejection uses a prior-adaptive free-energy score that adjusts its threshold with the prior proportion of unknown-class samples, decoupling detection from classification. Experiments on three audio datasets show our method achieves state-of-the-art results for few-shot open-set audio classification under multiple experimental conditions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

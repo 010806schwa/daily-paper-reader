@@ -1,0 +1,521 @@
+Title: Few-Shot Open-Set Audio Classification via Transductive Prototype Refinement and Class Logit Enhancement
+
+URL Source: https://arxiv.org/pdf/2607.26607v1
+
+Published Time: Thu, 30 Jul 2026 00:40:38 GMT
+
+Number of Pages: 6
+
+Markdown Content:
+# Few-Shot Open-Set Audio Classification via Transductive Prototype Refinement and Class Logit Enhancement 
+
+Tianyan Deng 
+
+School of Mathematics South China University of Technology 
+
+Guangzhou, China 202330400581@mail.scut.edu.cn 
+
+Rui Gao 
+
+School of Electronic and Information Engineering South China University of Technology 
+
+Guangzhou, China 202330350401@mail.scut.edu.cn 
+
+Yanxiong Li *
+
+School of Electronic and Information Engineering South China University of Technology 
+
+Guangzhou, China eeyxli@scut.edu.cn 
+
+Jiahao Du 
+
+School of Electronic and Information Engineering South China University of Technology 
+
+Guangzhou, China 202330350311@mail.scut.edu.cn 
+
+Abstract —Few-shot Open-set audio classification requires clas-sifying query samples from known classes with a few labeled support samples while rejecting query samples from unknown classes. Transductive inference jointly observes the full unla-beled query set to improve prototype estimation, yet standard transductive updates do not distinguish known from unknown query samples, leaving prototypes vulnerable to open-set contam-ination. Drawing on latent-inlierness weighting and decoupled scoring for unknown-class samples, we propose a two-phase transductive method operating over a frozen audio encoder. First, each query sample is assigned a latent inlierness score that down-weights likely unknown-class samples, so that prototype refinement is driven primarily by known-class evidence. The refined prototypes are then directly optimized on a transductive loss combining support cross-entropy, inlierness-weighted condi-tional entropy minimization, and inlierness-weighted marginal entropy maximization, while open-set rejection uses a prior-adaptive free-energy score that adjusts its threshold with the prior proportion of unknown-class samples, decoupling detection from classification. Experiments on three audio datasets show our method achieves state-of-the-art results for few-shot open-set audio classification under multiple experimental conditions. Code is available at https://github.com/Gostyan/ROLE 
+
+Index Terms —Few-shot open-set classification, transductive inference, audio classification 
+
+I. I NTRODUCTION 
+
+Real-world few-shot audio classification [1]–[4] rarely satis-fies the closed-set assumption: query samples routinely include sounds outside classes of support set. In the transductive setting, a model observes the full unlabeled query set jointly during inference, which improves episode-level prototype es-timation [5], [6]. However, standard transductive updates treat all query samples equally and cannot distinguish known-class from unknown-class samples, so prototype estimation degrade  
+
+> ∗
+
+Corresponding author: Yanxiong Li (eeyxli@scut.edu.cn). 
+
+as the unknown-class proportion grows [7]–[9]. Existing trans-ductive few-shot methods mainly target closed-set accuracy, while dedicated open-set methods do not fully exploit query set structure. This tension is especially pronounced in audio, where environmental sounds span an open-ended category space and deployment conditions are highly variable. Few-shot learning provides metric- and meta-learning foun-dations via Prototypical Networks [10], MAML [11], and embedding baselines [12]. Few-shot open-set methods such as OPP [13], MET [14], Glocal [15], TANE [16], and AISP [17] improve inductive rejection through various prototype and scoring strategies. Transductive methods, such as TIM [5] and Prototype Rectification [6], improve closed-set class estima-tion but are not designed for open-set episodes. Contextual transductive FSOR [9] is the closest prior transductive open-set extension. OSLO [7] introduces latent-inlierness weighting for prototype estimation and EOL [8] proposes decoupled outlier-logit scoring. Few-shot open-set keyword-spotting methods tackle open-set challenges through multi-stage training [18], on-device calibration [19], and cross-domain reprojection [20], but remain task-specific and do not address transductive pro-totype contamination for general audio classification. We propose Refinement-based Outlier-Logit Enhancement (ROLE), a transductive algorithm for Few-shot Open-set Au-dio Classification (FOAC) operating on a frozen audio encoder. Our contributions are as follows.  
+
+> •
+
+We propose ROLE, a unified transductive inference pro-cedure that couples latent-inlierness-guided prototype re-finement with a prior-adaptive free-energy rejection score in a single episode-level inference rule, requiring only a frozen pre-trained encoder with no episodic meta-training or backbone fine-tuning.  
+
+> •
+
+Evaluated on ESC-50, FSD-Kaggle2018, and Urban-arXiv:2607.26607v1 [cs.SD] 29 Jul 2026 Sound8K, under 5-way 1-shot/5-shot and 20%/50%/80% outlier ratios, our method achieves the highest AUROC scores in 10 out of 18 evaluation settings, with macro-mean AUROC of 85.88/92.22 vs. 81.15/90.26 for the strongest baseline MET. II. M ETHOD 
+
+A. Problem Formulation 
+
+We consider a transductive N -way, K-shot open-set episode. The support set S = {(xsi , y si )}Ns 
+
+> i=1
+
+(Ns = N K )contains labeled examples from N novel classes, and the unlabeled query set Q = {xqj }Nq 
+
+> j=1
+
+may contain both known-class samples ( inliers ) and unknown-class samples ( outliers ). The full query set is observed jointly during inference. The goal is to classify inlier query samples into one of N support classes and reject outliers with a scalar outlier score. We write 
+
+[N ] = {1, . . . , N } for the inlier label set. ROLE operates on a frozen pre-trained audio encoder 
+
+f (·) that maps each waveform to a normalized embedding 
+
+ϕ = f (x)/∥f (x)∥. We write ϕsi and ϕqj for support and query embeddings respectively. ROLE optimizes only episode-specific parameters: class prototypes {μk}Nk=1 , re-initialized per episode. 
+
+B. Design Principles 
+
+ROLE is structured as a two-phase pipeline, and each phase addresses a distinct challenge in transductive open-set classification. 
+
+Prototype bias from undifferentiated transduction. Stan-dard transductive updates (e.g., TIM [5], Prototype Rectifica-tion [6]) incorporate all query evidence equally into prototype estimation. In open-set episodes, unknown-class query samples inevitably participate in these updates, pulling prototypes away from the true known-class centers and the bias grows with the unknown-class ratio. Phase 1 mitigates this by introducing a per-query latent inlierness score: query samples assessed as unlikely to belong to any known class are automatically down-weighted, so that primarily known-class evidence refines the prototypes. 
+
+Conflated classification and rejection under a single softmax. A natural approach uses the softmax posterior over known classes for both classification and open-set rejection. However, softmax normalizes only over known classes and cannot express “this query sample belongs to none of them”: an unknown-class query sample equidistant from all prototypes receives a uniform but non-negligible posterior, appearing similar to a genuinely ambiguous inlier. Phase 2 decouples the two objectives by deriving classification from a class-wise softmax and open-set rejection from a sigmoid on the negative log-mean-exp of the same logits, which explicitly measures whether total class evidence justifies considering the query sample as known-class. Figure 1 summarizes the resulting pipeline. 
+
+C. Unified Transductive Inference 
+
+Given a labeled support set and an unlabeled open-set query set, ROLE first refines prototypes under latent inlierness and then further optimizes them on a transductive loss with a prior-adaptive decoupled scoring objective. 
+
+Phase 1: Inlierness-guided prototype refinement. Phase 1 refines class prototypes using query-batch evidence while preventing unknown-class query samples from biasing the result. We write Norm( ·) = (·)/∥ · ∥ for ℓ2 normaliza-tion. Prototypes are initialized from support means: μ(0)  
+
+> k
+
+=Norm( P  
+
+> i:ysi=k
+
+ϕsi ). Each query sample j carries a latent inlierness score ξj ∈ (0 , 1) (initialized to ξ(0)  
+
+> j
+
+= 1 ), rep-resenting the model’s belief that query sample j belongs to some known class. Following the block-coordinate descent of OSLO [7], three variables—soft assignments Z, inlierness 
+
+ξ, and prototypes μ—are updated alternately for Tboot iter-ations with support assignments held fixed. At iteration t,let s(t) 
+
+> jk
+
+= τ ⟨μ(t) 
+
+> k
+
+, ϕ qj ⟩ denote the temperature-scaled cosine similarity between query sample j and prototype k, and 
+
+π(t) 
+
+> jk
+
+= Softmax k∈[N ](s(t) 
+
+> jk
+
+) the posterior probability that query sample j belongs to class k.Soft assignments are modulated by inlierness rather than committed to hard pseudo-labels, which would propagate assignment errors directly into prototypes: 
+
+Z(t+1)  
+
+> jk
+
+= Softmax k∈[N ]
+
+
+
+ξ(t) 
+
+> j
+
+s(t)
+
+> jk
+
+
+
+(1) Here ξj acts as an inverse temperature: when ξj ≈ 1 the as-signment peaks at the nearest prototype, when ξj ≈ 0 it flattens to uniform, neutralizing the query sample’s contribution. The inlierness score is then updated via the expected log-posterior under the soft assignment, measuring how well the known-class structure explains query sample j:
+
+ξ(t+1)  
+
+> j
+
+= Sigmoid 1
+
+λξ
+
+X
+
+> k
+
+Z(t+1)  
+
+> jk
+
+log π(t) 
+
+> jk
+
++ log 1 − bb
+
+!
+
+(2) where λξ > 0 controls sensitivity and b is the prior outlier proportion of the episode. The bias term log 1−bb shifts ξj
+
+downward when b is large: at high outlier ratios, the default 
+
+σ(0) = 0 .5 would place many outliers at an ambiguous mid-point, making them hard to suppress, the prior shift pushes the threshold so that only query samples with strong known-class evidence retain high inlierness. Prototypes are re-estimated by combining fixed support geometry with inlierness-filtered query evidence: 
+
+μ(t+1)  
+
+> k
+
+= Norm 
+
+ X  
+
+> i:ysi=k
+
+ϕsi +
+
+> Nq
+
+X
+
+> j=1
+
+ξ(t+1)  
+
+> j
+
+Z(t+1)  
+
+> jk
+
+ϕqj
+
+ (3) The product ξj Zjk provides double gating: only query samples that are both likely inliers and confidently assigned to class k
+
+influence μk, preventing unknown-class query samples from shifting prototypes. 
+
+Phase 2: Transductive prototype optimization with de-coupled scoring. Phase 2 directly optimizes the class pro-Fig. 1. Overview of ROLE. A frozen audio encoder maps support and query audio to normalized embeddings. Phase 1 performs inlierness-guided prototype refinement. Phase 2 centers episode geometry, optimizes prototypes with ξ-weighted transductive losses, and uses prior-adaptive free-energy rejection decoupled from classification. 
+
+totypes {μk} on the episode-level transductive loss, fur-ther adapting the refined geometry to the observed query distribution. Because frozen encoders carry a shared bias from pre-training, we first subtract the episode mean ¯ϕ = 
+
+> 1
+> Ns+Nq
+
+(P 
+
+> i
+
+ϕsi + P 
+
+> j
+
+ϕqj ), yielding centered prototypes ˜μk =
+
+μ(Tboot ) 
+
+> k
+
+− ¯ϕ and centered query samples ˜ϕqj = ϕqj − ¯ϕ.The logit for query sample j on class k is ljk = τ ⟨ ˜ϕqj , ˜μk⟩,the temperature-scaled cosine similarity between the centered query sample and prototype, where τ > 0 is a fixed tempera-ture shared across both phases. Following EOL [8], classification and rejection are decou-pled rather than sharing a single softmax: 
+
+ˆoj = Sigmoid − log 1
+
+> NN
+
+X
+
+> k=1
+
+eljk − log b
+
+!
+
+,pjk = Softmax k∈[N ](ljk ).
+
+(4) The class posterior pjk gives the predicted class ˆyj =arg max k ljk . The outlier score ˆoj is derived from the negative log-mean-exp of the logits: when no class logit is high, the sum P 
+
+> k
+
+eljk is small relative to N , so − log 1
+
+> N
+
+P 
+
+> k
+
+eljk 
+
+is large and ˆoj is correspondingly large. The prior-adaptive shift − log b further lowers the free-energy threshold required for inlier acceptance as the outlier proportion b grows, so that the boundary between inlier and outlier decisions adapts automatically to episode difficulty. The prototypes {˜μk} are optimized over Tcal gradient steps on a transductive loss: 
+
+Ltrans = − 1
+
+NsNsX
+
+> i=1
+
+log pi,y si + λq
+
+P 
+
+> j
+
+ξj H(pj )
+
+P 
+
+> j
+
+ξj
+
++ λma 
+
+X
+
+> k
+
+ˆpk log ˆ pk
+
+(5) where ˆpk =  P  
+
+> j
+
+ξj pjk 
+
+ P  
+
+> j
+
+ξj
+
+ is the ξ-weighted marginal class distribution; λq and λma > 0 are hyperparameters balancing the three objectives. The three terms are as follows. The support cross-entropy anchors prototype updates to la-beled data. The ξj -weighted conditional entropy minimization encourages sharp per-query predictions for likely inliers while ignoring outliers ( ξj ≈ 0), where the per-query entropy is 
+
+H(pj ) = − X
+
+> k
+
+pjk log pjk . (6) The ξ-weighted marginal entropy maximization: since 
+
+ˆpk log ˆ pk ≤ 0, minimizing +λma 
+
+P 
+
+> k
+
+ˆpk log ˆ pk pushes ˆp
+
+toward the uniform distribution, encouraging the prototype geometry to assign inlier query samples evenly across known classes and preventing collapse to a dominant class. Unlike OSLO/EOL, ROLE uses inlierness-gated TIM-style optimization before prior-adaptive free-energy scoring. Algorithm 1 summarizes the complete procedure of ROLE. III. E XPERIMENTS 
+
+A. Datasets 
+
+We evaluate different methods on three audio datasets: ESC-50 [21], FSD-Kaggle2018 [22] and UrbanSound8K [23]. The encoder is pre-trained on AudioSet [24] and kept frozen. No dataset contributes a training split. All clips are used Algorithm 1 ROLE 
+
+Require: Support set S, query set Q, frozen encoder f
+
+Ensure: Predicted label ˆyj and outlier score ˆoj for each query sample j 
+
+> 1:
+
+Encode and ℓ2-normalise all embeddings; init μ(0)  
+
+> k
+
+from support means, ξ(0)  
+
+> j
+
+=1  
+
+> 2:
+
+for t = 0 , . . . , T boot − 1 do // Phase 1  
+
+> 3:
+
+s(t) 
+
+> jk
+
+= τ ⟨μ(t) 
+
+> k
+
+, ϕ qj ⟩, π(t) 
+
+> jk
+
+= Softmax k(s(t) 
+
+> jk
+
+) 
+
+> 4:
+
+Z(t+1)  
+
+> jk
+
+← Softmax k
+
+ ξ(t) 
+
+> j
+
+s(t)
+
+> jk
+
+ 
+
+> 5:
+
+ξ(t+1)  
+
+> j
+
+← σ
+
+ 1
+
+> λξ
+
+P 
+
+> k
+
+Z(t+1)  
+
+> jk
+
+log π(t) 
+
+> jk
+
++ log 1−bb
+
+ 
+
+> 6:
+
+μ(t+1)  
+
+> k
+
+← Norm  P   
+
+> i:ysi=k
+
+ϕsi + P 
+
+> j
+
+ξ(t+1)  
+
+> j
+
+Z(t+1)  
+
+> jk
+
+ϕqj
+
+ 
+
+> 7:
+
+end for  
+
+> 8:
+
+Centre all embeddings: ˜ϕ ← ϕ − ¯ϕ // Phase 2  
+
+> 9:
+
+for t = 0 , . . . , T cal − 1 do  
+
+> 10:
+
+ljk = τ ⟨ ˜ϕqj , ˜μk⟩; minimise Ltrans w.r.t. {˜μk} 
+
+> 11:
+
+end for return ˆyj = arg max k ljk , ˆoj = σ − log 1
+
+> N
+
+P 
+
+> k
+
+eljk −
+
+log b
+
+for episodic evaluation. Each dataset is divided into 5 folds. Episodes are drawn from the 4 non-held-out folds with the held-out fold rotated across iterations. 
+
+ESC-50 [21] contains 2,000 five-second environmental sound clips across 50 classes (40 clips/class) with 5 built-in cross-validation folds. We designate 25 classes (indices 0–24) as the inlier pool and the remaining 25 classes (indices 25–49) as the outlier pool. Each episode samples 5 inlier and 5 outlier classes from their respective pools. 
+
+FSD-Kaggle2018 [22] contains 9,473 variable-length clips across 41 general-purpose sound-event classes (94–300 clips/class). Because the dataset has no built-in folds, we assign 5 stratified folds deterministically (seed = 0). We use 20 classes (indices 0–19) as inlier pool and 21 classes (indices 20–40) as outlier pool, each episode samples 5 + 5 from these pools. 
+
+UrbanSound8K [23] contains 8,732 urban sound clips across 10 classes (374–1,000 clips/class). The original 10 folds are remapped to 5 by merging consecutive pairs (folds 1– 2 → 1, 3–4 → 2, . . . ). With 5 inlier classes (indices 0–4) and 5 outlier classes (indices 5–9), every episode uses all 10 classes. 
+
+B. Experimental Setup 
+
+Each configuration uses 5-way open-set episodes with 5 inlier classes and 5 outlier classes drawn from their respective pools. We evaluate both 1-shot and 5-shot support samples. Support samples come exclusively from inlier classes. All query samples are unlabeled at test time. Each inlier class con-tributes 4 query samples, whereas each outlier class contributes 1, 4, or 16 query samples, yielding 20%, 50%, and 80% outlier ratios. Under the 1-shot setting, this gives 5 support samples per episode. Under 5-shot, 25 support samples per episode. Query set sizes are 25, 40, and 100 for the three outlier ratios, regardless of shot count. We follow a 5-fold cross-fold protocol with the held-out fold excluded from episode sampling. 300 episodes are drawn per fold, yielding 1,500 episodes per configuration. Because ROLE is a transductive inference method without cross-episode training, support and query samples come from the non-held-out folds of the same dataset. Across the full benchmark (8 baselines + ROLE, 3 datasets, 2 shot settings, 3 outlier ratios), this amounts to 9×3×2×3×1,500 = 243 ,000 
+
+episode-level inferences. We report three metrics [25]: inlier classification accuracy (Acc), measuring the fraction of correctly classified known-class query samples, area under the receiver operating charac-teristic curve (AUROC), which evaluates the ranking quality of the outlier score across all operating thresholds, and area under the precision–recall curve (AUPR), which emphasizes detection performance when the positive (outlier) class is rare or dominant depending on the outlier ratio. Table I shows per-dataset results across all outlier ratios and shot settings. Table II presents the macro-average over all three datasets, further averaged over the three outlier ratios, under 1-shot and 5-shot protocols. Both tables arrange methods by row. All methods share the same pre-trained Audio Spectrogram Transformer (AST [26], pre-trained on AudioSet [24]). Fol-lowing standard model-agnostic transductive FSL practice [5], [6], the encoder is kept fixed during inference so that the comparison isolates differences in the FOAC algorithm itself. We compare ROLE against four transductive baselines, OSTIM [25], OSLO [7], EOL [8], and OPP-T [13], as well as five inductive baselines, OPP-I [13], MET [14], Glocal [15], TANE [16], and AISP [17]. All methods use the same frozen AST embeddings and identical episodic construction so that differences can be attributed to the open-set inference rule rather than to backbone changes. For OPP-I/OPP-T, since the AST backbone cannot be retrained, base-class weight vectors are computed as the mean of frozen AST embeddings over all training-fold samples per class, omitting the backbone fine-tuning stage of the original paper. For MET, Glocal, and TANE, all three share the same cosine ProtoNet classifier. Only the outlier scoring function differs, and no per-method temperature tuning is applied, which accounts for their identi-cal Acc values. AISP is evaluated under a class-split protocol (60% base-class meta-training / 40% novel-class evaluation). UrbanSound8K is excluded for AISP as its 10-class pool yields only 4 novel classes after splitting, which is insufficient for 5-way episodes. 
+
+C. Main Results 
+
+Tables I and II summarize the benchmark. ROLE achieves the best AUROC in 10 out of the 18 dataset-specific settings. At 20% outlier ratios under 1-shot, OSLO leads in all three datasets: with only a small number of query samples of unknown classes, prototype refinement alone suffices and the benefit of decoupled scoring diminishes. Table II confirms ROLE’s macro-average advantage: ROLE attains 85.88% (1-shot) and 92.22% (5-shot) AUROC, improving over MET by 4.73% and 1.96% respectively, and leads inlier Acc under TABLE I DETAILED PER -DATASET RESULTS . M ETRICS : A CC /AUROC/AUPR (%). 
+
+Method Outlier Ratio ESC-50 FSD-Kaggle2018 UrbanSound8K 5-way 1-shot 5-way 5-shot 5-way 1-shot 5-way 5-shot 5-way 1-shot 5-way 5-shot Acc AUROC AUPR Acc AUROC AUPR Acc AUROC AUPR Acc AUROC AUPR Acc AUROC AUPR Acc AUROC AUPR OSTIM [25] 20% 
+
+98.41 94.44 82.81 99.46 96.20 87.65 88.05 80.48 54.51 94.26 84.62 60.60 80.13 67.30 39.03 90.84 74.73 45.77 OSLO [7] 97.54 97.98 94.17 99.27 98.53 96.15 83.91 86.32 67.86 92.30 89.95 74.04 72.43 73.99 50.07 87.78 77.96 55.89 EOL [8] 96.10 71.52 38.11 98.44 88.57 62.65 85.55 65.13 36.29 93.05 79.19 48.82 76.23 57.90 31.62 89.04 69.08 39.98 OPP-I [13] 96.32 88.68 73.24 99.20 92.01 80.74 81.39 71.05 46.01 92.10 73.88 48.96 69.28 61.42 37.47 87.28 61.86 38.24 OPP-T [13] 98.23 88.49 73.64 99.30 90.80 78.47 79.68 70.60 46.19 92.52 72.82 48.11 75.99 61.62 37.68 88.08 61.48 38.02 MET [14] 96.32 94.49 85.85 99.20 98.27 95.43 81.39 80.28 58.04 92.10 90.39 75.86 69.28 68.53 44.53 87.28 81.79 60.13 
+
+Glocal [15] 96.32 94.66 85.42 99.20 98.22 95.09 81.39 78.68 54.80 92.10 87.75 68.91 69.28 67.51 43.18 87.28 74.00 50.33 TANE [16] 96.32 93.51 82.44 99.20 97.47 93.06 81.39 76.18 51.51 92.10 84.13 62.72 69.28 65.19 40.98 87.28 69.02 45.55 AISP [17] 93.74 87.14 75.34 96.21 94.32 86.90 69.21 75.66 56.43 84.59 81.44 61.61 —ROLE (Ours) 97.94 96.09 88.99 99.34 98.69 96.45 85.79 82.55 60.69 92.91 91.74 78.56 75.41 70.12 43.87 88.46 82.08 59.85 OSTIM [25] 50% 
+
+96.97 70.03 70.57 99.19 76.32 75.61 84.63 71.84 71.35 92.66 76.75 75.83 75.54 53.00 57.77 88.38 60.81 63.26 OSLO [7] 96.87 76.74 74.87 99.13 92.40 91.09 83.31 73.80 72.65 92.28 82.82 80.93 70.42 54.05 55.33 86.75 66.54 65.04 EOL [8] 96.86 96.26 95.79 99.23 99.24 99.21 83.96 83.88 82.21 92.74 93.69 93.13 74.30 74.14 74.00 88.30 86.83 86.57 
+
+OPP-I [13] 96.07 89.47 88.73 99.27 91.82 91.37 81.34 71.44 70.30 92.55 74.35 73.28 68.59 61.22 62.50 87.31 61.99 63.76 OPP-T [13] 96.87 67.77 67.38 98.91 79.01 77.59 83.95 60.68 61.47 91.86 66.83 66.64 70.63 54.59 56.05 85.79 57.33 59.18 MET [14] 96.07 94.75 94.39 99.27 98.50 98.54 81.34 80.64 79.24 92.55 90.75 90.04 68.59 68.16 68.47 87.31 82.16 81.07 Glocal [15] 96.07 95.06 94.55 99.27 98.44 98.41 81.34 79.19 77.32 92.55 88.17 86.57 68.59 67.14 67.39 87.31 74.38 74.21 TANE [16] 96.07 93.93 93.22 99.27 97.73 97.60 81.34 76.61 74.80 92.55 84.57 82.89 68.59 64.82 65.51 87.31 69.34 70.21 AISP [17] 90.13 87.10 86.69 98.42 94.73 94.93 80.13 71.81 71.66 88.73 81.23 80.69 —ROLE (Ours) 96.70 97.22 97.31 99.32 99.15 99.22 83.73 85.74 85.26 93.05 93.05 92.77 73.73 74.90 75.02 88.39 84.85 84.54 OSTIM [25] 80% 96.33 34.37 74.11 98.78 43.80 78.14 81.25 57.05 84.56 91.58 62.94 86.84 71.90 35.80 75.88 85.86 42.53 85.68 OSLO [7] 82.26 31.62 66.30 95.04 37.58 72.95 73.87 40.07 76.18 87.77 55.37 82.63 56.09 28.72 70.04 72.77 35.63 72.66 EOL [8] 96.49 96.42 98.99 98.98 98.92 99.71 82.24 87.32 96.02 92.27 93.95 98.22 73.74 77.06 92.58 87.45 87.52 96.27 
+
+OPP-I [13] 96.19 88.41 95.97 99.05 91.84 97.30 80.93 71.70 89.05 92.33 73.43 89.99 68.96 61.64 85.78 87.05 61.91 86.09 OPP-T [13] 71.48 30.72 69.54 92.93 43.94 76.97 69.09 41.66 76.51 85.80 51.40 80.73 52.66 44.79 76.84 70.47 49.29 79.19 MET [14] 96.19 94.47 98.12 99.05 98.23 99.48 80.93 80.51 92.81 92.33 90.28 96.78 68.96 68.56 88.53 87.05 82.00 93.75 Glocal [15] 96.19 94.66 98.12 99.05 98.20 99.45 80.93 79.17 92.03 92.33 87.45 95.42 68.96 67.54 88.14 87.05 74.26 90.92 TANE [16] 96.19 93.42 97.65 99.05 97.43 99.18 80.93 76.66 90.96 92.33 83.81 94.01 68.96 65.29 87.28 87.05 69.24 89.16 AISP [17] 89.58 88.26 96.14 96.26 95.31 98.64 63.66 72.87 90.13 87.06 82.10 93.87 —ROLE (Ours) 96.56 98.00 99.45 99.00 99.25 99.80 82.97 88.88 96.60 92.86 93.83 98.19 73.86 79.38 93.45 88.07 87.33 96.15 
+
+5-shot (93.49%). Under 1-shot, OSTIM leads Acc narrowly (85.91% vs. 85.19%) but trails ROLE by 23.18% in AUROC, reflecting the gap between closed-set transduction and open-set discriminability. AISP, despite episodic meta-training, trails the training-free ROLE by 5.41% in macro AUROC. The per-method trends reveal complementary failure modes that ROLE avoids. OSLO refines prototypes effectively at low contamination but lacks a decoupled scoring head, so its AUROC collapses under 80% outliers (e.g. 31.62% on ESC-50 1-shot) where corrupted prototypes directly degrade the coupled softmax. Conversely, EOL applies decoupled scoring without prototype refinement; it excels at high outlier ratios yet underperforms at 20% (e.g. 71.52% AUROC on ESC-50 1-shot) because its support-only prototypes are too coarse for reliable logit calibration. The inductive methods MET [14], Glocal [15], and TANE [16] adopt distinct rejection criteria but share a structural limitation: their rejection boundaries are calibrated solely from support examples and remain fixed at test time, causing degradation as the episode outlier ratio shifts. ROLE sidesteps these failure modes by jointly refining prototypes with inlierness gating and adapting rejection to the episode outlier prior, although acoustically similar unknown sounds may still influence refinement. 
+
+TABLE II MACRO -AVERAGED RESULTS OVER ESC-50, FSD-K AGGLE 2018, AND 
+
+URBAN SOUND 8K, FURTHER AVERAGED OVER THREE OUTLIER RATIOS PER DATASET . A CC /AUROC/AUPR (%). 
+
+Method 5-way 1-shot 5-way 5-shot Acc AUROC AUPR Acc AUROC AUPR OSTIM [25] 85.91 62.70 67.84 93.45 68.74 73.26 OSLO [7] 79.63 62.59 69.72 90.34 70.75 76.82 EOL [8] 85.05 78.85 71.73 93.28 88.55 80.51 OPP-I [13] 82.12 73.89 72.12 92.90 75.90 74.41 OPP-T [13] 77.62 57.88 62.81 89.52 63.66 67.21 MET [14] 82.12 81.15 78.89 92.90 90.26 87.90 Glocal [15] 82.12 80.40 77.88 92.90 86.76 84.37 TANE [16] 82.12 78.40 76.04 92.90 83.64 81.60 AISP [17] 81.07 80.47 79.40 91.88 88.19 86.11 ROLE (Ours) 85.19 85.88 82.29 93.49 92.22 89.50 
+
+D. Ablation Study 
+
+Table III evaluates four component variants of ROLE on ESC-50 and FSD-Kaggle2018, macro-averaged across three outlier ratios (20%, 50%, 80%) and both shot settings. Urban-Sound8K is omitted because its 10 classes make each episode cover all inlier/outlier classes, limiting ablation representative-TABLE III ABLATION RESULTS MACRO -AVERAGED OVER ESC-50 AND 
+
+FSD-K AGGLE 2018, THREE OUTLIER RATIOS , AND BOTH SHOT SETTINGS .FORMAT : MEAN ± 95 % CI (%). 
+
+Variant AUROC Acc ROLE 93.82 ± 0.16 93.53 ± 0.29 
+
+w/o Phase 1 91.91 ± 0.16 91.88 ± 0.28 w/o ξ-gate ( ξj ≡ 1) 71.77 ± 0.29 90.01 ± 0.45 w/o Phase 2 92.53 ± 0.17 92.81 ± 0.32 w/o b-prior 89.83 ± 0.15 90.09 ± 0.30 
+
+ness. The ablation reveals a clear hierarchy of contributions. Removing ξ-gating causes by far the largest AUROC drop (−22.05%), confirming that inlierness gating is the most critical mechanism: without it, Phase 1 propagates outlier contributions uniformly into prototypes, severely corrupting the logit geometry. Removing the prior-adaptive shift (w/o b-prior) causes the next-largest degradation ( −3.99% AUROC, 
+
+−3.44% Acc), showing that calibrating the inlierness threshold to the episode outlier proportion is essential for both detection and classification. Removing Phase 1 entirely yields moder-ate drops ( −1.91% AUROC, −1.65% Acc), indicating that Phase 2 can partially recover from a coarser initialisation. Disabling Phase 2 causes the smallest AUROC drop ( −1.29%) but reduces Acc by 0.72%, confirming that the transductive optimisation further corrects few-shot class geometry beyond what Phase 1 alone achieves. IV. C ONCLUSIONS 
+
+We presented ROLE, a transductive inference procedure for few-shot open-set audio classification that couples inlierness-guided prototype refinement with a prior-adaptive free-energy rejection score and a transductive prototype optimization ob-jective. This design directly addresses the core tension of transductive FOAC: query set transduction benefits prototype estimation only when query samples of unknown classes are identified and suppressed first. Experiments show macro-averaged AUROC/AUPR gains, especially at moderate-to-high outlier ratios; ablations verify that both stages are necessary. All experiments use a fixed pre-trained AST encoder, and stronger encoder adaptation and inlierness estimation remain directions for future work. ACKNOWLEDGMENT 
+
+This work was partly supported by the national natural science foundation of China (62371195, 62111530145), the exchange project of the 10th Meeting of China-Croatia Science and Technology Cooperation Committee (10-34), and the national undergraduate training program for innovation and entrepreneurship (202510561025 and 202510561026). REFERENCES [1] Y. Li, J. Li, Y. Si, J. Tan, and Q. He, “Few-shot class-incremental audio classification with adaptive mitigation of forgetting and overfitting,” 
+
+TASLP , vol. 32, pp. 2297–2311, 2024. [2] Y. Si, Y. Li, J. Tan, G. Chen, Q. Li, and M. Russo, “Fully few-shot class-incremental audio classification with adaptive improvement of stability and plasticity,” TASLP , vol. 33, pp. 418–433, 2025. [3] Y. Li, W. Cao, J. Tan, Q. Li, and G. Chen, “Few-shot class-incremental audio classification using pseudo-incrementally trained em-bedding learner and continually updated stochastic classifier,” TASLP ,vol. 33, pp. 3880–3895, 2025. [4] Y. Li, W. Cao, W. Xie, J. Li, and E. Benetos, “Few-shot class-incremental audio classification using dynamically expanded classifier with self-attention modified prototypes,” TMM , vol. 26, pp. 1346–1360, 2024. [5] M. Boudiaf, I. Ziko, J. Rony, J. Dolz, P. Piantanida, and I. Ben Ayed, “Information maximization for few-shot learning,” in NeurIPS , vol. 33, 2020, pp. 2445–2457. [6] J. Liu, L. Song, and Y. Qin, “Prototype rectification for few-shot learning,” in ECCV , 2020, pp. 741–756. [7] M. Boudiaf, E. Bennequin et al. , “Open-set likelihood maximization for few-shot learning,” in CVPR , 2023, pp. 24 007–24 016. [8] M. Ochal, M. Patacchiola, M. Boudiaf, and S. Wang, “Trans-ductive few-shot open-set recognition by enhancing outlier logits,” arXiv:2408.02052, 2024. [9] S. Wu, H. Luo, and X. Lin, “Tnpnet: An approach to few-shot open-set recognition via contextual transductive learning,” Neurocomputing , vol. 621, p. 129276, 2025. [10] J. Snell, K. Swersky, and R. S. Zemel, “Prototypical networks for few-shot learning,” in NeurIPS , 2017. [11] C. Finn, P. Abbeel, and S. Levine, “Model-agnostic meta-learning for fast adaptation of deep networks,” in ICML , 2017, pp. 1126–1135. [12] Y. Tian, Y. Wang, D. Krishnan, J. B. Tenenbaum, and P. Isola, “Rethink-ing few-shot image classification: A good embedding is all you need?” in ECCV , 2020, pp. 266–282. [13] L.-Y. Sun and W.-T. Chu, “Overall positive prototype for few-shot open-set recognition,” Pattern Recognition , vol. 151, p. 110400, 2024. [14] H. Sapkota, K. P. Neupane, and Q. Yu, “Meta evidential transformer for few-shot open-set recognition,” in ICML , 2024, pp. 43 389–43 406. [15] H. Wang, G. Pang, P. Wang, L. Zhang, W. Wei, and Y. Zhang, “Glocal energy-based learning for few-shot open-set recognition,” in CVPR ,2023, pp. 7507–7516. [16] S. Huang, J. Ma, G. Han, and S.-F. Chang, “Task-adaptive negative envision for few-shot open-set recognition,” in CVPR , 2022, pp. 7161– 7170. [17] Y. Li, J. Tan, Q. Li, G. Chen, S. Huang, and T. Virtanen, “Few-shot open-set audio classification using attention information-fused prototypes,” 
+
+TASLP , vol. 34, pp. 1929–1943, 2026. [18] L.-Y. Li, T.-H. Lo, J.-W. Hung, S.-C. Huang, and B. Chen, “Few-shot open-set keyword spotting with multi-stage training,” in APSIPA ASC ,2024, pp. 1–5. [19] M. Rusci and T. Tuytelaars, “Few-shot open-set learning for on-device customization of keyword spotting systems,” in Interspeech , 2023, pp. 2768–2772. [20] M. Yang, Q. He, J. Huang, Y. Chen, Y. Li, and Z. Liu, “Cross-domain few-shot open-set keyword spotting using keyword adaptation and prototype reprojection,” in ICASSP , 2025, pp. 1–5. [21] K. J. Piczak, “Esc: Dataset for environmental sound classification,” in 
+
+ACM Multimedia , 2015, pp. 1015–1018. [22] E. Fonseca, M. Plakal, F. Font, D. P. W. Ellis, X. Favory, J. Pons, and X. Serra, “General-purpose tagging of freesound audio with audioset labels,” in DCASE Workshop , 2018, pp. 69–73. [23] J. Salamon, C. Jacoby, and J. P. Bello, “A dataset and taxonomy for urban sound research,” in ACM Multimedia , 2014, pp. 1041–1044. [24] J. F. Gemmeke, D. P. W. Ellis, D. Freedman et al. , “Audio set: An ontology and human-labeled dataset for audio events,” in ICASSP , 2017, pp. 776–780. [25] M. Boudiaf, E. Bennequin, M. Tami, C. Hudelot, A. Toubhans, P. Pi-antanida, and I. Ben Ayed, “Model-agnostic few-shot open-set recogni-tion,” arXiv:2206.09236, 2022. [26] Y. Gong, Y.-A. Chung, and J. Glass, “Ast: Audio spectrogram trans-former,” in Interspeech , 2021, pp. 571–575.

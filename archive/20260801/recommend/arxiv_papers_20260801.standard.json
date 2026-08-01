@@ -1,0 +1,101 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-01T21:08:37.767681+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.28306v1",
+      "source": "arxiv",
+      "title": "A Distributed Acoustic Sensing Dataset for Vessel Detection and Localization in Submarine Cable Protection",
+      "abstract": "Recent incidents of accidental damage and suspected sabotage to submarine telecommunication and power cables, particularly in the Baltic Sea, have underscored their vulnerability and the need for continuous monitoring solutions. Distributed acoustic sensing (DAS) applied to submarine optical-fiber cables enables wide-area monitoring of underwater acoustic activity.   We present the Marlinks-NS DAS dataset, comprising processed submarine DAS measurements and AIS-derived vessel information curated for cable-protection research. The dataset defines two machine-learning tasks (vessel detection and vessel-to-cable distance estimation) allowing reproducible research under realistic marine conditions.   The dataset contains 74,771 labeled data instances from ten days of continuous recording along a 2,554 m segment in a 28 km buried fiber-optic cable in the North Sea. Each instance includes spectral-energy features from 250 sensing channels, together with anonymized distance measurements and metadata from AIS information. The released HDF5 data, documentation, processing description, and example code support reproducible development and evaluation of DAS-based vessel-monitoring methods for submarine cable protection.",
+      "authors": [
+        "Erick Eduardo Ramirez-Torres",
+        "Javier Macias-Guarasa",
+        "Daniel Pizarro",
+        "Javier Tejedor",
+        "Sira Elena Palazuelos-Cagigas",
+        "Pedro J. Vidal-Moreno",
+        "María R. Fernández-Ruiz",
+        "Sonia Martin-Lopez",
+        "Miguel Gonzalez-Herraez",
+        "Roel Vanthillo"
+      ],
+      "primary_category": "physics.geo-ph",
+      "categories": [
+        "physics.geo-ph",
+        "cs.LG"
+      ],
+      "published": "2026-07-30T14:44:11+00:00",
+      "link": "https://arxiv.org/pdf/2607.28306v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "underwater DAS dataset for vessel detection and localization, directly related to ship/vessel acoustic recognition",
+      "llm_evidence_cn": "面向船舶检测与定位的水下分布式声感数据集，直接关联船舶噪声识别",
+      "llm_evidence": "面向船舶检测与定位的水下分布式声感数据集，直接关联船舶噪声识别",
+      "canonical_evidence": "面向船舶检测与定位的水下分布式声感数据集，直接关联船舶噪声识别",
+      "llm_tldr_en": "Presents Marlinks-NS DAS dataset with processed submarine acoustic sensing and AIS vessel information, defining vessel detection and distance-estimation tasks for cable protection.",
+      "llm_tldr_cn": "针对海底电缆易受损和需连续监测的问题，该文提出Marlinks-NS分布式声学感知（DAS）数据集，包含处理后的海底DAS测量和AIS船舶信息。数据集定义了船舶检测和船舶到电缆距离估计两个机器学习任务，支持在真实海洋环境下进行可复现研究。该数据直接面向水下船舶声学监测，是船舶噪声识别与定位相关研究的重要资源，也为利用水下声学信号识别船只提供了标准化数据基准。",
+      "llm_tldr": "针对海底电缆易受损和需连续监测的问题，该文提出Marlinks-NS分布式声学感知（DAS）数据集，包含处理后的海底DAS测量和AIS船舶信息。数据集定义了船舶检测和船舶到电缆距离估计两个机器学习任务，支持在真实海洋环境下进行可复现研究。该数据直接面向水下船舶声学监测，是船舶噪声识别与定位相关研究的重要资源，也为利用水下声学信号识别船只提供了标准化数据基准。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "vessel noise classification with high frequency cues",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.26607v1",
+      "source": "arxiv",
+      "title": "Few-Shot Open-Set Audio Classification via Transductive Prototype Refinement and Class Logit Enhancement",
+      "abstract": "Few-shot Open-set audio classification requires classifying query samples from known classes with a few labeled support samples while rejecting query samples from unknown classes. Transductive inference jointly observes the full unlabeled query set to improve prototype estimation, yet standard transductive updates do not distinguish known from unknown query samples, leaving prototypes vulnerable to open-set contamination. Drawing on latent-inlierness weighting and decoupled scoring for unknown-class samples, we propose a two-phase transductive method operating over a frozen audio encoder. First, each query sample is assigned a latent inlierness score that down-weights likely unknown-class samples, so that prototype refinement is driven primarily by known-class evidence. The refined prototypes are then directly optimized on a transductive loss combining support cross-entropy, inlierness-weighted conditional entropy minimization, and inlierness-weighted marginal entropy maximization, while open-set rejection uses a prior-adaptive free-energy score that adjusts its threshold with the prior proportion of unknown-class samples, decoupling detection from classification. Experiments on three audio datasets show our method achieves state-of-the-art results for few-shot open-set audio classification under multiple experimental conditions.",
+      "authors": [
+        "Tianyan Deng",
+        "Yanxiong Li",
+        "Rui Gao",
+        "Jiahao Du"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.LG"
+      ],
+      "published": "2026-07-29T08:29:47+00:00",
+      "link": "https://arxiv.org/pdf/2607.26607v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Few-shot open-set audio classification method applicable to underwater target recognition",
+      "llm_evidence_cn": "适用于水下目标识别的少样本开放集音频分类方法",
+      "llm_evidence": "适用于水下目标识别的少样本开放集音频分类方法",
+      "canonical_evidence": "适用于水下目标识别的少样本开放集音频分类方法",
+      "llm_tldr_en": "Proposes a two-phase transductive few-shot open-set audio classification method with latent-inlierness weighting to guard prototype refinement from open-set contamination and decoupled scoring for known/unknown separation, improving accuracy and rejection on frozen audio encoders.",
+      "llm_tldr_cn": "针对少样本开放集音频分类中未知类样本污染原型估计的问题，提出一种两阶段直推式方法：先为每个查询样本计算潜在内点度权重以降低未知样本影响，再通过解耦评分区分已知与未知类。在冻结音频编码器上实验，该方法显著提升已知类分类精度和未知类拒绝能力，为水下目标识别等少样本开放集音频分类任务提供了有效方案。",
+      "llm_tldr": "针对少样本开放集音频分类中未知类样本污染原型估计的问题，提出一种两阶段直推式方法：先为每个查询样本计算潜在内点度权重以降低未知样本影响，再通过解耦评分区分已知与未知类。在冻结音频编码器上实验，该方法显著提升已知类分类精度和未知类拒绝能力，为水下目标识别等少样本开放集音频分类任务提供了有效方案。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic target recognition using high frequency features",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
