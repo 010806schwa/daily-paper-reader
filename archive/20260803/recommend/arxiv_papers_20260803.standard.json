@@ -1,0 +1,95 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-03T20:33:38.298293+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.29621v1",
+      "source": "arxiv",
+      "title": "CENDRe: Concept Extraction with Natural Domain Representations",
+      "abstract": "Convolutional neural networks (CNNs) are widely used for time-series classification, but their deployment in critical domains requires understanding the temporal and spectral patterns that drive their predictions. Concept extraction (CE) methods identify such patterns by analyzing representations within the models' latent space. However, existing time-series CE methods have three limitations: they operate only in the time domain and overlook frequency features, predefine the number of concepts, and produce localizations misaligned with the regions the model uses. We address these limitations by proposing CENDRe, a concept extraction method for CNNs. It first discovers concepts by clustering per-timestep latent representations in two stages, where silhouette-guided aggregation selects the number of concepts automatically. Then, it localizes each concept through gradients of a presence score that contrasts the latent representations with their prototypes, producing masks that concentrate on the regions driving the concept. These gradients, propagated through a differentiable invertible mapping of the input such as a Fourier transform, yield localizations for the same concepts in the frequency domain. Finally, each concept receives a relevance score that quantifies its contribution to each class. On synthetic benchmarks, CENDRe achieves representation correctness comparable to state-of-the-art CE methods and significantly higher importance correctness. On real bearing-fault data, CENDRe extracts the frequency bands driving the model's predictions, located in regions commonly inspected for fault diagnosis, producing evidence to assess the model that time-domain CE methods cannot.",
+      "authors": [
+        "Antonia Holzapfel",
+        "Andres Felipe Posada Moreno",
+        "Sebastian Trimpe"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-31T16:56:27+00:00",
+      "link": "https://arxiv.org/pdf/2607.29621v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "frequency-domain concept extraction for CNN time-series classification; transferable to acoustic classification",
+      "llm_evidence_cn": "面向CNN时间序列分类的频域概念提取方法，可迁移至水声识别",
+      "llm_evidence": "面向CNN时间序列分类的频域概念提取方法，可迁移至水声识别",
+      "canonical_evidence": "面向CNN时间序列分类的频域概念提取方法，可迁移至水声识别",
+      "llm_tldr_en": "CENDRe is a concept extraction method that discovers temporal and spectral concepts in CNN time-series classifiers, overcoming time-only analysis and misaligned localizations; it reveals frequency patterns driving predictions, useful for interpreting high-frequency cues in ship-noise recognition.",
+      "llm_tldr_cn": "针对基于CNN的时间序列分类模型缺乏可解释性，现有概念提取方法往往只分析时域信号且忽略频率特征。CENDRe通过两阶段聚类逐时间步潜表示，结合频谱表示与轮廓引导，自动确定概念数量，并生成与模型实际使用区域对齐的定位。实验证明该方法能够在时域和频域同时发现有意义的概念，为船舶噪声等水下目标识别中的高频特征分析提供了可解释的分析工具。",
+      "llm_tldr": "针对基于CNN的时间序列分类模型缺乏可解释性，现有概念提取方法往往只分析时域信号且忽略频率特征。CENDRe通过两阶段聚类逐时间步潜表示，结合频谱表示与轮廓引导，自动确定概念数量，并生成与模型实际使用区域对齐的定位。实验证明该方法能够在时域和频域同时发现有意义的概念，为船舶噪声等水下目标识别中的高频特征分析提供了可解释的分析工具。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "using high frequency acoustic features for underwater target classification",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.27454v2",
+      "source": "arxiv",
+      "title": "Improved Robustness in AI-Generated Music Detection",
+      "abstract": "AI music generators leave predictable spectral artifacts determined by their architecture. Existing detectors exploit these artifacts with near-perfect accuracy on raw generated tracks, but their performance collapses under simple audio manipulations, such as speed modification or pitch shifting. We address this open robustness problem by introducing a frequency-scaling-invariant detection pipeline that aims to prevent this kind of attack by design. Our method maps audio onto a log-frequency axis via a log-STFT remapping. A single learned cross-correlation filter, combined with max-pooling, provides shift invariance at inference time. Training uses a hybrid loss that jointly supervises binary detection and artifact-peak localization, regularizing boundary weights. Because robustness to speed change is built in by design, the detector is also interpretable: it outputs both a binary decision and an estimate of the applied speed-change factor.",
+      "authors": [
+        "Emile Dugelay",
+        "Thomas Barand",
+        "Aurélien Laouar",
+        "Baptiste Campeas",
+        "Darius Afchar",
+        "Romain Hennequin"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD"
+      ],
+      "published": "2026-07-29T20:43:13+00:00",
+      "link": "https://arxiv.org/pdf/2607.27454v2",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Log-STFT frequency-scaling-invariant audio detection; transferable to ship noise recognition via frequency features",
+      "llm_evidence_cn": "提出基于log-STFT的频率缩放不变检测方法，可用于船舶噪声的高频特征识别",
+      "llm_evidence": "提出基于log-STFT的频率缩放不变检测方法，可用于船舶噪声的高频特征识别",
+      "canonical_evidence": "提出基于log-STFT的频率缩放不变检测方法，可用于船舶噪声的高频特征识别",
+      "llm_tldr_en": "Proposes a frequency-scaling-invariant pipeline using log-STFT remapping and a learned cross-correlation filter with max-pooling for robust AI-music detection, preserving accuracy under speed and pitch manipulations.",
+      "llm_tldr_cn": "现有AI生成音乐检测器在原始音频上准确率高，但在变速或变调后性能显著下降。本文提出一种频率缩放不变的检测流程，通过log-STFT重映射和对数频率轴上的学习互相关滤波与最大池化实现尺度不变性，并用混合损失联合监督检测与伪影峰值定位。实验表明该方法在音频操作下依然保持稳健检测，为音频频率特征识别提供了可迁移的技术方案。",
+      "llm_tldr": "现有AI生成音乐检测器在原始音频上准确率高，但在变速或变调后性能显著下降。本文提出一种频率缩放不变的检测流程，通过log-STFT重映射和对数频率轴上的学习互相关滤波与最大池化实现尺度不变性，并用混合损失联合监督检测与伪影峰值定位。实验表明该方法在音频操作下依然保持稳健检测，为音频频率特征识别提供了可迁移的技术方案。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "high frequency acoustic features for ship noise recognition",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

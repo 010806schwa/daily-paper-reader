@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-03",
+  "date": "2026-08-03",
+  "generated_at": "2026-08-03T20:35:37",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/03/2607.29621v1-cendre-concept-extraction-with-natural-domain-representations",
+      "section": "quick",
+      "title_en": "CENDRe: Concept Extraction with Natural Domain Representations",
+      "authors": "Antonia Holzapfel, Andres Felipe Posada Moreno, Sebastian Trimpe",
+      "date": "2026-07-31",
+      "pdf": "https://arxiv.org/pdf/2607.29621v1",
+      "score": "7.0",
+      "evidence": "面向CNN时间序列分类的频域概念提取方法，可迁移至水声识别",
+      "tldr": "时间序列CNN的可解释性受限于现有概念提取方法仅考虑时域、需预设概念数且定位不准。CENDRe通过两阶段聚类与轮廓引导自动确定概念数，利用梯度与可逆傅里叶变换同时对时频域定位，并给出类别相关重要性，在轴承故障数据上提取出与诊断专家关注的频带一致，优于现有方法。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Convolutional neural networks (CNNs) are widely used for time-series classification, but their deployment in critical domains requires understanding the temporal and spectral patterns that drive their predictions. Concept extraction (CE) methods identify such patterns by analyzing representations within the models' latent space. However, existing time-series CE methods have three limitations: they operate only in the time domain and overlook frequency features, predefine the number of concepts, and produce localizations misaligned with the regions the model uses. We address these limitations by proposing CENDRe, a concept extraction method for CNNs. It first discovers concepts by clustering per-timestep latent representations in two stages, where silhouette-guided aggregation selects the number of concepts automatically. Then, it localizes each concept through gradients of a presence score that contrasts the latent representations with their prototypes, producing masks that concentrate on the regions driving the concept. These gradients, propagated through a differentiable invertible mapping of the input such as a Fourier transform, yield localizations for the same concepts in the frequency domain. Finally, each concept receives a relevance score that quantifies its contribution to each class. On synthetic benchmarks, CENDRe achieves representation correctness comparable to state-of-the-art CE methods and significantly higher importance correctness. On real bearing-fault data, CENDRe extracts the frequency bands driving the model's predictions, located in regions commonly inspected for fault diagnosis, producing evidence to assess the model that time-domain CE methods cannot.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/03/2607.27454v2-improved-robustness-in-ai-generated-music-detection",
+      "section": "quick",
+      "title_en": "Improved Robustness in AI-Generated Music Detection",
+      "authors": "Emile Dugelay, Thomas Barand, Aurélien Laouar, Baptiste Campeas, Darius Afchar, Romain Hennequin",
+      "date": "2026-07-29",
+      "pdf": "https://arxiv.org/pdf/2607.27454v2",
+      "score": "6.0",
+      "evidence": "提出基于log-STFT的频率缩放不变检测方法，可用于船舶噪声的高频特征识别",
+      "tldr": "AI音乐生成器留下可预测的频谱伪影，现有检测器在原始音频上准确，但对速度修改或音高平移等操作鲁棒性不足。本文提出频率缩放不变的检测管道，通过对数STFT重映射将音频映射到对数频率轴，结合学习到的互相关滤波与最大池化实现平移不变性。混合损失联合监督二分类与伪影峰定位，在保持可解释性的同时输出速度变化因子。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "AI music generators leave predictable spectral artifacts determined by their architecture. Existing detectors exploit these artifacts with near-perfect accuracy on raw generated tracks, but their performance collapses under simple audio manipulations, such as speed modification or pitch shifting. We address this open robustness problem by introducing a frequency-scaling-invariant detection pipeline that aims to prevent this kind of attack by design. Our method maps audio onto a log-frequency axis via a log-STFT remapping. A single learned cross-correlation filter, combined with max-pooling, provides shift invariance at inference time. Training uses a hybrid loss that jointly supervises binary detection and artifact-peak localization, regularizing boundary weights. Because robustness to speed change is built in by design, the detector is also interpretable: it outputs both a binary decision and an estimate of the applied speed-change factor.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

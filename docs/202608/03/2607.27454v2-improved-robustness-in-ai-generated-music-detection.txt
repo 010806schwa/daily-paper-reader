@@ -1,0 +1,328 @@
+Title: Improved Robustness in AI-Generated Music Detection
+
+URL Source: https://arxiv.org/pdf/2607.27454v2
+
+Published Time: Mon, 03 Aug 2026 00:34:23 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# IMPROVED ROBUSTNESS IN AI-GENERATED MUSIC DETECTION 
+
+# Emile Dugelay 1 Thomas Barand 1 Aurelien Laouar 1 Baptiste Campeas 1
+
+# Darius Afchar 2 Romain Hennequin 21Department of Computer Science, Ecole Centrale de Lyon, France 
+
+> 2
+
+# Deezer Research, Paris, France 
+
+{dugelayemile, th.barand, aurelienlaouar, campeasb}@gmail.com, research@deezer.com 
+
+ABSTRACT 
+
+AI music generators leave predictable spectral artifacts determined by their architecture. Existing detectors exploit these artifacts with near-perfect accuracy on raw gener-ated tracks, but their performance collapses under simple audio manipulations, such as speed modification or pitch shifting. We address this open robustness problem by in-troducing a frequency-scaling-invariant detection pipeline that aims to prevent this kind of attack by design. Our method maps audio onto a log-frequency axis via a log-STFT remapping. A single learned cross-correlation fil-ter, combined with max-pooling, provides shift invariance at inference time. Training uses a hybrid loss that jointly supervises binary detection and artifact-peak localization, regularizing boundary weights. Because robustness to speed change is built in by design, the detector is also inter-pretable: it outputs both a binary decision and an estimate of the applied speed-change factor. 
+
+1. INTRODUCTION 
+
+Audio GenAI tools like Suno, Udio, or Producer empower users with easy, prompt-based song creation. Although these tools open up creative possibilities, AI-generated tracks are widely used to flood streaming platforms as well as to drive fraudulent traffic as a malicious way to divert revenue from real artists [1]. In the absence of transpar-ent and reliable metadata, AI-generated music detection is essential to monitor content in the whole music recording industry (labels, distributors, music streaming platforms). Such detectors usually exploit spectral artifacts left by the generation process within the generated audio [2]. These detectors prove effective on raw generated tracks, but per-form poorly when the AI audio is manipulated with simple methods such as pitch shifting or resampling [3, 4]. Since these methods can be easily applied with free audio soft-ware or even directly in AI generation tools, this leaves vulnerabilities that fraudsters could easily exploit. Speed modification, in particular, is used as a creative tool in mu-          
+
+> © E. Dugelay, T. Barand, A. Laouar, B. Campeas, D. Afchar, R. Hennequin. Licensed under a Creative Commons Attribu-tion 4.0 International License (CC BY 4.0). Attribution: E. Dugelay, T. Barand, A. Laouar, B. Campeas, D. Afchar, R. Hennequin, “Improved robustness in AI-generated music detection”, in Proc. of the 27th Int. Society for Music Information Retrieval Conf., Abu Dhabi, UAE, 2026.
+
+sic genres such as nightcore [5] and is also widely used as a way to adapt music to video on platforms such as Tik-Tok [6], so speed modification is very likely to be used on AI-generated content and to fool detectors. At the same time, keeping detectors lightweight enables fast inference and large-scale deployment and keeping them interpretable permits recourse in case of False Positives. In this paper, we introduce a frequency-scaling-invariant extension to the original Fourier strategy of [2] in order to make it robust to speed manipulation. Our approach exploits a simple property: a frequency-scaling transformation, such as the one induced by a speed modification, when viewed on a logarithmic frequency axis, becomes a translation. This reframes robustness as a translation-invariance problem, for which we design a lightweight architecture whose invariance holds by con-struction rather than by training-time augmentation. The resulting models contain only a few thousand trainable pa-rameters, match the state-of-the-art on clean audio, and remain near-perfect under speed modification attacks, a regime where baselines degrade substantially. Our contribution is set on three axes. First, we formal-ize AI-music detection under speed modification attacks as a problem of log-frequency equivariance and translation invariance, and derive an architecture that satisfies both by construction. Second, we show that this architecture matches state-of-the-art detectors on unaltered audio while remaining robust under speed modification. Third, our de-tector is fully interpretable: beyond a binary decision, it outputs an estimate of the applied speed modification fac-tor, enabling forensic analysis of the manipulation. We publicly release the code so that anyone can replicate our experiments 1 .
+
+2. RELATED WORK 
+
+The detection of AI-generated music is an emerging MIR task sharing methodological overlap with composer iden-tification and music auto-tagging [3], as well as deepfake detection [7–9]. Existing approaches can be categorized into two families. 
+
+Content-based detection. The first family relies on learned representations of the musical content, either through end-to-end training or through classification on top of general-purpose embeddings. Rahman et al. [10]  
+
+> 1github.com/thomas0barand/robust-deepfake-detector
+
+1arXiv:2607.27454v2 [cs.SD] 31 Jul 2026 Proceedings of the 27th ISMIR Conference, Abu Dhabi, UAE, November 08–12, 2026 released SONICS, a large-scale dataset of Suno and Udio tracks generated from templated prompts, and proposed 
+
+SpecTTTra , a transformer handling long audio contexts by tokenizing spectrograms along both time and frequency. Cros Vila et al. [3] showed that simpler classifiers (SVMs, random forests, K-nearest neighbors) operat-ing on CLAP audio embeddings [11] can match or ex-ceed SpecTTTra on their own Suno/Udio dataset, and benchmarked these against the commercial IRCAM Am-plify detector. Their experiments revealed that all evalu-ated systems—including commercial ones—collapse un-der simple transformations: resampling the input to 22.05 kHz alone is enough to flip the predicted label on a large fraction of AI samples. They further identified that such detectors rely on features across the 0 –12 kHz range, including both sub-500 Hz and above-10 kHz bands. It is consistent with the hypothesis that generation-specific cues concentrate in narrow frequency bands that post-processing can easily displace. Similar detection approaches can be found in [4,12–17]. Arguably, these models are not interpretable due to their end-to-end nature. 
+
+Explicit artifact detection. Other approaches design de-tectors around directly modeling generation artifacts, in-stead of embedding the whole musical content. Afchar et al. [2] provided the first mathematical anal-ysis of spectral artifacts in AI-generated music. They showed that transposed convolution layers—the stan-dard upsampling primitive in neural audio decoders— produce predictable energy peaks at frequencies deter-mined solely by network architecture (stride and hid-den sampling frequency), independent of training data or learned weights. Controlled experiments confirmed this architectural-fingerprint hypothesis: the same archi-tecture trained on different datasets (FMA, MTAT, MTG-Jamendo) or with different random seeds produced iden-tical peak locations. This phenomenon is a frequency-domain instance of the well-known checkerboard artifact first analyzed in computer vision [18], and noted in audio as “upsampling artifacts” by Donahue et al. [19] and Pons et al. [20]; MelGAN [21] explicitly chose kernel sizes to attenuate these effects. Building on this characterization, Afchar et al. [2] pro-posed a lightweight detector that (i) time-averages the magnitude spectrum, (ii) subtracts a piecewise-linear base-line to isolate peaks, (iii) restricts analysis to a discrimina-tive band ( 5–16 kHz), and (iv) trains a logistic regression on the resulting feature, that we will refer to as fingerprint ,following the terminology of [2]. The detector reached >99% accuracy in their experiments, confirming that de-tecting the artifact was sufficient to detect AI generation. 
+
+The Robustness Gap. Despite these recent advances, both families fail under simple frequency-scaling transforma-tions applied at inference. Cros Vila et al. [3] documented this failure across CLAP-based, transformer-based, and commercial systems, while Afchar et al. [4] reported a col-lapse of accuracy to 1–3% under pitch shift for their CNN-based detector. The natural response is training-time data augmenta-tion with speed-altered samples. We instead propose to address the problem at the architectural level and extend the artifact-based detection line of [2] with a pipeline that is frequency-scaling-invariant by construction, preserving its interpretability and lightweight character. 
+
+3. PROBLEM FORMULATION 3.1 Spectral Artifacts in AI-Generated Music 
+
+Most AI music generators rely on transposed convolution layers to upsample latent embeddings into waveforms. As shown in [2], this upsampling process causes the signal spectrum to alias, producing spurious energy peaks at pre-dictable frequencies. For a single deconvolution layer of stride k and hidden sampling frequency fs, these artifacts form a finite Dirac comb of ⌊k/ 2⌋ + 1 peaks evenly spaced by fs. When L such layers are stacked, the per-layer combs combine into a set P of peaks with a fractal-like 
+
+structure: P contains every integer combination of the lay-ers’ hidden sampling frequencies, weighted by their re-spective strides. This fingerprint is determined by the net-work architecture alone, independent of training data or learned weights. We refer to the representation of such fin-gerprints learned by our model as a fakeprint .
+
+3.2 Detection Pipeline 
+
+Given an audio signal s(t), we model the detection sys-tem as a two-stage pipeline. An artifact extractor A first maps s to a representation A(s) that highlights the spectral peaks described by P. A binary classifier D then oper-ates on this representation to decide whether the signal is AI-generated: 
+
+s(t) A
+
+−−→ A(s) D
+
+−−→ D(A(s)) ∈ { 0, 1}. (1) This factored design is intentional: by separating arti-fact extraction from classification, each component can be studied and optimized independently. 
+
+3.3 Signal Transformations and Robustness 
+
+A basic attack against such a detector is to apply a post-processing transformation to the generated audio before it is submitted for analysis. We focus on the very common 
+
+speed modification [5,6] (note that we address direct speed modifications with their induced frequency alteration, not time-stretching). 
+
+Speed modification by a factor α > 0 consists of resam-pling the signal as Tα : s(t) 7 → s(αt ), which scales the temporal signal by α and the frequencies by 1 
+
+> α
+
+.Here, we study theoretically how the detection pipeline behaves under ideal spectral scaling Tα.Under Tα, the full pipeline becomes: 
+
+s(t) Tα
+
+−−→ s(αt ) A
+
+−−→ A◦Tα(s) D
+
+−−→ D◦A◦Tα(s). (2) 2Proceedings of the 27th ISMIR Conference, Abu Dhabi, UAE, November 08–12, 2026 
+
+Figure 1 . Overview of the proposed detection pipeline. The artifact extractor maps audio s(t) to a log-frequency fakeprint 
+
+A(s) via STFT, time-averaging, and logarithmic interpolation. The detector normalizes (batch) A(s), into x and computes its cross-correlation z with learned weights w via 1D convolution. The output ˆy is obtained by applying a sigmoid to 
+
+max( z) + b, where b is a trainable bias. Training jointly minimizes a BCE loss LBCE (y, ˆy) on the binary AI/human label and, weighted by λ, a cross-entropy loss LCE (α, z) that supervises the peak location in z.
+
+3.4 Equivariance and Invariance Objectives 
+
+We formalize the detection task through the notions of equivariance and invariance. 
+
+Log-frequency equivariance of A. A speed change trans-formation Tα : s(t) 7 → s(αt ) acts on the spectrum by scal-ing all frequencies by a factor 1 
+
+> α
+
+. When the spectrum is represented on a logarithmic frequency axis ξ = log f ,this multiplicative factor becomes an additive translation by − log α, as log fα = log( f ) − log α. We therefore seek an extractor A satisfying: 
+
+A ◦ Tα(s)( ξ) = A(s)( ξ − log α), ∀s, ∀α > 0, (3) where the right-hand side denotes the feature map of s
+
+translated by log α along the log-frequency axis. In other words, scaling the input signal by α produces a rigidly shifted version of the extracted features. The artifact pat-tern moves, but its structure is preserved. 
+
+Invariance of D. The classifier D should be insensitive to such translations, i.e.: 
+
+D ◦ A(s)( ξ + k) = D ◦ A(s)( ξ), ∀s, ∀k. (4) These two objectives are complementary: if A satis-fies log-frequency equivariance, the robustness of the full pipeline D ◦ A reduces to requiring D to be invariant to translations along the log-frequency axis. 
+
+4. PROPOSED METHOD 
+
+We now describe the concrete implementation of the two-stage pipeline introduced in Section 3. The artifact extrac-tor A is engineered to satisfy log-frequency equivariance, the detector D is built to be invariant to such translations, so that the full pipeline D ◦ A remains robust to time-frequency scaling Tα. An overview of both components is illustrated in Figure 1. 
+
+4.1 Artifact Extractor 
+
+Given a signal s(t), the artifact extractor A produces a 1D log-frequency representation A(s) ∈ RF , with F the num-ber of log-frequency bins, that highlights the spectral peaks described by P. It proceeds in three steps: time-frequency analysis, time averaging, and lower-hull subtraction. 
+
+Time-frequency analysis. In line with [2], the Short-Time Fourier Transform (STFT) is applied to the audio sig-nal s(t), yielding a spectrogram with linearly spaced fre-quency bins. 
+
+Time averaging and log remapping. The spectrogram is collapsed to a 1D spectrum by averaging over the time dimension. The STFT spectrum ¯S is then linearly interpo-lated onto F geometrically spaced bins: 
+
+¯Slog [ξk] = interp( ¯S)
+
+
+
+fmin · 2k/B ′ 
+
+, k ∈ J0, F − 1K,
+
+(5) where B′ is the target log-frequency resolution. 
+
+Lower-hull subtraction. Again, following [2], we sub-tract a piecewise-linear baseline H( ¯Slog ) to isolate the ar-tifact peaks in fakeprints: 
+
+A(s)[ ξ] = max   ¯Slog [ξ] − H( ¯Slog )[ ξ], 0 . (6) 
+
+A(s) retains only peaks above the smooth baseline, iso-lating the artifacts from P. Under an ideal frequency scal-ing Tα, the whole fakeprint shifts rigidly by log α along ξ,as illustrated in Figure 2. 
+
+4.2 Detector 
+
+The detector D takes as input the normalized fakeprint 
+
+x ∈ RF and produces a binary prediction ˆy ∈ [0 , 1] to-gether with a lag estimate ˆα. It comprises three compo-nents: batch normalization, a 1D convolution with a single learned filter w ∈ RF , and a classification head. 
+
+Normalization. The fakeprint A(s) is first clamped (pre-vents outlier bins from dominating) and batch-normalized (standardizing feature distributions across the batch). 
+
+Cross-correlation via 1D convolution. The core of the detector is a 1D convolution between x and w leading to 
+
+z ∈ RF . Each entry zk is the inner product of x shifted by k −  F
+
+> 2
+
+ bins with w, which is equivalent to the cross-correlation between x and the time-reversed filter w, eval-uated at lag k −  F
+
+> 2
+
+. A peak at k∗ = argmax k zk indi-cates that the fakeprint best aligns with w when shifted by 
+
+k∗ −  F
+
+> 2
+
+ bins, as shown in Figure 2. 3Proceedings of the 27th ISMIR Conference, Abu Dhabi, UAE, November 08–12, 2026 
+
+Figure 2 . Illustration of the learned detector on a gen-erated track and the same track after a speed modifica-tion of α = 0 .84 . Top: fakeprints of both tracks. Aspeed change shifts the artifact pattern rigidly along the log-frequency axis (arrows). Middle: learned convolu-tion weights w. Peaks emerge at the characteristic loca-tions of the unshifted artifact pattern — visible for instance around 8 kHz and 11 .2 kHz , aligned with the blue fakeprint above. Bottom: cross-correlation between w and the two fakeprints. Each curve exhibits a sharp peak whose posi-tion directly indicates the applied speed-change factor: 1.0
+
+for the unmodified track and α for the manipulated one. 
+
+Classification head. The detection score is obtained by applying a sigmoid to the cross-correlation maximum plus a trainable bias b:
+
+ˆy = σ
+
+
+
+max  
+
+> k
+
+zk + b
+
+
+
+. (7) The bias b controls the global detection threshold indepen-dently of the shape of w.
+
+Shift invariance. The max-pooling over z makes the clas-sification head invariant to translations of the fakeprint. If 
+
+x is shifted by ∆ bins, every entry of z shifts cyclically by 
+
+∆, so max k zk remains unchanged. 
+
+4.3 Training objective 
+
+The model is trained with a hybrid loss combining a Bi-nary Cross-Entropy (BCE) classification term and a Cross-Entropy (CE) lag-regression term: 
+
+L = LBCE (y, ˆy) + λ LCE (α, z), (8) where the CE term is computed only on AI-generated samples (for which a ground-truth lag α is available). The CE target is a one-hot vector with a 1 at position 
+
+⌊F/ 2 + log 2(α) · B′⌉, i.e. the bin index that the peak of 
+
+z should occupy. 
+
+Gradient analysis. The two terms act on w through distinct gradient signals. Let k∗ = argmax k zk denote the current peak position. The BCE gradient updates w
+
+through a single cross-correlation slice: 
+
+∂LBCE 
+
+∂w f
+
+= (ˆ y − y) · xk∗+f −⌊ F 
+
+> 2
+
+⌋, (9) while the CE gradient aggregates over all F lags: 
+
+∂LCE 
+
+∂w f
+
+= 
+
+> F−1
+
+X
+
+> k=0
+
+ pk − 1[k = kα] · xk+f −⌊ F 
+
+> 2
+
+⌋, (10) where pk = softmax( z)k and kα is the target lag index. Unlike the BCE gradient, which is non-zero only at the sin-gle winning lag k∗, the CE gradient distributes across all weights wf through all the lags, ensuring a dense and uni-form gradient signal across all frequency bins. We show in Section 6 that the addition of the CE term has a slightly positive impact on the performance of detection of the pro-posed system. Because the BCE gradient touches w only through the slice at k∗, weights wf whose receptive field index 
+
+k∗ + f − ⌊ F/ 2⌋ lies in the zero-padded region receive a near-zero gradient. The CE term, by summing over all k,provides a dense gradient signal to every weight includ-ing boundary ones, keeping the learned weights balanced across all frequency bins rather than collapsing to zero at the boundaries (which we observed experimentally). 
+
+4.4 Interpretability 
+
+By construction, the learned w acts as a reference fakeprint : it encodes the expected log-frequency pattern of artifacts for the target architecture. At inference time, the cross-correlation z measures the similarity between the fakeprint x and w at every possible log-frequency lag. This yields a dual output. The maximum value of z,passed through the sigmoid, drives the binary detection score. The position of that maximum, k∗ locates the lag at which x and w best align, and directly recovers the speed-change factor applied to the input. Figure 2 illustrates this behaviour on a representative example. 
+
+5. EXPERIMENTAL SETUP 5.1 Dataset 
+
+To train our network to distinguish between AI-generated and genuine audio, we compiled a dataset of 10,000 audio tracks. Each track was truncated to retain only the first 30 seconds of audio. The dataset is evenly balanced, 5,000 AI-generated tracks sourced from Suno v5 and 5,000 gen-uine tracks sampled from the FMA-small dataset [22]. In addition to Suno v5, we trained and evaluated our method on Suno v3.5 and Udio v120, with 5,000 tracks for each music generator both taken from the Sonics dataset [10]. To evaluate the model’s robustness against temporal al-terations, we established two distinct training subsets: • "Clean" Dataset: Consists of the original audio tracks without any modifications. • "Attack" Dataset: Consists of tracks manipulated with speed modification. For training, speed-change factors were uniformly sampled from a discrete set of bin shifts in [-990, +990] bins, which corresponds to an approxi-mate speed multiplier range of ×0.7 to ×1.4. The sam-pling is restricted to discrete bin-aligned values so that 4Proceedings of the 27th ISMIR Conference, Abu Dhabi, UAE, November 08–12, 2026 each applied speed factor corresponds exactly to an in-teger shift in the log-frequency representation. This en-sures an unambiguous ground-truth target for LCE . At test time, the speed-change factors were sampled uni-formly and continuously from the range ×0.7 to ×1.4, without any constraint of alignment to discrete bin shifts, so that the evaluation reflects realistic speed manipula-tions rather than bin-aligned ones. The specific speed change factor applied to each track was recorded and saved alongside its extracted features. 
+
+5.2 Feature Extraction and Preprocessing 
+
+Our data comes from two sources with different native sampling rates: the SONICS dataset [10] at 16 kHz, and Suno v5 recordings at 44 ,100 Hz. We keep each source at its native rate to avoid resampling artifacts. The network takes as input the feature we refer to as the 
+
+fakeprint , computed in a manner similar to [2]: we use a Fourier transform frame of size Nfft = 2 14 . It is cropped to a frequency band that depends on the sampling rate: 1–
+
+7 kHz for the SONICS data and 5–16 kHz for Suno v5. The frequency axis is then mapped to a log-scale by linear in-terpolation onto 1920 bins per octave. 
+
+5.3 Training Procedure 
+
+The network was trained using a 10% validation split for a maximum of 50 epochs with a batch size of 64 . We uti-lized the Adam optimizer, initialized with a learning rate of 0.001 and a weight decay of 10 −5. The cross-entropy loss is modulated by a tuning hyperparameter, λ. Thanks to the offline caching of the fakeprints and the compact architecture, training completes in under 5 minutes on a consumer-grade GPU. 
+
+6. RESULTS & DISCUSSION 
+
+We evaluate our method across two main axes: (1) De-tection performance on unattacked audio compared to two baselines: our implementation of Afchar et al. [2] and the SpecTTTra-α (best performing model of [10]), (2) Robust-ness to speed change attacks across all model variants. Finally, we show that the robustness to speed modifica-tion of our system also induces a limited form of robustness to pitch-shift modifications. 
+
+6.1 Effect of the CE speed factor classification loss 
+
+Table 1 shows the effect of the auxiliary lag-regression loss weight λ on our model, trained and evaluated on speed-modified Suno v5 recordings (corresponding to the At-tack /Attack condition of Table 2). Setting λ=0 (BCE only) already yields strong results thanks to the log-frequency design, but boundary weights collapse toward zero as dis-cussed in Section 4.3. By looking especially at F1, adding the CE loss with 
+
+λ > 0 provides a dense gradient signal that regularizes w
+
+and consistently improves all metrics showing the impor-tance of this extra loss. We can see the performance is not very sensitive to the value of λ: we observe a slight             
+
+> λAUC F1 Prec. 0.00 0.996 0.963 0.991
+> 0.05 0.997 0.986 0.989 0.10 0.997 0.979 0.991
+
+Table 1 . Tuning on λ for Our Method evaluated on at-tacked audio. Best value highlighted in bold .decrease of F1 and AUC for λ > 0.05 which could be ex-plained by the domination of the CE loss over the main BCE loss which aims at solving the classification task we evaluate on. In the remainder of the paper, we then report only per-formance of our system for λ=0 .05 .
+
+6.2 AI Detection and Scale Invariance Performance on unattacked audio: Table 2 compares our model against SpecTTTra-α [10] and Afchar et al. [2] under all combinations of training and test conditions. When trained and tested on clean, unmodified audio (first block), our model nearly matches the baseline despite containing few trainable parameters, confirming that the log-frequency cross-correlation is a sufficient statistic for artifact detection on unperturbed signals. SpecTTTra-α
+
+yields poor results on Suno v5 primarily because it was not trained on the Suno v5 data. 
+
+Robustness under speed modification attacks: The bot-tom blocks of Table 2 report performance for all model variants when models are evaluated on attacked audio, with speed factors drawn continuously (not bin-aligned). The Afchar et al. baseline, which operates on a lin-early spaced frequency axis, collapses under these trans-formations (AUC ≈ 0.81 and F1 ≈ 0.67 on Suno v5). SpecTTTra-α, evaluated as released, degrades similarly. Our pipeline maintains high performance, validating the theoretical guarantees derived in Section 3. It achieves an AUC of 0.997 and a F1-Score of 0.986 under attack, out-performing both evaluated baselines. Beyond detection, our architecture also enables recov-ering the applied speed-change factor from the cross-correlation peak location. On Suno v5, this estimate reaches an MAE of 4 × 10 −4.
+
+Figure 3 . F1-Score vs Speed Factor ( α). Evaluation of model generalization across a range of speed factors on Suno v5, for Our method and Afchar et al.. While our model was trained on the interval [0 .7, 1.4] (shaded), it maintains an F1-score > 0.8 up to a speed factor of 1.5.5Proceedings of the 27th ISMIR Conference, Abu Dhabi, UAE, November 08–12, 2026                                                                                                              
+
+> Suno v3.5 Suno v5 Udio v120
+> Train Test Model AUC F1 Prec. AUC F1 Prec. AUC F1 Prec. Clean Clean Afchar et al. 1.000 .998 .996 1.000 .998 .999 1.000 .997 .994
+> SpecTTTra-α†.997 .965 .932 .714 .360 .793 .999 .965 .932 Our Method .999 .995 .990 1.000 .998 .999 .996 .990 .982 Attack Clean Afchar et al. .968 .919 .883 .946 .885 .849 .939 .895 .839 Our Method 1.000 .995 .992 .999 .993 .995 .988 .965 .968 Clean Attack Afchar et al. .893 .004 .250 .745 .008 .400 .864 .021 .556 SpecTTTra-α†.780 .552 .815 .692 .302 .687 .810 .589 .848 Our Method .977 .754 .979 .986 .732 .993 .932 .574 .950
+> Attack Attack Afchar et al. .910 .782 .848 .817 .675 .768 .918 .842 .825 Our Method .999 .983 .989 .997 .986 .989 .964 .855 .950
+
+Table 2 . Detection performance for all combinations of training and test conditions ( Clean : unmodified audio; Attack :random speed modification, bin-aligned factors for training, continuous non-bin-aligned factors for test, see Section 5). 
+
+> †
+
+: Evaluated as released, not retrained. Best value per metric and test condition in bold .
+
+Generalization to unseen speed modification factors: 
+
+To further highlight the inherent robustness of our architec-ture, we emphasize the model’s performance when trained exclusively on unaltered tracks and evaluated against speed modification attacks ( Clean /Attack block of Table 2). Even without exposure to temporally altered data during train-ing, our model remains highly performant (AUC stays above 0.93 on all datasets), demonstrating generalization capacity by design. In addition, Figure 3 demonstrates that our approach remains robust to track alterations, exhibiting strong generalization even when subjected to speed factors just outside the training distribution, while Afchar et al. baseline remains below at every speed factor ̸ = 1 .
+
+Robustness to Pitch Shifting: The most general form of pitch-shifting implementation is based on time-stretching (usually performed by a phase vocoder) followed by a re-sampling of the waveform to bring it back to its origi-nal duration. Here, we use the Rubber Band Library [23] to generate high-quality pitch-shifted samples. The time-stretching phase will affect the artifacts’ strength, but will not change their position, and detectors are expected to re-tain partial robustness to time-stretching, as shown in [2]. The resampling will move all artifacts and will result in a drop of the performance of detectors, similarly as we observe in Table 2. The speed change invariance of our proposed method is naturally designed to compensate the effect on frequency of this second phase. The results of the detectors applied on pitch-shifted signals are shown in Table 3. We do observe a limited robustness to pitch-shifting in our detector, particularly in maintaining high precision/AUC and overall separability. The main effect of pitch-shifting is to decrease the detection score of our method, but the very high AUC shows a high discrimina-tive power, and other metrics could possibly be optimized by recalibrating the decision threshold, or optionally re-training on additional pitch-shifted samples.                                       
+
+> Suno v3.5 Suno v5 Udio v120
+> Model AUC F1 Prec. AUC F1 Prec. AUC F1 Prec. Afchar et al. 0.794 0.732 0.624 0.771 0.720 0.697 0.768 0.720 0.572 SpecTTTra-α0.674 0.399 0.774 0.700 0.347 0.686 0.764 0.557 0.821
+> Our Method 0.920 0.439 0.931 0.963 0.279 0.987 0.811 0.707 0.767
+
+Table 3 . Detection performance on audio altered with pitch shift. We evaluate the same augmentation-trained models as in Table 2 ( Attack -trained rows). 
+
+6.3 Limits 
+
+A common alternative to architectural invariance is training-time augmentation with speed-altered or pitch-shifted samples. We did not pursue this route, as it trades theoretical guarantees for empirical coverage of a discrete set of attack parameters and must be revisited for each new transformation. Our pipeline is invariant to frequency scaling by construction, as confirmed by the zero-shot ro-bustness in Table 2: trained on unaltered audio alone, the model still reaches AUC 0.986 under attack. Two limitations remain: first, we targeted a single at-tack type. Other common manipulations (equalization, dynamic range compression, codec compression) remain untested, and pitch-shifting (Table 3), which combines re-sampling and time-stretching, exposes the limits of our representation: time-stretching is not equivariant under it, nor would be a non-uniform warp scaling frequency bands by different factors. Second, training was restricted to three generative mod-els, so the model does not generalize to other generators. This limitation is not specific to our approach: SpecTTTra-
+
+α, the detector of Afchar et al., and other state-of-the-art systems exhibit the same behavior, as each generative architecture leaves distinct spectral artifacts that must be learned from data. Retraining is therefore required for broad coverage across all systems, but the lightweight de-sign of our model makes this process particularly inexpen-sive. 
+
+7. CONCLUSION 
+
+This paper addresses a critical vulnerability in current AI music detectors: their drastic accuracy drop under sim-ple frequency-scaling manipulations such as speed mod-ification. We introduced a mathematically grounded, lightweight pipeline that is frequency-scaling-invariant by design: mapping audio to a log-frequency axis yields shift equivariance, while a 1D cross-correlation filter with max-pooling guarantees shift invariance at inference. Our model matches state-of-the-art performance on clean audio and reaches an F1-Score up to 0.986 under speed-change attacks, outperforming the baseline while re-covering the speed-change factor for forensics, with partial robustness to pitch-shifting. 6Proceedings of the 27th ISMIR Conference, Abu Dhabi, UAE, November 08–12, 2026 
+
+8. ETHICS STATEMENT 
+
+The detector proposed in this paper is designed to sup-port content monitoring on streaming platforms, where AI-generated tracks are increasingly used to extract fraudulent royalties at scale. Reliable detection contributes to a fairer distribution of revenue toward human artists and to greater transparency for listeners. Despite these benefits, our system and others carry risks that necessitate careful deployment. False posi-tives pose an asymmetric threat, as misidentifying human-made tracks can cause irreparable financial and reputa-tional harm; thus, detection scores should be treated as auxiliary signals within a human-in-the-loop framework rather than a sole basis for automated enforcement. Fur-thermore, because the boundary between human and AI-generated music is increasingly porous due to widespread AI-assisted production [3], binary classification risks un-fairly penalizing legitimate hybrid works. We therefore emphasize the need for clear communication regarding which specific forms of AI involvement the model flags to ensure transparency for both creators and listeners. 
+
+9. REFERENCES 
+
+[1] Deezer, “Deezer confirms demonetization of up to 85% of AI-music streams due to fraud and moves to sell AI-detection Tech-nology,” https://newsroom-deezer.com/2026/01/ ai-generated-music-deezer-selling-detection-tool/, 2026, [Online; accessed 24-April-2026]. [2] D. Afchar, G. Meseguer-Brocal, K. Akesbi, and R. Hennequin, “A Fourier Explanation of AI-music Ar-tifacts,” in ISMIR , 2025. [3] L. C. Vila, B. L. T. Sturm, L. Casini, and D. Dalmazzo, “The AI Music Arms Race: On the Detection of AI-Generated Music,” Transactions of the International Society for Music Information Retrieval , vol. 8, 2025. [4] D. Afchar, G. Meseguer-Brocal, and R. Hennequin, “AI-Generated Music Detection and its Challenges,” 
+
+Proceedings of the IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) ,2025. [5] E. Viñuela, “Sped-up y nightcore en el paradigma de las plataformas,” Revista de la Asociación Española de Investigación de la Comunicación , vol. 12, no. 24, p. raeic122404, Nov. 2025. [Online]. Available: https://revistaeic.eu/index.php/raeic/article/view/686 [6] Christian Brooks BBC News, “TikTokers are speeding up songs - but are we forgetting the originals?” https://www.bbc.com/news/articles/cqv5x2qe8q6o, 2024, [Online; accessed 24-April-2026]. [7] Z. Wu, J. Yamagishi, T. Kinnunen, C. Hanilçi, M. Sahidullah, A. Sizov, N. Evans, M. Todisco, and H. Delgado, “ASVspoof: the automatic speaker verification spoofing and countermeasures challenge,” 
+
+IEEE Journal of Selected Topics in Signal Processing ,vol. 11, no. 4, pp. 588–604, 2017. [8] Y. Mirsky and W. Lee, “The creation and detection of deepfakes: A survey,” ACM computing surveys (CSUR) , vol. 54, no. 1, pp. 1–41, 2021. [9] S.-Y. Wang, O. Wang, R. Zhang, A. Owens, and A. A. Efros, “CNN-generated images are surprisingly easy to spot... for now,” in Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition ,2020, pp. 8695–8704. [10] M. A. Rahman, Z. I. A. Hakim, N. H. Sarker, B. Paul, and S. A. Fattah, “SONICS: Synthetic or not – iden-tifying counterfeit songs,” in International Conference on Learning Representations (ICLR) , 2025. [11] Y. Wu, K. Chen, T. Zhang, Y. Hui, T. Berg-Kirkpatrick, and S. Dubnov, “Large-scale contrastive language-audio pretraining with feature fusion and keyword-to-caption augmentation,” in ICASSP . IEEE, 2023, pp. 1–5. [12] L. Comanducci, P. Bestagini, and S. Tubaro, “Fake-musiccaps: A dataset for detection and attribution of synthetic music generated via text-to-music models,” 
+
+Journal of Imaging , vol. 11, no. 7, p. 242, 2025. [13] Y. Zang, Y. Zhang, M. Heydari, and Z. Duan, “Singfake: Singing voice deepfake detection,” in 
+
+ICASSP . IEEE, 2024. [14] Y. Li, M. Milling, L. Specia, and B. W. Schuller, “From Audio Deepfake Detection to AI-Generated Music Detection–A Pathway and Overview,” arXiv preprint arXiv:2412.00571 , 2024. [15] M. Frohmann, G. Meseguer-Brocal, M. Schedl, and E. V. Epure, “Double entendre: Robust audio-based AI-generated lyrics detection via multi-view fusion,” in Findings of the Association for Computational Lin-guistics: ACL 2025 , 2025, pp. 1914–1926. [16] D. Lopez-Ayala, A. Cabello, P. Zinemanas, E. Molina, and M. Rocamora, “AI-Generated Music Detection in Broadcast Monitoring,” in ICASSP , 2026. [17] Y. Kim and S. Go, “Segment Transformer: AI-Generated Music Detection via Music Structural Anal-ysis,” in 2025 Asia Pacific Signal and Information Pro-cessing Association Annual Summit and Conference (APSIPA ASC) . IEEE, 2025, pp. 664–669. [18] A. Odena, V. Dumoulin, and C. Olah, “De-convolution and checkerboard artifacts,” Distill ,2016. [Online]. Available: http://distill.pub/2016/ deconv-checkerboard [19] C. Donahue, J. McAuley, and M. Puckette, “Adver-sarial Audio Synthesis,” International Conference on Learning Representations (ICLR) , 2019. 7Proceedings of the 27th ISMIR Conference, Abu Dhabi, UAE, November 08–12, 2026 [20] J. Pons, S. Pascual, G. Cengarle, and J. Serrà, “Upsam-pling Artifacts in Neural Audio Synthesis,” in ICASSP ,2021. [21] K. Kumar, R. Kumar, T. de Boissiere, L. Gestin, W. Z. Teoh, J. Sotelo, A. de Brebisson, Y. Bengio, and A. Courville, “Melgan: Generative adversarial net-works for conditional waveform synthesis,” Advances in Neural Information Processing Systems (NeurIPS) ,2019. [22] K. Benzi, M. Defferrard, P. Vandergheynst, and X. Bresson, “FMA: A dataset for music analysis,” 
+
+CoRR , 2016. [23] Particular Programs Ltd, “Rubber band library: Au-dio time stretcher library,” https://breakfastquay.com/ rubberband/, 2024, version 4.0.0. 8
