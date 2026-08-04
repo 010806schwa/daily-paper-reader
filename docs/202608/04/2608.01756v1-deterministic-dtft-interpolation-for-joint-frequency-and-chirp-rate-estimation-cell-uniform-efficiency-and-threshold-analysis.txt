@@ -1,0 +1,814 @@
+Title: Deterministic DTFT Interpolation for Joint Frequency and Chirp-Rate Estimation: Cell-Uniform Efficiency and Threshold Analysis
+
+URL Source: https://arxiv.org/pdf/2608.01756v1
+
+Published Time: Tue, 04 Aug 2026 02:20:13 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+> 1
+
+# Deterministic DTFT Interpolation for Joint Frequency and Chirp-Rate Estimation: Cell-Uniform Efficiency and Threshold Analysis 
+
+Miaomiao Wei, Jianjun Li, Yang Wang, Huaiyuan Chen, Lulu Gao, and Hang Liu 
+
+Abstract —Joint estimation of the frequency and chirp rate of a noisy chirp signal arises in radar, sonar, and burst satellite communications. Conventional estimators combine a coarse grid search with fine interpolation; accuracy degrades at the edges of the residual cell (the edge effect) and below the breakdown SNR (the threshold effect). This paper presents a deterministic two-stage estimator that controls both failure modes uniformly over the entire residual cell. The estimator combines a time-centered, zero-padded dechirp–FFT acquisition bank with alternating selectable-p amplitude-interpolation refinements on fractional-bin DTFT samples; in the centered frame, the frequency–chirp-rate cross-term of the Fisher information vanishes. The paper derives a mean-squared-error and threshold characterization across the full SNR range, in closed form except for one calibrated scalar (an effective cell count), to our knowledge the first for the joint problem: the breakdown threshold is governed by the cell count, and its cell-position dependence is dominated by the straddle loss of the coarse FFT, which the padding bounds at 0.4 dB. An asymptotic uniformity analysis over the whole cell, including the corners, gives closed-form fixed-point variance ratios of 1.003 and 0.998 , analytically free of the residual. A closed-form bias analysis under unmodeled jerk shows the centered chirp-rate estimate is first-order immune. Monte Carlo experiments at N = 256 (validated at N = 32 –512 ) measure frequency- and chirp-rate-axis efficiencies with median 1.03 and worst case 1.07 over 144 cell positions at −5 dB. Threshold predictions hold within 1.0 dB on four held-out configurations. The dechirp–FFT bank is fully parallel, and each of the four refinement iterations evaluates three DTFT samples per axis; under fixed operating conditions, per-estimate latency is constant at O(N log N ) cost. 
+
+Index Terms —Chirp-rate estimation, frequency estimation, DTFT interpolation, Cram´ er–Rao bound, threshold analysis, edge effect. 
+
+I. I NTRODUCTION 
+
+# ESTIMATING the frequency and the chirp rate of a single-component linear-chirp signal from a small number of noisy samples is a classical problem in statistical signal processing, arising when a propagation delay changes at an approximately constant rate: radar and sonar returns from accelerating targets [1], [2], Doppler and Doppler-rate ac-quisition in burst satellite and mobile communications [3], [4], and instrumentation of swept sources [5]. The joint Cram´ er–Rao bound (CRB) for this model was derived by Peleg and Porat [6]. Attaining it over the whole parameter 
+
+The authors are with Zhongyuan University of Technology, Zhengzhou, China (corresponding author: Miaomiao Wei, e-mail: mmwei@zut.edu.cn). This work was supported in part by the National Natural Science Foundation of China under Grant 62301624, and in part by the Key Science and Technology Research Project of Henan Province under Grant 242102211006. 
+
+space, at low SNR, and at predictable computational cost remains difficult. Conventional estimators are two-stage: a coarse search localizes the parameter pair on a grid at cell resolution, and a fine interpolation stage resolves the residual offsets within the cell. This architecture exposes two distinct failure modes. The edge effect is a property of the fine stage: the variance of DFT-interpolation estimators becomes nonuniform over the residual cell, rising above the CRB as the residual approaches the half-bin boundary, and the degradation intensifies as the SNR decreases [7], [8]. The threshold effect is a property of the coarse stage: below a breakdown SNR, the global search produces outliers and the mean-squared error (MSE) departs from the CRB by orders of magnitude [9], [10]. Because the residual depends on the parameters to be estimated, an estimator must control both effects uniformly over the entire cell, including its corners, where both residuals are simultaneously extremal. Fine frequency estimation of a single tone has been studied extensively. Fixed-coefficient estimators interpolate the resid-ual from two or three DFT samples [11]–[13]; iterative inter-polation on two Fourier coefficients achieves the asymptotic CRB (the Aboutanios–Mulgrew, or A&M, estimator) [14], and shifting the sampling points by a tunable fraction q (the q-shift estimator, QSE) generalizes the scheme [15]; amplitude-ratio inversion handles zero-padded signals [7]; a nonitera-tive weighted least-squares (WLS) interpolator attains near-CRB accuracy at arbitrary residuals, targeting fast real-time applications [16]; the maximum-likelihood (ML) interpolator and the CRB for arbitrary residuals were derived in [17], with near-CRB accuracy reached in a single interpolation step by adapting the interpolation factor to the residual; and a selectable-p amplitude kernel was shown to avoid the low-SNR edge effect by keeping its samples strictly inside the main lobe [8], [18]. Recently, a linearized-DTFT estimator [19], an iterative parabolic scheme aimed at deep-space Doppler tracking [20], and an auxiliary-DFT-sample iterative estimator reporting near-CRB accuracy at all signal lengths together with a reduced breakdown threshold [21] have appeared. Interpo-lation has also been extended to multidimensional harmonics (two and K independent spatial frequencies) in the 2-D/ K-D QSE (QSE2) of [22], with a multicomponent extension in [23]. The joint (f, ˙f ) problem is structurally different from both the 1-D and the multidimensional-harmonic settings. The chirp couples the two estimands within a single time series, and the corresponding residual cell is two-dimensional. arXiv:2608.01756v1 [eess.SP] 3 Aug 2026 2
+
+Interpolation has been applied to this joint problem in the two-stage scheme of Jiang and Le [3], which localizes the chirp rate by an explicit coarse search and then refines it by a three-point parabolic interpolation of the log-likelihood, reaching near-CRB accuracy above a low threshold, while the frequency is obtained by applying a single-tone frequency estimator to the dechirped signal. The joint estimation can also be addressed directly. Maximum-likelihood treatments of the joint frequency/frequency-rate problem were developed in [1], [24], and polynomial-phase methods estimate the rate through phase-differencing or bilinear transforms [25], [26], with nonlinearities that raise the SNR threshold; the quasi-maximum-likelihood (QML) line [27], [28] lowers that thresh-old substantially by regressing an instantaneous-frequency track from a short-time Fourier transform, and the statistics of refinement stages in two-stage polynomial-phase schemes have been analyzed in [29]. Transform-domain estimators rotate the signal into the frac-tional Fourier transform (FrFT) domain [30], in which the rotation order is located by golden-section search (GSS), with an asymptotic perturbation analysis showing near-minimum-variance behavior [5] and a recent high-performance refine-ment [31], and interpolation-based iterative refinement has likewise been applied to FrFT-domain samples [32]; discrete chirp-Fourier transform (DCFT) methods search an N × N
+
+transform grid [2], [33]. In these approaches, the frequency is ultimately recovered by a 1-D estimator on the dechirped sig-nal. The published accuracy analyses concern the asymptotic (CRB) regime. Aldimashki and Serbes [31] derive analytical models of the peak FrFT magnitude in the noisy case and use them to lower the breakdown threshold of the coarse search, but no closed-form characterization of the threshold itself is available. Most recently, learning-based estimators have entered the problem space: unfolded sparse-recovery networks address off-grid frequency estimation [34], [35], and a complex-valued network targets the chirp problem itself, motivated by the same cost of the two-dimensional search [36]. These estimators learn their update operators from data; their threshold behavior and cell uniformity are not analyzed. On the theoretical side, the threshold and no-information regions of ML frequency estimation have recently been charac-terized exactly for a single tone [10], which completes a line of analysis begun in [9], [37], but, to the best of our knowledge, no closed-form threshold characterization exists for the joint 
+
+(f, ˙f ) problem, and no estimator of it comes with a character-ization of uniform CRB efficiency over the two-dimensional residual cell. A further obstacle appears intrinsic. In the natural parameterization (frequency referenced to the first sample), the joint CRB exhibits a near-perfect anti-correlation between the two estimands ( −√15 /4 ≈ − 0.97 asymptotically), suggesting that errors in one axis must contaminate the other. This coupling is an artifact of the time origin, and the classical remedy is to center the time index about the mid-signal instant, which removes the odd-moment cross-terms of the Fisher information and minimizes the polynomial-phase bounds [38]. The starting point of this paper is the observation that a fixed-schedule joint interpolation loop built in the centered coordinates inherits the decoupling at every refinement step, at finite signal length. This paper presents a deterministic estimator of the pair 
+
+(f, ˙f ), together with the analysis that the two-stage architec-ture calls for. The contributions are the following. 1) A two-stage joint estimator: a centered, zero-padded dechirp–FFT acquisition bank followed by Q alternating refinements with a selectable-p amplitude kernel on fractional-bin DTFT samples. The schedule is fixed a priori, with an O(KμN log N ) acquisition cost that is 
+
+O(N log N ) per branch of the fully parallel Kμ-branch bank ( Kμ set by the chirp-rate prior), and constant latency. The coarse padding factor is set at Mfac = 3 ,which caps the straddle-induced threshold advance at 
+
+0.4 dB across the cell. 2) A three-segment MSE characterization of the joint es-timator over the entire SNR axis, in closed form up to a single calibrated scalar: it gives the acquisition probability, the breakdown threshold governed by the effective cell count of the two-dimensional search, and the per-axis no-information floors, and it makes the cell-position dependence of the threshold explicit through the FFT straddle loss, controllable by zero-padding. This extends the 1-D threshold theory of [10] to the joint problem. 3) An asymptotic uniformity analysis of the refinement stage over the residual cell, including the corners: with the centered coordinates, the selectable-p kernel, and the fixed-point iteration (contraction verified by simulation), the cell position drops out of the leading error term, yielding closed-form fixed-point efficiency constants on both axes that are analytically free of the residual; the complete alternating algorithm’s residual excess is measured below 7% over the whole cell at −5 dB. An ablation shows centering is necessary: the identical kernel without centering degrades by up to a factor of 
+
+1.8 × 10 4 at high SNR. The rest of the paper is organized as follows. Section II states the signal model, defines the residual cell, and derives the centered reparameterization with its closed-form joint CRBs. Section III specifies the estimator and its constants. Section IV develops the threshold theorem, the cell-uniformity theorem, and the jerk-robustness proposition. Section V vali-dates the claims by Monte Carlo simulation against five base-lines and the closest prior joint interpolator, and Section VI concludes. II. S IGNAL MODEL AND JOINT CRAM ´ER –R AO BOUND 
+
+A. Signal Model 
+
+We observe N uniformly spaced samples of a single-component second-order polynomial-phase (linear-chirp) sig-nal in additive noise, 
+
+x[n] = A e jψ [n] + w[n], n = 0 , . . . , N − 1, (1) with phase 
+
+ψ[n] = ϕ0 + 2 π
+
+
+
+νn + 12 μn 2
+
+, (2) 3
+
+where A > 0 is the unknown deterministic amplitude, ϕ0 is the unknown initial phase, and w[n] is circularly symmetric complex white Gaussian noise of variance σ2. The signal-to-noise ratio is ρ = A2/σ 2, written γ ≜ 10 log 10 ρ in decibels. The normalized frequency ν (cycles/sample) and the normalized chirp rate μ (cycles/sample 2) are the parameters to be estimated, while (A, ϕ 0) are nuisance parameters. For a sampling rate fs, the physical frequency and chirp rate are recovered as f0 = νf s and ˙f = μf 2 
+
+> s
+
+, so that (1) covers, e.g., the joint estimation of a Doppler shift and its rate of change from a short burst. Throughout, estimation accuracy is reported through the ratio 
+
+ηθ = E(ˆθ − θ)2
+
+CRB θ
+
+, θ ∈ { ν, μ }, (3) so that ηθ = 1 indicates attainment of the Cram´ er–Rao bound. Above threshold, the bias of the compared estimators is negligible, and the MSE coincides with the variance, so ηθ
+
+is then a variance ratio; in the threshold region, where outliers dominate, ηθ follows the MSE definition of (3). 
+
+B. Centered Reparameterization 
+
+Let c = ( N − 1) /2 denote the mid-point of the signal and define the centered time index n′ = n − c ∈ {− c, . . . , c }.Substituting n = n′ + c into (2) yields 
+
+ψ[n] = ϕc + 2 π
+
+
+
+νc n′ + 12 μ n ′2
+
+, (4) with the centered frequency and absorbed phase 
+
+νc = ν + μc, ϕc = ϕ0 + 2 π νc + 12 μc 2. (5) Thus νc is the instantaneous frequency at the center of the signal, whereas ν is the instantaneous frequency at its first sample; the chirp rate μ is unaffected. The centered index grid is symmetric about zero, so all odd-order moments vanish: 
+
+X
+
+> n
+
+n′ = X
+
+> n
+
+n′3 = 0 . (6) This cancellation underlies the decoupling results below. 
+
+C. Residual Cell and Edge Effect 
+
+Conventional estimators of (ν, μ ) operate in two stages: a coarse stage that localizes the parameters on a discrete grid, followed by a fine stage that interpolates the residual offsets. The natural grid spacing is 1/N in νc and 1/N 2 in μ. A chirp-rate offset of 1/N 2 accumulates a quadratic phase deviation of approximately half a cycle over the signal, which is the direct analog of the one-cycle deviation produced by a frequency offset of one bin. We therefore write 
+
+νc = k0 + δν
+
+N , μ = ℓ0 + δμ
+
+N 2 , (7) with k0, ℓ 0 ∈ Z and residuals (δν , δ μ) ∈ [− 12 , 12 ]2. We refer to this square as the residual cell and to (± 12 , ± 12 ) as its corners .The cell is defined on the centered frequency. After dechirping, the spectral peak lies at νc = ν + μc . A cell defined on the native ν would let the peak drift relative to the coarse FFT grid with the arbitrary integer ℓ0 carried by μ, injecting ℓ0 into the straddle loss and the threshold of Section IV; νc is therefore the coordinate used for the coarse grid, the refinement, and all experiments. Since the residuals are determined by the unknown true parameters, an estimator fielded without prior knowledge must perform uniformly over the entire cell. Fine-stage interpolation estimators, by contrast, are known to exhibit the edge effect : their variance is nonuniform over the cell, rising above the CRB as the residual approaches ± 12 ,and the degradation intensifies as the SNR decreases [7], [8]. In the joint (ν, μ ) problem, the cell is two-dimensional, and the corners are the worst case. 
+
+D. Joint CRB: Decoupling and Closed Forms 
+
+For the deterministic signal (1) in circularly symmet-ric white Gaussian noise, the Fisher information ma-trix (FIM) over a parameter vector θ is [F]ij =(2 /σ 2) Re P  
+
+> n
+
+∂s ∗[n]/∂θ i ∂s [n]/∂θ j with s[n] = Ae jψ [n]
+
+[39]. The amplitude A is decoupled from the phase parameters, with derivative weights ∂ψ/∂ϕ c = 1 , ∂ψ/∂ν c = 2 πn ′, and 
+
+∂ψ/∂μ = πn ′2. With S2 = P 
+
+> n
+
+n′2 = N (N 2 − 1) /12 and 
+
+S4 = P 
+
+> n
+
+n′4 = N (N 2 − 1)(3 N 2 − 7) /240 , the FIM of the centered phase parameters θc = ( ϕc, ν c, μ ) is 
+
+F(θc) = 2 ρ
+
+
+
+N 0 πS 2
+
+0 4π2S2 0
+
+πS 2 0 π2S4
+
+ , (8) where the two zeros are exact consequences of (6): the cross-information terms I(ϕc, ν c) ∝ P n′ and I(νc, μ ) ∝ P n′3
+
+vanish identically. Hence νc is exactly decoupled from both nuisance and chirp-rate parameters at finite N , and inverting (8) gives the closed-form bounds 
+
+CRB νc = 32π2ρ N (N 2 − 1) , (9) 
+
+CRB μ = 90 
+
+π2ρ N (N 2 − 1)( N 2 − 4) , (10) with large-N behavior CRB νc ≃ 3/(2 π2ρN 3) and CRB μ ≃
+
+90 /(π2ρN 5). First, (9) coincides with the classical single-tone frequency CRB [9]. Because of the decoupling, jointly estimating the chirp rate does not reduce the achievable accuracy of the centered frequency. Second, since the repa-rameterization (5) leaves μ unchanged, CRB μ is the same in both parameterizations. In the native parameterization (ν, μ ) (time origin at the first sample), the coupling reappears. There the cross-information 
+
+I(ν, μ ) ∝ P 
+
+> n
+
+n3̸ = 0, and the normalized correlation coefficient of the joint bound, obtained from the inverse FIM, equals −0.967 at N = 64 and approaches −√15 /4 ≈ − 0.968 
+
+as N → ∞ . This strong coupling can be removed by the choice of time origin. The centering (5) cancels it at finite N .This reference-time choice minimizes the polynomial-phase bounds [38]. Since (5) is a linear reparameterization with Jacobian 
+
+∂(νc, μ )/∂ (ν, μ ) =  1 c
+
+> 0 1
+
+, the native frequency bound follows from (9)–(10) without a separate inversion: 
+
+CRB ν = CRB νc + c2 CRB μ (11) 
+
+= CRB νc
+
+h
+
+1 + 15 ( N − 1) 2
+
+(N − 2)( N + 2) 
+
+i
+
+−−−−→  
+
+> N→∞
+
+16 CRB νc .4
+
+The bound on the frequency at the signal edge is thus asymptotically sixteen times the bound on the frequency at its center. This inflation is intrinsic to the estimand—no estimator of ν can avoid it—but it suggests the principle adopted in Section III: estimate the decoupled pair (νc, μ ), in which both bounds are attainable axis by axis, and map back through 
+
+ˆν = ˆ νc −cˆμ, which attains (11) provided the centered estimates are efficient and uncorrelated. Unless stated otherwise, the efficiencies (3) reported in Sec-tion V are computed in the centered coordinates, i.e., against (9)–(10), for all methods alike; this is the parameterization in which every compared estimator is given the benefit of the decoupled bound. A central claim of this paper, formalized in Section IV, is that the proposed estimator attains near-CRB efficiency on both axes uniformly over the whole cell, including the corners, 
+
+3 dB or more above the threshold SNR. III. P ROPOSED ESTIMATOR 
+
+The estimator follows the classical two-stage architecture of Section II-C, with three choices that, taken together, produce the uniform-efficiency behavior established in Section IV: (i) all dechirping and refinement are carried out in the centered 
+
+coordinates of Section II-B, so that the two axes remain decoupled at every step; (ii) the coarse stage is a zero-padded dechirp–FFT bank with padding factor Mfac ≥ 3,which equalizes the detection threshold across the residual cell; and (iii) the fine stage interpolates fractional-bin DTFT samples with the selectable-p amplitude kernel of [8], [18], extended here to alternate between the frequency and chirp-rate axes. The refinement schedule is deterministic and search-free : each iteration evaluates three DTFT samples per axis, at predetermined offsets from the running estimate, and each axis update is in closed form, so the computational schedule of the complete estimator is independent of the data and of the SNR. Algorithm 1 summarizes the steps. Throughout this section, let 
+
+Xm(λ) =  
+
+> N−1
+
+X
+
+> n=0
+
+x[n] e−jπm (n−c)2
+
+e−j2πλn/N (12) denote the DTFT sample, at the (possibly fractional) bin λ,of the observation dechirped with trial chirp rate m about the signal center, and let clip( x, [a, b ]) = min {max {x, a }, b }. By (4), when m = μ the dechirped signal is a pure tone at the centered frequency νc, so |Xμ(λ)| peaks at λ = N ν c.
+
+A. Coarse Stage: Centered Dechirp–FFT Bank 
+
+The coarse stage evaluates |Xmi (·)| on a chirp-rate grid of spacing 1/N 2, covering the prior interval [−μmax , μ max ],each via an FFT zero-padded to length M = Mfac N , and takes the overall peak. This acquisition is a fixed grid search over the prior rectangle, deterministic and fully parallel across branches; Theorem 1 analyzes it as such. A similar bank-plus-interpolation acquisition was used for coarse carrier-frequency-offset estimation of high-dynamic signals in [40]; the contribution here lies in the refinement stage that the bank initializes, and in its uniformity and threshold analysis. 
+
+Algorithm 1 Deterministic joint (ν, μ ) estimation 
+
+Require: x[n], n = 0, . . . , N −1; prior interval 
+
+[−μmax , μ max ] sampled by Kμ branches; p ∈ (0 , 12 ); Q;
+
+Mfac ≥ 3
+
+Ensure: (ˆ ν, ˆμ) 
+
+> 1:
+
+c ← (N −1) /2; M ← Mfac N 
+
+> 2:
+
+Coarse stage (dechirp–FFT bank):  
+
+> 3:
+
+for all mi = −μmax + 2μmax (i−1)  
+
+> Kμ−1
+
+, i = 1 , . . . , K μ {Kμ
+
+branches, spacing ≈1/N 2} do  
+
+> 4:
+
+Pi[k] ← P 
+
+> n
+
+x[n] e−jπm i(n−c)2
+
+e−j2πkn/M {FFT of length M } 
+
+> 5:
+
+end for  
+
+> 6:
+
+(i⋆, k ⋆) ← arg max i,k Pi[k]; ˆμ ← mi⋆ ; ˆk ← k⋆N/M  
+
+> 7:
+
+Fine stage ( Q alternating refinements; the first iteration refines ˆk using the coarse ˆμ):  
+
+> 8:
+
+for q = 1 , . . . , Q do  
+
+> 9:
+
+ˆk ← ˆk + clip  ˆδν , [− 12 , 12 ] with ˆδν from (13) {ν axis } 
+
+> 10:
+
+Hs ← | Xˆμ+s/N 2 (ˆk)|, s ∈ {− p, 0, p } { μ axis } 
+
+> 11:
+
+if H−p − 2H0 + Hp < 0 then  
+
+> 12:
+
+ˆμ ← ˆμ + clip  ˆδμ, [−1, 1] /N 2, ˆδμ =
+
+p
+
+2
+
+H−p − Hp
+
+H−p − 2H0 + Hp 
+
+> 13:
+
+end if  
+
+> 14:
+
+end for  
+
+> 15:
+
+ˆνc ← ˆk/N ; ˆν ← ˆνc − c ˆμ
+
+Because the dechirping is centered, the residual chirp left by a grid mismatch ∆μ is ejπ ∆μ(n−c)2
+
+, an even function of n − c, which broadens the tone but does not displace the peak frequency. In the absence of noise the coarse outputs are therefore unbiased cell localizations of (νc, μ ) with residuals confined to |δν | ≤ 1/(2 Mfac ) bins (on the padded grid) and 
+
+|δμ| ≤ 12 . The experiments use Kμ = 64 branches, i.e., 
+
+1.04 -cell spacing; the resulting worst-case start-up excess over half a cell is absorbed by the clipped fine-stage updates. The corner efficiency at −5 dB is unchanged to three digits for branch spacings from 0.52 to 2.11 cells ( 2 × 10 4 Monte Carlo trials). Under noise, near a cell boundary the arg max may select the adjacent straddling cell, leaving a starting residual just outside the nominal range; the clipped fine-stage updates (Section III-B) traverse up to half a bin per iteration and absorb such near misses within one or two iterations. The padding factor matters through the straddle (scalloping) loss of the coarse search. The padded FFT samples the peak at most 1/(2 Mfac ) bins from the true frequency, so the worst-case loss over the cell is 10 log 10 sinc 2 1/(2 Mfac ): −3.9 dB for the unpadded search, attained at the corner δν = 12 , which advances the outlier-production threshold there by about 4 dB relative to the cell center. For the 1-D single-tone problem, padding beyond Mfac = 2 is known to bring only marginal further threshold improvement [21]; the requirement adopted here is stricter: a threshold equalized across cell positions ,extending the uniformity into the threshold region. Mfac = 2 
+
+still admits a −0.9 dB loss at the quarter-cell positions δν =
+
+± 14 ; the corner itself falls on the padded grid. Mfac = 3 instead caps the loss at 10 log 10 sinc 2( 16 ) ≈ − 0.4 dB everywhere. The 5
+
+choice enters the threshold theory explicitly, through the loss factor L2 = sinc 2 d in the detection probability of Theorem 1. 
+
+B. Fine Stage: Alternating Selectable-p Interpolation 
+
+Each of the Q refinement iterations updates the two axes in turn, always through fractional-bin samples (12) of the original 
+
+data. 
+
+1) Frequency axis: With the current chirp-rate estimate ˆμ
+
+removed, the residual δ of the running centered-frequency bin 
+
+ˆk is estimated by the selectable-p amplitude interpolator [8] 
+
+ˆδν = p  |Xˆμ(ˆk+p)| − | Xˆμ(ˆk−p)|
+
+|Xˆμ(ˆk+p)| + |Xˆμ(ˆk−p)| − 2|Xˆμ(ˆk)| cos πp , (13) where p ∈ (0 , 12 ) is the interpolation factor. The update (13) algebraically inverts the spectral kernel, as exploited by the original 1-D estimator. In the absence of noise it returns the residual in a single step, uniformly for all δ ∈ (− 12 , 12 )
+
+including the cell edge: in the large-N limit, and to O(1 /N 2)
+
+for finite N (Lemma 1). 
+
+2) Chirp-rate axis: The chirp-rate residual is probed by the same selectable-p principle applied along the μ axis. The three magnitudes Hs = |Xˆμ+s/N 2 (ˆk)|, s ∈ {− p, 0, p }, are computed by re-dechirping at chirp-rate offsets ±p cells, and the vertex of the interpolating parabola, ˆδμ = p 
+
+> 2
+
+(H−p −
+
+Hp)/(H−p − 2H0 + Hp), updates ˆμ by ˆδμ/N 2. This three-point parabolic vertex is the standard equally-spaced peak interpolation adopted, in particular, by Jiang and Le for the chirp-rate axis of the joint problem [3]; a parabola is used here rather than (13) because the peak profile along the chirp-rate axis is a Fresnel-type broadening curve, not a Dirichlet kernel, so the closed-form inverse does not apply; the parabola is kernel-agnostic, and the residual left by its small model mismatch is eliminated by the remaining iterations. Two inexpensive safeguards make the iteration robust at very low SNR: each frequency update is clipped to half a cell, and the chirp-rate update is applied only when the three-point stencil is concave; if the stencil fails concavity in all Q iterations, 
+
+ˆμ retains the coarse-grid value; this fallback is observed only below threshold. The alternation converges because of the centering (Sec-tion III-A). A chirp-rate error does not displace the frequency peak, and a frequency error enters the chirp-rate stencil only through the (flat) peak magnitude, so the two updates are asymptotically decoupled and the joint iteration contracts to the fixed point (ˆ νc, ˆμ) = ( νc, μ ). This contraction is certified in the noiseless case and verified by simulation under noise; it is stated as an explicit hypothesis (Assumption 1). In all experiments, Q = 4 iterations are used; Q = 3 already attains the same accuracy at the target SNRs. An iteration ablation at the corner ( Q = 1 , . . . , 6) gives ηνc = 1 .21 , 1.07 , then 
+
+1.02 –1.03 from Q = 3 onward at −5 dB, with the chirp-rate axis converged from Q = 1 , so Q = 4 carries one iteration of margin. Finally, the native frequency is recovered through the linear map ˆν = ˆ νc − cˆμ of (5). 
+
+Remark 1 (Kernel constant under zero-padding): The con-stant cos πp in the denominator of (13) is the Dirichlet-kernel period of the length-N signal; it is not related to, and must not be replaced by, the zero-padding factor of the coarse FFT. Zero-padding refines the grid on which an FFT approximates the DTFT; the fine stage instead evaluates the DTFT directly at the fractional points ˆk, ˆk ± p, so the only length scale involved is the signal length N . Writing the kernel constant as cos( πN p/M ) with M = Mfac N destroys the inversion property. In a noiseless test ( N = 256 , p = 0 .35 ) the correct constant recovers δ ∈ { 0.10 , 0.30 , 0.49 } to within O(1 /N 2)
+
+in one step (Lemma 1), whereas the miswritten constant with 
+
+Mfac ∈ { 2, 3} yields errors of order one before any noise is added. 
+
+Remark 2 (Choice of the interpolation factor p): The factor p is fixed at p = 0.35 throughout this paper, for two complementary reasons. (i) Insensitivity above threshold: 
+
+because (13) inverts the spectral kernel for all p ∈ (0 , 12 ), the fixed-point variance of the iteration is essentially independent of p. The closed-form efficiency κν (p, N ) of Theorem 2 is flat in p, and paired Monte Carlo sweeps over the ad-missible range track the closed form across SNRs and cell positions (Fig. 2). The closed form (20) shows the residual 
+
+p-dependence is monotone, with smaller p giving marginally lower variance, the direction of the small-shift prescriptions derived for linearized complex-ratio kernels [21]. But the total range is ≈1.3% over p ∈ (0 , 0.49] , because the update (13) inverts the kernel algebraically. This contrasts with the near-iteration-free 1-D estimator of D’Amico–Morelli [17], which attains near-CRB accuracy without iteration by selecting the interpolation factor as a closed-form function of the current residual: in the proposed centered, fixed-Q iteration, efficiency stems from decoupling and the fixed point, eliminating the tuning parameter rather than prescribing it. (ii) Safe sampling at large residual: the constraint p < 12 keeps both interpolation samples inside the main lobe for all residuals up to the cell edge, whereas half-bin sampling at ˆk ± 12 [14] approaches the spectral null adjacent to the peak and becomes ill-conditioned at low SNR [8], [18]. Within the padded pipeline used here the coarse stage already confines the residual to |δ| ≤ 1/6, so this advantage is modest; it becomes decisive only when the padding is limited and the residual is allowed to reach the cell edge. 
+
+C. Computational Complexity 
+
+Let Kμ denote the number of chirp-rate branches of the bank, chosen to sample the prior at ≈1/N 2 spacing ( 64 in the experiments). The coarse stage costs Kμ dechirp–FFT pairs, i.e., O Kμ Mfac N log( Mfac N ) operations, proportional to the number of branches. A search-based refinement requires instead a number of transform evaluations that is only log-arithmic in the prior width, so for wide priors the bank is the more expensive acquisition; its compensating properties are determinism and full parallelism, the Kμ branches being independent. The fine stage adds six O(N ) DTFT samples per iteration, for a total of O(QN ), negligible against the coarse stage. The operation count is independent of the data; the data enter only the two safeguard comparisons, so latency is constant and known in advance; this is of practical value on FPGA/DSP platforms. 6
+
+By contrast, search-based estimators refine the chirp rate by a data-driven sequence of transform evaluations (e.g., golden-section search over the fractional-Fourier order [5]), in which the iterations are inherently sequential and their count is set by the prescribed tolerance; Section V-D reports a measured end-to-end comparison. IV. T HEORETICAL ANALYSIS 
+
+Theorem 1 characterizes when the acquisition stage suc-ceeds. It gives a closed-form description of the three-segment MSE behavior of the joint estimator over the entire SNR axis, including the dependence of the threshold on the cell position through the straddle loss of the coarse FFT. Theorem 2 characterizes how accurately the refinement stage performs once acquisition succeeds. On the frequency axis its efficiency is uniform over the residual cell—including the corners—with a closed-form fixed-point efficiency constant that does not depend on the cell position; the chirp-rate axis admits the same leading-order constant (Remark 5), with the complete alternating algorithm supported by simulation. Proposition 1 quantifies the sensitivity of the estimator to model order through the bias induced by an unmodeled cubic (jerk) phase term. Together, the three results describe the estimator across the SNR axis and the residual cell, and under first-order model mismatch. 
+
+A. Threshold Region of the Joint Estimator 
+
+In the acquisition stage of Algorithm 1, the global peak is taken over the dechirp–FFT bank. Normalize the squared magnitudes by N σ 2: a resolution cell containing only noise produces a power z ∼ Exp(1) , while the cell containing the signal produces a power s with noncentral density 
+
+fs(t) = e−(t+Γ) I0
+
+ 2√Γt, Γ = N L 2(δν , M fac ) ρ, (14) where I0 is the zeroth-order modified Bessel function of the first kind and Γ is the coherently integrated SNR of the signal cell. The factor 
+
+L2 = sinc 2 d, d(δν , M fac ) = δν − round( δν Mfac ) 
+
+> Mfac
+
+, (15) is the straddle (scalloping) loss : the padded FFT samples the Dirichlet peak at distance d (in bins) from the true frequency, so the sampled peak power is reduced by |D(d)/D (0) |2 ≈
+
+sinc 2 d, where D(r) = sin πr/ sin( πr/N ). A chirp-rate resid-ual leaves the even quadratic phase ejπ (δμ/N 2)( n−c)2
+
+and an analogous peak-power loss, but an N -independent and much smaller one: at most 0.07 dB over the bank’s mismatch range 
+
+|δμ| ≤ 0.52 , an order of magnitude below the frequency-axis cap below, and absorbed into the calibration henceforth. The frequency-axis loss is largest at the cell corners and is controlled by the padding factor: d ≤ 1/(2 Mfac ), so 
+
+Mfac = 1 admits up to −3.9 dB at δν = 12 , Mfac = 2 
+
+admits −0.9 dB at δν = 14 , and Mfac = 3 caps the loss at −0.4 dB (cf. Section III-A). Let M denote the number of effectively independent noise cells spanned by the two-dimensional search: the padded bins are correlated, so M is smaller than the literal grid size and is treated as a single calibrated scalar (Remark 4). It is distinct from the coarse-FFT length Mfac N of Section III. 
+
+Theorem 1 (Joint threshold region): For the estimator of Algorithm 1, with prior intervals of width Bν and Bμ on the two axes: (i) Under an independent-effective-cell model of the com-peting noise cells, with a single calibrated count M (Re-mark 4), the probability that acquisition selects the signal cell is 
+
+Pd = Es
+
+(1 − e−s)M =
+
+Z ∞
+
+> 0
+
+fs(t) (1 − e−t)M dt. (16) (ii) For θ ∈ { νc, μ } the MSE obeys the approximate three-segment model 
+
+MSE θ (ρ) ≈  1 − Pd(ρ) Σθ + Pd(ρ) CRB θ (ρ), (17) with prior-variance floors Σν = B2 
+
+> ν
+
+/12 and Σμ = B2
+
+> μ
+
+/12 :the MSE follows the CRB for ρ ≫ ρth , saturates at Σθ for 
+
+ρ ≪ ρni , and transitions rapidly in between. (iii) The breakdown threshold admits the asymptotic form 
+
+Γth ≈ ln M,ρth (δν , M fac ) = ln M
+
+N L 2(δν , M fac ) , (18) i.e., the threshold is governed by a single effective cell count of the two-dimensional search, and its dependence on the cell position is dominated by the straddle loss: ∆ρth [dB] = 
+
+−10 log 10 L2(δν , M fac ). The no-information threshold ρni is obtained from the same soft threshold by solving Pd(ρni ) = ϵ
+
+for a prescribed small ϵ.
+
+Proof: (i) Condition on the signal-cell power s. The noise-cell powers are i.i.d. Exp(1) , so the probability that all M of them fall below s is (1 − e−s)M; averaging over (14) gives (16). The weak correlation of padded bins is absorbed into the calibrated M (Remark 4). (ii) rests on two approximations: conditioned on correct acquisition the refinement is treated as CRB-accurate (supported by The-orem 2 and the measurements of Section V), and condi-tioned on an outlier the selected cell is treated as uniform over the prior region, with variance Σθ —conservative near threshold, where mis-selections are cell-scale near misses (Remark 4); total expectation gives (17). (iii) For large M,
+
+(1 −e−s)M = exp  M ln(1 −e−s) ≈ exp( −M e−s), a doubly exponential function of s that switches from 0 to 1 in an O(1) 
+
+neighborhood of s = ln M. Hence Pd ≈ Pr {s > ln M} , and since E[s] = 1 + Γ concentrates around Γ for large Γ, the transition occurs at Γ ≈ ln M; substituting Γ = N L 2ρ yields (18). The effective count M is calibrated once on a single configuration (Remark 4). 
+
+Remark 3 (Relation to the 1-D threshold theory): For a single tone, the exact acquisition probability was derived by Serbes and Qaraqe [10] as p = [1 − 12 e−N ρ/ 2]N −1,together with Lambert-W closed forms for the breakdown and no-information thresholds, building on the classical outlier analyses of [9], [37]. Equation (16) is the conditional form of the same construction and reduces to a comparable ex-pression in the 1-D on-grid case ( L2 = 1 , M → N − 1). Theorem 1 extends the theory in three directions specific 7
+
+to the joint problem: the acquisition competes against asingle effective count of two-dimensional cells; the threshold acquires a continuous cell-position dependence through the straddle loss (15), controllable by the padding factor; and the floors Σν , Σμ are per-axis prior variances. The three-segment structure itself (prior floor / threshold / asymptotic) is the classical interval-error picture, which underlies both Ziv– Zakai-type bounds on any estimator [41] and estimator-specific interval-error threshold predictions for maximum likelihood [42]; Theorem 1 provides a prediction of the latter kind, in closed form, for the joint problem—with, specific to two dimensions, the cell-position dependence through the straddle loss. To our knowledge no closed-form threshold characteri-zation of joint (ν, μ ) estimation is available in the literature; existing chirp estimators—including the low-threshold quasi-maximum-likelihood family [27], [28]—are analyzed in the asymptotic (CRB) region [5], with threshold behavior reported by simulation; the noisy-case analytical models of [31] lower the breakdown threshold, but do not characterize the threshold location, its cell-position dependence, or the three-segment MSE of the complete estimator. 
+
+Remark 4 (Accuracy budget of the threshold prediction): 
+
+Three approximations are involved. First, the extremal ap-proximation Γth ≈ ln M biases the predicted threshold high by up to about 1 dB; the soft step has finite width. Second, the effective count M is smaller than the literal grid size, because padded FFT bins are correlated and the across-axis maxima are not strictly independent; we therefore treat M as a single calibrated scalar : the integer among 200 logarithmi-cally spaced candidates in [10 2, 10 5.5] that minimizes the mean squared dB error of (17) over the transition region ( 1.5 < η < 
+
+half the no-information floor) of the center, Mfac = 3 curve, giving M = 15794 at N = 256 and then held fixed. That one curve is in-sample; every other configuration is held out. M is specific to the search configuration and is not transported. The other-length onsets of Section V are measured, not predicted. The fitted value is physically interpretable. The acquisition takes its peak over Mfac N = 768 padded frequency bins times the 64 chirp-rate branches (Section V), i.e. 49152 
+
+evaluated cells, but only N × 66 ≈ 16896 resolution cells; the fitted M is 93% of the resolution-cell count—the threefold-oversampled padded bins contribute almost no independent chances. Third, the outlier model treats every competing cell as signal-free, whereas the mismatched-dechirp branches retain part of the signal energy. Near-threshold mis-selections are therefore dominated by cell-scale near misses rather than prior-uniform outliers, which increase the effective Pd and contribute far less than Σθ to the MSE, so the three-segment model errs on the conservative side in the transition region. All other predictions, in particular the cell-position threshold advances at reduced padding, follow from the same single calibrated scalar and match Monte Carlo threshold locations within −0.0 to +1 .0 dB on the four held-out configurations (Section V); the straddle-loss term is thus an independently validated prediction. We present the theorem as a calibrated engineering model: (i) is exact only under the stated surrogate, and (ii)–(iii) inherit its calibration. 
+
+B. Cell-Uniform CRB Efficiency (Edge-Free) 
+
+We now turn to the refinement stage, which converts the acquired cell into fine frequency and chirp-rate estimates through alternating selectable-p updates; the frequency-axis update (13) is an algebraic inverse .
+
+Lemma 1 (Inversion): In the absence of noise, a single application of (13) inverts the residual: ˆδν = δν for the large-
+
+N (asymptotic) spectral kernel, and with an error O(1 /N 2)
+
+for the finite-N kernel, for all δν ∈ (− 12 , 12 ), p ∈ (0 , 12 ), and 
+
+N . The residual bound is uniform over the cell. 
+
+Proof: After exact dechirping, the noiseless data is a pure tone; its DTFT magnitude at offset r from the nearest bin is |X(ˆk + r)| = A |D(δ − r)|, D(r) = sin πr/ sin( πr/N ).For large N the kernel tends to D(r) → N sinc( r) =
+
+N sin πr/ (πr ); substituting the three samples r ∈ {− p, 0, p }
+
+into (13) with this asymptotic form and simplifying the re-sulting ratio yields ˆδ = δ identically in δ, the denominator constant cos πp being the value that effects the cancellation (Remark 1). For finite N the Dirichlet kernel differs from its 
+
+sinc limit by O(1 /N 2), so the single-step inversion carries a residual of the same order; it is uniform in δ.Lemma 1 has two consequences. First, the estimator’s de-terministic error is uniform over the cell before noise enters— of order 1/N 2 everywhere, so there is no deterministic edge degradation to begin with. Second, the iteration ˆk ← ˆk + ˆδν
+
+has the true frequency as a fixed point (a single step in the noiseless case). The analysis that follows requires the iteration to reach that fixed point, which we state as an explicit hypothesis. 
+
+Assumption 1 (Local contraction): In the SNR range γ =
+
+−5 to −8 dB (the target range of Section V), the alternating refinement is locally contracting toward (νc, μ ). In the absence of noise the measured per-iteration contraction of the joint residual is below 5 × 10 −2 uniformly over the cell (numerical certification, worst case at the corner); at the target SNRs the measured per-iteration factor is ξ ≈ 0.1, so after Q = 4 
+
+iterations the systematic (mean) component of the residual is δeff = O(ξQ) ≤ 10 −4 regardless of the residual the cell position originally imposed. The stochastic scatter of the intermediate iterates, of order pκν CRB νc N bins, re-enters the final update and is accounted for by the O(1 /(N ρ )) term of Theorem 2. The noisy-case contraction is certified numerically on a finite grid (Section III-B), and Theorem 2 is conditional on it. Under Assumption 1, the noise variance of the final update is evaluated at δeff ≈ 0, and the cell position drops out of the leading term of the error budget. Computing that variance gives Theorem 2. 
+
+Theorem 2 (Cell-uniform fixed-point efficiency): Above threshold and under Assumption 1, once the refinement of Algorithm 1 has reached its fixed point, the linearized (leading-order) error model of the estimator satisfies, for θ = νc and all (δν , δ μ) ∈ [− 12 , 12 ]2 including the four corners, 
+
+ηθ (δν , δ μ) = var( ˆθ)CRB θ
+
+= 1 + εθ , |εθ | ≤ εmax < ∞, (19) where the bound εmax = ε0 + O(ξ2Q) + O 1/(N ρ ) is independent of the cell position: ε0 = κν (p, N )−1 is the fixed-8
+
+point variance excess of the three-sample amplitude kernel, which converges to an N -independent constant ( ε0 ≈ 3×10 −3
+
+for p = 0 .35 ); O(ξ2Q) denotes the finite-iteration residual, below 10 −8 for ξ ≈ 0.1 and Q = 4 ; and O(1 /(N ρ )) is a finite-SNR term, arising from the amplitude nonlinearity of |X|, that decays as the SNR grows and accounts for the mild overall rise of the measured efficiency as the threshold is approached (full-cell worst values 1.02 at 30 dB, 1.07 at −5 dB, and 1.10 –1.15 
+
+at −8 dB; Section V). The refinement samples the DTFT at the interpolated fractional bin, so no straddle loss enters, unlike in the acquisition stage; the relevant coherent SNR here is N ρ ,distinct from the acquisition-level Γ = N L 2ρ of Theorem 1. The deterministic single-step residual of Lemma 1 is a separate 
+
+bias of O(1 /N 2) bins, with a squared contribution to the ratio growing as O(ρ/N 3); at N = 256 the residual reaches 1% of the bound only beyond +56 dB. In particular, the fixed-point variance of the frequency axis is, in closed form, 
+
+var(ˆ νc) = p2  N − D(2 p)
+
+4N 2ρ D(p) − N cos πp 2 , (20) 
+
+κν (p, N ) = var(ˆ νc)CRB νc
+
+,
+
+in which the right-hand side contains no δ: the efficiency is analytically independent of the cell position. Numerically 
+
+κν (0 .35 , 256) = 1 .003 . The uniformity transfers to the na-tive parameterization through the linear map (5): ηnative  
+
+> ν
+
+=[var(ˆ νc) + c2 var(ˆ μ)] /[CRB νc + c2CRB μ] ≈ 1 when ηνc ≈
+
+1, the chirp-rate axis is likewise near-efficient (Remark 5), and the centered estimates are uncorrelated (Pillar A of the proof)—all three observed in simulation. 
+
+Proof: The proof rests on two pillars. 
+
+Pillar A (centered decoupling). By (8) the FIM of (ϕc, ν c, μ )
+
+is diagonal in the (νc, μ ) block, and the refinement inherits the same decoupling. A chirp-rate error ∆μ leaves a residual chirp ejπ ∆μ(n−c)2
+
+that is even about the signal center and hence does not displace the frequency peak, while a frequency error enters the chirp-rate stencil only through the locally flat peak magnitude. To leading order, the two axes therefore neither bias nor inflate each other, independently of the cell position, and the final linear map preserves efficiency since the centered estimates are uncorrelated at that order; higher-order interactions enter the O(1 /(N ρ )) budget term. 
+
+Pillar B (kernel inversion and fixed point). By Lemma 1 and the contraction property, the terminal update operates at δeff ≈
+
+0. Linearizing (13) there: the three magnitudes are |X(ˆk)| ≈ 
+
+AN + u0 and |X(ˆk ± p)| ≈ A D (p) + u±, where u0 and u±
+
+are the in-phase noise components of the corresponding DTFT samples: writing each sample as its signal term plus complex noise W , u = Re {W e −jφ } with φ the phase of the signal term. Each has var( u) = N σ 2/2, and E[u+u−] = σ2 
+
+> 2
+
+D(2 p)
+
+(the DTFT noise samples at spacing 2p are correlated through the Dirichlet kernel). The signal terms cancel in the numerator of (13), leaving ˆδ ≈ p (u+ − u−)/ 2A[D(p) − N cos πp ]
+
+with var( u+ − u−) = σ2 N − D(2 p); converting bins to cycles/sample ( νc = ˆk/N ) gives (20). No step of the closed-form computation involves δν or δμ, so κν (p, N )—the leading term ε0—is cell-position independent and tends to an N -independent constant. The only residual dependence enters through δeff = O(ξQ), contributing O(ξ2Q), and through the finite-SNR O(1 /(N ρ )) term carried by the amplitude nonlinearity of |X|; both are δ-free bounds. At the corner, the denominator D(p) − N cos πp remains a finite nonzero constant, so εmax is finite. Within the linearization, every term of the budget is nonnegative, so εθ ≥ 0 to leading order; Monte Carlo measurements scatter around 1 + ε0 within sampling error, on either side (Section V). 
+
+Remark 5 (Chirp-rate axis): The μ axis follows the same centered fixed-point architecture, and Pillar A, the decou-pling of the two axes, holds for both axes independently of the cell position. Its parabolic-vertex stencil is not the algebraic inverse of the Fresnel-type peak profile along μ,so no counterpart of Lemma 1 (noiseless inversion) exists; at the fixed point the profile is even in δμ, the vertex is unbiased, and the linearization of Pillar B carries over. With 
+
+F (s) = P 
+
+> n
+
+e−jπ (s/N 2)( n−c)2
+
+= G(s)ejφ s the Fresnel sum of the residual chirp, the fixed-point variance is, in closed form, 
+
+var( ˆδμ) = p2N − G(2 p) cos(2 φp − φ2p)
+
+16 ρ N − G(p)2 cells 2, (21) in which, as in (20), no step involves δν or δμ: the constant is cell-position independent. Numerically κμ(0 .35 , 256) =var(ˆ μ)/CRB μ = 0 .998 , unity to within the linearization order, and a single-update Monte Carlo check at the fixed point gives 
+
+1.004 –1.005 (10 5 trials). 
+
+Remark 6 (Necessity of centering): Centering is a structural requirement. Without it ( c = 0 in the dechirping), the residual chirp ejπ ∆μn 2
+
+, n = 0 , . . . , N − 1, is asymmetric. Its linear phase component displaces the apparent peak frequency by 
+
+≈ ∆μ (N −1) /2, injecting the chirp-rate error directly into the frequency axis—this is the −0.97 correlation of Section II-D acting inside the refinement loop. Section V quantifies the resulting collapse for all three kernels. 
+
+Remark 7 (Relation to 1-D edge-effect removals): In one dimension, near-CRB accuracy at arbitrary residuals is ob-tained without iteration by the WLS estimator of Morelli et al. [16] and by the residual-adaptive interpolator of D’Amico– Morelli [17], and the selectable-p kernel avoids the low-SNR edge effect [8], [18]; all of these results concern a single tone. Theorem 2 is, to our knowledge, the first cell-uniform efficiency analysis for joint (ν, μ ) interpolation, where the two-dimensional residual cell (and its corners) has no 1-D counterpart, and where centering—irrelevant in 1-D, where no quadratic term exists—becomes the decisive ingredient. 
+
+C. Robustness to Unmodeled Jerk 
+
+Finally we consider a departure from the second-order model (1): the true phase contains an unmodeled cubic term, ψ[n] = ϕ0 + 2 π(νn + 12 μn 2 + ζ 
+
+> 6
+
+n3), with jerk ζ
+
+(cycles/sample 3), while the estimator continues to fit two phase derivatives. Under a cubic perturbation, the instantaneous frequency varies along the signal and the native parameters no longer characterize it globally, so bias is referenced to the mid-signal instantaneous parameters νinst  
+
+> c
+
+= ν + μc + ζ 
+
+> 2
+
+c2 and 
+
+μinst  
+
+> c
+
+= μ + ζc —the quantities the centered estimator reports. 9
+
+Proposition 1 (Jerk-induced bias and validity domain): At high SNR, under the least-squares phase-projection analysis, the unmodeled cubic term induces, to first order in ζ, the deterministic biases 
+
+bias(ˆ νc) = ζ (3 N 2 − 7) 120 ≈ ζN 2
+
+40 , bias(ˆ μ) = 0 , (22) i.e., the entire first-order effect of the jerk falls on the frequency axis; the centered chirp-rate estimate is first-order immune. The second-order model remains adequate as long as the bias is below the noise floor, which bounds the admissible jerk by 
+
+ζmax (ρ) = 120 3N 2 − 7
+
+pCRB νc (ρ). (23) 
+
+Proof: At high SNR a maximum-likelihood fit performs a least-squares projection of the unmodeled phase 2π ζ 
+
+> 6
+
+n′3 onto the model basis {1, n ′, n ′2} spanned by the fitted parameters; the proposed interpolation estimator tracks this projection up to a small kernel-dependent factor, quantified in Section V. On the centered grid all odd moments through the fifth vanish (P n′ = P n′3 = P n′5 = 0 ), so the cubic perturbation is orthogonal to the even basis vectors 1 and n′2—hence zero bias on ϕc and μ—and projects only onto n′, with coefficient 
+
+> ζ
+> 6
+
+P n′4/ P n′2 = ζ 
+
+> 6
+
+· 3N 2−720 , giving (22). Equating |bias(ˆ νc)|
+
+to pCRB νc gives (23). 
+
+Remark 8 (Scope of the robustness claim): Two points delimit the claim. First, the bias (22) is that of the least-squares projection onto the second-order model, which a second-order fit incurs, to first order in ζ; the proposed estimator tracks it to within 2.4–3.7% (Section V), and its validity domain matches that of other second-order methods. Specific to the proposed estimator is the centering. On the uncentered grid, the odd moments do not vanish, and the jerk bias contaminates the chirp-rate axis as well. The first-order immunity of ˆμ in (22) is thus a third consequence of the centered coordinates, after the CRB decoupling (Section II-D) and the refinement decoupling (Theorem 2). Second, since the comparison of admissible jerk ranges across published methods depends on their respective signal lengths and sampling rates, (23) is stated in normalized units only. V. N UMERICAL RESULTS 
+
+Unless stated otherwise, all experiments use N = 256 
+
+samples, a signal placed at k0 = round(0 .2N ) frequency bins and ℓ0 = 2 chirp-rate cells, and the residual pair 
+
+(δν , δ μ) of the centered parameterization, νc = ( k0 + δν )/N 
+
+and μ = ( ℓ0 + δμ)/N 2 (Section II-C), swept as indicated. The proposed estimator runs with the fixed configuration of Section III ( p = 0 .35 , Q = 4 , Mfac = 3 ). The chirp-rate prior is μmax = 5 × 10 −4 (about 66 chirp-rate cells wide at N = 256 ), sampled by a Kμ = 64 -branch dechirp bank at approximately one-cell spacing; the frequency prior is the full bandwidth ( Bν = 1 ). All methods search the same prior region. Five baselines are compared. (a) A&M-kernel variant and (b) QSE kernel (fair): both run in the same framework as the proposed estimator (centered flow, coarse stage, and chirp-rate stencil) and differ from it only in the frequency kernel, so the comparison isolates the kernel alone. Variant (a) uses the half-bin complex-ratio update of [14]; variant (b) uses the q-shift interpolator of Solak et al. [22], the two-dimensional extension of the 1-D QSE [15], implemented from their published update and normalization constant c(q). A naive transplant of the original 2-D routine, uncentered, unpadded, and with the chirp rate frozen at the coarse-grid resolution 1/N 2, is examined separately in Section V-F as a control. (c) FrFT-GSS: golden-section search over the chirp rate [5] followed by iterative A&M frequency estimation on the dechirped signal. Two implementations are used: the tolerance-stopped search of the published protocol, and a strengthened variant that initializes the search from a 64 -point pre-grid and evaluates the objective through parabolically refined DTFT peaks on the unpadded 
+
+N -point spectrum, which makes the search converge reliably; the strengthened variant supplies the accuracy curves, and Sec-tion V-D accounts for both. (d) 2-D ML oracle: Nelder–Mead maximization of the two-dimensional periodogram initialized at the true parameter values; it attains the CRB at both cell positions from −8 dB upward and is represented there by the 
+
+η = 1 line (below −13 dB even this reference departs from the bound); being initialized with unavailable information, it is a conditional reference, not an implementable competitor. 
+
+(e) DPT: the discrete polynomial-phase transform of Peleg and Friedlander [25] with the variance-optimal delay τ = N/ 2;both the DPT 2 peak and the dechirped spectrum peak are refined by local maximization of the DTFT magnitude, and a noiseless self-check reproduces their variance expressions (their Eqs. (42) and (44)) to within 6% .The modified DCFT (MDCFT) estimator of Song et al. 
+
+[33] was also implemented. The published method locates the quasi-peak on an N × N transform grid and refines it by iterated interpolation of MDCFT coefficients at half-bin offsets; our implementation keeps the grid search and replaces the interpolation by a local ML refinement of the peak. It reaches the bound at the inner cell positions ( ηνc = 1 .01 –
+
+1.03 at δ ∈ { 0, 0.25 }, −5 dB) and, excluding outlier trials, 
+
+1.02 at the cell corner. The corner outlier rate is 1.1 × 10 −3,an order of magnitude above the padded acquisition methods, consistent with the straddle loss of its unpadded N × N grid (Theorem 1). Its grid cost is O(N 2 log N ), and it is omitted from the figures for clarity. All methods are evaluated on the common task of estimating the mid-signal (centered) frequency. The reported efficiency is ηνc = E(ˆ νc − νc)2/CRB νc with ˆνc = ˆ ν + cˆμ, the MSE convention of (3), so that uncentered baselines are measured against the same decoupled bound (Section II-D). All Monte Carlo experiments use MC = 2 × 10 4 per point (the dedicated outlier count of Section V-B uses 3 × 10 4); paired (common) noise realizations are used across methods. Where method differences are at the percent level, paired 95% bootstrap confidence intervals over the common-noise trials are quoted. 
+
+A. Verification of Cell-Uniform Efficiency 
+
+Fig. 1 shows the cell-diagonal sweep at γ = −5 dB, only 
+
+3–3.5 dB above the threshold. The proposed estimator is flat at ηνc = 1 .01 –1.03 from the cell center to (0 .49 , 0.49) . The 10                     
+
+> Fig. 1. Efficiency ηνcalong the cell diagonal δν=δμat γ=−5dB (N= 256 , MC = 2 ×10 4, paired noise across methods). The three kernels embedded in the same flow are flat and near the bound over the entire diagonal (the proposed estimator at 1.01 –1.03 , the fair QSE kernel at 1.01 –1.03 , and the A&M-kernel variant at 1.03 –1.04 ), while FrFT-GSS, which inherits an uncentered frequency stage, sits 3.5–11 .5% above the bound. The three fair kernels are nearly indistinguishable, locating the uniformity in the centered, padded flow.
+
+uniformity asserted by Theorem 2 thus holds at low SNR, where edge effects are most damaging [8]. The two other kernels embedded in the same flow, the A&M variant ( 1.03 –
+
+1.04 ) and the fair QSE kernel ( 1.01 –1.03 ), track it closely; on common noise the paired differences are +1 .1% to +1 .2% 
+
+(A&M) and −0.2% to −0.4% (QSE) with 95% CIs excluding zero, the direction predicted by Remark 2. Quantitatively, evaluating the closed form (20) at p = q = N −1/3 ≈ 0.157 
+
+predicts a variance 0.30% below that at p = 0 .35 , in agreement with the measured paired difference: it indicates that the margin between the QSE kernel and the proposed estimator is the small-offset effect of Remark 2, not a property of the kernel form. This behavior stems from two properties of the framework: the padded coarse stage confines the starting residual to |δ| ≤ 1/6, where all three kernels are near-efficient (Section V-F); and the centering decouples the axes, so a chirp-rate residual leaves the centered peak in place and enters the native frequency only as −c ∆μ to leading order, which the mapping ˆνc = ˆ ν + cˆμ removes. FrFT-GSS, by contrast, lies 3.5–11 .5% above the bound, reflecting the uncentered A&M frequency stage it inherits. DPT is below its breakdown threshold at this SNR (Section V-B) and is omitted here. Fig. 2 verifies this attribution directly within the proposed kernel: a paired sweep of the interpolation factor over p ∈
+
+[0 .05 , 0.49] , run on common noise with a shared coarse stage so that the comparison isolates the fine stage, at four SNRs from the −7 dB transition foot to +30 dB and at three residual positions (the cell center, δ = 0 .25 , and the corner). The measured profiles follow κν (p) point by point—the prediction falls inside the paired 95% CI at 111 of the 120 sweep points, the nine misses clustered in a single shared-noise configuration (sweep points are not independent trials)—with a total spread of 1.0–1.5% against the predicted 1.3% , and the near-threshold profiles show no excess p-dependence relative                                     
+
+> Fig. 2. Paired change in ηνcrelative to the fixed value p= 0 .35 over
+> p∈[0 .05 ,0.49] , at the cell center (left) and the (0 .49 ,0.49) corner (right);
+> N= 256 , MC = 2 ×10 4per point, common noise and a shared coarse stage across p, bars are paired bootstrap 95% CIs. The dashed curve is the closed form κν(p)of (20); the dotted line marks the QSE shift q=N−1/3. The profiles track the closed form from the −7dB transition foot to +30 dB with a total spread of 1.0–1.5% ; no trial reached the half-bin outlier threshold ( 0
+> of 2.4×10 5over the three swept positions).
+
+to +30 dB. At p = q = N −1/3 the paired change is −0.14% 
+
+to −0.37% , bracketing both the −0.30% prediction and the measured QSE margin above. The chirp-rate axis is flatter still, with all paired differences below 0.02% . This confirms the p-insensitivity asserted in Remark 2: the fixed p = 0 .35 
+
+concedes at most a fraction of a percent in accuracy over the admissible range. The estimators differ instead in uniformity and threshold behavior, examined next. Fig. 3 validates Theorem 2 over the full cell. The efficiency surfaces of the proposed estimator are flat ( ην ≤ 1.02 and 
+
+ημ ≤ 1.02 across the residual cell), and the measured surface agrees with the analytical constant κν = 1.003 of (20) with mean deviation 1.0% . The third panel is the ablation of Remark 6: with centering removed and everything else identical, ην spans 27 to 1.8 × 10 4 across the cell. The best uncentered cell is still 27 × worse than the worst centered one. The closed forms of Theorem 2 and Lemma 1 are not specific to N = 256 (Fig. 4): the fixed-point efficiency κν
+
+converges to a small N -independent constant ( κν − 1 ≈
+
+3 × 10 −3), and the noiseless single-step inversion residual decays as O(1 /N 2) over N = 64 –4096 —below 4 × 10 −6
+
+at N = 256 , negligible against any noise floor, and driven to machine precision by the subsequent iterations. The 30 -dB surfaces of Fig. 3 isolate the refinement stage; the first two rows of Fig. 5 repeat the full-cell sweep at −8
+
+and −5 dB. At −5 dB the surfaces are flat over the entire cell, including the negative-residual quadrants: median ηνc and 
+
+ημ both 1.03 , worst of the 144 cells 1.07 , and no centered-frequency error exceeded half a bin in 2.88 × 10 6 trials. At 
+
+−8 dB— 0.5 dB above the center onset and essentially at the corner onset—rare acquisition near-misses appear ( 270 
+
+half-bin exceedances, 9.4 × 10 −5) and dominate the MSE of the cells they fall in; excluding them, the simulation gives a median of 1.07 and a worst cell of 1.10 (νc) and 1.15 (μ). The uniformity of Theorem 2 and Remark 5 thus holds at the target SNRs, with only rare outlier-induced exceedances near threshold. The third row of Fig. 5 extends the centering ablation of Remark 6 to the other kernels. They produce the same 11                                                        
+
+> Fig. 3. Uniformity over the full 12 ×12 residual cell ( N= 256 ,30 dB, MC = 2 ×10 4). Left to right: native ηνof the proposed estimator (max 1.02 ,corners included); ημ(max 1.02 ); ablation, the identical kernel and schedule without centering, shown as log 10 ην(range 27 –1.8×10 4); and the δμ= 0
+> slice of ηνcagainst the closed-form fixed-point efficiency κν= 1 .003 of Theorem 2 (dashed), which carries no δ-dependence and no fitted correction.
+> Fig. 4. Scalings of the refinement theory with the signal length N(closed-form κν; measured noiseless single-step residual). The fixed-point efficiency excess κν(p, N )−1tends to an N-independent constant ( ≈3×10 −3for
+> p= 0 .35 ), so the estimator is CRB-efficient to a small fixed factor across signal lengths; the noiseless single-step inversion residual of Lemma 1 at
+> δ= 0 .49 follows the O(1 /N 2)reference over N= 64 –4096 .
+
+degradation cell by cell (to within 0.7% on ηνc , 3.3% on 
+
+ημ): the chirp-rate MSE roughly doubles ( ημ median ≈2.2, up to 5.2), and ηνc oscillates over [0 .81 , 1.41] about unity. The sub-unity values are inherent to a biased estimator. Without centering, the chirp-rate refinement acquires a small systematic offset. Their centered counterparts are all flat. The uncentered penalty grows with SNR: at −5 dB it roughly doubles the chirp-rate MSE, while at 30 dB it reaches ην ∈ [27 , 1.8×10 4],as shown in Fig. 3. Uniform efficiency in the joint problem is thus a property of the centering, not of the interpolation kernel. 
+
+B. Verification of the Threshold Characterization 
+
+Fig. 6 sweeps the SNR from −16 to +6 dB at the cell center and corner. With padding, the threshold of the proposed estimator is nearly the same at the center and the corner (≈− 8.5 and ≈− 8.0 dB), and the cell-position dependence is predicted by Theorem 1 via the straddle loss. Above threshold, the proposed estimator, its A&M and QSE variants, and FrFT-GSS track the bound on the centered-frequency axis to 
+
++6 dB (FrFT-GSS with the 3.5–11 .5% excess of Fig. 1), apart from the rare outlier excursions. The phase-based DPT breaks down much earlier: it deviates from the bound at ≈− 2.0 dB (center) and ≈− 1.3 dB (corner), some 6–7 dB above the other methods, although it reaches the bound above its own threshold. The near-threshold outlier statistics of the coarse stage are consistent with the prediction of Theorem 1. At the worst case, the (0 .49 , 0.49) corner at −8 dB, just above threshold, a direct count over 3 × 10 4 paired trials gives an outlier probability (defined as a centered-frequency error exceeding half a bin) of 2.3 × 10 −4 for FrFT-GSS and 1.0 × 10 −4 for each of the three fixed-schedule methods ( 95% Clopper–Pearson intervals 
+
+[0 .9, 4.8] × 10 −4 and [0 .2, 2.9] × 10 −4, respectively); an exact test on the paired counts ( 7 versus 3 events on common noise realizations, two-sided p ≥ 0.13 ) does not reject equal rates, and no method is outlier-free near threshold. The determinism of the proposed schedule is therefore a statement about latency and reproducibility (Section V-D), not a claim of superior threshold reliability. Fig. 7 tests the closed forms of Theorem 1: the lines are the three-segment form (17)–(18) with the single constant 
+
+M = 15794 calibrated once on the center ( Mfac = 3)curve, under the protocol of Remark 4; everything else is prediction. The plotted ratio is the native MSE ν /CRB ν
+
+(11), the acquisition-level quantity; for the centered estimator 
+
+MSE ν = MSE νc + c2 MSE μ, so the three-segment form carries over, with the floor set by Σν = B2 
+
+> ν
+
+/12 (the c2B2
+
+> μ
+
+/12 
+
+contribution is below 2% , and η floors are ≈16 × lower than in the centered convention of Fig. 6). Three features of the figure carry the verification. First, 
+
+Σν = 1 /12 predicts a no-information floor of η = 1 .46 × 10 4,against 1.34 ×10 4 measured at −16 dB. Second, the predicted onset of the threshold region (the SNR at which η crosses 2
+
+from above) is higher than the measured onset by 0.5 dB on the calibration curve and by −0.0 to +1 .0 dB on the four held-out configurations, consistent with Remark 4; the measured crossings themselves carry 0.4–0.95 dB bootstrap intervals, because near threshold the MSE is dominated by rare outliers. Third, the cell-position dependence follows the predicted straddle shifts: the unpadded corner (straddle loss 
+
+10 log 10 sinc 2(0 .49) ≈ − 3.8 dB) advances the measured onset by 3.8 dB, and the padded configurations advance it by 0.46 –12 
+
+Fig. 5. Full-cell uniformity at −8 and −5 dB and the centering ablation ( N = 256 , 12 × 12 grid over [−0.49 , 0.49] 2, MC = 2 × 10 4 per cell, disjoint noise seeds per cell). Rows 1–2, proposed estimator at −8 dB ( 0.5 dB above the center onset, at the corner onset) and −5 dB: ηνc , ημ, and the fraction of trials with a centered-frequency error exceeding half a bin. At −5 dB, no such event occurs in 2.88 × 10 6 trials and the surfaces are flat: median 1.03 on both axes, worst of 144 cells 1.07 (νc) and 1.06 (μ). At −8 dB, 270 exceedances ( 9.4 × 10 −5, over 128 cells) dominate the raw MSE of the cells they fall in; excluding them, the median is 1.07 and the worst cell 1.10 (νc) and 1.15 (μ). Row 3, the centering ablation at −5 dB: removing the centering (all else identical) produces the same surface for all three kernels—proposed, A&M, and QSE agree cell by cell to within 0.7% on ηνc and 3.3% on ημ (ηνc medians 
+
+1.11 /1.11 /1.11 , oscillating over [0 .81 , 1.41] ; ημ medians 2.23 /2.24 /2.23 )—while their centered counterparts are all flat (worst cells 1.07 /1.07 /1.06 ). Both signs of both residuals are covered. 
+
+0.50 dB with 0.5–0.95 dB confidence intervals, bracketing the predicted 0–0.99 dB differences, which are not individually resolved at this precision. One calibrated constant thus repro-duces the floor, the onset, and the position dependence of all five curves. The L2 term in (18) is an independently validated mechanism rather than a fitted correction, and Mfac = 3 keeps the measured cell-position spread at ≈0.5 dB, consistent with its 0.4 dB deterministic straddle cap (Section III-A) to within onset-estimation noise. 
+
+C. Validation at Other Signal Lengths 
+
+Table I repeats the two headline measurements at N = 32 ,
+
+64 , and 512 under the fixed physical chirp-rate prior, with the SNR shifted so that the distance to the predicted threshold is the same at each length. The center and corner efficiencies 
+
+TABLE I VALIDATION AT OTHER SIGNAL LENGTHS (μmax ≈ 32 /N 2 , THE FIXED -PHYSICAL -PRIOR CONVENTION OF SECTION V-D; 
+
+γop = −5 + 10 log 10 (256 /N ) DB; MC = 2 × 10 4 THROUGHOUT ;
+
+N = 256 ROW FROM FIGS . 1 AND 7). proposed, ηνc A&M variant, ηνc onset (dB) 
+
+N γop center corner center corner center / corner 
+
+32 +4 1.02 1.05 1.03 1.06 +0 .9 / +0 .964 +1 1.04 1.03 1.06 1.05 −2.0 / −2.1256 −5 1.03 1.03 1.04 1.04 −8.5 / −8.0512 −8 1.02 1.05 1.03 1.06 −11 .0 / −11 .0
+
+of the proposed estimator and of its A&M variant remain within 6% of the bound at all three lengths and both cell positions, and the measured breakdown onsets at the center and the corner agree to within 0.5 dB, so the cell uniformity 13 
+
+Fig. 6. Efficiency versus SNR at the cell center (left) and corner (right) ( N = 256 , MC = 2 × 10 4 per point). The four acquisition-based methods leave the prior floor between −10 and −8 dB and follow the bound up to +6 dB at both cell positions, with closely matched thresholds at the center and the corner, the cell-position independence that the prescribed padding secures (Theorem 1); the phase-based DPT leaves the floor only at about −2 dB and approaches the bound above its own threshold. Inside the transition, at −9 dB, the acquisition-based methods are at ∼10 3 (outlier-dominated MSE); by −8 dB, at the corner, the three fixed-schedule methods are within 10% of the bound while FrFT-GSS remains at ≈4.8 (its higher near-threshold outlier rate, quantified in the text); the −8 dB center values remain outlier-dominated, cf. the exceedance maps of Fig. 5. Insets: linear-scale zoom of the transition exit, −7 to −1 dB at the center and −8 to −1 dB at the corner. 
+
+Fig. 7. Theorem 1 against Monte Carlo ( N = 256 , MC = 2 ×10 4 per point). Lines: closed form (17)–(18) with the single fitted constant M = 15794 
+
+(calibrated at the center, Mfac = 3 ); dots: measured MSE ν /CRB ν . The four remaining curves are independent predictions through the straddle loss (15): the measured onset advances at reduced padding and off-center positions track the predicted straddle shifts, quantified against the higher-precision onset measurement in the text. 
+
+of Theorem 2 and the threshold equalization of Section III-A are not specific to N = 256 . The onset itself moves by 11 .9 dB from N = 32 to N = 512 , matching the 12 .0 dB that the 1/N 
+
+scaling of (18) predicts for the 16 × length ratio. 
+
+D. Runtime and Complexity Comparison 
+
+Fig. 8 reports measured runtimes, which serve here to verify scaling: all methods track the O(N log N ) reference; at small 
+
+N the measured times lie above it, dominated by the per-call overhead of the interpreted implementation. The proposed 
+
+Fig. 8. Single-estimate runtime versus N : per signal the minimum of three repetitions is kept (suppressing scheduler jitter), and the median across 100 
+
+signals is plotted; identical hardware and implementation framework; fixed physical chirp-rate prior, so the branch count is constant across N ; FFT-friendly lengths N = 2 am, m ∈ { 1, 3, 5, 7, 9}. The proposed estimator, its A&M variant, and the QSE2 transplant scale as O(N log N ) (dotted reference, least-squares fit); the two FrFT-GSS variants (tolerance-stopped protocol and strengthened pre-grid implementation) bracket the proposed estimator. DPT is the cheapest method tested. 
+
+schedule prescribes the number and set of transform evalua-tions in advance; the golden-section search evaluates fewer transforms under its tolerance-stopped protocol, at the cost of an inherently sequential count that varies with the realization, while the strengthened variant trades additional evaluations for global acquisition. The naive QSE2 without padding and the chirp-rate refinement is the cheapest of the three variants, but forfeits threshold equalization at the cell corner and 14 
+
+cell-uniform efficiency (Sections V-B and V-F). DPT is the cheapest method tested, at the threshold cost quantified in Sec-tion V-B. The MDCFT baseline (not plotted) is dominated by its N ×N transform grid, O(N 2 log N ), an order of magnitude above the fixed-schedule methods at N = 1024 . All curves are single-threaded NumPy implementations of comparable opti-mization effort on the same workstation (Intel Core i9-9880H, 
+
+32 GB; Python 3.12, NumPy 2.4; perf_counter after one warm-up call per method); absolute times are implementation-dependent, and the informative content is the relative ordering and the scaling with N at the stated prior width. The fixed physical prior is the fixed-duration convention: the observation window T is held fixed while the sampling rate grows with 
+
+N , so ˙fmax = μmax f 2 
+
+> s
+
+= 32 /T 2 is constant and the branch count is constant across N . At a fixed sampling rate, the same physical prior would span O(N 2) cells and the bank cost would grow accordingly (Section III-C). The medians hide one further difference: because its algorithmic parameters are fixed, independent of the parameters to be estimated, the proposed estimator has constant complexity and identical runtime on each run, whereas the golden-section search time varies from signal to signal. 
+
+E. Robustness to Unmodeled Jerk 
+
+Fig. 9 examines robustness to unmodeled jerk, sweeping the cubic term over a 40 × range at 20 –40 dB; the two axes behave as Proposition 1 predicts. The frequency-axis degradation follows the deterministic bias (22) to within 2.4–3.7% , while the chirp-rate axis shows no bias trend over the same sweep. In cell units the measured chirp-rate bias is consistent with zero to within the Monte Carlo error (below 6 × 10 −6 of a cell over the sweep), while the frequency-axis bias grows to 
+
+0.46 cell, and ημ ≤ 1.34 throughout, a variance-level excess rather than the linear-in-Φ growth of the frequency axis. The validity bound (23) contracts as the SNR grows, because at higher SNR the noise floor is lower and the model bias appears earlier, consistent with a second-order fit. 
+
+F. Kernel Ablation: Edge Regime and Reduced Padding 
+
+Fig. 10 isolates the contribution of the interpolation kernel itself to the estimation accuracy, in the regime where the two kernels differ: low SNR, with the residual near the cell edge [8], [18]. With every other component identical, the selectable-p kernel tracks below the A&M kernel at all tested cell positions ( 1.025 versus 1.037 at the −5 dB corner; 1.079 
+
+versus 1.090 at −8 dB). Within the padded pipeline the gap is only ≈1% , because the zero-padded coarse stage already confines the refinement residual to |δ| ≤ 1/6, where even the half-bin samples used in the A&M kernel remain inside the main lobe; the structural advantage of p < 12 (Remark 2) is fully realized only at large controlled residual; in the 1-D setting it reaches ≈7% [8]. Two control experiments delimit the role of the kernel (Fig. 11). First , when the three kernels are placed in the identical centered, padded flow with the same chirp-rate stencil (isolating the frequency kernel as for the A&M variant), the selectable-p, A&M, and QSE kernels are nearly indistinguish-able and uniform along the cell diagonal (Fig. 11(a), all within 
+
+1.01 –1.04 at −5 dB). The naive QSE2 transplant varies over the cell instead. A QSE kernel embedded in the same flow is as uniform as ours. Second , reducing the padding factor (Fig. 11(b)) does not expose a kernel-level robustness margin: at Mfac = 1 the corner efficiency of both kernels degrades together to ≈3.5–3.6, and for Mfac ≥ 2 both sit at ≈1.02 –
+
+1.04 . The Mfac = 1 degradation is driven by the coarse-stage straddle loss and the incipient outliers of Theorem 1, which are kernel-independent and, at this trial count, well sampled. The selectable-p kernel’s benefit is the modest, controlled-residual edge improvement above, and its selection here is primarily for continuity with the estimator family of [8], [18]. 
+
+G. Comparison with the Closest Prior Joint Interpolator 
+
+The estimator most closely related to ours is that of Jiang and Le [3], to our knowledge the only prior in-terpolation method that operates directly on the dechirped DTFT/likelihood samples; interpolation-based refinements in transform domains—FrFT [32], [43], modified DCFT [33], and ambiguity function [44]—instead recover the parameters through 1-D estimators after the transform-domain search discussed in Section I. We implemented the architecture from their published equations—a coarse trial search over the chirp rate, a single three-point parabolic interpolation of the log-likelihood on that axis, and a plug-in single-tone frequency es-timator, for which we use the A&M estimator [14] as the paper leaves the inner estimator unspecified. In the noiseless limit, the frequency is recovered exactly, while the single parabolic pass leaves a chirp-rate residual of ≈0.06 cell; the proposed 
+
+Q-iteration refinement drives the same quantity to machine precision. Under noise, on the centered-frequency axis, the Jiang–Le implementation reaches near-CRB efficiency above its threshold but sits uniformly about 1% above the proposed estimator across −6 to +6 dB, at both cell positions (paired differences +1 .0% to +1 .3% , all 95% CIs excluding zero; 
+
+N = 256 , MC = 2 × 10 4). The substantive distinction is structural rather than numerical: their chirp-rate axis is localized by an explicit search, their thresholds are reported only by simulation, and neither the cell-uniformity nor the threshold behavior is analyzed—the gaps this paper addresses. VI. C ONCLUSION 
+
+This paper treated the joint estimation of frequency and chirp rate as a uniformity problem, because the residual depends on the parameters to be estimated and a reliable two-stage estimator must therefore maintain its accuracy and its threshold at the worst cell position. The proposed estimator addresses both failure modes by centering the coordinates and padding the acquisition. The centering removes the frequency– chirp-rate cross-term of the Fisher information that couples the two estimands in the natural parameterization; the zero-padded acquisition bank equalizes the detection threshold across the cell; and the selectable-p kernel, operating on fractional-bin DTFT samples, inverts the Dirichlet kernel throughout the residual cell and keeps its samples in the main lobe down 15                                                  
+
+> Fig. 9. Unmodeled jerk ( N= 256 , MC = 2 ×10 4), parameterized by the edge cubic phase Φ = ( ζ/ 6)( N/ 2) 3in cycles. Left: ηνcdegrades with Φas the bias closed form (22) predicts (deviation 2.4–3.7% over the sweep), with the validity bound (23) marked per SNR ( Φvalid = 2 .0×10 −3,6.4×10 −4,2.0×10 −4
+> cycles at 20 /30 /40 dB). Right: ημstays flat ( ≤1.34 ) over the entire sweep: the first-order immunity of the centered chirp-rate estimate (Proposition 1).
+> Fig. 10. Kernel isolation at low SNR ( N= 256 , MC = 2 ×10 4): identical centered flow, coarse stage, and chirp-rate stencil; only the frequency kernel differs (selectable-p,p= 0 .35 , versus half-bin A&M). Left: γ=−5dB; right: −8dB. The selectable-pkernel is uniformly the better of the two ( ≈1% at the edge); under Mfac = 3 padding, the refinement residual stays below 1/6bin, so the half-bin degradation of A&M is largely suppressed and the remaining gap is small. Inset (right): zoom of δ≥0.05 , past the outlier-inflated points at δ≤0.03 .
+
+to the cell edge, a benefit that is modest within the padded pipeline. The supporting theory consists of two closed forms: an MSE and threshold characterization across the full SNR range with a single calibrated cell count, and variance ratios on both axes, independent of the cell position. A closed-form jerk-bias analysis shows the chirp-rate estimate to be first-order immune to unmodeled cubic phase, a robustness margin specific to the centering. Monte Carlo experiments corroborated the theoretical predictions. The frequency-axis efficiency stays within 7% of the bound over the whole cell at −5 dB, which is 3.5 dB above the approximately −8.5 dB threshold at N = 256 ; the threshold predictions fall within 
+
+1.0 dB on four held-out configurations from a single calibrated constant. For low-SNR burst applications such as satellite telemetry and the detection of highly dynamic targets in radar and sonar systems, the proposed estimator provides predictable latency, a schedule fixed in advance, and accuracy independent of the residual-cell position of the true parameters. The analysis is confined to a single-component second-order model; two extensions remain open. Multiple chirp components motivate an estimate-and-subtract front end, and its interaction with the threshold theory is open; damped chirps and very short signals change the spectral kernel and the can-cellations on which the centered analysis rests. Both directions can reuse the framework developed here: conditional detection probability for the acquisition stage and fixed-point noise gain for the refinement stage; both are under investigation. 
+
+Reproducibility. The code that reproduces every figure in this paper will be made publicly available upon publication. 16 
+
+Fig. 11. Two control experiments on the role of the frequency kernel ( N = 256 , γ = −5 dB, centered ηνc ; MC = 2 × 10 4 per point). (a) Kernels isolated in the identical centered, padded flow with the same chirp-rate stencil: the selectable-p, A&M, and QSE kernels coincide and are uniform along the cell diagonal, whereas the naive QSE2 transplant (uncentered, unpadded) varies nonmonotonically—its deviation is thus a flow artifact, not a kernel property. (b) Corner efficiency ( δ = 0 .49 ) versus padding factor: reducing Mfac degrades both kernels together (coarse-stage straddle loss, kernel independent), so the kernel choice provides no system-level robustness margin to reduced padding. Inset: zoom of Mfac = 2 –6, where both kernels are flat and separated only by the ≈1% kernel-constant offset. 
+
+REFERENCES [1] T. J. Abatzoglou, “Fast maximum likelihood joint estimation of fre-quency and frequency rate,” IEEE Transactions on Aerospace and Electronic Systems , vol. AES-22, no. 6, pp. 708–715, 1986. [2] X.-G. Xia, “Discrete chirp-Fourier transform and its application to chirp rate estimation,” IEEE Transactions on Signal Processing , vol. 48, no. 11, pp. 3122–3133, 2000. [3] W. Jiang and T. Le, “Joint estimation of Doppler frequency shift and Doppler frequency rate based on interpolation,” Journal of Electronics & Information Technology , vol. 35, no. 1, pp. 166–171, 2013, in Chinese. [4] J. Wang, C. Jiang, L. Kuang, and B. Yang, “Iterative Doppler frequency offset estimation in satellite high-mobility communications,” IEEE Jour-nal on Selected Areas in Communications , vol. 38, no. 12, pp. 2875– 2888, 2020. [5] O. Aldimashki and A. Serbes, “Performance of chirp parameter estima-tion in the fractional Fourier domains and an algorithm for fast chirp-rate estimation,” IEEE Transactions on Aerospace and Electronic Systems ,vol. 56, no. 5, pp. 3685–3700, 2020. [6] S. Peleg and B. Porat, “The Cramer-Rao lower bound for signals with constant amplitude and polynomial phase,” IEEE Transactions on Signal Processing , vol. 39, no. 3, pp. 749–752, 1991. [7] Y. Zhang, Y. Xie, X. Li, X.-P. Zhang, and J. Zhou, “Frequency estimation for zero-padded signal based on the amplitude ratio of two DFT samples,” IEEE Transactions on Signal Processing , vol. 69, pp. 6504– 6514, 2021. [8] M. Wei, Y. Zhu, J. Sun, X. Lu, X. Mu, and J. Xu, “Performance optimization in frequency estimation of noisy signals: Ds-IpDTFT estimator,” Sensors , vol. 23, no. 17, p. 7461, 2023. [9] D. C. Rife and R. R. Boorstyn, “Single tone parameter estimation from discrete-time observations,” IEEE Transactions on Information Theory ,vol. 20, no. 5, pp. 591–598, 1974. [10] A. Serbes and K. Qaraqe, “Threshold regions in frequency estimation,” 
+
+IEEE Transactions on Aerospace and Electronic Systems , vol. 58, no. 5, pp. 4850–4856, 2022. [11] B. G. Quinn, “Estimating frequency by interpolation using Fourier coefficients,” IEEE Transactions on Signal Processing , vol. 42, no. 5, pp. 1264–1268, 1994. [12] M. D. Macleod, “Fast nearly ML estimation of the parameters of real or complex single tones or resolved multiple tones,” IEEE Transactions on Signal Processing , vol. 46, no. 1, pp. 141–148, 1998. [13] C¸ . Candan, “A method for fine resolution frequency estimation from three DFT samples,” IEEE Signal Processing Letters , vol. 18, no. 6, pp. 351–354, 2011. [14] E. Aboutanios and B. Mulgrew, “Iterative frequency estimation by interpolation on Fourier coefficients,” IEEE Transactions on Signal Processing , vol. 53, no. 4, pp. 1237–1242, 2005. [15] A. Serbes, “Fast and efficient sinusoidal frequency estimation by using the DFT coefficients,” IEEE Transactions on Communications , vol. 67, no. 3, pp. 2333–2342, 2019. [16] M. Morelli, M. Moretti, and A. A. D’Amico, “Single-tone frequency es-timation by weighted least-squares interpolation of Fourier coefficients,” 
+
+IEEE Transactions on Communications , vol. 70, no. 1, pp. 526–537, 2022. [17] A. A. D’Amico, M. Morelli, and M. Moretti, “Frequency estimation by interpolation of two Fourier coefficients: Cram´ er-Rao bound and maximum likelihood solution,” IEEE Transactions on Communications ,vol. 70, no. 10, pp. 6819–6831, 2022. [18] M. Wei, A. Zhang, L. Qi, B. Li, and J. Sun, “An efficient frequency estimator for a complex exponential signal based on interpolation of selectable DTFT samples,” Sensors , vol. 22, no. 3, p. 861, 2022. [19] D. Belega and D. Petri, “Complex-valued noisy sinewaves frequency estimator based on DTFT linearization and interpolation,” Circuits, Systems, and Signal Processing , vol. 43, no. 7, pp. 4624–4642, 2024. [20] A. Togni, M. Zannoni, and P. Tortora, “Accurate frequency estimation through iterative parabolic interpolations,” Signal Processing , vol. 237, p. 110094, 2025. [21] A. Serbes, “An improved frequency estimator using auxiliary DFT samples: CRB performance across all signal lengths,” IEEE Transactions on Aerospace and Electronic Systems , vol. 61, no. 6, pp. 18 970–18 981, 2025. [22] V. Solak, S. Aldirmaz-Colak, and A. Serbes, “Fast and efficient 2-D and K-D DFT-based sinusoidal frequency estimation,” IEEE Transactions on Signal Processing , vol. 70, pp. 5087–5101, 2022. [23] V. Solak and A. Serbes, “A novel DFT-based algorithm for 2-D mul-tiple sinusoidal frequency estimation,” IEEE Signal Processing Letters ,vol. 31, pp. 999–1003, 2024. [24] P. M. Djuri´ c and S. M. Kay, “Parameter estimation of chirp signals,” 
+
+IEEE Transactions on Acoustics, Speech, and Signal Processing , vol. 38, no. 12, pp. 2118–2126, 1990. [25] S. Peleg and B. Friedlander, “The discrete polynomial-phase transform,” 
+
+IEEE Transactions on Signal Processing , vol. 43, no. 8, pp. 1901–1914, 1995. [26] P. O’Shea, “A fast algorithm for estimating the parameters of a quadratic FM signal,” IEEE Transactions on Signal Processing , vol. 52, no. 2, pp. 385–393, 2004. [27] I. Djurovi´ c and L. Stankovi´ c, “Quasi-maximum-likelihood estimator of polynomial phase signals,” IET Signal Processing , vol. 8, no. 4, pp. 347–359, 2014. 17 
+
+[28] I. Djurovi´ c and M. Simeunovi´ c, “Review of the quasi-maximum likeli-hood estimator for polynomial phase signals,” Digital Signal Processing ,vol. 72, pp. 59–74, 2018. [29] P. O’Shea, “On refining polynomial phase signal parameter estimates,” 
+
+IEEE Transactions on Aerospace and Electronic Systems , vol. 46, no. 3, pp. 978–987, 2010. [30] L. B. Almeida, “The fractional Fourier transform and time-frequency representations,” IEEE Transactions on Signal Processing , vol. 42, no. 11, pp. 3084–3091, 1994. [31] O. Aldimashki and A. Serbes, “LFM signal parameter estimation in the fractional Fourier domains: Analytical models and a high-performance algorithm,” Signal Processing , vol. 214, p. 109224, 2024. [32] J. Song, Y. Wang, and Y.-f. Liu, “Iterative interpolation for parameter es-timation of LFM signal based on fractional Fourier transform,” Circuits, Systems, and Signal Processing , vol. 32, pp. 1489–1499, 2013. [33] J. Song, Y. Xu, Y. Liu, and Y. Zhang, “Investigation on estimator of chirp rate and initial frequency of LFM signals based on modified discrete chirp Fourier transform,” Circuits, Systems, and Signal Processing ,vol. 38, no. 12, pp. 5861–5882, 2019. [34] P. Pan, Y. Zhang, Y. Li, Y. Ye, W. He, Y. Zhu, and R. Guo, “Interpretable optimization-inspired deep network for off-grid frequency estimation,” 
+
+IEEE Transactions on Neural Networks and Learning Systems , vol. 36, no. 8, pp. 14 816–14 828, 2025. [35] Y. Zhang, P. Pan, Y. Li, and R. Guo, “Efficient off-grid frequency esti-mation via ADMM with residual shrinkage and learning enhancement,” 
+
+Mechanical Systems and Signal Processing , vol. 224, p. 112200, 2025. [36] X. Hou and Y. Gao, “Chirp parameter estimation via a knowledge diffusion-assisted complex-valued neural network,” in Proc. IEEE 7th Adv. Inf. Manag., Communicates, Electron. Autom. Control Conf. (IM-CEC) , 2025, pp. 488–495. [37] B. G. Quinn and P. J. Kootsookos, “Threshold behavior of the maxi-mum likelihood estimator of frequency,” IEEE Transactions on Signal Processing , vol. 42, no. 11, pp. 3291–3294, 1994. [38] B. Ristic and B. Boashash, “Comments on “The Cramer-Rao lower bounds for signals with constant amplitude and polynomial phase”,” 
+
+IEEE Transactions on Signal Processing , vol. 46, no. 6, pp. 1708–1709, 1998. [39] S. M. Kay, Fundamentals of Statistical Signal Processing: Estimation Theory . Upper Saddle River, NJ: Prentice Hall, 1993. [40] M. Wei, Z. Liu, C. Li, and J. Sun, “Coarse carrier frequency offset estimation of high-dynamic signals based on interpolation and peri-odogram,” Application Research of Computers , vol. 39, no. 2, pp. 548– 551, 556, 2022, in Chinese. [41] K. L. Bell, Y. Steinberg, Y. Ephraim, and H. L. Van Trees, “Extended Ziv–Zakai lower bound for vector parameter estimation,” IEEE Trans-actions on Information Theory , vol. 43, no. 2, pp. 624–637, 1997. [42] F. Athley, “Threshold region performance of maximum likelihood di-rection of arrival estimators,” IEEE Transactions on Signal Processing ,vol. 53, no. 4, pp. 1359–1373, 2005. [43] Y. Liu, Y. Zhao, J. Zhu, Y. Xiong, and B. Tang, “Iterative high-accuracy parameter estimation of uncooperative OFDM-LFM radar signals based on FrFT and fractional autocorrelation interpolation,” Sensors , vol. 18, no. 10, p. 3550, 2018. [44] W. Feng and B. Zhang, “DAF interpolation algorithm for parameter estimation of LFM signals (in Chinese),” Journal of Signal Processing ,vol. 28, no. 8, pp. 1134–1138, 2012.

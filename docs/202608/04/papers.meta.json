@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-04",
+  "date": "2026-08-04",
+  "generated_at": "2026-08-04T22:02:18",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/04/2608.01108v1-topological-rainbow-trapping-for-spatial-frequency-demultiplexing-of-underwater-acoustic-signals",
+      "section": "quick",
+      "title_en": "Topological Rainbow Trapping for Spatial-frequency Demultiplexing of Underwater Acoustic Signals",
+      "authors": "Cheng Lin, Yangkai Liu, Tuo Liu, Yi Zhang, Haiyan Fan, Hui Zhang",
+      "date": "2026-08-02",
+      "pdf": "https://arxiv.org/pdf/2608.01108v1",
+      "score": "7.0",
+      "evidence": "面向目标识别的水下空间-频率解复用",
+      "tldr": "水下多频声波的高效分离与定位对目标识别和声能收集至关重要，但复杂的流固作用与开放系统集成难题限制了拓扑彩虹捕获的应用。本文基于声学谷量子霍尔效应（QVHE）和自旋量子霍尔效应（QSHE），利用表面声波（SSAW）的近场渐逝特性，提出两种水下空间-频率解复用机制。实验表明，QVHE通过空间梯度使不同频率分量在不同位置局域化；QSHE则令多频信号先沿边界鲁棒传输，再按频率转移至远端角态。该工作实现了缺陷容忍的物理层解复用，降低了对数字信号处理的依赖，为水下目标识别与频率选择性能量收集提供了新方案。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Efficient separation and localization of multifrequency acoustic waves are essential for underwater target recognition and acoustic energy harvesting. The underwater implementation of topological rainbow trapping remains challenging because of complex fluid-solid interactions and the difficulty of integrating long-range transport with frequency-selective localization in an open system. Here, we theoretically develop and experimentally demonstrate two underwater spatial-frequency demultiplexing mechanisms based on the acoustic analogues of the QVHE and QSHE. Both mechanisms employ SSAWs, whose fields are confined near a structured surface and decay evanescently into the surrounding water, enabling experiments without an enclosed waveguide. In the QVHE mechanism, a spatial gradient along a valley-Hall edge channel shifts the local edge-state dispersion, causing different frequency components to become localized at distinct positions and thereby realizing spectral and spatial demultiplexing. In the QSHE mechanism, one-dimensional topological edge states are coupled to frequency-selective zero-dimensional higher-order corner states. Multifrequency signals first propagate robustly along a common boundary and are then transferred to prescribed remote corners according to frequency, producing a transport-then-confinement process. This mechanism combines defect-tolerant edge transport, frequency-selective corner localization, and remote rainbow trapping. Numerical simulations and experiments verify the frequency-dependent localization and the persistence of the designed transport pathways in the presence of structural defects. The proposed open SSAW platform performs robust frequency demultiplexing at the physical layer, reducing reliance on digital signal processing and offering potential for underwater target recognition and frequency-selective acoustic energy harvesting.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/04/2608.01756v1-deterministic-dtft-interpolation-for-joint-frequency-and-chirp-rate-estimation-cell-uniform-efficiency-and-threshold-analysis",
+      "section": "quick",
+      "title_en": "Deterministic DTFT Interpolation for Joint Frequency and Chirp-Rate Estimation: Cell-Uniform Efficiency and Threshold Analysis",
+      "authors": "Miaomiao Wei, Jianjun Li, Yang Wang, Huaiyuan Chen, Lulu Gao, Hang Liu",
+      "date": "2026-08-03",
+      "pdf": "https://arxiv.org/pdf/2608.01756v1",
+      "score": "6.0",
+      "evidence": "面向声呐的联合频率与线性调频率估计方法，可服务于水声目标识别。",
+      "tldr": "针对噪声chirp信号的频率与调频率联合估计，现有粗搜索加插值方法在残差单元边缘和低信噪比下性能下降。本文提出确定性两阶段估计器，采用时间中心化、零填充的dechirp-FFT采集组，配合交替选择p的分数bin DTFT幅度插值，使Fisher信息交叉项为零。推导了全信噪比范围内闭式MSE与阈值特性，阈值由有效单元数决定，边缘位置影响被填充限制在0.4dB。实验在N=256时频率与调频率轴效率中位数1.03、最坏1.07，阈值预测误差小于1dB。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Joint estimation of the frequency and chirp rate of a noisy chirp signal arises in radar, sonar, and burst satellite communications. Conventional estimators combine a coarse grid search with fine interpolation; accuracy degrades at the edges of the residual cell (the edge effect) and below the breakdown SNR (the threshold effect). This paper presents a deterministic two-stage estimator that controls both failure modes uniformly over the entire residual cell. The estimator combines a time-centered, zero-padded dechirp-FFT acquisition bank with alternating selectable-$p$ amplitude-interpolation refinements on fractional-bin DTFT samples; in the centered frame, the frequency-chirp-rate cross-term of the Fisher information vanishes. The paper derives a mean-squared-error and threshold characterization across the full SNR range, in closed form except for one calibrated scalar (an effective cell count), to our knowledge the first for the joint problem: the breakdown threshold is governed by the cell count, and its cell-position dependence is dominated by the straddle loss of the coarse FFT, which the padding bounds at 0.4 dB. An asymptotic uniformity analysis over the whole cell, including the corners, gives closed-form fixed-point variance ratios of $1.003$ and $0.998$, analytically free of the residual. A closed-form bias analysis under unmodeled jerk shows the centered chirp-rate estimate is first-order immune. Monte Carlo experiments at $N=256$ (validated at $N=32$-$512$) measure frequency- and chirp-rate-axis efficiencies with median $1.03$ and worst case $1.07$ over $144$ cell positions at $-5$ dB. Threshold predictions hold within $1.0$ dB on four held-out configurations. The dechirp-FFT bank is fully parallel, and each of the four refinement iterations evaluates three DTFT samples per axis; under fixed operating conditions, per-estimate latency is constant at $O(N\\log N)$ cost.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

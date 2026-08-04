@@ -1,0 +1,1177 @@
+Title: 2608.01108v1.pdf
+
+URL Source: https://arxiv.org/pdf/2608.01108v1
+
+Published Time: Tue, 04 Aug 2026 01:13:04 GMT
+
+Number of Pages: 22
+
+Markdown Content:
+Topological Rainbow Trapping for Spatial -frequency 
+
+# Demultiplexing of Underwater Acoustic Signals 
+
+## Cheng Lin a, Yangkai Liu a, Tuo Liu b, Yi Zhang c, Haiyan Fan a, * , Hui Zhang a, *  
+
+> a
+
+Jiangsu Key Laboratory for Design and Manufacturing of Precision Medicine Equipment, School of 
+
+Mechanical Engineering, Southeast University, Nanjing, Jiangsu 211189, China  
+
+> b
+
+State Key Laboratory of Acoustics and Marine Information Institute of Acoustics, C hinese Academy of 
+
+Sciences, Beijing, 100190, China  
+
+> c
+
+Shenzhen Research Institute of Big Data, The Chinese University of Hong Kong (Shenzhen), Shenzhen, 
+
+Guangdong 518000, China 
+
+## Abstract: 
+
+Efficient separation and localization of multifrequency acoustic waves are essential for underwater 
+
+target recognition and acoustic energy harvesting. Topological rainbow trapping enables frequency 
+
+demultiplexing by combining slow -wave localization with topologically protected transport, yet its 
+
+underwater implementation rem ains challenging because of complex fluid –solid interactions and 
+
+the difficulty of integrating long -range transport with frequency -selective localization in an open 
+
+system. Here, we theoretically develop and experimentally demonstrate two underwater spatia l–
+
+frequency demultiplexing mechanisms based on the acoustic analogues of the quantum valley Hall 
+
+effect (QVHE) and quantum spin Hall effect (QSHE). Both employ spoof surface acoustic waves 
+
+(SSAWs), whose fields are confined near a structured surface and de cay evanescently into the 
+
+surrounding water, enabling experiments without an enclosed waveguide. In the QVHE mechanism, 
+
+a spatial gradient along a valley -Hall edge channel shifts the local edge -state dispersion, causing 
+
+different frequencies to accumulate at distinct positions and thereby realizing spectral and spatial 
+
+demultiplexing. In the QSHE mechanism, one -dimensional topological edge states are coupled to 
+
+frequency -selective zero -dimensional higher -order corner states. Multifrequency signals first 
+
+pro pagate robustly along a common boundary and are then transferred to prescribed remote corners 
+
+according to frequency, producing a transport -then -confinement process. This mechanism combines 
+
+defect -tolerant edge transport, frequency -selective corner localiz ation, and remote rainbow trapping. 
+
+Numerical simulations and measurements verify the frequency -dependent localization and the 
+
+persistence of the designed transport pathways under structural defects. The proposed open SSAW 
+
+platform performs robust frequenc y demultiplexing at the physical layer, reducing reliance on 
+
+digital signal processing and offering potential for underwater target recognition and frequency -
+
+selective acoustic energy harvesting. 
+
+## Keywords: Underwater acoustic metamaterials ; Spoof surface acoustic waves ; Topological 
+
+rainbow trapping ; Higher -order topological states ; Frequency demultiplexing 
+
+## __________              
+
+> *Corresponding author.
+> E-mail address: Chenglin@seu.edu.cn (C. Lin), yangkai.liu@seu.edu.cn (Y.Liu ), liutuo@mail.ioa.ac.cn (T. Liu),
+> zhangyi@sribd.cn (Y.Zhang ), haiyan.fan@seu.edu.cn (H. Fan), seuzhanghui@seu.edu.cn (H. Zhang)
+
+# 1. Introduction 
+
+In complex and dynamic underwater environments, the severe attenuation of electromagnetic 
+
+waves renders acoustic waves the primary medium for long -range underwater communication and 
+
+target detection [1 –5] . The radiated noise of surface vessels, submarines , and increasingly prevalent 
+
+unmanned underwater vehicles generally contains multiple frequency components [6] . Isolating 
+
+diagnostically relevant frequencies from such mixed signals is therefore essential for reliable 
+
+underwater target recognition . Moreover , the marine environment is rich in acoustic wave energy. 
+
+Harvesting this energy through piezoelectric [7] , resonan t [8] , or nanostructured designs [9,10] 
+
+could suppo rt the development of self -powered underwater sensor networks . Underwater acoustic 
+
+metamaterials [11,12] , whic h have advanced rapidly over the past decade , provide flexible means 
+
+of manipulating waterborne acoustic wav es and offer new opportunities for both target recognition 
+
+and energy harvesting . Through artificially engineered subwavelength structures, these 
+
+metamaterials can exhibit effective acoustic properties that are difficult to obtain in natural media, 
+
+enabling precise control of underwater acoustic wave propagation at the subwavelength scale . In 
+
+recent years, underwater acoustic metamaterials have demo nstrated tremendous potential in fields 
+
+such as sound absorption [13 –16] , acoustic wave focusing [17 –19] , acoustic cloaking [20 –22] , and 
+
+topological acoustics [23 –25] .
+
+Among these developments , topological acoustic systems are particularly attractive because 
+
+they can support boundary modes with suppressed b ackscattering [26,27] , as well as higher -order 
+
+localiz ed modes [28] associated with nontrivial topological invariants [29 –32 ]. More recently, 
+
+spatially graded topological structures have been introduced to establish a position -dependent 
+
+relationship between frequency and wave localization, giving rise to the topological rainbow effect 
+
+[33] . In a spatially graded topological structure, the local dispersion evolves along the propagation 
+
+direction, causing different spectral components to approach thei r respective slow -wave or stopping 
+
+conditions at distinct spatial locations [34] . This process enables spectral d emultiplexing, spatial 
+
+separation, and selective wave localization [33,35,36] . Accordingly, the topological rainbow effect 
+
+has been demonstrated in various physical fields , such as photonic systems [35 –38] , airborne 
+
+acoustic systems [39,40] , and elastic wave systems [41] .
+
+Transferring this concept to waterborne acoustics is nontrivial. The coupled dynamics of the 
+
+liquid medium and solid structure modify modal dispersion and field confinement, increasing the 
+
+complexity of both structural design and experimental implementation. Consequently, underwater 
+
+realizations of topological rainbow trapping remain comparatively limited . Furtherm ore, beyond 
+
+realizing rainbow localization underwater, it remains difficult to construct an open underwater 
+
+acoustic system that combines topologically protected transport over extended propagation 
+
+distances with spectral discrimination and subsequent ener gy confinement at prescribed remote sites. 
+
+Addressing these challenges could shift preliminary spectral processing from the digital domain to 
+
+the acoustic hardware itself , thereby reducing dependence on active control systems and 
+
+downstream signal -processi ng algorithms. Such functionality would be valuable for the extraction 
+
+of characteristic frequency components, underwater target recognition, and spatially distributed 
+
+acoustic energy harvesting. 
+
+In this paper, we theoretically develop and experimentally d emonstrate topological rainbow 
+
+trapping in an open underwater environment based on spoof surface acoustic wave s (SSAW s), as 
+
+illustrated in Fig. 1. The surface -bound nature of SSAWs permits acoustic manipulation in an unenclosed water domain, thereby providing a suitable system for implementing topological 
+
+rainbow trapping without an enclosing acoustic cavity. The system consists of two spatially graded 
+
+two -dimensional (2D) topological acoustic configurations designed t o support valley -Hall edge -
+
+state trapping and pseudospin -mediated edge -to -corner localization, respectively. The upper 
+
+configuration is based on an acoustic analogue of the quantum valley Hall effect (QVHE) and 
+
+exploits valley -polarized topological edge st ates along a spatially graded interface. The gradient 
+
+continuously modifies the local edge -state dispersion, causing different frequency components to 
+
+reach their respective stopping conditions at distinct positions along the propagation path. This 
+
+frequen cy -dependent position mapping enables joint spectral and spatial demultiplexing. The lower 
+
+configuration is based on an acoustic analogue of the quantum spin Hall effect (QSHE), in which 
+
+pseudospin -polarized one -dimensional (1D) edge states are coupled to frequency -selective zero -
+
+dimensional (0D) higher -order corner states. Acoustic signals are first transported over an extended 
+
+distance along the topological boundary and are subsequently coupled into remote corner modes 
+
+whose resonance frequencies match th e corresponding spectral components. This edge -to -corner 
+
+coupling produces a “transport -then -confinement ” process, enabling frequency -selective remote 
+
+localization following long -range topological edge transport . Numerical simulations incorporating 
+
+structu ral defects further indicate that the edge -guided waves bypass the perturbations and continue 
+
+to excite the prescribed remote corner states, demonstrating the defect tolerance of the edge -to -
+
+corner transport pathway under the tested conditions. Theoretical analyses and experimental 
+
+measurements demonstrate position -dependent spectral separation in the QVHE configuration and 
+
+defect -tolerant edge -to -corner rainbow trapping in the QSHE configuration. By combining 
+
+protected boundary transport with geometrically prescribed corner localization, the open SSAW 
+
+system provides a physical -layer strategy for underwater frequency demultiplexing and offers 
+
+potential for target recognition and broadband acoustic energy harvesting. 2. Mo del an d Method s
+
+# 2.1 Unit -cell dispe rsion relations and topological phase 
+
+# transition     
+
+> Fig.1. The open underwater SSAW system for spatial -frequency demultiplexing and edge -to -corner topological
+> rainbow trapping.
+
+Figure 2(a) illustrates the geometric configuration of the QVHE unit cell, with a lattice constant 
+
+of a = 0.7 √3 mm. The structure consists of an aluminum plate with a thickness of l = 0.9 mm 
+
+immersed in water , in which two circular blind holes of depth of l0 = 0.6 mm are arranged in a 
+
+honeycomb pattern. The centers of the two holes are positioned symmetrically along the long 
+
+diagonal of the unit cell . The reference size parameter is d efine d as d = 0. 4 mm. To characterize 
+
+the topological phase transition induced by the broken spatial inversion symmetry, a dimensionless 
+
+perturbation parameter δ is introduced to tune the two holes according to 𝑑 1 = 𝑑 (1.3 + 𝛿 ) and 
+
+𝑑 2 = 𝑑 (1.3 − 𝛿 ), respectively. At δ = 0, the two sublattice holes are identical and the unit cell 
+
+possesses C₆ᵥ symmetry . Varying δ [for example, δ = ±0.1 in Fig. 2(a) ] provides con trol over the 
+
+bandgap. The dispersion relations are obtained from the eigenfrequency problem of the fully 
+
+coupled solid –fluid system. For the solid (fluid) medium , the acoustic impedance is 𝑍 𝐴𝐿 =
+
+𝜌 𝐴𝐿 𝑐 𝐴𝐿 = 16 .821 × 10 6 kg m−2 s−1 ( 𝑍 𝑊 = 𝜌 𝑊 𝑐 𝑊 = 1.49 × 10 6 kg m−2 s−1 ). The resulting 
+
+impedance ratio of approximately 11.3 is not sufficiently large to justify a perfectly rigid boundary 
+
+approximation. The elastic response of the plate and the pressure field in water are therefore solved 
+
+simultaneously, with continuity of normal motion and traction imposed at each solid –fluid interface. 
+
+Bloch –Floquet periodic conditions are applied to the in -plane bound aries, and the Bloch wave 
+
+vector is swept along the Γ–K–M–Γ path of the first Brillouin zone. In Fig. 2(b), the gray shaded 
+
+regions represent the projected continuum of propagating acoustic modes in water, delimited by the 
+
+water sound lines. Modes within t hese regions can radiate energy into the surrounding water and therefore do not constitute tightly confined SSAW modes. For the inversion -symmetric cell with δ
+
+= 0, the two bands shown by the black dotted curves meet at a twofold -degenerate Dirac point at 
+
+the K valley, as shown in Fig. 2(b) . When δ > 0 or δ < 0, the geometric deformation breaks the 
+
+spatial inversion symmetry of the lattice leading to the lift ing of the Dirac degeneracy and formation 
+
+of a bandgap, as depicted by the red and blue curve s in Fig. 2(b). 
+
+Figure 2(c) shows the evolution of the two K -point eigenfrequencies as δ varies continuously 
+
+from −0.1 to +0.1. The bandgap narrows as δ approaches zero, closes at the Dirac point when δ = 0, 
+
+and reopens after the perturbation changes sign . Although the unit cells with δ = 0.1 and δ = −0.1 
+
+exhibit identical dispersion relation s under opposite perturbation signs , their underlying topological 
+
+properties are distinct . As evidenced by Fig. 2(c), the dominant pressure response is exchanged 
+
+between the two inequivalent blind holes at the K point when the sign of δ is reversed , providing 
+
+direct evidence of band inversion .
+
+The band inversion is accompanied by a reversal of the valley topology. This si gnifies that the 
+
+propagating modes within the two structures possess distinct topological valley indices. The 
+
+topological distinction between the two phases can be characterized by the valley Chern index .
+
+Owing to time -reversal symmetry, the Berry curvatures near the inequivalent K and K′ valleys have 
+
+opposite signs, so the total Chern number over the entire Brillouin zone remains zero [42] .
+
+Integration of the Berry curvature around a single valley for the band below the gap gives CK = −1/2 
+
+for δ < 0, indicating a topologi cally trivial phase , CK = +1/2 for δ > 0, characterizing a topologically 
+
+nontrivial phase (see Note 2 in Supplementary Materials) .                           
+
+> Fig .2.Schematic of the underwater QVHE unit cell and corresponding dispersion relations . (a) Three -dimensional
+> geometry of the aluminum –water unit cell and representative configurations for δ= 0 and δ= ± 0.1. Gray and blue
+> denote aluminum and water, respectively; d₁ and d₂ are the diameters of the two blind holes. (b) Dispersion relations
+> along Γ –K–M–Γ. The black dotted curves correspond to the inversion -symmetric cell with δ= 0, whereas the red and blue solid curves show the upper and lower bands for the perturbed cells with δ= ± 0.1. The gray shaded regions
+> represent the water -radiation continuum ass ociated with the sound lines; the inset shows the first Brillouin zone and
+> the selected wave -vector path. (c) Evolution of the K -point eigenfrequencies with δand acoustic pressure
+> distributions, demonstrating the exchange of modal character and the associ ated band inversion
+
+To enable 0D acoustic localization, a composite QSHE unit cell consists of three primitive 
+
+QVHE unit cell s is therefore introduced , as shown in Fig . 3(a). The QSHE unit cells use through -
+
+holes instead of blind holes. In the unperturbed geometry, the six holes are arranged with sixfold 
+
+rotational symmetry . Due to the band folding mechanism [43] , the single Dirac point originally 
+
+located at the K and K′ valleys is mapped to the Γ point , leading to a fourfold -degenerate double 
+
+Dirac point, as indicated by the bl ack dashed line in Fig . 3(b). A radial displacement parameter Δd
+
+is introduced to tune the positions of the six holes relative to the cell center: Δd > 0 corresponds to 
+
+outward expansion, whereas Δd < 0 corresponds to inward contraction 
+
+The dispersion relations are calculated using the same fully coupled solid –fluid eigenfrequency 
+
+framework as that used for the QVHE unit cell. As shown in Fig. 3(b), both the expanded 
+
+configuration with Δd = 0.15d and the contracted configuration with Δd = −0.26 d lift the fourfold 
+
+degeneracy and open a b andgap around the double -Dirac frequency. The red and blue solid curves 
+
+represent the bands above and below the opened gap for the perturbed configurations, while the 
+
+labels A(B) and C(D) identify the corresponding nearly degenerate mode pairs at Γ. The ev olution 
+
+of the Γ-point eigenfrequencies and the associated pressure eigenfields are shown in Fig. 3(c). As 
+
+Δd is varied from negative to positive values, the bandgap closes at the double Dirac point and 
+
+subsequently reopens with an inverted modal ordering. For the expanded cell with Δd = 0.15 d, the 
+
+upper mode pair A exhibits dipole -like pₓ and pᵧ characteristics, whereas the lower pair C exhibits 
+
+quadrupole -like dₓ ²₋ᵧ² and dₓ ᵧ characteristics. For the contracted cell with Δd = −0.26 d, the order is 
+
+reversed: the quadrupole -like pair B lies above the gap and the dipole -like pair D lies below it. This 
+
+exchange of the p- and d-type mode characters provides direct evidence of band inversion and 
+
+indicates a change in the sign of the effective Dirac mass. The p–d band inversion therefore marks 
+
+a transition between two acoustic pseudospin -Hall phases. The spin -Chern analysis gives a 
+
+vanishing spin Chern number for the contracted configuration (Δd < 0), identifying it as 
+
+topologically trivial, and a nonzero spin Chern number for the expanded configuration (Δd > 0), 
+
+identifying it as topologically nontrivial ( see Note 3 in Supplementary Materials ). Fig . 3. Schematic of the composite QSHE unit cell and dispersion relations . (a) Three -dimensional geometry of the 
+
+enlarged unit cell formed by three primitive QVHE cells, together with the unperturbed (Δd = 0), expanded (Δd > 0), 
+
+and contracted (Δd < 0) configurations . Gray and blue denote aluminum and water, respectively. (b) Dispersion 
+
+relations along M –Γ–K. The bla ck dashed curves show the unperturbed double Dirac point at Γ, whereas the red and 
+
+blue solid curves show the bands above and below the gap opened by the geometric perturbation. The gray shaded 
+
+regions indicate the projected continuum of propagating waterb orne modes; the inset shows the reduced Brillouin 
+
+zone and the selected wave -vector path . (c) Evolution of the Γ-point eigenfrequencies and acoustic pressure 
+
+distributions of modes A –D for Δd = 0.15 d and Δd = −0.26 d, demonstrating the inversion between the dipole -like p
+
+modes and quadrupole -like d modes. 
+
+# 2.2 Supercell interface states and boundary bandgaps 
+
+Owing to their opposite valley Chern indices, the two QVHE domains support one -dimensional 
+
+interface states wit hin their common bulk bandgap. These states enable robust wave transport along 
+
+the interface with suppressed backscattering, provided that intervalley scattering remains weak. 
+
+Figure 4(a) shows a ribbon supercell formed by adjoining the QVHE unit cells UC1 (δ = −0.1) and 
+
+UC2 (δ = +0.1), which possess opposite valley Chern indices. The periodic arrangement in the 
+
+transverse direction produces two zigzag interfaces, denoted ZZ1 and ZZ2. In the dispersion 
+
+relations in Fig. 4(b), the gray regions represent the bulk bands, whereas the red and blue branches 
+
+correspond to edge states localized at ZZ1 and ZZ2, respectively. Both branches lie in the common 
+
+bulk bandgap and connect the bulk bands, confirming the existence of valley -dependent interface 
+
+channels. Figure 4(c) shows the acoustic pressure and elastic -displacement fields of modes E1 and 
+
+E2 at the wave vectors marked in Fig. 4(b). Both modes are localized near the corresponding zigzag 
+
+interfaces and decay into the adjacent domains. The co -localization of the scalar pressure field in 
+
+water and the vector displacement field in aluminum demonstrates the simultaneous confinement of 
+
+the coupled acoustic –elastic response by the QVHE interface states. Their distinct field symmetries are consistent with the reversed d omain ordering at ZZ1 and ZZ2. 
+
+To establish the relationship between frequency and spatial position, we investigate the 
+
+influence of the size tuning parameter δ on the dispersion characteristics. Fig ure 4(d) plots the 
+
+dispersion relations of ZZ1 interface states across various δ (see Note 4 in supplementary materials 
+
+for complete dispersion relations) . It can be observed that the boundary state stably exists within the 
+
+bandgap region, regardless of how δ changes. Furthermore, increasing δ systematically sh ifts the 
+
+eigenfrequencies to higher regimes. This demonstrates that δ effectively modulates the frequency 
+
+of the interface states .               
+
+> Fig. 4. QVHE ribbon supercell and dispersion relations. (a) Ribbon supercell composed of UC1 (δ=−0.1) and UC2
+> (δ=0.1 ), forming two zigzag interfaces, ZZ1 and ZZ2. (b) Dispersion relations of the supercell. The gray regions
+> denote the bulk bands, while the red and blue branches represent the interface states localized at ZZ1 and ZZ2,
+> respectively. E1 and E2 indicate the re presentative eigenmodes examined in (c). (c) Scalar acoustic pressure fields
+> in water and vector elastic -displacement fields in the aluminum plate for modes E1 and E2. Their co -localization
+> near the corresponding interfaces demonstrates the simultaneous co nfinement of the coupled acoustic and elastic
+> responses. (d) Evolution of the ZZ1 interface -state dispersion for δ= 0.1, 0.15, 0.2, and 0.2 5,showing an upward
+> frequency shift with increasing δ.
+
+Although the aforementioned valley -dependent supercell supports 1D topological interface 
+
+state s and enables frequency tuning , the acoustic energy remains confined to a 1D path . To further 
+
+achieve 0D localization of acoustic energy, we analyze a composite QSHE supercell composed of 
+
+the QSHE unit cell . a ribbon supercell is constructed from the contracted unit cell CUC1 (Δ d =
+
+−0.26 d) and the expanded unit cell CUC2 (Δ d = +0.15 d), as shown in Fig. 5(a). These unit cells 
+
+correspond to topologically trivial and nontrivial pseudospin -Hall phases, respectively. The 
+
+tr ansverse periodicity of the ribbon produces two armchair interfaces with opposite domain 
+
+orderings, labeled AM1 and AM2. 
+
+Figures 5(b) and 5(c) show the dispersion relations of the supercells containing the AM1 and 
+
+AM2 interfaces, respectively. The gray circles represent bulk states, while the red and blue circles represent the topological interface state. Unlike the gap -conn ecting QVHE branches in Fig. 4(b), 
+
+each QSHE edge branch spans only part of the common bulk bandgap. The AM1 branch occupies 
+
+the lower part of the common bulk bandgap, leaving an upper edge bandgap. Conversely, the AM2 
+
+branch occupies the upper part leavin g a lower edge bandgap. Consequently, edge bandgaps are 
+
+formed [blue shadowed regions in Figs. 5(b) and 5(c)], within which localized 0D corner states can 
+
+emerge . Figure 5(d) shows the underwater acoustic pressure distributions and displacement fields 
+
+of t he eigenmodes marked as CE1 in Fig. 5(b) and CE2 in Fig. 5(c). Their co -localization confirms 
+
+the simultaneous confinement of the scalar acoustic and vector elastic responses by the QSHE edge 
+
+states .
+
+Fig . 5. QSHE ribbon supercell s and dispersion relations. (a) Supercell composed of contracted CUC1 (Δ d = −0.26 d)
+
+and expanded CUC2 (Δ d = +0.15 d), forming the armchair interfaces AM1 and AM2. (b) The dispersion relations of 
+
+the supercell containing the AM1 interface . The gray regions denote the bulk ba nds, the blue curve denotes the AM1 
+
+edge branch, and the blue shaded region marks the upper AM1 edge bandgap. (c) The dispersion relations of the 
+
+supercell containing the AM2 interfac e. The red curve denotes the AM2 edge branch, and the blue shaded region 
+
+marks the lower AM2 edge bandgap. CE1 and CE2 indicate the representative eigenmodes shown in (d). (d) Scalar 
+
+acoustic pressure fields in water and vector elastic -displacement fields in the aluminum plate for CE1 and CE2. The 
+
+simultaneous localization of t he two fields at AM1 and AM2 demonstrates the coordinated confinement of the 
+
+coupled acoustic and elastic responses by the QSHE edge states. 
+
+# 3. Topological Interface Transport and Higher -Order Corner States 
+
+To examine SSAW transport along the topological interfaces, two finite straight -channel 
+
+models are constructed. The QVHE model in Fig. 6(a) consists of an upper UC1 domain (δ = −0.1, 
+
+blue) and a lower UC2 domain (δ = +0.1, orange), which have opposite valley Chern indices and 
+
+form a zigzag interface. T he QSHE model in Fig. 6(c) combines the contracted CUC1 domain (Δ d
+
+= −0.26 d, blue) and the expanded CUC2 domain (Δ d = +0.15 d, orange), forming an armchair 
+
+interface between the trivial and nontrivial pseudospin -Hall phases. In both models, a monopole sourc e is positioned near the left end of the interface to excite the corresponding in -gap mode, and 
+
+perfectly matched layers are applied at the exterior computational boundaries to absorb outgoing 
+
+waves and suppress artificial reflection s. Figure 6(b) shows th e acoustic -energy distribution of the 
+
+QVHE model at 482 kHz. The field launched by the source remains predominantly confined to the 
+
+zigzag interface and propagates across the full channel, while its amplitude decays rapidly in the 
+
+transverse direction with little penetration into the adjoining bulk domains. This response is 
+
+consistent with the QVHE interface branch identified in Fig. 4 and confirms the excitation and 
+
+transport of an interface -confined SSAW across the modeled channel. The 
+
+acoustic energy d istribution of the QSHE model at 501 kHz is presented in Fig. 6(d). The 
+
+intensity maxima extend along the armchair interface and remain strongly confined between the two 
+
+bulk domains . These characteristics stem from the topological protection provided by t he difference 
+
+in topological phases across the interface, ensuring robust acoustic signal transport along predefined 
+
+paths.               
+
+> Fig .6.Straight -interface transport of SSAWs in the QVHE and QSHE lattices. (a) Finite QVHE model formed by
+> UC1 (δ=−0.1) and UC2 (δ= +0.1), which possess opposite valley Chern indices and form a zigzag interface. (b)
+> Acoustic energy distribution at 482 kHz, showing propagation along the QVHE interface and transverse confinement
+> within the dashed region. (c) Finite QSHE model formed by contracted CUC1 (Δ d=−0.26 d) and expanded CUC2
+> (Δ d= +0.15 d), which form an armchair interface between the two pseudospin -Hall phases. (d) Acoustic energy
+> distribution at 501 kHz, showing the interface -confined QSHE edge mode.
+
+To ver ify the higher -order corner states, a finite triangular metastructure is constructed by 
+
+embedding a CUC2 domain (orange) within a CUC1 domain (blue), as shown in Fig. 7(a). CUC1 
+
+and CUC2 represent the trivial and nontrivial pseudospin -Hall phases, respecti vely. Three symmetry -related corners are formed in this metastructure. For R = R0, with R0 = Ra = 0.26 mm, the 
+
+computed eigenfrequency spectrum in Fig. 7(b) separates the bulk, edge, and corner states. Three 
+
+nearly degenerate corner eigenvalues appear near 522 kHz within the edge bandgap. Figure 7(c) 
+
+shows the eigenfield of a representative corner m ode at 522 kHz. The field maximum is located at 
+
+one CUC1 -CUC2 corner and decays rapidly both along the adjoining interfaces and into the 
+
+surrounding bulk domains, confirming its zero -dimensional localization. 
+
+To assign distinct resonance frequencies to the four corner sites in the final device shown in 
+
+Fig. 1, the hole radius R at each corner is used as a local tuning parameter. As shown in Fig. 7(d), 
+
+increasing R/R0 from 1.0 to 1.3 monotonically reduces the corner -state frequency from 
+
+approximately 522 to 504 kHz. This frequency -radius relation provides the design basis for 
+
+frequency -selective corner localization. The corresponding eigenfields in Fig. S2 further show that 
+
+the field remains concentrated at the designated corner over the investigated paramete r range. 
+
+Fig . 7. Formation and geometric tuning of QSHE corner states. (a) Finite triangular metastructure formed by an inner 
+
+CUC2 domain and an outer CUC1 domain, producing three symmetry -related corners along their interface. (b) 
+
+Eigenfrequency spectr um for R = R0 = 0.26 mm. Black, blue, and red markers denote bulk, edge, and corner states, 
+
+respectively; the shaded region indicates the edge bandgap. (c) Acoustic -energy distribution of a representative 
+
+corner state at 522 kHz for R / R0 = 1.0, showing strong localization at one CUC1 -CUC2 corner. (d) Corner -state 
+
+frequency as a function of the hole radius R / R0, demonstrating a monotonic frequency decrease with increasing R. 
+
+# 4. Topological rainbow demultiplexing and corner trapping 
+
+To r ealize QVHE -based spatial -frequency demultiplexing in an open underwater environment, 
+
+a four -segment topological metadevice is constructed, as shown in Fig. 8(a). The segments, labeled 
+
+A–D, are arranged sequentially along the propagation direction. In each segment, the upper UC1 domain and the lower UC2 domain possess opposite valley Chern indices and form a topological 
+
+interface. By assigning different symmetry -breaking parameters δ (δA1 = −0.1, δB1 = −0.15, δC1 =
+
+> −
+
+0.2, and δD1 = −0.2 5, δA2 = 0.1, δB2 = 0.15, δC2 = 0.2, and δD2 = 0.2 5) to these successive regions, 
+
+the local interface -state dispersion and the associated band edge shift toward higher frequencies 
+
+along the wave propagation directio n, thereby establishing a piecewise spectral gradient along the 
+
+propagation path. 
+
+Figure 8(b) illustrates the underwater acoustic energy distributions at excitation frequencies of 
+
+471, 474, 476, and 480 kHz , respectively . As the excitation frequency increases, the field -
+
+accumulation position shifts progressively downstream: the 471 kHz component is confined near 
+
+the entrance region, whereas the 474, 476, and 480 kHz components reach successively more distant 
+
+segments . This behavior is consistent with a progressive reduction in group velocity as each 
+
+frequency comp onent approaches the local interface -state band edge, resulting in frequency -
+
+dependent wave accumulation. The fields remain tightly confined in the transverse direction, 
+
+confirming a direct frequency -to -position mapping and the spatial demultiplexing of th e incident 
+
+multifrequency signal along the QVHE interface.      
+
+> Fig .8.QVHE -based topological rainbow demultiplexing. (a) Four -segment interface with stepwise perturbation magnitudes |δ| = 0.10, 0.15, 0.20, and 0.25 in regions A -D, respectively. In each segment, UC1 and UC2 carry
+> opposite valley Chern indices. (b) Acoustic energy distributions at 471, 474, 476, and 480 kHz, showing the
+> downstream shift of the field -accumulation position with increasing frequency. The dashed rectangles indicate the
+> interface channel.
+
+The QSHE configuration extends the rainbow mechanism from one -dimensional edge 
+
+localization to zero -dimensional corner confinement. As shown in Fig. 9(a), the open SSAW syste m
+
+consists of four domains, labeled I -IV. Domain I is formed by the trivial CUC1 phase, whereas 
+
+domains II -IV are formed by the nontrivial CUC2 phase. Their arrangement creates a common edge -
+
+transport channel and four corner sites, C1 -C4, at the lower vert ices of domains II and III. These 
+
+sites join boundaries with distinct edge terminations and edge bandgaps, providing the spectral and 
+
+geometric conditions required for higher -order corner localization. The corner -hole radii are set to 
+
+RC1 = 1. 2Ra, RC2 = 1. 15Ra, RC3 = 1. 10Ra, RC4 = 1. 05 Ra, where Ra = 0.26 mm, to detune the four local 
+
+corner resonances. The operating frequencies are selected within the propagating edge -state window 
+
+so that the incident signals can first be delivered along the common interface .
+
+Figure 9(b) presents the acoustic energy fields at 500.0, 501.4, 502.2, and 504.4 kHz. At all 
+
+four frequencies, the wave launched from the same source initially follows the common edge 
+
+channel. It is then transferred to and confined at C1, C2, C3, or C4 when the excitation frequency 
+
+matches the corresponding corner resonance. The trapping position therefore shifts progressively 
+
+away from the source from C1 to C4, demonstrating a transport -then -confinement process that 
+
+combines edge -mediated delivery with frequency -selective remote corner localization. The weak 
+
+field away from the selected corner indicates limited coupling to the other corner sites. 
+
+In conventional graded acoustic structures, abrupt variations in geometric parameters may act 
+
+as defects or i mpedance mismatches, thereby inducing interfacial backscattering and reducing 
+
+trapping efficiency and signal purity. However, in the proposed topological meta -device, the local 
+
+resonant frequencies vary with the geometric parameters, while the topological interface states are 
+
+maintained along the propagation path. This topological protection enables signals at different 
+
+frequencies to traverse the graded waveguide with limited scattering before reaching their 
+
+designated trapping sites. The resulting high -co ntrast spatial frequency separation provides a 
+
+physical basis for broadband acoustic -energy harvesters and high -signal -to -noise -ratio sensor arrays 
+
+in complex underwater environments. Fig. 9. QSHE -based edge -to -corner rainbow trapping. (a) Open SSAW system comprising four domains (I -IV), a 
+
+common one -dimensional edge channel, and four locally tuned corner sites (C1 -C4). The corner -hole radii are RC1 
+
+= 1. 20 Ra, RC2 = 1.1 5Ra, RC3 = 1.1 0Ra, RC4 = 1. 05 Ra . (b) Acoustic energy distributions at 500.0, 501.4, 502.2, and 
+
+504.4 kHz, showing edge -mediated transport followed by frequency -selective localization at C1, C2, C3, and C4, 
+
+respectively. 
+
+# 5. Defect tolerance of QVHE - and QSHE -based rainbow 
+
+# trapping 
+
+To evaluate the tolerance of the proposed topological rainbow -trapping mechanisms to 
+
+structural imperfections, defect -containing models are constructed for both the QVHE - and QSHE -
+
+based systems. The selected defects include local variations in hole size and missing holes along the 
+
+propagation channels or near the trapping sites. The corresponding pressure -field distributions are 
+
+examined to determine whether frequency -dependent transport and localization are preserved. 
+
+As shown in Fig. 1 0(a) , three defects are introduced along the graded interface of the QVHE 
+
+rainbow device . Defect A enlarges one boundary hole in the second segment, defect B removes an 
+
+interface hole in the third segment, and defect C enlarges one boundary hole in the fourth segment. These perturbations locally modify the interface geometry without changing the valley -Hall phases 
+
+of the adjoining bulk domains. The acoustic energy distribution s in Fig. 1 0(b) show that the 474 
+
+kHz component remains confined to its expected upstream accu mulation region, whereas the 480 
+
+kHz component propagates through the perturbed interfaces and reaches the downstream segment. 
+
+In both cases, the field remains concentrated near the domain wall with limited radiation into the 
+
+bulk. The preservation of the frequency -dependent accumulation pattern provides qualitative 
+
+evidence that the QVHE rainbow response is tolerant to the examined defects, provided that 
+
+intervalley scattering is not strongly induced.          
+
+> Fig. 10 .Defect -tolerance analysis of the QVHE -based topological rainbow device. (a) Graded interface containing
+> three local perturbations: enlarged one boundary hole in the second segment (A), an interface -hole vacancy in the
+> third segment (B), and enlarged one boundary hole in the fourth segment (C). The red dashed boxes mark the defect
+> locations. (b) Acoustic energy distributions at 474 and 480 kHz, demonstrating preserved interface confinement and
+> frequency -dependent field accumulation in the presence of the d efects.
+
+The defect tolerance of the QSHE edge -to -corner mechanism is examined using the perturbed 
+
+structure in Fig. 11 (a). Defect A introduces a hole vacancy in the second corner site C2 , defect B 
+
+contracts selected holes in the fourth corner site C4 , and defect C removes holes from the common 
+
+edge -transport channel. Despite these local perturbations, the pressure fields in Fig. 11 (b) retain the 
+
+intended transport -then -confinement behavior. At 501.4 kHz, the guided field is delivered to and 
+
+localized at C2 , while at 504.4 kHz it propagates farther along the same edge channel and is 
+
+concentrated at C4. The weak response at the nonresonant corner sites indicates that the frequency -
+
+selective trapping sequence is preserved. These results provide qualitative evi dence that both edge -
+
+mediated delivery and remote corner localization remain functional under the tested defects, as long 
+
+as the perturbations do not close the relevant bulk and edge gaps or strongly mix the pseudospin channels.         
+
+> Fig. 11 .Defect -toleranc e analysis of the QSHE edge -to -corner trapping device. (a) Finite structure containing a hole
+> vacancy in C2 (A), locally contracted holes in C4 (B), and hole vacancies along the common edge channel (C). The
+> red dashed boxes mark the perturbed regions. (b) Acoustic pressure fields at 501.4 and 504.4 kHz, showing edge -
+> mediated transport followed by frequency -selective localization at C2 and C4, respectively.
+
+# 6. Experimental validation 
+
+To experimentally verify underwater topological rainbow separation and t rapping, phononic -
+
+crystal aluminum -plate samples I and II were fabricated by precision computer numerical control 
+
+(CNC) machining. Sample I implements the QVHE graded interface, whereas sample II implements 
+
+the QSHE edge -to -corner configuration. The experimental configurations are shown in Figs. 1 2(a, 
+
+b) and Figs. S3 (a, b). Each sample was securely clamped at the bottom to ensure mechanical stability. 
+
+To reproduce the underwater operating environment and approximate 2D propagation, the samples 
+
+were im mersed in an anechoic water tank. Underwater absorbing wedges were arranged around the 
+
+samples to suppress reflections from the tank boundaries and approximate open radiation conditions. 
+
+A piezoelectric actuator (AE0203D04DF, 5 mm in length) was bonded nea r the left entrance 
+
+of the interface channel and driven by a Tektronix AFG31000 signal generator through an Aigtek 
+
+ATA -2022H power amplifier. The near -surface acoustic pressure was measured using a miniature 
+
+needle hydrophone mounted on a motorized three -dimensional translation stage. The hydrophone was scanned point by point over a predefined plane close to the structured surface. A computer -
+
+based control program coordinated the excitation, stage motion, and signal acquisition through an 
+
+NI PXIe -5160 digit izer .   
+
+> Fig. 12.Experimental platform for underwater SSAW measurements. (a) Instrumentation and signal -flow diagram,
+> including the waveform generator, power amplifier, piezoelectric actuator, water tank, scanning hydrophone, NI
+> PXIe -5160 digitizer, motorized stage, and computer -based control system. The inset marks the four observation
+> points on sample I. (b) Photograph of the experimental arrangement, showing the submerged sample, actuator,
+> scanning hydrophone, supporting facets, and stepper -motor p ositioning system.
+
+The experiments evaluate the transmission and localization characteristics in terms of both 
+
+frequency -domain responses and spatial -field distributions. The local spectral responses were first 
+
+measured at four positions along each sample . The excitation frequency was swept across the target 
+
+band, and the pressure amplitude was recorded at each observation point. For sample I, the spectra 
+
+in Fig. 1 3(a) show position -dependent transmission windows. From point 1 to point 4, the lower -
+
+frequen cy boundary of the enhanced -response region shifts progressively upward, with approximate 
+
+response intervals of 470 -482, 472 -482, 476 -482, and 478 -482 kHz, respectively. This systematic 
+
+shift is consistent with the spatial variation of the local QVHE inter face -state dispersion. For sample 
+
+II, the spectra measured at C1 -C4 in Fig. 1 3(c) exhibit four distinct resonances centered at 
+
+approximately 500.0, 501.4, 502.2, and 504.4 kHz, confirming that the local corner geometries 
+
+produce spectrally separated corner responses. The measured ordering agrees with the numerical 
+
+prediction; residual frequency shifts can arise from machining tolerances, clamping conditions, 
+
+water -property variations, and measurement uncertainty. 
+
+Two -dimensional scans were subsequently perf ormed under single -frequency harmonic 
+
+excitation to visualize the frequency -dependent localization. For sample I, the measured acoustic 
+
+pressure -amplitude maps at 472, 474, 476, and 480 kH z are presented in Fig. 13(b) . The field 
+
+remains confined to the QVHE interface, while the longitudinal accumulation position moves 
+
+progressively away from the source as the frequency increases. The weak response beyond each 
+
+accumulation region and the limited transverse leakage experimentally demonstrate spatial -
+
+freque ncy demultiplexing along the graded interface. For sample II, the fields in Fig. 1 3(d) first 
+
+follow the common QSHE edge channel and are then concentrated at C1, C2, C3, and C4 at the 
+
+corresponding excitation frequencies. These measurements reproduce the transport -then -
+
+confinement process and verify frequency -selective remote corner localization. Together, the results validate QVHE -based rainbow demultiplexing and QSHE -based edge -to -corner trapping in the 
+
+open underwater SSAW platform, supporting its potent ial for frequency -selective sensing and 
+
+acoustic -energy concentration .           
+
+> Fig. 13.Experimental validation of QVHE -based rainbow demultiplexing and QSHE -based edge -to -corner trapping.
+> (a) Pressure amplitude spectra measured at points 1–4along the graded QVHE interface of sample I. (b) Measured
+> acoustic pressure -amplitude maps at 472, 474, 476, and 480 kHz, showing the frequency -dependent downstream
+> shift of the field -accumulation position. (c) Pressure amplitude spectra measured at corner sites C1 –C4 of s ample II.
+> (d) Measured acoustic pressure -amplitude maps at the indicated excitation frequencies, showing transport along the
+> common QSHE edge channel followed by frequency -selective localization at C1 –C4. The red dashed lines in (b)
+> and (d) denote the corr esponding edge -transport channels.
+
+# 7. Conclusion 
+
+In conclusion, we established two complementary underwater topological SSAW platforms 
+
+based on the acoustic analogues of the QVHE and QSHE. Calculations of the fully coupled fluid –
+
+solid dispersion relations established the bulk topological properties of th e two systems. In the 
+
+QVHE lattice, breaking inversion symmetry lifts the Dirac degeneracy at the K valley and produces 
+
+two domains with opposite valley Chern indices. In the QSHE lattice, the p–d band inversion at the 
+
+Γ point distinguishes the contracted and expanded pseudospin -Hall phases. Ribbon -supercell 
+
+calculations subsequently identified gap -spanning interface states in the QVHE system and 
+
+termination -dependent edge states in the QSHE system. The corresponding moda l fields 
+
+demonstrate that the scalar acoustic pressure response in water and the vector elastic -displacement 
+
+response in the aluminum plate are simultaneously confined near the interfaces, confirming the 
+
+coordinated localization of the coupled fluid –solid modes. Finite -structure calculations further 
+
+verified interface -guided propagation, higher -order corner localization, and geometric tuning of the 
+
+corner -state eigenfrequencies, thereby establishing the spectral basis for edge -to -corner coupling. 
+
+These top ological states were subsequently used to implement two distinct rainbow mechanisms. For the QVHE device, a stepwise spatial variation of the symmetry -breaking 
+
+parameter shifts the local interface -state dispersion, mapping different frequency components to 
+
+different accumulation positions along the same propagation path. For the QSHE device, 
+
+multifrequency signals are first transported through a common edge channel and are then selectively 
+
+coupled into remote corner states whose resonances are set by the lo cal geometry. This transport -
+
+then -confinement process separates the delivery and capture functions while retaining frequency 
+
+selectivity. Tests containing structural perturbations showed that the guided fields remained 
+
+confined to the designed interfaces a round the examined defects. Measurements on the fabricated 
+
+QVHE and QSHE samples reproduced the predicted position -dependent spectral responses and 
+
+spatial pressure distributions, experimentally confirming both interface -based rainbow 
+
+demultiplexing and fr equency -selective corner trapping in an open underwater configuration .
+
+Beyond the present demonstrations, the integration of passive spectral routing, topological 
+
+transport, and subwavelength localization provides a basis for compact underwater spectral 
+
+an alyzers, distributed frequency -selective sensor arrays, multiplexed acoustic transducers, and 
+
+wave -based analog preprocessing. Physical -layer separation of characteristic frequencies may 
+
+facilitate underwater target recognition while reducing downstream pr ocessing requirements. 
+
+Frequency -selective corner localization could also concentrate ambient acoustic energy at integrated 
+
+transducers for energy harvesting. The same frequency -to -position mapping may support parallel 
+
+spectral monitoring and channel -selec tive underwater communication. Future work s will focus on 
+
+dynamic tunability, broader and lower -frequency operation, loss reduction, conversion efficiency, 
+
+and validation under realistic marine conditions. 
+
+## CRediT authorship contribution statement 
+
+Cheng Lin : Conceptualization, Methodology, Software, Investigation, Writing – original draft. 
+
+Yangkai Liu : Methodology, Validation, Supervision. Tuo Liu : Software, Investigation, Validation. 
+
+Yi Zh ang : Validation, Resources, Writing – review & editing. Haiyan Fan: Supervision, Project 
+
+administration Funding acquisition, Writing – review & editing. Hui Zhang: Conceptualization, 
+
+Supervision, Project administration, Funding acquisition, Writing – review & editing. 
+
+## Declaration of competing interest 
+
+The authors declare that they have no known competing financial interests or personal 
+
+relationships that could have appeared to influence the work reported in this paper. 
+
+## Acknowledgments 
+
+This work was supported by the National Natural Science Foundation of China (Grant Nos. 
+
+52501418 and 12574493), the Natural Science Foundation of Jiangsu Province (Grant No. 
+
+BK20251266), and the Advanced Ocean Institute of Southeast University, Nantong (MP202601). 
+
+# 【参考文献】 
+
+[1]  D.P. Zitterbart, A. Bocconcelli, M. Ochs, J. Bonnel, TOSSIT: A low -cost, hand deployable, 
+
+rope -less and acoustically silent mooring for underwater passive acoustic monitoring, 
+
+HardwareX 11 (2022) e00304. https://doi.org/10.1016/j.ohx.2022.e00304. [2]  I.A. Kirichenko, I.B. Starchenko, V.Y. Vishnevezkiy, A.I. Markolia, I.I. Sizov, T.P. Strochan, 
+
+Optimization of acoustic profiler characteristics in the scope of underwater archeolog y and 
+
+monitoring of underwater engineering objects, IOP Conf. Ser.: Mater. Sci. Eng. 1103 (2021) 
+
+012011. https://doi.org/10.1088/1757 -899X/1103/1/012011. 
+
+[3]  A. Czapiewska, A. Luksza, R. Studanski, A. Zak, Reduction of the Multipath Propagation 
+
+Effect in a Hydroacoustic Channel Using Filtration in Cepstrum, Sensors 20 (2020) 751. 
+
+https://doi.org/10.3390/s20030751. 
+
+[4]  F.J.L. Ribeiro, A. De Castro  Pinto  Pedroza, L.H.M.K. Costa, Underwater monitoring system 
+
+for oil exploration using acoustic sensor networks, Telecommun Syst 58 (2015) 91 –106. 
+
+https://doi.org/10.1007/s11235 -014 -9948 -6. 
+
+[5]  C. Feng, Y. Luo, J. Zhang, H. Li, An OFDM -Based Frequency Domain Equalization Algorithm 
+
+for Underwater Acoustic Communication with a High Channel Utilization Rate, JMSE 11 
+
+(20 23) 415. https://doi.org/10.3390/jmse11020415. 
+
+[6]  J. Wu, Y. Chen, B. Jia, G. Li, Y. Zhang, J. Yong, Optimal design of emission waveform for 
+
+acoustic scattering test under multipath interference, in: 2020 5th International Conference on 
+
+Communication, Imag e and Signal Processing (CCISP), IEEE, Chengdu, China, 2020: pp. 
+
+102 –106. https://doi.org/10.1109/CCISP51026.2020.9273470. 
+
+[7]  X. Jia, G. Jin, T. Ye, Y. Chen, Tunable underwater sound absorption via piezoelectric materials 
+
+with local resonators, Internatio nal Journal of Mechanical Sciences 285 (2025) 109812. 
+
+https://doi.org/10.1016/j.ijmecsci.2024.109812. 
+
+[8]  M. Yuan, Z. Cao, J. Luo, J. Zhang, C. Chang, An efficient low -frequency acoustic energy 
+
+harvester, Sensors and Actuators A: Physical 264 (2017) 84 –89. 
+
+https://doi.org/10.1016/j.sna.2017.07.051. 
+
+[9] Y. Xi, J. Wang, Y. Zi, X. Li, C. Han, X. Cao, C. Hu, Z. Wang, High efficient harvesting of 
+
+underwater ultrasonic wave energy by triboelectric nanogenerator, Nano Energy 38 (2017) 
+
+101 –108. https://doi.org/10.1 016/j.nanoen.2017.04.053. 
+
+[10]  G. Zhu, Y. Su, P. Bai, J. Chen, Q. Jing, W. Yang, Z.L. Wang, Harvesting Water Wave Energy by 
+
+Asymmetric Screening of Electrostatic Charges on a Nanostructured Hydrophobic Thin -Film 
+
+Surface, ACS Nano 8 (2014) 6031 –6037. https: //doi.org/10.1021/nn5012732. 
+
+[11]  J. Zhu, Y. Chen, X. Zhu, F.J. Garcia -Vidal, X. Yin, W. Zhang, X. Zhang, Acoustic rainbow 
+
+trapping, Sci Rep 3 (2013) 1728. https://doi.org/10.1038/srep01728. 
+
+[12]  Y. Meng, S. Cheng, L. Zhang, S. Zhang, Y. Xin, Y. Sun, Q. Zh ao, Low ‐Frequency Bandgap 
+
+Modulation and Vibration Suppression in Three ‐Dimensional Labyrinth ‐Shaped Acoustic 
+
+Metamaterials, Physica Status Solidi (b) 263 (2026) e70241. 
+
+https://doi.org/10.1002/pssb.70241. 
+
+[13]  J. Feng, Q. Liang, Y. Dou, J. He, J. He, T. C hen, Ultrathin Underwater Sound -Absorbing 
+
+Metasurface by Coupling Local Resonance with Cavity Resonance, Phys. Rev. Applied 18 
+
+(2022) 034054. https://doi.org/10.1103/PhysRevApplied.18.034054. 
+
+[14]  X. Fang, X. Yin, J. Wu, Y. Li, H. Li, W. Wang, Y. Li, W. Wu, Underwater metagratings for sub -
+
+kilohertz low frequency and broadband sound absorption, International Journal of Mechanical 
+
+Sciences 260 (2023) 108630. https://doi.org/10.1016/j.ijmecsci.2023.108630. 
+
+[15]  C. Cai, F. Xin, Pressure -adaptive ultra -thin hy brid metamaterials for broadband low -frequency 
+
+underwater sound absorption, Thin -Walled Structures 216 (2025) 113603. 
+
+https://doi.org/10.1016/j.tws.2025.113603. [16]  X. Pan, X. Fang, X. Yin, Y. Li, Y. Pan, Y. Jin, Gradient index metamaterials for broadband 
+
+underwater sound absorption, APL Materials 12 (2024) 031111. 
+
+https://doi.org/10.1063/5.0190946. 
+
+[17]  C. Gu, Y. Chen, W. Chen, P. Zhao, Acoustic Energy Harvester by Electromagnetic Mechanisms 
+
+and Helmholtz Resonator, IOP Conf. Ser.: Earth Environ. Sci. 617 (2020) 012038. 
+
+https://doi.org/10.1088/1755 -1315/617/1/012038. 
+
+[18]  J. Mei, L. Fan, X. Hong, Broadband and high -numerical -aperture sharp focusing for waterborne 
+
+sound with metagrating -based lens, New J. Phys. 24 (2022) 093014. 
+
+https://doi.org/10.1088/1367 -2630/ac8e27. 
+
+[19]  S. -D. Zhao, Y. -S. Wang, C. Zhang, H. -W. Dong, Topology -optimized reflection -type 
+
+pentamode metasurfaces for broadband underwater beam regulation, Wave Motion 135 (2025) 
+
+103515. https://doi.org/10.1016/j.wavemoti.2025.103515. 
+
+[20]  H. Zou, P. Li, P. Peng, An ultra -thin acoustic metasurface with multiply resonant units, Physics 
+
+Letters A 384 (2020) 126151. https://doi.org/10.1016/j.physleta.2019.126151. 
+
+[21]  G. Yu, Y. Qiu, Y. Li, X. Wang, N. Wang, Underwater Acoustic Stealth by a Broadband 2 -Bit 
+
+Coding Metasurface, Phys. Rev. Applied 15 (2021) 064064. 
+
+https://doi.org/10.1103/PhysRevApplied.15.064064. 
+
+[22]  D. Lee, Y. Jang, J. Park, I.S. Kang, J. Li, J. Rho, Underwater stealth metasurfaces composed of 
+
+split -orifice –conduit hybrid resonators, Jo urnal of Applied Physics 129 (2021) 105103. 
+
+https://doi.org/10.1063/5.0042246. 
+
+[23]  Y. Wang, M. Di, C. Ding, Y. Dong, S. Zhai, C. Luo, X. Zhao, Controllable and multi -band 
+
+acoustic metamaterial topological insulators, J. Phys. D: Appl. Phys. 58 (2025) 1153 03. 
+
+https://doi.org/10.1088/1361 -6463/ada6d0. 
+
+[24]  L. Sirota, D. Sabsovich, Y. Lahini, R. Ilan, Y. Shokef, Real -time steering of curved sound beams 
+
+in a feedback -based topological acoustic metamaterial, Mechanical Systems and Signal 
+
+Processing 153 (2021) 107479. https://doi.org/10.1016/j.ymssp.2020.107479. 
+
+[25]  J. Sun, X. Wang, Y. Wang, Research on impurity -mediated reconfigurable acoustic topological 
+
+metamaterial for waveguide transport and localized edge states tuning, Materials Today Physics 
+
+60 (2026) 1 01983. https://doi.org/10.1016/j.mtphys.2025.101983. 
+
+[26 ] H. Xue, Y. Yang, B. Zhang, Topological acoustics, Nat Rev Mater 7 (2022) 974 –990. 
+
+https://doi.org/10.1038/s41578 -022 -00465 -6. 
+
+[27]  H. Fan, H. Gao, S. An, Z. Gu, S. Liang, Y. Zheng, T. Liu, Hermitian and non -hermitian 
+
+topological edge states in one -dimensional perturbative elastic metamaterials, Mechanical 
+
+Systems and Signal Processing 169 (2022) 108774. 
+
+https://doi.org/10.1016/j.ymssp.2021.108774. 
+
+[28]  W. Zhu, W. Deng, Y. Liu, J. Lu, H. -X. Wang, Z. -K. Lin, X. Huang, J. -H. Jiang, Z. Liu, 
+
+Topological phononic metamaterials, Rep. Prog. Phys. 86 (2023) 106501. 
+
+https://doi.org/10.1088/1361 -6633/aceeee. 
+
+[29]  Z. Zhang, Y. Tian, Y. Wang, S. Gao, Y. Cheng, X. Liu, J. Christensen, Directional Acoustic 
+
+Antennas Based on Valley ‐Hall Topological Insulators, Advanced Materials 30 (2018) 1803229. 
+
+https://doi.org/10.1002/adma.201803229. 
+
+[30]  Z. Zhang, Y. Tian, Y. Cheng, Q. Wei, X. Liu, J. Christensen, Topological Acoustic Delay Line, 
+
+Phys. Rev. Applied 9 (2018) 034032 . https://doi.org/10.1103/PhysRevApplied.9.034032. 
+
+[31]  S. Huo, J. Chen, H. Huang, G. Huang, Simultaneous multi -band valley -protected topological edge states of shear vertical wave in two -dimensional phononic crystals with veins, Sci Rep 7 
+
+(2017) 10335. ht tps://doi.org/10.1038/s41598 -017 -10857 -2. 
+
+[32]  J. -W. Dong, X. -D. Chen, H. Zhu, Y. Wang, X. Zhang, Valley photonic crystals for control of 
+
+spin and topology, Nature Mater 16 (2017) 298 –302. https://doi.org/10.1038/nmat4807. 
+
+[33]  S.El. Soliman, M. Barlou, Z. J. Wong, K.L. Tsakmakidis, Topological rainbow trapping, Nat 
+
+Rev Phys 7 (2025) 409 –424. https://doi.org/10.1038/s42254 -025 -00836 -2. 
+
+[34]  S. Elshahat, C. Wang, H. Zhang, C. Lu, Perspective on the topological rainbow, Applied Physics 
+
+Letters 119 (2021) 23050 5. https://doi.org/10.1063/5.0074014. 
+
+[35]  J. Ma, C. Ouyang, Y. Yang, D. Wang, H. Li, L. Niu, Y. Liu, Q. Xu, Y. Li, Z. Tian, J. Han, W. 
+
+Zhang, Asymmetric frequency multiplexing topological devices based on a floating edge band, 
+
+Photon. Res. 12 (2024) 1201. https://doi.org/10.1364/PRJ.518426. 
+
+[36]  S. Farid, K. Dixon, M. Shayegannia, R.H.H. Ko, M. Safari, J.Y.Y. Loh, N.P. Kherani, Rainbows 
+
+at the End of Subwavelength Discontinuities: Plasmonic Light Trapping for Sensing 
+
+Applications, Advanced Optical Material s 9 (2021) 2100695. 
+
+https://doi.org/10.1002/adom.202100695. 
+
+[37]  C. Lu, C. Wang, M. Xiao, Z.Q. Zhang, C.T. Chan, Topological Rainbow Concentrator Based 
+
+on Synthetic Dimension, Phys. Rev. Lett. 126 (2021) 113902. 
+
+https://doi.org/10.1103/PhysRevLett.126.1139 02. 
+
+[38]  C. Lu, W. Zhao, S. Zhang, Y. Zheng, C. Wang, Y. Li, Y. -C. Liu, X. Hu, Z. Hong Hang, 
+
+Observation of topological rainbow in non -Hermitian systems, Chin. Opt. Lett. 21 (2023) 
+
+123601. https://doi.org/10.3788/COL202321.123601. 
+
+[39]  Z. -D. Zhang, S. -Y. Y u, M. -H. Lu, Y. -F. Chen, Gigahertz Surface Acoustic Wave Topological 
+
+Rainbow in Nanoscale Phononic Crystals, Phys. Rev. Lett. 133 (2024) 267001. 
+
+https://doi.org/10.1103/PhysRevLett.133.267001. 
+
+[40]  W. Yuan, Y. Zhang, Y. Pan, Y. Huang, J. Zhao, F. Yang, Z. Zhong, Topological rainbow trapping, 
+
+concentration and guiding in graded elastic valley phononic crystal plate, Engineering 
+
+Structures 304 (2024) 117596. https://doi.org/10.1016/j.engstruct.2024.117596. 
+
+[41]  L. Yan, Z. Guo, Y. Chen, Y. Liu, Functionally gr aded elastic valley metamaterials for low -
+
+frequency surface wave manipulation, Mechanics of Advanced Materials and Structures 33 
+
+(2026) 2433695. https://doi.org/10.1080/15376494.2024.2433695. 
+
+[42]  J. Lu, C. Qiu, L. Ye, X. Fan, M. Ke, F. Zhang, Z. Liu, Obse rvation of topological valley transport 
+
+of sound in sonic crystals, Nature Phys 13 (2017) 369 –374. https://doi.org/10.1038/nphys3999. 
+
+[43]  H. Fan, B. Xia, L. Tong, S. Zheng, D. Yu, Elastic Higher -Order Topological Insulator with 
+
+Topologically Protected Corner States, Phys. Rev. Lett. 122 (2019) 204301. 
+
+https://doi.org/10.1103/PhysRevLett.122.204301.

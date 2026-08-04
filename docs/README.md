@@ -6,27 +6,27 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-03
-- 运行时间：2026-08-03 20:35:31 UTC
+- 最新运行日期：2026-08-04
+- 运行时间：2026-08-04 22:02:12 UTC
 - 运行状态：成功
 - 本次总论文数：2
 - 精读区：0
 - 速读区：2
 
 ### 今日简报（AI）
-今日速读2篇，聚焦概念提取与AI音乐检测。较值得关注的是基于自然领域表征的概念提取方法（7.0分），AI音乐检测鲁棒性研究（6.0分）可作补充。建议优先浏览前者，以了解概念提取的新思路。
-- 详情：[/202608/03/README](/202608/03/README)
+今日速读2篇论文，暂无精读；最高分为水下声学信号的空间频率解复用拓扑彩虹捕获研究（7.0）。值得关注其利用拓扑彩虹实现声学信号分频解复用，以及DTFT插值法在频率与线性调频速率联合估计中的均匀高效表现（6.0）。建议优先精读高分文章，并思考两方法在声学传感与参数估计任务中的结合潜力。
+- 详情：[/202608/04/README](/202608/04/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [CENDRe: Concept Extraction with Natural Domain Representations](/202608/03/2607.29621v1-cendre-concept-extraction-with-natural-domain-representations)  
+1. [Topological Rainbow Trapping for Spatial-frequency Demultiplexing of Underwater Acoustic Signals](/202608/04/2608.01108v1-topological-rainbow-trapping-for-spatial-frequency-demultiplexing-of-underwater-acoustic-signals)  
    标签：评分：7.0/10、query:shipnoise-hf
-   evidence：面向CNN时间序列分类的频域概念提取方法，可迁移至水声识别
-2. [Improved Robustness in AI-Generated Music Detection](/202608/03/2607.27454v2-improved-robustness-in-ai-generated-music-detection)  
+   evidence：面向目标识别的水下空间-频率解复用
+2. [Deterministic DTFT Interpolation for Joint Frequency and Chirp-Rate Estimation: Cell-Uniform Efficiency and Threshold Analysis](/202608/04/2608.01756v1-deterministic-dtft-interpolation-for-joint-frequency-and-chirp-rate-estimation-cell-uniform-efficiency-and-threshold-analysis)  
    标签：评分：6.0/10、query:shipnoise-hf
-   evidence：提出基于log-STFT的频率缩放不变检测方法，可用于船舶噪声的高频特征识别
+   evidence：面向声呐的联合频率与线性调频率估计方法，可服务于水声目标识别。
 
 
 <div class="dpr-home-promo-card">
