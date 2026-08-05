@@ -1,0 +1,2570 @@
+Title: Tensor-Based Joint Pitch and DOA Estimation
+
+URL Source: https://arxiv.org/pdf/2607.29003v1
+
+Published Time: Mon, 03 Aug 2026 00:24:38 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+# Tensor-Based Joint Pitch and DOA Estimation 
+
+Yifan Wu and Michael B. Wakin 
+
+Abstract —We propose a tensor-based subspace method for the joint estimation of pitch and direction of arrival (DOA) of multiple harmonic sources. Unlike conventional matrix-based approaches that unfold the spatio-temporal data into a single ma-trix, the proposed method preserves the multidimensional Hankel tensor structure and exploits a Kronecker product constraint satisfied by the true signal subspace. The matrix-based subspace estimate is refined by projecting it onto an empirically estimated Kronecker-structured signal cage obtained from mode-unfolded tensor subspaces. Beyond the estimator itself, we provide anon-asymptotic theory explaining when this tensor refinement improves the matrix baseline. We show that the oracle refinement using the true Kronecker projector is non-worsening, decompose the overall tensor gain into oracle gain and empirical loss, and derive deterministic and high-probability sufficient conditions for positive overall tensor gain under complex Gaussian noise. The analysis reveals a sweet-spot behavior: the largest certified gain occurs when the matrix estimate is neither nearly perfect nor too inaccurate. Simulations over closely spaced, harmonically related, and coherent-source scenarios show that the proposed method improves subspace accuracy and downstream pitch/DOA estimation, and also outperforms representative matrix and tensor-train-based baselines. 
+
+Index Terms —Joint pitch and DOA estimation, Subspace estimation, Kronecker projector, ESPRIT, Tensor gain. 
+
+I. INTRODUCTION The estimation of the fundamental frequency, or pitch, of a signal is a cornerstone of speech and audio processing [1]–[4]. Because real-world scenarios often involve multiple concurrent harmonic sources [5], research has increasingly shifted toward joint pitch and direction-of-arrival (DOA) estimation using multi-channel sensor arrays [5]–[10]. Early joint estimation methods were often constrained by narrowband signal as-sumptions or high computational costs associated with multi-dimensional grid searches. Progress in this field has seen the development of more efficient subspace-based techniques such as Estimation of Signal Parameters via Rotational Invariance Techniques (ESPRIT) [6], which leverages temporal and spa-tial shift-invariance structures. More recently, the focus has shifted toward enhancing robustness in non-ideal conditions through filtering methods and minimum variance solutions that account for colored noise statistics. Meanwhile, tensor-based techniques [11]–[23] have signif-icantly advanced multi-dimensional harmonics estimation by exploiting the inherent structure of signals received by sensor arrays. In [11], a higher-order SVD (HOSVD) based method was proposed. By estimating the signal subspace directly                   
+
+> Yifan Wu is with the Department of Electrical and Computer Engineering, California State Polytechnic University, Pomona, CA, 91768, USA (e-mail: yiw062@ucsd.edu, yifanwu@cpp.edu). Michael B. Wakin is with the Department of Electrical Engi-neering, Colorado School of Mines, Golden, CO, 80401, USA (e-mail:mwakin@mines.edu).
+
+from the tensor instead of “stacking” multidimensional data into matrices, this approach preserves the inherent multi-dimensional structure from the start, leading to significantly more accurate subspace and parameter estimates. In [12], a generic framework to assess the performance of tensor methods was established, and the “tensor gain” over matrix methods was empirically demonstrated. In [13], a general framework (TeTraKron) was introduced that extends arbitrary matrix-based subspace tracking schemes to their tensor-based counterparts via a Kronecker-structured projection applied to the matrix-based subspace estimate, yielding improved accu-racy in time-varying multidimensional harmonic retrieval. A closed-form analytical performance assessment of 2-D Tensor ESPRIT was derived in terms of physical parameters in [14], expressing the mean squared estimation error as a function of the SNR, array geometry, number of snapshots, and signal correlation to quantify the accuracy difference between the tensor and matrix versions of ESPRIT. In [15], a novel tensor-based framework for high-resolution DOA estimation in trans-mit beamspace (TB) MIMO radar systems was proposed. In [16], the authors proposed a coupled coarray tensor canonical polyadic (CP) decomposition-based method for DOA estima-tion that exploits the multidimensional structure of coprime L-shaped arrays. The authors in [17] developed algorithms for tensor CP decomposition with structured factor matrices and analyzed their performance, demonstrating how incorporating structural constraints improves identifiability and estimation accuracy. A joint time-delay and frequency estimation ap-proach based on parallel factor analysis was proposed in [18]. We refer readers to [19]–[23] for a comprehensive review of the progress of tensor methods in signal processing problems. Despite this widespread success, the advantage of tensor-based subspace estimation is almost universally invoked as a qualitative principle—the “tensor gain” attributed to the algebraic structure of the multidimensional data—rather than quantified or guaranteed. The phenomenon was recognized early: the HOSVD-based estimate of [11] was shown to improve subspace accuracy, and [24] demonstrated that a tensor-based estimate is a strictly better estimate of the signal subspace than its matrix-based counterpart in the presence of noise. The most complete relevant theoretical treatment to date is the analytical performance-assessment framework of [12], which provides explicit first-order expansions of the subspace estimation error for both matrix- and tensor-based ESPRIT-type algorithms and has become the standard tool for predicting their accuracy. Its reach, however, is funda-mentally asymptotic —the expansions derive from a first-order perturbation in the noise and are exact only in the high-SNR or large-sample regime—and descriptive , in that it predicts each estimator’s error and, in the noiseless limit, identifies when the two subspace estimates coincide, but does not certify arXiv:2607.29003v1 [eess.SP] 31 Jul 2026 2
+
+that the gain is strictly positive at a finite operating point. Related efforts likewise remain asymptotic in nature, whether characterizing the maximum gain of spatial smoothing [25] or the perturbation of the HOSVD itself [26]. In short, the existence of the tensor gain has been established and its asymptotic behavior analyzed, yet the conditions guaranteeing it for a fixed geometry, source configuration, and noise level have remained largely open. In this work, we propose a tensor-based framework for joint pitch and DOA estimation. By modeling the received signals as a multi-dimensional tensor and utilizing the inherent Kronecker structure of the pitch and DOA harmonics, we pro-pose a refined subspace estimation technique that utilizes the Kronecker product of projection matrices from mode-unfolded data. We demonstrate that this tensor-based refinement pro-vides superior subspace estimation as well as pitch and DOA estimation accuracy compared to its matrix-based counterpart, particularly in noisy environments, thereby establishing a more robust foundation for subsequent pitch and DOA retrieval. Beyond proposing the estimator, we also provide a theo-retical analysis explaining when this refinement improves the matrix-based subspace estimate. We first show that the ideal, oracle version of the tensor refinement—formed using the true Kronecker projector—is never worse than the matrix-based subspace estimate whenever the matrix estimate has nonzero overlap with the true signal subspace. We then decompose the empirical tensor gain into two competing terms: an oracle gain, which measures the improvement obtained from the exact Kronecker constraint, and an empirical loss, which accounts for the error incurred when the Kronecker projector is estimated from noisy data. This decomposition yields a deterministic sufficient condition for positive tensor gain. We further convert this deterministic condition into a high-probability guarantee under additive complex Gaussian noise. The analysis combines Wedin-type subspace perturbation bounds, concentration inequalities for the structured Hankel noise unfoldings, and a bound on the leakage of the matrix-based subspace outside the Kronecker-constrained signal cage. This leads to an explicit non-asymptotic condition under which the tensor-refined subspace is guaranteed to be closer to the true signal subspace than the matrix-based estimate. In summary, the main contributions of this paper are as follows: (1) We formulate joint pitch and DOA estimation as a structured tensor subspace problem and identify a Kronecker product constraint satisfied by the true signal subspace. (2) We propose a tensor-refined subspace estimator that projects the conventional matrix-based estimate onto an empirically es-timated Kronecker-structured signal cage. (3) We establish an oracle tensor-gain result showing that the ideal tensor refinement cannot degrade the matrix-based subspace estimate. (4) We derive deterministic and high-probability sufficient conditions for positive empirical tensor gain, explicitly balanc-ing oracle improvement against empirical Kronecker-projector estimation error. (5) We demonstrate through simulations that the proposed method improves both subspace accuracy and downstream pitch/DOA estimation accuracy across several challenging acoustic scenarios. We also numerically demon-strate the validity of the theoretical analysis. To the best of our knowledge, this is the first work to provide explicit deterministic and high-probability sufficient conditions under which a Kronecker-structured tensor refinement is guaranteed to improve a given matrix-based subspace estimate. The remainder of this paper is organized as follows. Sec-tion II introduces the signal model, the matrix and ten-sor data structures, and some useful decompositions of the unfolded tensors. Section III first presents subspace-based estimation methods formulated using both matrix and tensor representations, and subsequently develops joint pitch and DOA estimation techniques based on ESPRIT. Section IV presents a deterministic sufficient condition for positive tensor gain and then converts the deterministic condition into a non-asymptotic high probability guarantee under additive complex Gaussian noise. Section V provides numerical examples that demonstrate the performance advantages of the tensor-based method. Finally, Section VI concludes. Throughout the paper, we use lowercase boldface for vectors (a), uppercase boldface for matrices ( A), and calligraphic script for tensors ( X ). Scalars are written in italics ( a, L). 
+
+j = √−1. For a matrix A, we write A⊤, AH , A−1, and A+
+
+for its transpose, conjugate transpose, inverse, and Moore– Penrose pseudoinverse, respectively; σi(A) denotes the i-th largest singular value; and ∥A∥2 and ∥A∥F denote the spectral and Frobenius norms, respectively. Finally, letting F and G
+
+be matrices of the same dimension, we measure the distance between the subspaces range( F) and range( G) as: 
+
+d(F, G) := ∥Prange( F) − Prange( G)∥2,
+
+where Prange( F) = FF + and Prange( G) = GG + denote or-thogonal projection matrices onto range( F) and range( G), re-spectively. The subspace distance coincides with the sine of the largest principal angle between range( F) and range( G). Note that when F has orthonormal columns, Prange( F) = FF H , and when G has orthonormal columns, Prange( G) = GG H .II. S IGNAL MODEL 
+
+A. Data 1) Setup: We suppose that R microphones are arranged in a uniform linear array (ULA) with array spacing d. The microphones synchronously collect N uniform time samples, which we denote as xr (n) for microphone r ∈ { 0, 1, . . . , R −
+
+1} and sample index n ∈ { 0, 1, . . . , N − 1}.We assume that P sources are incident on the microphone array. Each source p ∈ {1, 2, . . . , P } is harmonic with a known harmonic number (model order) denoted by Lp. We let 
+
+ωp denote the unknown pitch of source p and αp,l denote the unknown complex amplitude of harmonic l ∈ { 1, 2, . . . , L p}
+
+for source p. Finally, we let θp denote the unknown DOA of source p.We can therefore model the received data as 
+
+xr (n) = sr (n) + qr (n),
+
+where 
+
+sr (n) = 
+
+> P
+
+X
+
+> p=1
+> Lp
+
+X
+
+> l=1
+
+αp,l ej(ωpln +ϕplr ) (1) 3
+
+and qr (n) is additive complex white Gaussian noise with variance σ2. In (1), ϕp = ωpfs dc sin( θp) is the phase shift for source p caused by the propagation time delay between array elements, where fs is the signal sampling frequency, and c is the speed of propagation. 
+
+2) Matrices: For a positive integer M that we refer to as the data matrix dimension, we can arrange the received data into a series of R × M matrices 
+
+X(n) = 
+
+
+
+x0(n) . . . x0(n + M − 1) 
+
+... . . . ...
+
+xR−1(n) . . . xR−1(n + M − 1) 
+
+ ∈ CR×M
+
+for n = 0 , 1, ..., N − M . Similarly, sr (n) and qr (n) may be arranged into S(n) (signal matrices) and Q(n) (noise matrices), respectively. We then have X(n) = S(n) + Q(n),
+
+n = 0 , 1, ..., N −M . The signal matrices S(n) can be rewritten using (1) as 
+
+S(n) = 
+
+> P
+
+X
+
+> p=1
+> Lp
+
+X
+
+> l=1
+
+βp,l (n)as(lϕ p)aTt (lω p),
+
+where βp,l (n) = αp,l ejlω pn, and 
+
+as(ϕp) = [1 ejϕ p · · · ej(R−1) ϕp ]T
+
+and 
+
+at(ωp) = [1 ejω p · · · ej(M −1) ωp ]T
+
+are steering vectors. 
+
+3) Tensors: Stacking all of the received data matrices together, we can construct the R × M × (N − M + 1) tensor 
+
+X = [ X(0) |X(1) | · · · | X(N − M )] ∈ CR×M ×(N −M +1) .
+
+Similarly, S(n) and Q(n) may be arranged into S (signal) and 
+
+Q (noise) tensors, respectively. We then have X = S + Q.The R × M × (N − M + 1) signal tensor S can be unfolded into the mode-1, mode-2, and mode-3 unfolding matrices S1 = [ S](1) ∈ CR×M (N −M +1) , S2 = [ S](2) ∈
+
+CM ×R(N −M +1) , and S3 = [S](3) ∈ CRM ×(N −M +1) , re-spectively. Note that S1 = [ S(0) S(1) · · · S(N − M )] and 
+
+S3 = [vec( S(0)) vec( S(1)) · · · vec( S(N − M ))] . Analogous mode-1, 2, and 3 unfoldings can be defined for X and Q.
+
+B. Useful decompositions 1) Steering matrices: Letting 
+
+a(ωp, ϕ p) = at(ωp) ⊗ as(ϕp) ∈ CRM ×1
+
+denote the Kronecker product of at(ωp) and as(ϕp), we define the matrix 
+
+A = [ a(ω1, ϕ 1), . . . , a(L1ω1, L 1ϕ1), a(ω2, ϕ 2), . . . . . . , a(LP ωP , L P ϕP )] 
+
+of size RM × L, where 
+
+L := 
+
+> P
+
+X
+
+> p=1
+
+Lp
+
+is the total number of harmonic components. Simi-larly, we can define the L × (N − M + 1) matrix 
+
+Z := [z(0) z(1) · · · z(N − M )] , where z(n) =[β1,1(n), . . . , β 1,L 1 (n), β 2,1(n), . . . , β P,L P (n)] T . With A and 
+
+Z, we can then write 
+
+S3 = AZ . (2) Define the matrices 
+
+At = [ at(ω1), . . . , at(L1ω1), at(ω2), . . . , at(LP ωP )] ∈ CM ×L,
+
+As = [ as(ϕ1), . . . , as(L1ϕ1), as(ϕ2), . . . as(LP ϕP )] ∈ CR×L.
+
+An important observation is that 
+
+A = At ∗ As, (3) where ∗ denotes the Khatri-Rao product. We can also write 
+
+S1 = As(Z • A⊤ 
+
+> t
+
+) and S2 = At(Z • A⊤ 
+
+> s
+
+), (4) where • denotes the row-wise Khatri-Rao product. 
+
+2) Singular value decompositions: Throughout this paper, we assume min {R, M, N − M + 1 } ≥ L. From the de-compositions (2) and (4), it follows that rank( S1) ≤ L,
+
+rank( S2) ≤ L, and rank( S3) ≤ L.We denote the compact singular value decompositions (SVDs) of S1, S2, and S3 as S1 = US1 ΣS1 VH 
+
+> S1
+
+, S2 =
+
+US2 ΣS2 VH 
+
+> S2
+
+, and S3 = US3 ΣS3 VH 
+
+> S3
+
+, where ΣS1 , ΣS2 , ΣS3
+
+are L × L diagonal matrices containing the singular values of 
+
+S1, S2, S3 on the diagonal (including zeros if the matrix has rank less than L), and US1 , US2 , US3 and VS1 , VS2 , VS3
+
+are appropriately sized matrices, each with L orthornormal columns. III. M ETHODOLOGY 
+
+A. Assumptions 
+
+Our analysis rests on four mild assumptions: 1) (Sufficient dimension) As mentioned in Section II-B2, we assume min {R, M, N − M + 1 } ≥ L, where L =PPp=1 Lp is the total number of harmonic components. 2) (Nontrivial amplitudes) All complex amplitudes αp,l 
+
+are nonzero. 3) (Harmonic incoherence) The set of all frequencies 
+
+{Ωp,l = lω p (mod 2 π)} contains L unique values. 4) (Spatial incoherence) The set of all spatial frequencies 
+
+{Ψp,l = lϕ p (mod 2 π)} contains L unique values; re-call that ϕp = ωpfs dc sin( θp), so this condition depends both on the DOAs and on the source frequencies. 
+
+Proposition III.1 . Under Assumptions 1–4, the following ma-trices all have rank L: At, As, A, Z, S1, S2, and S3.
+
+Proof: Due to its Vandermonde structure, At has rank L if 
+
+M ≥ L and Assumption 3 is satisfied. Similarly, As has rank 
+
+L if R ≥ L and Assumption 4 is satisfied. From (3), if At
+
+and As are rank L, then A must also be rank L. The matrix Z
+
+also has a Vandermonde structure and will have rank L if N −
+
+M + 1 ≥ L and Assumptions 2 and 3 hold. Finally, from (2) and (4), we will have rank( S1) = rank( S2) = rank( S3) = L
+
+if rank( At) = rank( As) = rank( Z) = L. □4
+
+B. Subspace estimation 
+
+The subspace of CRM spanned by the columns of US3
+
+contains key information that can be exploited by the ESPRIT method for joint estimation of both DOA and pitch (see Section III-C). We begin by detailing an important connection between this subspace and the mode-1 and mode-2 unfoldings of S. Inspired by [12, Corollary 1, Appendix A], we establish the following relationship between the mode-3 signal subspace and the signal subspaces associated with the other two modes. Although the resulting identity is the same as that in [12], our signal model and assumptions differ; therefore, we provide a self-contained proof tailored to the present setting. 
+
+Proposition III.2 . Suppose Assumptions 1–4 above are met. Define T1 = US1 UH 
+
+> S1
+
+and T2 = US2 UH 
+
+> S2
+
+. Then 
+
+US3 = ( T2 ⊗ T1)US3 . (5) 
+
+Proof: Defining Pt := AtA+ 
+
+> t
+
+and Ps := AsA+ 
+
+> s
+
+as orthogonal projectors onto the column span of At and As,respectively, it follows that At = PtAt and As = PsAs.Taking the Khatri-Rao product of At and As, we obtain 
+
+A = At ∗ As = ( PtAt) ∗ (PsAs) = ( Pt ⊗ Ps)( At ∗ As) = (Pt ⊗ Ps)A.Using (2) and (4), we then have 
+
+S1 = As(Z • A⊤ 
+
+> t
+
+) = PsAs(Z • A⊤ 
+
+> t
+
+) = PsS1,
+
+S2 = At(Z • A⊤ 
+
+> s
+
+) = PtAt(Z • A⊤ 
+
+> s
+
+) = PtS2, and 
+
+S3 = AZ = ( Pt ⊗ Ps)AZ = ( Pt ⊗ Ps)S3.
+
+From Proposition III.1, At, As, A, Z, S1, S2, and S3 all have rank L. Thus S1 = US1 ΣS1 VH 
+
+> S1
+
+= As(Z • A⊤ 
+
+> t
+
+), from which it follows that US1 = As(Z • A⊤ 
+
+> t
+
+)VS1 (ΣS1 )−1 =: 
+
+AsR1, where ΣS1 , R1 ∈ CL×L are both invertible. Similarly, 
+
+US2 = At(Z • A⊤ 
+
+> s
+
+)VS2 (ΣS2 )−1 =: AtR2 and US3 =
+
+AZV S3 (ΣS3 )−1 =: AR 3, where ΣS2 , ΣS3 , R2, R3 ∈ CL×L
+
+are all invertible. Hence, 
+
+Ps := AsA+ 
+
+> s
+
+= ( US1 R−11 )( US1 R−11 )+ = US1 R−11 R1U+
+
+> S1
+
+= US1 U+ 
+
+> S1
+
+= US1 (UH 
+
+> S1
+
+US1 )−1UH 
+
+> S1
+
+= US1 UH 
+
+> S1
+
+= T1,
+
+where the second to the last equality uses the fact UH 
+
+> S1
+
+US1 =
+
+I. Similarly, we can obtain Pt := AtA+ 
+
+> t
+
+= US2 UH 
+
+> S2
+
+= T2.Finally, we have (T2 ⊗ T1)US3 = ( Pt ⊗ Ps)US3 = ( Pt ⊗
+
+Ps)AR 3 = AR 3 = US3 , which proves (5). □
+
+The matrix T2 ⊗ T1 appearing in (5) is itself an orthogonal projection matrix. It is self-adjoint (as (T2 ⊗ T1)H = TH 
+
+> 2
+
+⊗
+
+TH 
+
+> 1
+
+= T2 ⊗ T1) and idempotent (as (T2 ⊗ T1)( T2 ⊗ T1) = (T2T2) ⊗ (T1T1) = T2 ⊗ T1). In practice, US3 is not directly available and must be estimated from noisy data in X . A classical method for doing so is to compute the SVD of the mode-3 unfolding of X :
+
+X3 = UX3 ΣX3 VH 
+
+> X3
+
+. Because X3 may be full rank in general, the subspace estimate can be obtained from the span of its first 
+
+L singular vectors. We denote this as 
+
+bUs,mat := UX3 (: , 1 : L) (6) because this estimate can be formed directly from the matrix 
+
+X3 = [vec( X(0)) vec( X(1)) · · · vec( X(N − M ))] without using tensors. We also note that bUs,mat is the same subspace estimate employed in [6]. The insight to be gleaned from Proposition III.2, however, is that additional subspace structure can be revealed through multiple unfoldings of the data tensor X . Specifically, T1 and 
+
+T2 can be estimated from the SVD of the mode-1 and mode-2 unfoldings of X as follows: 
+
+bT1 := UX1 (: , 1 : L)( UX1 (: , 1 : L)) H (7) and 
+
+bT2 := UX2 (: , 1 : L)( UX2 (: , 1 : L)) H . (8) With the estimated projection operator bT2 ⊗ bT1, we can then refine the matrix-based subspace estimate to obtain our tensor-based subspace estimate: 
+
+bUs,ten := ( bT2 ⊗ bT1) bUs,mat . (9) While the columns of bUs,ten are not automatically orthonor-mal, its column span range( bUs,ten ) is the refined subspace estimate. By projecting the matrix-based subspace estimate 
+
+bUs,mat onto the subspace constrained by both the spatial and temporal steering structures, we effectively suppress noise components that do not conform to the harmonic steering structure defined in (3). The goal is for improvement in the subspace estimate, provided by the approximate knowledge of the orthogonal projector T2 ⊗ T1, to translate into improved pitch and DOA accuracy. In practice, it is possible for the empirical tensor-based subspace estimate bUs,ten to be slightly worse than 
+
+bUs,mat , but this is a rare occurrence in our simulations (see Section V). Much more commonly, d( bUs,ten , US3 ) <d( bUs,mat , US3 ). Section IV of this paper is devoted to proving that d( bUs,ten , US3 ) < d ( bUs,mat , US3 ) with high probability in a variety of scenarios. 
+
+C. Pitch and DOA estimation 
+
+Once the subspace estimation is finished, we can then proceed to use the ESPRIT method for joint estimation of DOA and pitch. From the proof of Proposition III.2, we have that US3 = AR 3 where R3 is invertible, so US3 and A
+
+share the same column span. Following [6], we exploit the shift invariance structure in A to estimate DOA and pitch. We start by defining the following four selection matrices 
+
+W1 =
+
+ IM −1
+
+01×(M −1) 
+
+
+
+⊗ IR, W2 =
+
+01×(M −1) 
+
+IM −1
+
+
+
+⊗ IR,
+
+W3 = IM ⊗
+
+ IR−1
+
+01×(R−1) 
+
+
+
+, W4 = IM ⊗
+
+01×(R−1) 
+
+IR−1
+
+
+
+.
+
+The selection matrices W1 and W2 have size M R × (M −
+
+1) R, while W3 and W4 have size M R × M (R − 1) .Using the selection matrices, we have the following shift invariant relationships involving various submatrices of A:
+
+WT 
+
+> 1
+
+AΨ t = WT 
+
+> 2
+
+A and WT 
+
+> 3
+
+AΨ s = WT 
+
+> 4
+
+A, where Ψt and 
+
+Ψs are L × L matrices defined as Ψt = diag( Ψt1 , . . . , ΨtP )
+
+where Ψtp = diag  ejω p , . . . , e jω pLp
+
+ and Ψs =diag( Ψs1 , . . . , ΨsP ) where Ψsp = diag  ejϕ p , . . . , e jϕ pLp
+
+.5
+
+Substituting A = US3 R−13 into the above, we obtain the re-lations WT 
+
+> 1
+
+US3 Φt = WT 
+
+> 2
+
+US3 and WT 
+
+> 3
+
+US3 Φs = WT 
+
+> 4
+
+US3 ,which involve the similarity transformations Φt := R−13 ΨtR3
+
+and Φs := R−13 ΨsR3. It follows that the eigenvalues of 
+
+Φt and Φs are the same as the diagonal entries of Ψt and 
+
+Ψs; we denote these by μ(p) 
+
+> l
+
+and ν(p) 
+
+> l
+
+, respectively, for l =1, . . . , L p and p = 1 , . . . , P . Recall that rank( US3 ) = L. If 
+
+rank( WT 
+
+> 1
+
+US3 ) = L and rank( WT 
+
+> 3
+
+US3 ) = L, it follows that 
+
+Φt = ( WT 
+
+> 1
+
+US3 )+WT 
+
+> 2
+
+US3 and Φs = ( WT 
+
+> 3
+
+US3 )+WT 
+
+> 4
+
+US3 ,where + stands for the Moore-Penrose pseudoinverse. In practice, US3 is not directly available, but one of its estimates—either bUs,mat or bUs,ten from Section III-B—can be used in its place to compute estimates of Φt and Φs. The eigenvalues of these estimates are denoted by bμ(p) 
+
+> l
+
+and bν(p) 
+
+> l
+
+,respectively. Because the principal argument is defined modulo 
+
+2π, the phases are first unwrapped across the harmonic index 
+
+l; hereafter, ∠(·) denotes the corresponding unwrapped phase, chosen such that 
+
+∠bμ(p) 
+
+> l
+
+≈ lω p and ∠bν(p) 
+
+> l
+
+≈ lϕ p.
+
+The pitch and DOA parameters can then be estimated by averaging these phases over the model order as 
+
+bωp = 2
+
+Lp(Lp + 1) 
+
+> Lp
+
+X
+
+> l=1
+
+∠bμ(p)
+
+> l
+
+and 
+
+bθp = arcsin 
+
+ 2cLp(Lp + 1) bωpfsd
+
+> Lp
+
+X
+
+> l=1
+
+∠bν(p)
+
+> l
+
+ .
+
+In the multi-pitch case, the estimated eigenvalues bμ(p) 
+
+> l
+
+and 
+
+bν(p) 
+
+> l
+
+must be correctly associated to ensure consistent pairing between pitch and DOA estimates. Standard eigenvalue pairing techniques available in the literature (e.g., [27], [28]) can be employed to accomplish this task. IV. T HEORETICAL GUARANTEE FOR TENSOR GAIN 
+
+In this section, we prove that in a variety of scenar-ios, d( bUs,ten , US3 ) < d( bUs,mat , US3 ) with high proba-bility. To do this, we decompose the overall tensor gain 
+
+d( bUs,mat , US3 ) − d( bUs,ten , US3 ) into two components as detailed in equation (12). We provide deterministic bounds on these components in Theorem IV.3 and Theorem IV.4. As these bounds involve factors (such as bUs,mat ) that ultimately depend on the noise tensor Q, we then establish probabilistic bounds on the relevant quantities. Our analysis culminates in our main result, Theorem IV.16, which establishes that in certain scenarios, the overall tensor gain is positive with high probability. Our analysis is entirely non-asymptotic, as it can be applied to finite values of R, M , N , and SNR, and all constants (such as in the failure probabilities) are explicit. In contrast to the asymptotic framework of [12], our results provide finite-sample conditions under which a strictly positive tensor gain is guaranteed for a fixed problem configuration. 
+
+A. Setup 
+
+As in Proposition III.2, suppose Assumptions 1–4 are met. Therefore, from Proposition III.1, the following matrices all have rank L: At, As, A, Z, S1, S2, and S3.As in Section II, we suppose the base noise matrix Q ∈
+
+CR×N has i.i.d. entries distributed as CN (0 , σ 2).Recall that the columns of US3 ∈ CRM ×L define an orthonormal basis for the true L-dimensional mode-3 signal subspace, that bUs,mat ∈ CRM ×L defines an orthonormal basis for the matrix-based estimate of the subspace as defined in (6), and that bUs,ten ∈ CRM ×L defines a basis for our tensor-based estimate of the subspace as defined in (9). Recall also the projectors T1 = US1 UHS1 and T2 =
+
+US2 UHS2 together with their estimates bT1 (see (7)) and bT2
+
+(see (8)) from the mode-1 and mode-2 unfoldings of the data tensor X .We let K := range( T2 ⊗ T1) denote the true (“oracle”) subspace constrained by the spatial and temporal steering structures, and we let bK := range( bT2 ⊗ bT1) denote its empirical estimate. We define the corresponding orthogonal projection operators onto K and bK as 
+
+PK := T2 ⊗ T1 and P bK := bT2 ⊗ bT1,
+
+and we refer to PK and P bK as the oracle and empirical subspace projectors, respectively. By Proposition III.2, 
+
+PK US3 = US3 . (10) Due to (9), we have that bUs,ten = P bK bUs,mat ; that is, the empirical subspace projector is used to refine the matrix-based subspace estimate from (6). We also define 
+
+eUs,ten := PK bUs,mat ; (11) its range is the refined subspace estimate that would hypo-thetically be possible with knowledge of the oracle subspace projector PK.
+
+B. Decomposing overall tensor gain 
+
+Using the concept of distance between subspaces, we define the overall tensor gain as the improvement in estimating US3
+
+via our refined empirical estimate bUs,ten compared to the the original matrix-based estimate bUs,mat :overall tensor gain := d( bUs,mat , US3 ) − d( bUs,ten , US3 ).
+
+Both analytically and intuitively, we find it useful to decom-pose the overall tensor gain into the hypothetical gain that would be possible with the oracle estimate eUs,ten (see (11)), minus the amount of gain that is “given back” due to the use of the empirical (rather than oracle) projector. That is, overall tensor gain = goracle − ℓemp , (12) where we define the oracle gain and empirical loss as follows: 
+
+goracle := d( bUs,mat , US3 ) − d( eUs,ten , US3 ),ℓemp := d( bUs,ten , US3 ) − d( eUs,ten , US3 ).
+
+Our ultimate goal is to prove that the overall tensor gain is positive with high probability in a variety of scenarios. We approach this by identifying cases where the oracle gain exceeds the empirical loss. 6
+
+C. Oracle gain 
+
+Recall that the oracle gain goracle = d( bUs,mat , US3 ) −
+
+d( eUs,ten , US3 ) is the hypothetical tensor gain that would be possible using the oracle subspace projector PK compared to using the empirical subspace projector P bK. As we establish in the following lemma, the oracle gain can never be negative. Proofs of this proposition and all other theoretical results from Section IV are provided in the Appendix (see Supplementary Material). 
+
+Proposition IV.1 (Oracle gain is nonnegative) . goracle ≥ 0.The proof of Proposition IV.1 relies on the following lemma. 
+
+Lemma IV.2 (Retained-energy floor) . If d( bUs,mat , US3 ) < 1
+
+then PK bUs,mat has rank L and ρ > 0, where 
+
+ρ := σL(PK bUs,mat ). (13) The condition d( bUs,mat , US3 ) < 1 is satisfied except in pathological cases where the noise in X3 = S3 + Q3 causes its first L principal components to be completely orthogonal to those of S3. We henceforth adopt a fifth assumption. 5) (Nonzero correlation) The matrix estimate bUs,mat has nonzero correlation with the ground truth subspace, i.e., d( bUs,mat , US3 ) < 1. Similarly, we assume that 
+
+range( P bK bUs,mat ) is L-dimensional. We can furthermore establish deterministic lower and upper bounds on the oracle gain. To do this, we define 
+
+a := σ2
+
+> L
+
+(UHS3
+
+bUs,mat ), (14) 
+
+E∥ := ( PK − US3 UHS3 ) bUs,mat . (15) 
+
+Theorem IV.3 (Deterministic bounds on oracle gain) . The oracle gain satisfies 
+
+glower oracle ≤ goracle ≤ gupper oracle ,
+
+where 
+
+glower oracle := √1 − a −
+
+q
+
+∥E∥∥22
+
+q
+
+a + ∥E∥∥22
+
+.
+
+and 
+
+gupper oracle := √1 − a −
+
+r
+
+1 − aρ2 .
+
+Theorem IV.3 warrants some interpretation. First, we note that in situations where d( bUs,mat , US3 ) is small to begin with, there is not much room for oracle gain. This corresponds to situations where a is close to 1, causing the first square root term in gupper oracle to be near 0. Second, we note that if the largest principal angle between range( bUs,mat ) and K is near 0, then 
+
+ρ will be close to 1, and there will be little separation between the two square root terms in the upper bound. Note that because of (10), if there exists at least one large angle between 
+
+range( bUs,mat ) and K, there must exist at least one large angle between range( bUs,mat ) and range( US3 ). On the other hand, if the largest principal angle between range( bUs,mat ) and 
+
+range( US3 ) is large, a will be close to 0, which shrinks glower oracle .So there is a “sweet spot” for a; we revisit this in the numerical experiments. Third, in situations where ∥E∥∥2 is large, glower oracle 
+
+will be suppressed. In our probabilistic analysis, we identify situations where ∥E∥∥2 can be bounded from above with high probability. 
+
+D. Empirical loss 
+
+Recall that the empirical loss ℓemp = d( bUs,ten , US3 ) −
+
+d( eUs,ten , US3 ) quantifies how much of the oracle gain is “given back” due to the error in estimating K.Our next theorem establishes a deterministic bound on the empirical loss. To do this, we define 
+
+η := ∥P bK − PK∥2. (16) 
+
+Theorem IV.4 (Deterministic bound on empirical loss) . If η < ρ, the empirical loss satisfies 
+
+ℓemp ≤ ℓupper emp ,
+
+where 
+
+ℓupper emp := ηρ − η .
+
+Combining Theorems IV.3 and IV.4 with (12), we see that in situations where ℓupper emp < g lower oracle , we are guaranteed to have positive overall tensor gain. While this condition does not hold deterministically, we identify a range of scenarios where it holds with high probability. 
+
+E. Bounding terms in glower oracle and ℓupper emp 
+
+In this section, we focus on bounding ρ, a, ∥E∥∥2, and η,which are the terms appearing in ℓupper emp and glower oracle .
+
+1) Bounding ρ from below: To help bound ℓupper emp from above, we bound ρ from below. Recall from (13) that ρ =
+
+σL(PK bUs,mat ).
+
+Lemma IV.5 (Lower bound on ρ). ρ2 ≥ a.We establish a lower bound on a in a subsequent section. 
+
+2) Bounding η from above: To help bound ℓupper emp from above, we also bound η from above. Recall from (16) that the joint projection error η = ∥P bK − PK∥2.The following lemma decouples the joint Kronecker error into individual mode-space errors. 
+
+Lemma IV.6 (Kronecker telescoping bound) . Let Ti and bTi
+
+(i = 1 , 2) be the orthogonal projection matrices onto the true and estimated mode-i signal subspaces. Define δi := ∥ bTi −
+
+Ti∥2 for i = 1 , 2. Then, the distance between the joint tensor projectors satisfies: 
+
+η ≤ δ1 + δ2.
+
+By utilizing standard subspace perturbation theory, we can explicitly relate each δi directly to the underlying signal-to-noise dynamics of the individual unfoldings. 
+
+Corollary IV.7 (Perturbation bound for η). Let Xi = Si + Qi
+
+represent the mode-i unfoldings of the noisy data tensor X ,where Si has rank L. Define γi := σL(Si) for i = 1 , 2. If the spectral norm of the unfolded noise matrix satisfies ∥Qi∥2 <γi for i = 1 , 2, then: 
+
+η ≤ ∥Q1∥2
+
+γ1 − ∥ Q1∥2
+
++ ∥Q2∥2
+
+γ2 − ∥ Q2∥2
+
+. (17) 7
+
+We next derive non-asymptotic concentration bounds for the spectral norms ∥Q1∥2 and ∥Q2∥2 appearing in (17). We first bound (with high probability) the spectral norm of the mode-1 noise unfolding. To state this result, we define 
+
+K := N − M + 1 .
+
+Lemma IV.8 (Mode-1 noise concentration) . For any t1 > 0,the spectral norm of the mode-1 noise unfolding satisfies: 
+
+P
+
+
+
+∥Q1∥2 > σ p2 min( M, K )
+
+√R + √N
+
+
+
++ t1
+
+
+
+≤ exp 
+
+
+
+− t21
+
+σ2 min( M, K )
+
+
+
+.
+
+Next we bound (with high probability) the spectral norm of the mode-2 noise unfolding. 
+
+Lemma IV.9 (Mode-2 noise concentration) . For any t2 > 0,the spectral norm of the mode-2 noise unfolding satisfies: 
+
+P
+
+
+
+∥Q2∥2 > σ √2K(√R + √N ) + t2
+
+
+
+≤ exp 
+
+
+
+− t22
+
+σ2 min( M, K )
+
+
+
+.
+
+Combining Lemma IV.8 and Lemma IV.9 with Corol-lary IV.7 provides a probabilistic upper bound for the joint projection error η.
+
+3) Bounding a from below: To help with bounding both 
+
+glower oracle and ℓupper emp , we establish a lower bound on a. Recall from (14) that a = σ2
+
+> L
+
+(UHS3
+
+bUs,mat ).
+
+Lemma IV.10 (Lower bound on baseline subspace alignment) .
+
+Let US3 ∈ CRM ×L be the true mode-3 signal subspace basis, and let bUs,mat ∈ CRM ×L be the baseline matrix-based estimate obtained from the L dominant left singular vectors of the mode-3 unfolding X3 = S3 + Q3. Let γ3 = σL(S3)
+
+denote the singular value gap of the true signal matrix. If 
+
+∥Q3∥2 < 12 γ3, then 
+
+a ≥ 1 −
+
+ ∥Q3∥2
+
+γ3 − ∥ Q3∥2
+
+2
+
+. (18) Next we bound the spectral norm of the mode-3 noise unfolding. 
+
+Lemma IV.11 (Mode-3 noise concentration) . For any tail parameter t3 > 0, the spectral norm of the mode-3 noise unfolding satisfies: 
+
+P
+
+
+
+∥Q3∥2 > σ √2M
+
+√R + √N
+
+
+
++ t3
+
+
+
+≤ exp 
+
+
+
+− t23
+
+σ2 min( M, K )
+
+
+
+.
+
+Combining Lemma IV.10 with Lemma IV.11 provides a probabilistic lower bound for a.
+
+4) Bounding a from above: To help with bounding glower oracle 
+
+from below, we also establish an upper bound on a =
+
+σ2
+
+> L
+
+(UHS3
+
+bUs,mat ).For this analysis, let U⊥ 
+
+> S3
+
+∈ CRM ×(RM −L) be an orthonor-mal basis for range( US3 )⊥. Let bUs,mat , bVs,mat hold the top-
+
+L left/right singular vectors of X3, with buL, bvL their L-th columns and bσL := σL(X3). Let vL be the L-th right singular vector of S3.
+
+Lemma IV.12 (Upper bound on baseline subspace alignment) .
+
+If ∥Q3∥2 < γ 3, then 
+
+a ≤ 1 − U⊥HS3 Q3 bvL 2
+
+γ3 + ∥Q3∥2
+
+!2
+
+.
+
+The norm ∥Q3∥2 can be bounded probabilistically using Lemma IV.11. We also probabilistically bound 
+
+U⊥HS3 Q3 bvL 2, which appears in the upper bound on a.
+
+Lemma IV.13 (Probabilistic floor on the weakest-direction leakage) . Suppose K ≤ RM − L. Fix ε ∈ (0 , 12 ) and 
+
+μ ∈ (0 , 1) , and define 
+
+pw(ε, μ ) := 2 
+
+
+
+1 + 2
+
+> ε
+
+2K
+
+exp 
+
+
+
+− μ2(1 − 2ε)2 RM 
+
+4 min( M, K )
+
+
+
+. (19) Then with probability at least 1 − pw(ε, μ ),
+
+U⊥HS3 Q3 bvL 2 ≥ σ
+
+q RM (1 − μ) − L min( M, K )  
+
+> +
+
+.
+
+(20) We note that the failure probability pw(ε, μ ) in (19) is min-imized by choosing ε ≈ 1/16 . This leads us to a probabilistic upper bound for a.
+
+5) Bounding ∥E∥∥22 from above: To help with bounding 
+
+glower oracle from below, we establish an upper bound on ∥E∥∥22.Recall from (15) that E∥ = ( PK − US3 UHS3 ) bUs,mat .
+
+Lemma IV.14 (In-cage identity) . Let X3 = S3 + Q3 with S3
+
+of rank L and γ3 = σL(S3), and let bUs,mat , bVs,mat , bΣs,mat 
+
+be the top-L left singular vectors, right singular vectors, and singular values of X3. If ∥Q3∥2 < γ 3 then 
+
+E∥ 
+
+> 22
+
+≤ (PK − US3 UHS3 ) Q3 2
+
+γ3 − ∥ Q3∥2
+
+!2
+
+. (21) The norm ∥Q3∥2 can be bounded probabilistically using Lemma IV.11. We also probabilistically bound 
+
+(PK − US3 UHS3 ) Q3 2.
+
+Lemma IV.15 (Probabilistic in-cage envelope) . For any t4 > 0,
+
+P
+
+
+
+(PK − US3 UHS3 )Q3 2 > σ p(L2 − L)K + t4
+
+
+
+≤ exp 
+
+
+
+− t24
+
+σ2 min( M, K )
+
+
+
+. (22) This leads us to a probabilistic upper bound for ∥E∥∥22.8
+
+F. Proving that ℓupper emp < g lower oracle with high probability 
+
+We are now in position to prove our main result: that in certain scenarios the overall tensor gain is positive with high probability. 
+
+Theorem IV.16 (Main result) . Let γi := σL(Si) for i = 1 , 2, 3
+
+be the unfolding gaps. Fix positive slacks t1, t 2, t 3, t 4 > 0 and define 
+
+ω1 := σp2 min( M, K ) ( √R + √N ) + t1,ω2 := σ√2K (√R + √N ) + t2,ω3 := σ√2M (√R + √N ) + t3,ω4 := σp(L2 − L)K + t4.
+
+Then: 1) Oracle gain. Suppose K ≤ RM − L, ω3 < 12 γ3,and ω4 ≤ γ3 − ω3. Fix ε = 1 /16 , and μ ∈ (0 , 1 −
+
+L min( M, K )/RM ). Define 
+
+a := 1 −
+
+ ω3
+
+γ3−ω3
+
+2
+
+,a := 1 − σp[ RM (1 − μ) − L min( M, K ) ] +
+
+γ3 + ω3
+
+!2
+
+,E := ω4
+
+γ3 − ω3
+
+!2
+
+.
+
+If 4√7−227 ≤ a ≤ a < 1, then with probability at least 
+
+1 − e−t23/(σ2 min( M,K )) − e−t24/(σ2 min( M,K )) − pw
+
+ ε, μ ,the oracle gain is lower bounded as follows: 
+
+goracle ≥ √1 − a −√E
+
+p
+
+a + E
+
+| {z }
+
+glower oracle 
+
+. (23) 2) Empirical loss. Suppose ω1 < γ 1, ω2 < γ 2, and ω3 <
+
+12 γ3. Define 
+
+η := ω1
+
+γ1 − ω1
+
++ ω2
+
+γ2 − ω2
+
+,ρ := 
+
+r
+
+1 −
+
+ ω3
+
+γ3−ω3
+
+2
+
+.
+
+If η ≤ 12 ρ, then with probability at least 
+
+1 − e−t21/(σ2 min( M,K )) − e−t22/(σ2 min( M,K )) −
+
+e−t23/(σ2 min( M,K )) , the empirical loss is upper bounded as follows: 
+
+ℓemp ≤ ηρ − η
+
+| {z } 
+
+ℓupper emp 
+
+. (24) 3) Overall tensor gain. Suppose all assumptions above are satisfied and that ℓupper emp < g lower oracle . Then with probability at least 1 − e−t21/(σ2 min( M,K )) − e−t22/(σ2 min( M,K )) −
+
+e−t23/(σ2 min( M,K )) − e−t24/(σ2 min( M,K )) − pw
+
+ ε, μ , the overall tensor gain is lower bounded as follows: overall tensor gain ≥ glower oracle − ℓupper emp . (25) 0 5 10 15 20 25 30 35 40                 
+
+> 10 -2
+> 10 -1
+> Us Estimate Error
+> 0510 15 20 25 30 35 40
+> 10 -5
+> Pitch RMSE
+> 0510 15 20 25 30 35 40
+> SNR (dB)
+> 10 -3
+> 10 -2
+> 10 -1
+> 10 0
+> DOA RMSE
+> Tensor (Proposed)
+> Matrix ([6])
+> Tensor (Oracle)
+> CRB
+
+Fig. 1. Comparison of the proposed tensor method with matrix method [6] for two sources (setup ( i)). 0 5 10 15 20 25 30 35 40                 
+
+> 0.06
+> 0.07
+> 0.08
+> 0.09
+> Us Estimate Error
+> 0510 15 20 25 30 35 40
+> 10 -3
+> 10 -2
+> 10 -1
+> Pitch RMSE
+> 0510 15 20 25 30 35 40
+> SNR (dB)
+> 10 -2
+> 10 -1
+> 10 0
+> DOA RMSE
+> Tensor (Proposed)
+> Matrix ([6])
+> Tensor (Oracle)
+> CRB
+
+Fig. 2. Comparison for two close sources (setup ( ii )). 
+
+Theorem IV.16 defines ℓupper emp (a probabilistic upper bound on ℓemp ) and glower oracle (a probabilistic lower bound on goracle ). Both terms depend on σ, M , K, R, L, and γ3. However, only 
+
+ℓupper emp depends on γ1 and γ2. Our numerical examples identify scenarios where ℓupper emp ≤ glower oracle .V. N UMERICAL EXAMPLES 
+
+A. Performance evaluation and comparison with matrix meth-ods 
+
+We simulate a uniform linear array consisting of R = 15 mi-crophone sensors with inter-element spacing d = c/f s, where the speed of sound is set to c = 340 m /s and the sampling frequency is fs = 8 kHz . We vary the number of samples N ,the number of sources P , the data matrix dimension M , and the signal-to-noise ratio SNR = 10 log 10 
+
+∥S∥ 2
+
+> HS
+
+∥Q∥ 2
+
+> HS
+
+, where ∥ · ∥ HS 
+
+is the Hilbert-Schmidt norm of a tensor. Our six setups are summarized in Table I. Figures 1–5 show the corresponding numerical results. In each figure, the top plot reports the subspace estima-tion error, comparing d( bUs,ten , US3 ) to d( bUs,mat , US3 ); re-call that [6, Sec. III-D] is equivalent to using bUs,mat . We also report d( eUs,ten , US3 ), where eUs,ten is the “oracle” tensor-based subspace estimate discussed in Section IV-A. 9
+
+TABLE I PARAMETER SETTINGS FOR THE SIX EXPERIMENTAL SETUPS 
+
+Setup N M P Lp ω θ Description 
+
+(i) 12 8 2 [2, 3] [0.45, 0.5] [35 ◦, -15 ◦] Two sources (ii ) 10 6 2 [2, 3] [0.45, 0.4] [35 ◦, 33 ◦] Two close sources (iii ) 12 6 3 [1, 2, 3] [0.45, 0.4, 0.35] [-3 ◦, 35 ◦, 4 ◦] Three sources; two close (iv ) 12 8 2 [2, 3] [0.5, 0.25] [35 ◦, -15 ◦] Harmonically related (v) 13 8 2 [2, 3] [0.45, 0.5] [35 ◦, -15 ◦] Coherent sources (i.e. αp,l = 1 )(vi ) 13 8 2 [2, 3] [0.3, 0.315] [35 ◦, -25 ◦] Two sources, R = 12 in this case 0 5 10 15 20 25 30 35 40                 
+
+> 0.04
+> 0.06
+> 0.08
+> Us Estimate Error
+> 0510 15 20 25 30 35 40
+> 10 -2
+> Pitch RMSE
+> 0510 15 20 25 30 35 40
+> SNR (dB)
+> 10 -1
+> 10 0
+> DOA RMSE
+> Tensor (Proposed)
+> Matrix ([6])
+> Tensor (Oracle)
+> CRB
+
+Fig. 3. Comparison for three sources with two close sources (setup ( iii )). 0 5 10 15 20 25 30 35 40                 
+
+> 0.02
+> 0.04
+> 0.06
+> 0.08
+> Us Estimate Error
+> 0510 15 20 25 30 35 40
+> 10 -4
+> 10 -3
+> 10 -2
+> 10 -1
+> Pitch RMSE
+> 0510 15 20 25 30 35 40
+> SNR (dB)
+> 10 -2
+> 10 -1
+> 10 0
+> DOA RMSE
+> Tensor (Proposed)
+> Matrix ([6])
+> Tensor (Oracle)
+> CRB
+
+Fig. 4. Comparison when there are two sources and the pitches of these two sources are harmonically related (setup ( iv )). 
+
+The middle and bottom plots report the root mean square error (RMSE) of the resulting parameter estimates. The RMSEs of the pitch and DOA estimation are defined as Pitch RMSE =
+
+q 1
+
+P
+
+PPp=1 (bωp − ωp)2 and DOA RMSE =
+
+q 1
+
+P
+
+PPp=1 (bθp − θp)2.We see that the tensor method consistently outperforms the matrix method across the entire SNR range in subspace estimation, exhibiting a steeper decay in estimation error as the SNR increases. This improved subspace accuracy directly translates into enhanced parameter estimation performance. For pitch estimation, the tensor-based approach achieves lower RMSE at low to moderate SNRs, while both methods con-verge to similar performance levels at high SNRs, indicating 0 10 20 30 40 50 60 70 80                 
+
+> 10 -2
+> 10 -1
+> Us Estimate Error
+> 010 20 30 40 50 60 70 80
+> 10 -5
+> 10 0
+> Pitch RMSE
+> 010 20 30 40 50 60 70 80
+> SNR (dB)
+> 10 -5
+> 10 0
+> DOA RMSE
+> Tensor (Proposed)
+> Matrix ([6])
+> Tensor (Oracle)
+> CRB
+
+Fig. 5. Comparison for two coherent sources (setup ( v)). 
+
+asymptotic efficiency. In DOA estimation, the tensor method again demonstrates clear advantages, particularly in the low-SNR regime, where it yields significantly smaller RMSE than the matrix-based counterpart. While setups (i)–(iv ) corresponded to incoherent sources with randomly generated complex amplitudes αp,l , setup (v)
+
+corresponds to coherent sources with all αp,l = 1 . In practical scenarios, such as indoor room acoustics, sound reflections frequently lead to such coherence [29]. In this case, while Z
+
+still has rank L (recall Proposition III.1), it becomes poorly conditioned compared to the incoherent case. As shown in Figure 5, this introduces significant challenges for both esti-mation techniques. Nevertheless, the proposed tensor method consistently outperforms the matrix-based approach. 
+
+B. Performance analysis and comparison with state-of-the-art tensor methods 
+
+We benchmark the proposed tensor method against the matrix baseline [6], CP-ALS [19], and TT-MDL [30], one of the state-of-the-art tensor methods (see Figure 6). The proposed method attains the lowest subspace estimation error against the matrix baseline and TT-MDL at every tested SNR, but its ranking against CP-ALS is SNR-dependent: CP-ALS attains lower subspace error in a mid-range band from 8 to 20 dB, while the proposed method is strictly better at the low end (0–4 dB) and, more markedly, from 24 dB upward, where the performance of CP-ALS saturates. The CP model represents the tensor as a sum of L rank-one components, with each component coupling a spatial steering vector, a temporal steering vector, and a snapshot coefficient 10 0 5 10 15 20 25 30 35 40                 
+
+> 10 -1
+> 10 0
+> Us Estimate Error
+> Proposed (Kron)
+> Matrix [6]
+> TT-MDL [Gong20]
+> CP-ALS
+> 0510 15 20 25 30 35 40
+> 10 -5
+> 10 0
+> Pitch RMSE
+> Proposed (Kron)
+> Matrix [6]
+> TT-MDL [Gong20]
+> CP-ALS
+> CRB
+> 0510 15 20 25 30 35 40
+> SNR (dB)
+> 10 -2
+> 10 0
+> 10 2
+> DOA RMSE
+> Proposed (Kron)
+> Matrix [6]
+> TT-MDL [Gong20]
+> CP-ALS
+> CRB
+
+Fig. 6. Comparison of the proposed tensor method with matrix method [6], CP-ALS [19] and TT-MDL method [30] (setup ( vi )). Note in this setup, 
+
+R = 12 .
+
+vector across the three modes. In contrast, the Tucker-type relaxation underlying the proposed method only requires the individual mode unfoldings to have rank at most L, without enforcing a one-to-one correspondence among their latent components. Consequently, CP exploits a stronger structural model and can provide higher estimation accuracy when the factors are well conditioned. Its performance may nevertheless be sensitive to initialization and to near-collinearity among the factor-matrix columns. Although near-collinearity does not necessarily violate Kruskal’s sufficient uniqueness condition, it can make the CP decomposition poorly conditioned and numerically unstable. The proposed method sacrifices some of this stronger component-level coupling in exchange for a simpler noniterative SVD-based implementation, greater robustness to ill-conditioning, and explicit non-asymptotic performance guarantees. 
+
+C. Tensor gain bound characterization 
+
+Figure 7 illustrates the deterministic bounds on the oracle gain and empirical loss derived in Sections IV-C and IV-D. The array configuration for this experiment is described in the figure caption. We vary the noise standard deviation and compare the realized oracle gain and empirical loss with their corresponding theoretical bounds in panels (a) and (b), respectively. Because the oracle gain is lower bounded, all points in panel (a) lie on or below the diagonal line, which represents equality between the measured quantity and its bound. Similarly, because the empirical loss is upper bounded, all points in panel (b) lie on or above the diagonal line. These results numerically demonstrate the validity of the bounds established in Theorems IV.3 and IV.4. Figure 8 illustrates the “sweet-spot” behavior of the em-pirical tensor gain. The gain is small when the matrix-based estimate is already highly accurate, typically at high SNR, increases as the matrix estimate enters an intermediate-quality regime, and decreases again when the matrix estimate becomes too inaccurate, typically at low SNR. At high SNR, little room remains for further refinement. At intermediate SNR, the matrix estimate contains a substantial component outside the Kronecker-structured signal cage that can be removed by 10 -1 10 0           
+
+> realized oracle gain g oracle
+> 10 -1
+> 10 0
+> Thm IV.3 bound g oracle
+> lower
+> (a) oracle-gain bound g oracle 66goracle
+> lower
+> 10 -7 10 -6 10 -5 10 -4 10 -3 10 -2 10 -1 10 0
+> realized empirical loss l emp
+> 10 -8
+> 10 -6
+> 10 -4
+> 10 -2
+> 10 0
+> Thm IV.4 bound l emp
+> upper
+> (b) loss bound l emp 55lemp
+> upper
+> <=0.0020
+> <=0.0157
+> <=0.0470
+> <=0.1176
+
+Fig. 7. Demonstration of the deterministic bounds: (a) oracle gain lower bound, (b) empirical loss upper bound. R = 15 , M = 8 , N = 12 , K = 5 ,
+
+P = 2 , Lp = [2 , 3] , ωp = [1 .3, 1.0] , θp = [50 ◦, −35 ◦]. The sources are coherent (i.e., αp,l = 1 ). For each of four fixed noise levels σ, 200 trials are run. 
+
+the tensor refinement, leading to the largest gain (marked as star in Figure 8). At very low SNR, however, the empirically estimated Kronecker projector becomes unreliable, and the benefit of the refinement diminishes. Figure 9 provides a representative illustration of the impact of the Kronecker projector error η on the range of a where positive overall tensor gain is guaranteed according to our theory. We refer to this as the “certified interval” of a.Larger η indicates the empirical Kronecker projector is less accurate. As η increases, the certified interval narrows and eventually disappears. This behavior reinforces that the tensor-gain “sweet spot” represents a finite operating region that depends critically on the estimation accuracy of the Kronecker projector. Finally, Figure 10 presents two practical scenarios in which 
+
+ℓupper emp , the probabilistic upper bound on the empirical loss, falls below glower oracle , the lower bound on the oracle gain. In such scenarios, our Theorem IV.16 guarantees positive overall tensor gain with high probability. In this figure, we define the certified SNR as the smallest SNR at which ℓupper emp ≤ glower oracle ,i.e., where the dashed green curve exceeds the solid red curve. These examples demonstrate that the probabilistic guarantee in Theorem IV.16 can be practically achieved. Nevertheless, the guarantee remains conservative, as certification requires relatively favorable operating conditions. In practice, positive empirical tensor gain is often observed under substantially less demanding conditions. VI. C ONCLUSIONS 
+
+This paper developed a tensor-based framework for joint pitch and DOA estimation of multiple harmonic sources. By arranging the received array data as a multidimensional Hankel tensor, we showed that the true mode-3 signal subspace lies in a Kronecker-structured signal cage determined by the mode-1 11 d( bUs;mat; US3 ) = p1 ! a               
+
+> 00.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+> Tensor gain
+> 0
+> 0.05
+> 0.1
+> 0.15
+> 0.2
+> 0.25
+> 0.3
+> 0.35
+> overalltensorgain(measured)
+> oraclegain(ceiling)
+
+Fig. 8. Tensor gain versus the matrix-baseline error. R = 20 , M = 10 ,
+
+N = 24 , P = 2 , Lp = [2 , 3] , ωp = [0 .45 , 0.55] , θp = [35 ◦, −20 ◦]. SNR is swept from 0 to 60 dB with 2 dB step size and with 300 trials for each SNR. The amplitudes of sources are complex random. Every trial produces a unique value for both d( bUs,mat , US3 ) and tensor gain; these trials are grouped into bins according to d( bUs,mat , US3 ) and the median tensor gain for each bin is plotted. a            
+
+> 00.2 0.4 0.6 0.8 1
+> 2 = k bPK ! PK k2
+> 0
+> 0.05
+> 0.1
+> 0.15
+> 0.2
+> 0.25
+> 0.3
+> 0.35
+> 0.4
+> 0.45
+> 0.5
+> Projectorerror2
+> 00.1 0.2 0.3 0.4 0.5
+> Width of certi-ed a-interval
+> 0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> 0.9
+> 1
+
+Fig. 9. The certified interval versus the projector error η. We set ∥E∥∥2 =0.22 as a representative fixed value. The left panel marks the certified region in the (a, η ) plane. At every (a, η ) grid point, we “certify” (shade) the point if glower oracle > η√a−η , noting that η√a−η ≥ ℓupper emp due to Theorem IV.4 and Lemma IV.5. 
+
+and mode-2 subspaces. This observation led to a tensor-refined subspace estimator that projects the conventional matrix-based estimate onto an empirically estimated Kronecker cage before applying ESPRIT-type pitch and DOA retrieval. The paper also provided a theoretical explanation for the tensor gain. We proved that the oracle refinement using the true Kronecker projector cannot degrade the matrix estimate when the matrix estimate has nonzero overlap with the true subspace. We then decomposed the empirical gain into oracle improve-ment and empirical projector loss, yielding a deterministic sufficient condition for positive tensor gain. Under additive complex Gaussian noise, this condition was further converted into a high-probability guarantee using subspace perturbation bounds and concentration results for the structured Hankel noise unfoldings. The numerical results support both the estimation method and the theory. The proposed tensor refinement consistently improves subspace accuracy and pitch/DOA RMSE in low-to-moderate SNR regimes, including closely spaced sources, har-monically related sources, and coherent-source settings. Ad-10 -5 
+
+10 -4 
+
+10 -3 
+
+10 -2 
+
+10 -1 
+
+10 0
+
+> certified from 54 dB
+
+(a)     
+
+> measuredgoracle
+> glower
+> oracle(23)
+> lupper
+> emp(24)
+> measuredlemp
+
+30 40 50 60 70 80 
+
+SNR (dB) 
+
+10 -5 
+
+10 -4 
+
+10 -3 
+
+10 -2 
+
+10 -1 
+
+10 0
+
+> certified from 40 dB
+
+(b)     
+
+> measuredgoracle
+> glower
+> oracle(23)
+> lupper
+> emp(24)
+> measuredlemp
+
+Fig. 10. Demonstration of two scenarios where ℓupper emp ≤ glower oracle : (a) R =
+
+M = 60 , N = 64 , K = 5 , P = 2 , Lp = [2 , 3] , L = 5 , ωp = [0 .30 , 0.95] ,
+
+θp = [65 ◦, −65 ◦]; (b) R = M = 30 , N = 31 , K = 2, P = 2,
+
+Lp = [1 , 1] , L = 2, ωp = [0 .25 , 0.95] , θp = [55 ◦, −40 ◦]. The amplitudes of sources for both scenarios are complex random. All slack variables t1, t 2, t 3, t 4 are set such that the corresponding upper bound on failure probability exp( −t2 
+
+> i
+
+/(σ2 min( M, K ))) = 0 .02 . We budget another 
+
+0.02 failure probability by restricting pw(ε, μ ) ≤ 0.02 , setting ε = 1 /16 ,and solving for the smallest allowable μ. By the union bound, every plotted guarantee then holds with probability at least 1 − 5(0 .02) = 0 .90 . Each measured point is obtained via taking the smallest measured goracle (or largest measured ℓemp ) over 300 trials for each SNR. 
+
+ditional experiments verify the deterministic bounds, demon-strate the sweet-spot phenomenon in which gain is largest at intermediate matrix-estimate quality, and show that the certified gain window shrinks as the empirical Kronecker projector becomes less accurate. Comparisons with the ma-trix baseline and TT-MDL further indicate that the proposed Kronecker-refined estimator provides a favorable balance be-tween structure exploitation and subspace-estimation robust-ness. Our theoretical analysis decomposes the tensor gain into multiple factors that one could attempt to optimize through the array configuration, presenting an interesting opportunity for possible future work. 12 
+
+ACKNOWLEDGMENTS 
+
+This work was partially supported by NSF Grant CCF-2106834. The authors acknowledge the use of Claude, ChatGPT and Gemini for analytical and grammatical feedback, as well as collaborative code and text generation impacting all sections of the paper. AI-generated content has been carefully verified and heavily edited (or entirely rewritten) by the authors, who take full responsibility for the final work. REFERENCES [1] M. Kim and J. Skoglund, “Neural speech and audio coding: Modern AI technology meets traditional codecs [special issue on model-based and data-driven audio signal processing],” IEEE Signal Process. Mag. ,vol. 41, no. 6, pp. 85–93, 2025. [2] R. Haeb-Umbach, T. Nakatani, M. Delcroix, C. Boeddeker, and T. Ochiai, “Microphone array signal processing and deep learning for speech enhancement: Combining model-based and data-driven ap-proaches to parameter estimation and filtering,” IEEE Signal Process. Mag. , vol. 41, no. 6, pp. 12–23, 2025. [3] L. Liu and C. Weiß, “Unsupervised domain adaptation for music transcription: Exploiting cross-version consistency,” in IEEE ICASSP ,2025, pp. 1–5. [4] I. Lehmann, B. Gabrielson, T. Hasija, and T. Adali, “A comprehensive guide to multiset canonical correlation analysis and its application to joint blind source separation,” IEEE Trans. Signal Process. , 2025. [5] M. Christensen and A. Jakobsson, Multi-pitch estimation . Morgan & Claypool Publishers, 2009, vol. 5. [6] Y. Wu, L. Amir, J. R. Jensen, and G. Liao, “Joint pitch and DOA estimation using the ESPRIT method,” IEEE/ACM Trans. Audio, Speech, Language Process. , vol. 23, no. 1, pp. 32–45, 2014. [7] S. Karimian-Azari, J. Jensen, and M. Christensen, “Computationally efficient and noise robust DOA and pitch estimation,” IEEE/ACM Trans. Audio, Speech, Language Process. , vol. 24, no. 9, pp. 1613–1625, 2016. [8] J. R. Jensen, M. Christensen, and S. Jensen, “Nonlinear least squares methods for joint DOA and pitch estimation,” IEEE/ACM Trans. Audio, Speech, Language Process. , vol. 21, no. 5, pp. 923–933, 2013. [9] J. X. Zhang, M. Christensen, S. Jensen, and M. Moonen, “Joint DOA and multi-pitch estimation based on subspace techniques,” EURASIP J. Adv. Signal Process. , vol. 2012, no. 1, p. 1, 2012. [10] Z. Zhou, M. Christensen, J. R. Jensen, and S. Zhang, “Parametric mod-eling for two-dimensional harmonic signals with missing harmonics,” 
+
+IEEE Access , vol. 7, pp. 48 671–48 688, 2019. [11] M. Haardt, F. Roemer, and G. Del Galdo, “Higher-order SVD-based subspace estimation to improve the parameter estimation accuracy in multidimensional harmonic retrieval problems,” IEEE Trans. Signal Process. , vol. 56, no. 7, pp. 3198–3213, 2008. [12] F. Roemer, M. Haardt, and G. Del Galdo, “Analytical performance assessment of multi-dimensional matrix-and tensor-based ESPRIT-type algorithms,” IEEE Trans. Signal Process. , vol. 62, no. 10, pp. 2611– 2625, 2014. [13] Y. Cheng, F. Roemer, O. Khatib, and M. Haardt, “Tensor subspace tracking via kronecker structured projections (tetrakron) for time-varying multidimensional harmonic retrieval,” EURASIP Journal on Advances in Signal Processing , vol. 2014, no. 1, p. 123, 2014. [14] D. Rakhimov and M. Haardt, “Analytical performance assessment of 2-D tensor esprit in terms of physical parameters,” IEEE Open Journal of Signal Processing , vol. 5, pp. 122–131, 2023. [15] F. Xu, M. W. Morency, and S. A. Vorobyov, “DOA estimation for trans-mit beamspace MIMO radar via tensor decomposition with vandermonde factor matrix,” IEEE Trans. Signal Process. , vol. 70, pp. 2901–2917, 2022. [16] H. Zheng, Z. Shi, C. Zhou, M. Haardt, and J. Chen, “Coupled coarray tensor CPD for DOA estimation with coprime L-shaped array,” IEEE Signal Process. Lett. , vol. 28, pp. 1545–1549, 2021. [17] J. Goulart, M. Boizard, R. Boyer, G. Favier, and P. Comon, “Tensor CP decomposition with structured factor matrices: Algorithms and performance,” IEEE J. Sel. Topics Signal Process. , vol. 10, no. 4, pp. 757–769, 2015. [18] Y. Wu, H. So, and Y. Tan, “Joint time-delay and frequency estimation using parallel factor analysis,” Signal Process. , vol. 89, no. 8, pp. 1667– 1670, 2009. [19] N. D. Sidiropoulos, L. De Lathauwer, X. Fu, K. Huang, E. E. Papalex-akis, and C. Faloutsos, “Tensor decomposition for signal processing and machine learning,” IEEE Trans. Signal Process. , vol. 65, no. 13, pp. 3551–3582, 2017. [20] A. Cichocki, D. Mandic, L. De Lathauwer, G. Zhou, Q. Zhao, C. Caiafa, and H. A. Phan, “Tensor decompositions for signal processing applica-tions: From two-way to multiway component analysis,” IEEE Signal Process. Mag. , vol. 32, no. 2, pp. 145–163, 2015. [21] S. Miron, Y. Zniyed, R. Boyer, A. Lima Ferrer de Almeida, G. Favier, D. Brie, and P. Comon, “Tensor methods for multisensor signal process-ing,” IET signal processing , vol. 14, no. 10, pp. 693–709, 2020. [22] N. Tokcan, S. S. Sofi, C. Pr´ evost, S. Kharbech, B. Magnier, T. P. Nguyen, Y. Zniyed, L. De Lathauwer et al. , “Tensor decompositions for signal processing: Theory, advances, and applications,” Signal Processing , p. 110191, 2025. [23] A. Auddy, D. Xia, and M. Yuan, “Tensors in high-dimensional data analysis: Methodological opportunities and theoretical challenges,” An-nual review of statistics and its application , vol. 12, no. 1, pp. 527–551, 2025. [24] A. Thakre, M. Haardt, F. Roemer, and K. Giridhar, “Tensor-based spatial smoothing (TB-SS) using multiple snapshots,” IEEE Trans. Signal Process. , vol. 58, no. 5, pp. 2715–2728, 2010. [25] J. Steinwandt, F. Roemer, and M. Haardt, “Performance analysis of esprit-type algorithms for co-array structures,” in 2017 IEEE 7th Interna-tional Workshop on Computational Advances in Multi-Sensor Adaptive Processing (CAMSAP) , 2017, pp. 1–5. [26] A. Zhang and D. Xia, “Tensor SVD: Statistical and computational limits,” IEEE Trans. Inf. Theory , vol. 64, no. 11, pp. 7311–7338, 2018. [27] C. Duofang, C. Baixiao, and Q. Guodong, “Angle estimation using ESPRIT in MIMO radar,” Electron. Lett. , vol. 44, no. 12, pp. 770–771, 2008. [28] T. Liu and J. M. Mendel, “Azimuth and elevation direction finding using arbitrary array geometries,” IEEE Trans. Signal Process. , vol. 46, no. 7, pp. 2061–2065, 1998. [29] H. Kuttruff and M. Vorl¨ ander, Room acoustics . CRC Press, 2024. [30] X. Gong, W. Chen, J. Chen, and B. Ai, “Tensor denoising using low-rank tensor train decomposition,” IEEE Signal Processing Letters , vol. 27, pp. 1685–1689, 2020. [31] G. W. Stewart and J.-g. Sun, Matrix Perturbation Theory . Academic Press, 1990. [32] T. T. Cai and A. Zhang, “Rate-optimal perturbation bounds for singular subspaces with applications to high-dimensional statistics,” The Annals of Statistics , vol. 46, no. 1, pp. 60–89, 2018. [33] S. Boucheron, G. Lugosi, and P. Massart, “Concentration inequalities: A non asymptotic theory of independence,” 2013. [34] R. Vershynin, High-dimensional probability: An introduction with ap-plications in data science . Cambridge university press, 2018, vol. 47. [35] A. Lamperski, “Nonasymptotic pointwise and worst-case bounds for classical spectrum estimators,” IEEE Trans. Signal Process. , vol. 71, pp. 4273–4287, 2023. 13 
+
+APPENDIX 
+
+(S UPPLEMENTARY MATERIAL )
+
+A. Supporting proofs for Section IV-C 
+
+We first prove Lemma IV.2. 
+
+Proof. By (10), range( US3 ) ⊆ range( PK), hence US3 UHS3 ⪯
+
+PK as orthogonal projectors and ∥PKv∥2 ≥ ∥ US3 UHS3 v∥2 for all v. Therefore 
+
+ρ = σL(PK bUs,mat ) = min 
+
+> ∥w∥2=1
+
+∥PK bUs,mat w∥2
+
+≥ min 
+
+> ∥w∥2=1
+
+∥UHS3
+
+bUs,mat w∥2 = σL(UHS3
+
+bUs,mat ), (26) since US3 has orthonormal columns. The singular val-ues of the L × L matrix UHS3
+
+bUs,mat are the cosines of the principal angles, so σL(UHS3
+
+bUs,mat ) = cos θmax =q
+
+1 − d2( bUs,mat , US3 ), which is positive (and the rank is L)when d( bUs,mat , US3 ) < 1.We now complete the proof of Proposition IV.1. 
+
+Proof. If d( bUs,mat , US3 ) = 1 , the proposition follows imme-diately from the fact that d( eUs,ten , US3 ) ≤ 1.If d( bUs,mat , US3 ) < 1, let PK bUs,mat = QR be a thin QR factorization; R is invertible by Lemma IV.2. The principal-angle cosines between range( PK bUs,mat ) and range( US3 )
+
+are the singular values of UHS3 Q = (UHS3
+
+bUs,mat )R−1,where we used (10). Since RH R = bUH
+
+> s,mat
+
+PK bUs,mat ⪯
+
+bUH 
+
+> s,mat
+
+bUs,mat = I, we have ∥R∥2 ≤ 1 and σL(R−1) ≥ 1, so 
+
+cos θor max := σL
+
+ (UHS3
+
+bUs,mat )R−1
+
+≥ σL(UHS3
+
+bUs,mat ) =: cos θmat max .
+
+Hence sin θor max ≤ sin θmat max , i.e. d( eUs,ten , US3 ) ≤
+
+d( bUs,mat , US3 ). This completes the proof of Proposition IV.1. From the derivation above, we see that 
+
+goracle := d( bUs,mat , US3 ) − d( eUs,ten , US3 )= sin θmat max − sin θor max 
+
+= p1 − cos 2 θmat max − p1 − cos 2 θor max 
+
+=
+
+q
+
+1 − σ2
+
+> L
+
+(UHS3
+
+bUs,mat )
+
+−
+
+q
+
+1 − σ2
+
+> L
+
+ (UHS3
+
+bUs,mat )R−1
+
+:= √1 − a − √1 − b, (27) where a := σ2
+
+> L
+
+(UHS3
+
+bUs,mat ), b := σ2
+
+> L
+
+ UHS3
+
+bUs,mat R−1. We establish a lower bound on b.
+
+Lemma A.1 (In-cage retained energy) . We have 
+
+b ≥ blower := aa + ∥E∥∥22
+
+. (28) 
+
+Proof. Because PK is an orthogonal projector, RH R =
+
+bUH
+
+> s,mat
+
+PH 
+
+> K
+
+PK bUs,mat = bUH
+
+> s,mat
+
+PK bUs,mat . Split PK =
+
+US3 UHS3 + ( PK − US3 UHS3 ) into orthogonal projectors with orthogonal ranges (as range( US3 ) ⊆ range( PK)). Writing 
+
+M := UHS3
+
+bUs,mat and using the definition of E∥,
+
+RH R
+
+= bUH
+
+> s,mat
+
+US3 UHS3
+
+bUs,mat + bUH
+
+> s,mat
+
+(PK − US3 UHS3 ) bUs,mat 
+
+= MH M + EH 
+
+> ∥
+
+E∥,
+
+since (PK − US3 UHS3 ) is idempotent and Hermitian. With 
+
+z := R−1x,
+
+b = σ2
+
+> L
+
+(MR −1) = min 
+
+> z̸=0
+
+zH MH M z zH RH R z 
+
+= min 
+
+> z̸=0
+
+zH G1zzH G1z + zH G2z = 11 + λmax (G−11 G2) ,
+
+where G1 := MH M ≻ 0 (as a = λmin (G1) > 0 due to Assumption 5) and G2 := EH 
+
+> ∥
+
+E∥ ⪰ 0. Bounding the generalized eigenvalue, 
+
+λmax (G−11 G2) = max 
+
+> z̸=0
+
+zH G2zzH G1z ≤ λmax (G2)
+
+λmin (G1) = ∥E∥∥22
+
+a ,
+
+so b ≥  1 + ∥E∥∥22/a −1 = a/ (a + ∥E∥∥22) = blower .We are now prepared to prove Theorem IV.3. 
+
+Proof. From (27), goracle = √1 − a − √1 − b with b =
+
+σ2
+
+> L
+
+(UHS3
+
+bUs,mat R−1), and from Lemma A.1, b ≥ blower =
+
+a/ (a + ∥E∥∥22).The map t 7 → √1 − t is decreasing on [0 , 1] and blower ≤
+
+b ≤ 1, so √1 − b ≤ √1 − blower and therefore 
+
+goracle = √1 − a − √1 − b ≥ √1 − a − p1 − blower 
+
+= √1 − a −
+
+q
+
+∥E∥∥22
+
+q
+
+a + ∥E∥∥22
+
+.
+
+Note also that 
+
+σ2
+
+> L
+
+ (UHS3
+
+bUs,mat )R−1 ≤ σ2
+
+> L
+
+ UHS3
+
+bUs,mat 
+
+∥R−1∥22
+
+= σ2
+
+> L
+
+ UHS3
+
+bUs,mat 
+
+
+
+ρ2 .
+
+Therefore, we also have an upper bound on the oracle gain: 
+
+goracle = √1 − a − √1 − b ≤ √1 − a − p1 − a/ρ 2.
+
+This completes the proof of Theorem IV.3. 
+
+B. Supporting proofs for Section IV-D 
+
+Here we prove Theorem IV.4. 
+
+Proof. Define B := PK bUs,mat (so range( B) =range( eUs,ten ) and σL(B) = ρ). Next, define bB := P bK bUs,mat .We can then write bB = B+F, where F := ( P bK −PK) bUs,mat .It follows that ∥F∥2 ≤ ∥ P bK − PK∥2∥ bUs,mat ∥2 = η.Since range( bB) is L-dimensional under Assumption 5, Weyl’s inequality gives σL( bB) = σL(B + F) ≥ σL(B) −∥F∥2 ≥ ρ − η > 0.14 
+
+For any vector x, (I − PB)Bx = 0, hence ∥(I −
+
+PB) bBx ∥2 = ∥(I − PB)Fx ∥2 ≤ η∥x∥2, and hence for any unit vector v = bBx /∥ bBx ∥2 ∈ range( bB),
+
+∥(I − PB)v∥2 = ∥(I − PB) bBx ∥2
+
+∥ bBx ∥2
+
+≤ ησL( bB) ≤ ηρ − η .
+
+Taking the supremum over such v gives d( bUs,ten , eUs,ten ) ≤
+
+η/ (ρ − η). By the triangle inequality, 
+
+ℓemp = d( bUs,ten , US3 ) − d( eUs,ten , US3 )
+
+≤ (d( eUs,ten , US3 ) + d( bUs,ten , eUs,ten )) − d( eUs,ten , US3 )= d( bUs,ten , eUs,ten ) ≤ ηρ − η .
+
+C. Supporting proofs for Section IV-E 
+
+The proof of Lemma IV.5 (the fact that ρ2 ≥ a) is established in (26). Next we prove Lemma IV.6. 
+
+Proof. We express the difference between the two Kronecker product projectors using a standard telescoping identity: 
+
+P bK − PK = bT2 ⊗ bT1 − T2 ⊗ T1
+
+= ( bT2 − T2) ⊗ bT1 + T2 ⊗ ( bT1 − T1).
+
+Noting that the spectral norm of a Kronecker product satisfies 
+
+∥A ⊗ B∥2 = ∥A∥2∥B∥2, we have: 
+
+∥P bK − PK∥2 ≤ ∥ bT2 − T2∥2∥ bT1∥2 + ∥T2∥2∥ bT1 − T1∥2.
+
+Note that ∥ bT1∥2 = 1 and ∥T2∥2 = 1 . Substituting these values along with the definitions of δ1 and δ2 yields: 
+
+η ≤ δ2 · 1 + 1 · δ1 = δ1 + δ2.
+
+From this follows the proof of Corollary IV.7. 
+
+Proof. By Wedin’s sin θ theorem [31, Ch. V, Sec. 4.1, The-orem 4.4], [32, Sec. 2.3] applied to the singular subspaces of a matrix under additive deterministic perturbations, the canonical distance between the true and estimated singular subspaces is bounded by: 
+
+δi = ∥ bTi − Ti∥2 = ∥ sin Θ( bUi, Ui)∥2
+
+≤ max {∥ Qi bVi∥2, ∥ bUHi Qi∥2}
+
+σL(Xi) ≤ ∥Qi∥2
+
+σL(Xi)
+
+≤ ∥Qi∥2
+
+σL(Si) − ∥ Qi∥2
+
+= ∥Qi∥2
+
+γi − ∥ Qi∥2
+
+,
+
+where the last inequality follows by Weyl’s inequality: 
+
+σL(Xi) = σL(Si + Qi) ≥ σL(Si) − ∥ Qi∥2.Combining this with Lemma IV.6 yields the stated upper bound. Next we prove Lemma IV.8. 
+
+Proof. Let H1 : CR×N → CR×M K denote the linear map that sends Q to its mode-1 unfolding Q1. For any A, B ∈ CR×N ,the reverse triangle inequality and the inequality ∥· ∥ 2 ≤ ∥· ∥ F
+
+give 
+
+|∥ H1(A)∥2 − ∥ H1(B)∥2| ≤ ∥ H1(A−B)∥2 ≤ ∥ H1(A−B)∥F .
+
+Let E = A − B. Then 
+
+∥H1(E)∥2 
+
+> F
+
+≤ min( M, K )∥E∥2 
+
+> F
+
+,
+
+owing to the fact that H1(E) contains repeated copies of the entries of E, with no entry of E appearing more than 
+
+min( M, K ) times in H1(E). Thus, 
+
+|∥ H1(A)∥2 − ∥ H1(B)∥2| ≤ pmin( M, K )∥A − B∥F .
+
+Hence the mapping Q 7 → ∥H1(Q)∥2 is pmin( M, K )-Lipschitz. Now write 
+
+Q = σW, W = GR + iGI
+
+√2 ,
+
+where GR, GI ∈ RR×N have i.i.d. standard real Gaussian entries. Define 
+
+F (GR, GI ) := H1
+
+
+
+σ GR + iGI
+
+√2
+
+
+
+> 2
+
+.
+
+From the Lipschitz bound above, for two real inputs (GR, GI )
+
+and (G′
+
+> R
+
+, G′ 
+
+> I
+
+), we have 
+
+|F (GR, GI ) − F (G′
+
+> R
+
+, G′ 
+
+> I
+
+)|≤ σpmin( M, K ) (GR − G′
+
+> R
+
+) + i(GI − G′ 
+
+> I
+
+)
+
+√2 F
+
+= σ
+
+r min( M, K )2
+
+ ∥GR − G′
+
+> R
+
+∥2 
+
+> F
+
++ ∥GI − G′ 
+
+> I
+
+∥2
+
+> F
+
+1/2
+
+= σ
+
+r min( M, K )2 ∥[GR GI ] − [G′ 
+
+> R
+
+G′ 
+
+> I
+
+]∥F .
+
+Therefore, as a function of the underlying real Gaussian vector 
+
+(GR, GI ), F is Lipschitz with constant 
+
+J = σ
+
+r min( M, K )2 . (29) By the standard Gaussian concentration inequality for Lips-chitz functions [33, Theorem 5.6], 
+
+P (F − EF > t ) ≤ exp 
+
+
+
+− t2
+
+2J2
+
+
+
+.
+
+Substituting F = ∥Q1∥2 and using (29) gives 
+
+P (∥Q1∥2 − E∥Q1∥2 > t ) ≤ exp 
+
+
+
+− t2
+
+σ2 min( M, K )
+
+
+
+.
+
+(30) It remains to bound E∥Q1∥2. To do this, we exploit an algebraic identity for the mode-1 unfolding Q1 ∈ CR×M K . By tracing the column-repetition profile of the spatial-smoothing tensor construction, the columns of Q1 consist of shifted, overlapping blocks of Q. This implies that the row spaces are modulated by a deterministic column-selection operator 
+
+H ∈ RN ×M K such that Q1 = QH .The Gram matrix satisfies: 
+
+Q1QH 
+
+> 1
+
+= QHH H QH = QDQ H ,15 
+
+where D ∈ RN ×N is a diagonal matrix whose entries dn
+
+count the number of times the n-th column of Q is repeated across the tensor slices: 
+
+dn = min( n, M, K, N − n + 1) , n = 1 , . . . , N. 
+
+The maximum entry of D is bounded by the window dynam-ics: dmax = max n dn = min( M, K ). This yields: 
+
+∥Q1∥2 = ∥QD 1/2∥2 ≤ σpmin( M, K )∥W∥2
+
+= σpmin( M, K )
+
+ 1
+
+√2 ∥GR∥2 + 1
+
+√2 ∥GI ∥2
+
+
+
+.
+
+Invoking the sharp concentration of the spectral norm for standard real Gaussian matrices [34, Theorem 7.3.1], we have 
+
+E∥GR∥2 ≤ √R +√N and E∥GI ∥2 ≤ √R +√N . Therefore, 
+
+E∥Q1∥2 ≤ σp2 min( M, K )
+
+√R + √N
+
+
+
+. (31) Combining (31) with (30), we arrive at the tail bound in Lemma IV.8. We also prove Lemma IV.9. 
+
+Proof. Let H2 : CR×N → CM ×RK denote the linear map that sends Q to its mode-2 unfolding Q2. Repeating the arguments from the proof of Lemma IV.8 and using the fact that H2(E) contains the same entries as H1(E) in a different arrangement, we conclude that the mapping Q 7 → ∥ H2(Q)∥2
+
+is pmin( M, K )-Lipschitz. Using Gaussian concentration for Lipschitz functions [33, Theorem 5.6], we then have 
+
+P (∥Q2∥2 − E∥Q2∥2 > t ) ≤ exp 
+
+
+
+− t2
+
+σ2 min( M, K )
+
+
+
+.
+
+It remains to bound E∥Q2∥2. For k = 1 , . . . , K , define 
+
+Q(k) := Q(: , k : k + M − 1) T ∈ CM ×R.
+
+For any z ∈ CRK , write 
+
+z =
+
+
+
+z(1) 
+
+...
+
+z(K)
+
+ , z(k) ∈ CR.
+
+Then 
+
+Q2z =
+
+> K
+
+X
+
+> k=1
+
+Q(k)z(k).
+
+Therefore, 
+
+∥Q2z∥2 ≤
+
+> K
+
+X
+
+> k=1
+
+∥Q(k)∥2∥z(k)∥2.
+
+Since Q(k) is the transpose of a submatrix of Q, ∥Q(k)∥2 ≤∥Q∥2. Thus 
+
+∥Q2z∥2 ≤ ∥ Q∥2
+
+> K
+
+X
+
+> k=1
+
+∥z(k)∥2 ≤ √K∥Q∥2∥z∥2.
+
+Taking the supremum over ∥z∥2 = 1, we get ∥Q2∥2 ≤√K∥Q∥2. Since Q = σW, E∥Q2∥2 ≤ σ√K E∥W∥2. Using the standard expectation bound [34, Theorem 7.3.1] as in the proof of Lemma IV.8, we have E∥W∥2 ≤ √2
+
+√R + √N
+
+
+
+.This gives 
+
+E∥Q2∥2 ≤ σ√2K(√R + √N ).
+
+Combining this expectation bound with the concentration inequality proves the result. Next we prove Lemma IV.10. 
+
+Proof. From the geometric relationship between principal angles and canonical subspace distance metrics, the baseline distance is given by 
+
+d( bUs,mat , US3 ) = 
+
+q
+
+1 − σ2
+
+> L
+
+( bUH
+
+> s,mat
+
+US3 ).
+
+Squaring both sides yields the identity 
+
+a = σ2
+
+> L
+
+(UHS3
+
+bUs,mat ) = 1 − d2( bUs,mat , US3 ). (32) By applying Wedin’s sin θ theorem [31, Ch. V, Sec. 4.1, Theorem 4.4], [32, Sec. 2.3] to the left singular subspaces of 
+
+X3 under the deterministic additive noise perturbation Q3, the subspace distance is bounded by 
+
+d( bUs,mat , US3 ) ≤ ∥Q3∥2
+
+γ3 − ∥ Q3∥2
+
+.
+
+Substituting this upper bound into (32) completes the proof. Next we prove Lemma IV.11. 
+
+Proof. Let H3 : CR×N → CRM ×K denote the linear map that sends the base noise matrix Q to its mode-3 unfolding Q3.Repeating the arguments from the proof of Lemma IV.8 and using the fact that H3(E) contains the same entries as H1(E)
+
+in a different arrangement, we conclude that the mapping 
+
+Q 7 → ∥ H3(Q)∥2 is pmin( M, K )-Lipschitz. Using Gaussian concentration for Lipschitz functions [33, Theorem 5.6], we then have 
+
+P (∥Q3∥2 − E∥Q3∥2 > t ) ≤ exp 
+
+
+
+− t2
+
+σ2 min( M, K )
+
+
+
+.
+
+It remains to bound E∥Q3∥2. For any z ∈ CK , define vectors gm(z) ∈ CN , m = 1 , . . . , M , by 
+
+[gm(z)] m+k−1 = zk, k = 1 , . . . , K, 
+
+and zero elsewhere. Each gm(z) is a shifted copy of z, so 
+
+∥gm(z)∥2 = ∥z∥2.
+
+By the definition of Q3, the product Q3z can be written, up to a fixed permutation of entries, as 
+
+Q3z =
+
+
+
+Qg 1(z)
+
+Qg 2(z)
+
+...
+
+Qg M (z)
+
+ .16 
+
+Therefore, 
+
+∥Q3z∥22 =
+
+> M
+
+X
+
+> m=1
+
+∥Qg m(z)∥22
+
+≤ ∥ Q∥22
+
+> M
+
+X
+
+> m=1
+
+∥gm(z)∥22
+
+= M ∥Q∥22∥z∥22.
+
+Taking the supremum over all ∥z∥2 = 1 , we get 
+
+∥Q3∥2 ≤ √M ∥Q∥2.
+
+Hence, 
+
+E∥Q3∥2 ≤ √M E∥Q∥2.
+
+Using the standard expectation bound [34, Theorem 7.3.1] as in the proof of Lemma IV.9, we have E∥Q∥2 ≤
+
+σ√2
+
+√R + √N
+
+
+
+. This gives 
+
+E∥Q3∥2 ≤ σ√2M (√R + √N ).
+
+Combining this expectation bound with the concentration inequality proves the result. Next we prove Lemma IV.12. 
+
+Proof. The L-th SVD relation of X3 is X3 bvL = bσL buL. Since 
+
+range( S3) ⊆ range( US3 ) we have U⊥HS3 S3 = 0, so 
+
+U⊥HS3 Q3 bvL = U⊥HS3 X3 bvL = bσL U⊥HS3 buL.
+
+As buL is a column of bUs,mat , ∥U⊥HS3 buL∥2 ≤∥U⊥HS3
+
+bUs,mat ∥2 = d( bUs,mat , US3 ); hence 
+
+∥U⊥HS3 Q3 bvL∥2 ≤ bσL d( bUs,mat , US3 ). Weyl’s inequality gives bσL = σL(X3) ≤ σL(S3) + ∥Q3∥2 = γ3 + ∥Q3∥2.Combining yields 
+
+d( bUs,mat , US3 ) ≥ U⊥HS3 Q3 bvL 2
+
+γ3 + ∥Q3∥2
+
+.
+
+Substituting this lower bound into (32) completes the proof. Before proving Lemma IV.13, we establish the following structural result. Write ΣvL := σ−2 E(Q3vL)( Q3vL)H  ∈ CRM ×RM 
+
+for the normalized second-moment matrix of the weakest-direction noise leakage. 
+
+Lemma A.2 (Structure of the second-moment matrix) . The second-moment matrix has the Kronecker form ΣvL = G ⊗
+
+IR, where G = SH S ∈ CM ×M is the Gram matrix of the M unit-norm shifts of vL, collected as the convolution matrix S = [ g1 · · · gM ] ∈ CN ×M of the length-K filter vL;consequently ∥ΣvL ∥2 ≤ min( M, K ).
+
+Proof. With Q3vL = [ Qg 1; . . . ; Qg M ] (Lemma IV.11 iden-tity) and E[QBQ H ] = σ2 tr( B)IR for deterministic B, the 
+
+(m, m ′) block of ΣvL is σ−2E[Qg mgHm′ QH ] = ( gHm′ gm)IR,i.e. 
+
+ΣvL = G ⊗ IR (33) with G = SH S. Hence tr( ΣvL ) = R tr( G) = RM (each 
+
+∥gm∥2 = ∥vL∥2 = 1 ) and ∥ΣvL ∥2 = ∥G∥2. Two bounds follow: ∥G∥2 ≤ tr( G) = M and, since S is a finite section of the Toeplitz operator with symbol 
+
+X
+
+> k
+
+(vL)ke−iω(k−1) , (34) 
+
+∥G∥2 = ∥S∥22 ≤ max ω ΦvL (ω) ≤ K, where ΦvL (ω) := 
+
+P
+
+> k
+
+(vL)ke−iω(k−1) 2. Together ∥ΣvL ∥2 ≤ min( M, K ).The proof of the lemma above gives the exact Kronecker structure for any unit vector z ∈ CK :
+
+E(Q3z)( Q3z)H  = σ2 (Gz ⊗ IR),
+
+tr Gz = M ∥z∥22,
+
+∥Gz∥2 ≤ min( M, K ) ∥z∥22,
+
+(35) We are now in position to prove Lemma IV.13. 
+
+Proof. We proceed in seven steps. 
+
+Step 1 (Rayleigh quotient). Define PUS3 := US3 UHS3 . Since 
+
+U⊥ 
+
+> S3
+
+U⊥HS3 = IRM − PUS3 and ∥bvL∥2 = 1 ,
+
+U⊥HS3 Q3 bvL 
+
+> 22
+
+= bvHL QH 
+
+> 3
+
+(IRM − PUS3 )Q3 bvL = bvHL B bvL
+
+≥ λmin (B) = σK
+
+ (IRM − PUS3 )Q3
+
+2,
+
+(36) where B := QH 
+
+> 3
+
+(IRM − PUS3 )Q3 ∈ CK×K , B ⪰ 0. The inequality holds for every unit vector, in particular for the data-dependent bvL.
+
+Step 2 (reduction to a K × K Gram matrix). Let 
+
+M0 := σ−1(IRM − PUS3 )Q3 ∈ CRM ×K , so σK (( IRM −
+
+PUS3 )Q3)2 = σ2λmin (MH 
+
+> 0
+
+M0). Writing ∆ := MH 
+
+> 0
+
+M0 −
+
+E[MH 
+
+> 0
+
+M0] and λ0 := λmin 
+
+ E[MH 
+
+> 0
+
+M0], Weyl’s inequality gives 
+
+λmin (MH 
+
+> 0
+
+M0) ≥ λ0 − ∥ ∆∥2. (37) 
+
+Step 3 (deterministic floor for λ0). Let m := min( M, K ).Since IRM − PUS3 is an orthogonal projector, MH 
+
+> 0
+
+M0 =
+
+σ−2QH 
+
+> 3
+
+Q3 − σ−2QH 
+
+> 3
+
+PUS3 Q3, hence 
+
+E[MH 
+
+> 0
+
+M0] = RM IK − D,
+
+where D := σ−2 EQH 
+
+> 3
+
+PUS3 Q3
+
+ ⪰ 0. Here E[QH 
+
+> 3
+
+Q3] = 
+
+RM σ 2 IK because distinct time indices of W are indepen-dent: (E[QH 
+
+> 3
+
+Q3]) jk = σ2 P 
+
+> r,m
+
+E[W ∗ 
+
+> r,j +m−1
+
+Wr,k +m−1] = 
+
+RM σ 2δjk . For any unit z ∈ CK , using (35), and cyclicity of the trace, 
+
+zH Dz = σ−2 E∥PUS3 Q3z∥22 = tr  PUS3 (Gz ⊗ IR)
+
+≤ rank( PUS3 ) ∥Gz ⊗ IR∥2 = L∥Gz∥2 ≤ Lm, 
+
+so λmax (D) ≤ Lm and λ0 = RM − λmax (D) ≥ RM − Lm .
+
+Step 4 (tail bound with explicit constant). Fix a unit z ∈ CK
+
+and set Dz := ∥M0z∥22 − E∥M0z∥22. The vector y := M0z
+
+is a zero-mean Gaussian random vector with covariance 
+
+Cov y := E[yy H ] = ( IRM −PUS3 )( Gz ⊗IR)( IRM −PUS3 ),17 
+
+by (35). Diagonalize Cov y = VΛV H with eigenvalues λ1 ≥· · · ≥ 0; then y=VΛ 1/2w with w standard complex Gaussian, so 
+
+∥y∥22= X
+
+> i
+
+λi |wi|2 = X
+
+> i
+
+λi
+
+2 (ξ2 
+
+> i
+
++η2 
+
+> i
+
+), ξi, η i i.i.d. N (0 , 1) .
+
+Thus ∥M0z∥22 is a real Gaussian quadratic form gT Azg,
+
+g ∼ N (0 , I), whose matrix Az has nonzero spectrum 
+
+{λi/2, each with multiplicity 2}; consequently tr Az =tr Cov y, ∥Az∥2 
+
+> F
+
+= 12 tr( Cov 2
+
+> y
+
+), and ∥Az∥2 = 12 ∥Cov y∥2.The following dimensional bounds follow from (35) and the fact that projections contract PSD traces and spectral norms: 
+
+tr Cov y ≤ R tr Gz = RM , ∥Cov y∥2 ≤ ∥ Gz∥2 ≤ m, and 
+
+tr( Cov 2
+
+> y
+
+) ≤ ∥ Cov y∥2 tr Cov y ≤ RM m ; hence ∥Az∥2 
+
+> F
+
+≤
+
+RM m/ 2 and ∥Az∥2 ≤ m/ 2. The Gaussian Hanson–Wright inequality with explicit constant 18 [35, Lemma. 4], applied to 
+
+Az and to −Az, then yields the following guarantee for all 
+
+r > 0:
+
+P(|Dz| > r ) ≤ 2 exp 
+
+h
+
+− 18 min 
+
+ r2 
+
+> RM m/ 2
+
+, rm/ 2
+
+i 
+
+= 2 exp 
+
+h
+
+− 14 min 
+
+ r2 
+
+> RM m
+
+, rm
+
+i 
+
+. (38) 
+
+Step 5 ( ε-net for the operator norm). ∆ is Hermitian and 
+
+zH ∆z = Dz, so ∥∆∥2 = sup ∥z∥2=1 |Dz|. Let N be an ε-net of the unit sphere of CK (real dimension 2K), so |N | ≤ 
+
+(1+2 /ε )2K [34, Corollary. 4.2.11]. For any unit z pick bz ∈ N 
+
+with ∥z − bz∥2 ≤ ε; then |Dz − Dbz| = |zH ∆(z − bz) + ( z −
+
+bz)H ∆bz| ≤ 2ε∥∆∥2, whence ∥∆∥2 ≤ (1 − 2ε)−1 max N |Dbz|.A union bound over N with (38) at level (1 − 2ε)r gives, for all r > 0,
+
+P ∥∆∥2 > r 
+
+≤
+
+
+
+1 + 2
+
+> ε
+
+2K
+
+· 2 exp 
+
+h
+
+− 14 min 
+
+  (1 −2ε)r
+
+2 
+
+> RM m
+
+, (1 −2ε)rm
+
+i 
+
+.
+
+(39) 
+
+Step 6 (specialization). Set r = μRM . The quadratic branch of the minimum in (39) is the smaller one iff (1 − 2ε)r ≤ RM ,i.e. μ(1 − 2ε) ≤ 1, which holds automatically for μ < 1.Hence (39) collapses to the closed form 
+
+P ∥∆∥2 > μRM  ≤ pw(ε, μ ).
+
+Step 7 (assembly). On the event {∥ ∆∥2 ≤ μRM }, Steps 2– 3 give λmin (MH 
+
+> 0
+
+M0) ≥ RM − Lm − μRM = RM (1 −
+
+μ) − Lm . If the right-hand side is negative, the claim (20) is trivially true; otherwise take square roots and multiply by σ.Combining with (36) completes the proof of Lemma IV.13. Next we prove Lemma IV.14. 
+
+Proof. The thin SVD relation X3 bVs,mat = bUs,mat bΣs,mat and 
+
+U⊥HS3 S3 = 0 give U⊥HS3 Q3 bVs,mat = U⊥HS3
+
+bUs,mat bΣs,mat , so 
+
+U⊥HS3
+
+bUs,mat = U⊥HS3 Q3 bVs,mat bΣ−1s,mat . Hence 
+
+(I − US3 UHS3 ) bUs,mat = U⊥ 
+
+> S3
+
+U⊥HS3
+
+bUs,mat 
+
+= ( I − US3 UHS3 )Q3 bVs,mat bΣ−1s,mat .
+
+(40) Because range( US3 UHS3 ) ⊆ range( PK) we have 
+
+PKUS3 UHS3 = US3 UHS3 , so (PK −US3 UHS3 )( I−US3 UHS3 ) = 
+
+PK − US3 UHS3 ; left-multiplying (40) by (PK − US3 UHS3 )
+
+then yields 
+
+E∥ = ( PK − US3 UHS3 ) Q3 bVs,mat bΣ−1s,mat ,
+
+Using bΣ−1s,mat 2
+
+= 1 /σ L(X3) and submultiplicativity, we obtain 
+
+E∥ 2 ≤
+
+(PK − US3 UHS3 ) Q3 bVs,mat 2
+
+σL(X3)
+
+Using bVs,mat 2
+
+= 1 and Weyl with σL(X3) ≥ γ3 − ∥ Q3∥2,we obtain (21). Next we prove Lemma IV.15. 
+
+Proof. Since E[Q3QH 
+
+> 3
+
+] = σ2K IRM and 
+
+tr( PK − US3 UHS3 ) = L2 − L, we have 
+
+E (PK − US3 UHS3 )Q3 
+
+> 2
+> F
+
+= σ2K(L2 − L), hence 
+
+E (PK − US3 UHS3 )Q3 2 ≤ σp(L2 − L)K. The lemma follows from the fact that the mapping 
+
+Q 7 → ∥(PK − US3 UHS3 )H3(Q)∥2 is pmin( M, K )-Lipschitz. 
+
+D. Supporting proofs for Section IV-F 
+
+We first characterize the topology of glower oracle to justify the substitution of our directional inequalities. 
+
+Lemma A.3 (Monotonicity) . Let g(a, E ) := √1 − a −pE/ (a + E) on a ∈ (0 , 1) , E ≥ 0. Let 
+
+a∗ := 4√7 − 227 ≈ 0.318 .
+
+If a ≥ a∗, then g(a, E ) is non-increasing in both variables a
+
+and E. Consequently, if a∗ ≤ a ≤ a < 1 and 0 ≤ E ≤ E,then g(a, E ) ≥ g(a, E ).
+
+Proof. Note that 
+
+∂g ∂E = − a
+
+2√E (a + E)3/2 < 0
+
+since a, E > 0. Therefore, g is non-increasing in E.In addition, 
+
+∂g ∂a = − 12√1 − a +
+
+√E
+
+2( a + E)3/2 .
+
+Hence, ∂g ∂a ≤ 0 if and only if E(1 − a) ≤ (a + E)3.For fixed a, define 
+
+ha(E) := E(1 − a)(a + E)3 .
+
+The function ha(E) is maximized over E ≥ 0 at E = a 
+
+> 2
+
+. The maximum value of ha(E) at that point is 
+
+ha
+
+ a
+
+2
+
+
+
+= 4(1 − a)27 a2.
+
+To ensure ha(a/ 2) ≤ 1 for any E ≥ 0, we require a ≥ a∗.Therefore, we conclude that g is non-increasing in both variables on [a∗, 1) × [0 , ∞).18 
+
+We are now ready to prove Theorem IV.16. 
+
+Proof. Statement 1 (oracle gain): Lemma IV.11 gives ∥Q3∥2 ≤ ω3 with failure probability at most 
+
+e−t23/(σ2 min( M,K )) . On this event, Lemma IV.10 implies 
+
+a ≥ a. On this same event, Lemma IV.12 and Lemma IV.13 give a ≤ a with failure probability at most pw(ε, μ ). On this same event, Lemma IV.14 and Lemma IV.15 give ∥E∥∥22 ≤ E
+
+with failure probability at most e−t24/(σ2 min( M,K )) . Taking a union bound gives a failure probability bounded by the sum of the failure probabilities above. Lemma A.3 then gives g(a, ∥E∥∥22) ≥ g(a, E ), i.e., glower oracle ≥ glower oracle . The conclusion (23) then follows from Theorem IV.3. 
+
+Statement 2 (empirical loss): Lemma IV.8 gives ∥Q1∥2 ≤
+
+ω1 with failure probability at most e−t21/(σ2 min( M,K )) ,Lemma IV.9 gives ∥Q2∥2 ≤ ω2 with failure probability at most e−t22/(σ2 min( M,K )) , and Lemma IV.11 gives ∥Q3∥2 ≤ ω3
+
+with failure probability at most e−t23/(σ2 min( M,K )) . Taking a union bound gives a failure probability bounded by the sum of the failure probabilities above. Combining Lemma IV.5 and Lemma IV.10 then gives ρ ≥ ρ = √a, and Corollary IV.7 gives η ≤ η. Since η ≤ 12 ρ, we also have η < ρ . It follows that ηρ−η ≤ ηρ−η , i.e., ℓupper emp ≤ ℓupper emp . The conclusion (24) then follows from Theorem IV.4. 
+
+Statement 3 (overall tensor gain): Taking a union bound gives a failure probability bounded by the sum of the fail-ure probabilities above; the failure probability of the event 
+
+∥Q3∥2 ≤ ω3 need be counted only once. The conclusion (25) follows directly from (12) together with (23) and (24).

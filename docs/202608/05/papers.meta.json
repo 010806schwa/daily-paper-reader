@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-05",
+  "date": "2026-08-05",
+  "generated_at": "2026-08-05T21:28:05",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/05/2607.29003v1-tensor-based-joint-pitch-and-doa-estimation",
+      "section": "quick",
+      "title_en": "Tensor-Based Joint Pitch and DOA Estimation",
+      "authors": "Yifan Wu, Michael B. Wakin",
+      "date": "2026-07-31",
+      "pdf": "https://arxiv.org/pdf/2607.29003v1",
+      "score": "6.0",
+      "evidence": "谐波源基频与到达方向联合估计方法,可迁移至水下目标识别",
+      "tldr": "针对多谐波源的基音与到达角联合估计，现有矩阵方法易破坏多维结构。提出张量子空间方法，保留Hankel结构并利用Kronecker积约束，将矩阵子空间估计投影至经验Kronecker信号空间。理论证明oracle投影不恶化，分解张量增益并给出正增益充分条件，揭示甜点区间。仿真表明子空间精度及下游估计均优于矩阵与张量训练基线。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "We propose a tensor-based subspace method for the joint estimation of pitch and direction of arrival (DOA) of multiple harmonic sources. Unlike conventional matrix-based approaches that unfold the spatio-temporal data into a single matrix, the proposed method preserves the multidimensional Hankel tensor structure and exploits a Kronecker product constraint satisfied by the true signal subspace. The matrix-based subspace estimate is refined by projecting it onto an empirically estimated Kronecker-structured signal cage obtained from mode-unfolded tensor subspaces. Beyond the estimator itself, we provide a non-asymptotic theory explaining when this tensor refinement improves the matrix baseline. We show that the oracle refinement using the true Kronecker projector is non-worsening, decompose the overall tensor gain into oracle gain and empirical loss, and derive deterministic and high-probability sufficient conditions for positive overall tensor gain under complex Gaussian noise. The analysis reveals a sweet-spot behavior: the largest certified gain occurs when the matrix estimate is neither nearly perfect nor too inaccurate. Simulations over closely spaced, harmonically related, and coherent-source scenarios show that the proposed method improves subspace accuracy and downstream pitch/DOA estimation, and also outperforms representative matrix and tensor-train-based baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
