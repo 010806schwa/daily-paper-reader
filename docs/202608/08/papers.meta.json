@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-08",
+  "date": "2026-08-08",
+  "generated_at": "2026-08-08T19:51:07",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/08/2608.02397v1-can-foundation-models-hear-what-made-that-sound-a-tiered-benchmark-of-audio-language-models-and-traditional-classifiers-for-closed-set-sound-source-identification",
+      "section": "quick",
+      "title_en": "Can Foundation Models Hear What Made That Sound? A Tiered Benchmark of Audio-Language Models and Traditional Classifiers for Closed-Set Sound Source Identification",
+      "authors": "Sajjad Abdoli, Ghassan Al-Sumaidaee, Ahmad ElShiekh, Ahmed Rashad",
+      "date": "2026-08-03",
+      "pdf": "https://arxiv.org/pdf/2608.02397v1",
+      "score": "7.0",
+      "evidence": "适用于舰船噪声分类的声源识别方法基准测试",
+      "tldr": "封闭集声源识别中，音频语言模型与固定词表分类器在任务设置和评分上差异显著，缺乏公平对比。作者构建四层分级基准，覆盖11种方法、2242个音频片段，按粒度分别评估。结果显示Gemini-3.1-Pro-Preview最佳，类别级F1达85.6%，但细粒度仅56.7%；Kimi-Audio以较小规模表现接近，SSLAM/CLAP类别级可匹敌但细粒度不足。分析8968条思维链发现，回答长度不预测准确性，错误答案92-100%表现自信；研究提供全混淆矩阵与错误模式，为方法选择给出依据。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "We benchmark eleven audio classification methods: five task-aware closed-set LLMs (four Gemini models plus open-weight Kimi-Audio-7B-Instruct), four fixed-vocabulary taggers (YAMNet, PANNs, Whisper-AT, and SSLAM), a zero-shot audio-text model (CLAP), and an audio-grounded LLM (BAT). We evaluate them on a closed-set sound-source identification task over 2,242 clips spanning 23 fine-grained classes and 11 categories. Since these methods differ fundamentally in how they receive the task and how outputs are scored, we group them into four evaluation tiers rather than one leaderboard, reporting macro Precision, Recall, F1, and false-negative rate per tier. The best model, Gemini-3.1-Pro-Preview, reaches 85.6 percent category-level F1 and 56.7 percent fine-grained F1. Kimi-Audio is competitive for its size, reaching 67.5 percent category-level F1 and 32.9 percent fine-grained F1, but fails to answer 1.6 percent of samples. SSLAM and CLAP match or exceed the best closed-set model at the category level without seeing the candidate list, but fall behind at the fine-grained level. Analyzing the Gemini models' chain-of-thought across 8,968 responses, we find that response length does not predict accuracy, an apparent \"holistic judgment beats detailed analysis\" effect is better explained as a difficulty confound, and wrong answers are stated confidently 92 to 100 percent of the time. We report full per-class confusion matrices and metrics for all eleven methods, identify the structural error modes behind most of the accuracy loss between granularities, and give practical guidance for choosing among these method families.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

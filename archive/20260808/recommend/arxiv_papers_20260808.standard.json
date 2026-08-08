@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-08T19:48:44.161762+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.02397v1",
+      "source": "arxiv",
+      "title": "Can Foundation Models Hear What Made That Sound? A Tiered Benchmark of Audio-Language Models and Traditional Classifiers for Closed-Set Sound Source Identification",
+      "abstract": "We benchmark eleven audio classification methods: five task-aware closed-set LLMs (four Gemini models plus open-weight Kimi-Audio-7B-Instruct), four fixed-vocabulary taggers (YAMNet, PANNs, Whisper-AT, and SSLAM), a zero-shot audio-text model (CLAP), and an audio-grounded LLM (BAT). We evaluate them on a closed-set sound-source identification task over 2,242 clips spanning 23 fine-grained classes and 11 categories. Since these methods differ fundamentally in how they receive the task and how outputs are scored, we group them into four evaluation tiers rather than one leaderboard, reporting macro Precision, Recall, F1, and false-negative rate per tier. The best model, Gemini-3.1-Pro-Preview, reaches 85.6 percent category-level F1 and 56.7 percent fine-grained F1. Kimi-Audio is competitive for its size, reaching 67.5 percent category-level F1 and 32.9 percent fine-grained F1, but fails to answer 1.6 percent of samples. SSLAM and CLAP match or exceed the best closed-set model at the category level without seeing the candidate list, but fall behind at the fine-grained level. Analyzing the Gemini models' chain-of-thought across 8,968 responses, we find that response length does not predict accuracy, an apparent \"holistic judgment beats detailed analysis\" effect is better explained as a difficulty confound, and wrong answers are stated confidently 92 to 100 percent of the time. We report full per-class confusion matrices and metrics for all eleven methods, identify the structural error modes behind most of the accuracy loss between granularities, and give practical guidance for choosing among these method families.",
+      "authors": [
+        "Sajjad Abdoli",
+        "Ghassan Al-Sumaidaee",
+        "Ahmad ElShiekh",
+        "Ahmed Rashad"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI"
+      ],
+      "published": "2026-08-03T15:39:57+00:00",
+      "link": "https://arxiv.org/pdf/2608.02397v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "benchmark of sound source identification methods applicable to vessel noise classification",
+      "llm_evidence_cn": "适用于舰船噪声分类的声源识别方法基准测试",
+      "llm_evidence": "适用于舰船噪声分类的声源识别方法基准测试",
+      "canonical_evidence": "适用于舰船噪声分类的声源识别方法基准测试",
+      "llm_tldr_en": "Presents a tiered benchmark of eleven audio classification methods, including LLMs and traditional classifiers, for closed-set sound source identification over 23 classes and 2242 clips, reporting macro precision/recall/F1 and false-negative rate. The evaluation framework supports fair comparison and can inform vessel noise recognition method selection.",
+      "llm_tldr_cn": "针对音频声源识别任务，文中对十一种音频分类方法进行了分层基准评测，包括闭集LLM、固定词表标签器、零样本音频文本模型和音频基础模型。这些方法在任务接收与评分方式上本质不同，因此将评估分为四个层级，并在23类2242条录音上报告宏精度、召回率、F1与假阴性率。该基准为声源识别模型的公平比较提供了框架，其方法论可直接迁移到舰船噪声识别等方法评估中，具有重要参考价值。",
+      "llm_tldr": "针对音频声源识别任务，文中对十一种音频分类方法进行了分层基准评测，包括闭集LLM、固定词表标签器、零样本音频文本模型和音频基础模型。这些方法在任务接收与评分方式上本质不同，因此将评估分为四个层级，并在23类2242条录音上报告宏精度、召回率、F1与假阴性率。该基准为声源识别模型的公平比较提供了框架，其方法论可直接迁移到舰船噪声识别等方法评估中，具有重要参考价值。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
