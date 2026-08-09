@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-09",
+  "date": "2026-08-09",
+  "generated_at": "2026-08-09T19:42:49",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/09/2608.00796v1-an-uncertainty-driven-hybrid-deep-learning-approach-for-broad-coverage-rf-modulation-recognition",
+      "section": "quick",
+      "title_en": "An Uncertainty-Driven Hybrid Deep Learning Approach for Broad-Coverage RF Modulation Recognition",
+      "authors": "Nurettin Safak, Durdu Can Yerdeyatar, Muhammet Sefa Demirel, Alperen Marasli, Taha Eren Atmaca, Ozgun Ersoy",
+      "date": "2026-08-01",
+      "pdf": "https://arxiv.org/pdf/2608.00796v1",
+      "score": "6.0",
+      "evidence": "利用STFT时频图和CNN进行信号识别，可迁移至高频船舶噪声识别",
+      "tldr": "射频调制识别在低信噪比和多种调制方式下性能受限。为此提出一种不确定性驱动的混合深度学习方法，用快速傅里叶变换获取频谱，用短时傅里叶变换得到时频图，由二维卷积神经网络快速初判，用蒙特卡洛丢弃法估计不确定性，高不确定时再激活双向长短时记忆网络复核。仿真显示主路径准确率约为百分之八十三点三，单样本推理时间零点一三八毫秒，优于传统方法。不确定性估计能发现低置信度决策，为实时广覆盖识别提供了可扩展的低延迟方案。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Automatic RF modulation recognition is of critical importance in spectrum monitoring, electronic warfare, and cognitive radio applications, where low signal-to-noise ratio (SNR) conditions and the growing diversity of modulation schemes limit the performance of existing methods. This paper proposes an uncertainty-driven hybrid deep learning architecture for recognizing RF signals over a broad modulation space. The proposed approach carries out a multi-stage classification process by combining spectral information obtained through low-cost FFT-based preprocessing with time-frequency features extracted from short-time Fourier transform (STFT) spectrograms. The architecture comprises a 2D convolutional neural network (2D CNN)-based path for fast, low-latency primary classification, MC Dropout-supported Bayesian uncertainty estimation for assessing classification reliability, and a BiLSTM-based secondary decision mechanism activated under high-uncertainty conditions. The proposed system is evaluated in a controlled simulation environment spanning different SNR levels and modulation classes. Experimental results show that the primary 2D CNN path achieves $83.3\\pm0.7\\%$ accuracy with an inference time of only 0.138 ms per sample, providing superior performance compared with traditional rule-based and classical machine-learning approaches. Furthermore, the obtained findings reveal the limitations of compact spectral feature representations and classifiers lacking temporal modeling, particularly in disambiguating FSK-based modulations. The uncertainty estimation module offers promising results for detecting low-confidence decisions, and the proposed approach demonstrates the potential of a low-latency and scalable solution for real-time RF modulation recognition.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,58 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-09T19:41:36.783688+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.00796v1",
+      "source": "arxiv",
+      "title": "An Uncertainty-Driven Hybrid Deep Learning Approach for Broad-Coverage RF Modulation Recognition",
+      "abstract": "Automatic RF modulation recognition is of critical importance in spectrum monitoring, electronic warfare, and cognitive radio applications, where low signal-to-noise ratio (SNR) conditions and the growing diversity of modulation schemes limit the performance of existing methods. This paper proposes an uncertainty-driven hybrid deep learning architecture for recognizing RF signals over a broad modulation space. The proposed approach carries out a multi-stage classification process by combining spectral information obtained through low-cost FFT-based preprocessing with time-frequency features extracted from short-time Fourier transform (STFT) spectrograms. The architecture comprises a 2D convolutional neural network (2D CNN)-based path for fast, low-latency primary classification, MC Dropout-supported Bayesian uncertainty estimation for assessing classification reliability, and a BiLSTM-based secondary decision mechanism activated under high-uncertainty conditions. The proposed system is evaluated in a controlled simulation environment spanning different SNR levels and modulation classes. Experimental results show that the primary 2D CNN path achieves $83.3\\pm0.7\\%$ accuracy with an inference time of only 0.138 ms per sample, providing superior performance compared with traditional rule-based and classical machine-learning approaches. Furthermore, the obtained findings reveal the limitations of compact spectral feature representations and classifiers lacking temporal modeling, particularly in disambiguating FSK-based modulations. The uncertainty estimation module offers promising results for detecting low-confidence decisions, and the proposed approach demonstrates the potential of a low-latency and scalable solution for real-time RF modulation recognition.",
+      "authors": [
+        "Nurettin Safak",
+        "Durdu Can Yerdeyatar",
+        "Muhammet Sefa Demirel",
+        "Alperen Marasli",
+        "Taha Eren Atmaca",
+        "Ozgun Ersoy"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP",
+        "cs.LG"
+      ],
+      "published": "2026-08-01T17:57:36+00:00",
+      "link": "https://arxiv.org/pdf/2608.00796v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Signal classification with STFT spectrograms and CNN, transferable to high-frequency ship noise recognition",
+      "llm_evidence_cn": "利用STFT时频图和CNN进行信号识别，可迁移至高频船舶噪声识别",
+      "llm_evidence": "利用STFT时频图和CNN进行信号识别，可迁移至高频船舶噪声识别",
+      "canonical_evidence": "利用STFT时频图和CNN进行信号识别，可迁移至高频船舶噪声识别",
+      "llm_tldr_en": "Proposes an uncertainty-driven hybrid deep network combining FFT spectral features and STFT spectrograms for robust RF modulation recognition under low SNR, a signal-classification pipeline transferable to high-frequency ship noise recognition.",
+      "llm_tldr_cn": "针对低信噪比和调制类型多样导致现有射频调制识别性能受限的问题，提出一种不确定性驱动的混合深度学习架构。该方法将基于FFT的频谱信息与STFT时频图结合，采用多级分类及二维CNN进行信号识别。在广覆盖调制空间上的实验表明该方法能提升低信噪比下的识别鲁棒性。其基于时频特征与深度学习的信号分类流程可迁移到水下声学目标识别，用于船舶高频噪声的分类。",
+      "llm_tldr": "针对低信噪比和调制类型多样导致现有射频调制识别性能受限的问题，提出一种不确定性驱动的混合深度学习架构。该方法将基于FFT的频谱信息与STFT时频图结合，采用多级分类及二维CNN进行信号识别。在广覆盖调制空间上的实验表明该方法能提升低信噪比下的识别鲁棒性。其基于时频特征与深度学习的信号分类流程可迁移到水下声学目标识别，用于船舶高频噪声的分类。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

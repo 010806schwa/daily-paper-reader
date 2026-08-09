@@ -1,0 +1,346 @@
+Title: An Uncertainty-Driven Hybrid Deep Learning Approach for Broad-Coverage RF Modulation Recognition
+
+URL Source: https://arxiv.org/pdf/2608.00796v1
+
+Published Time: Tue, 04 Aug 2026 00:50:07 GMT
+
+Number of Pages: 6
+
+Markdown Content:
+# An Uncertainty-Driven Hybrid Deep Learning Approach for Broad-Coverage RF Modulation Recognition 
+
+Nurettin Safak, Durdu Can Yerdeyatar, Muhammet Sefa Demirel, Alperen Marasli, Taha Eren Atmaca, Ozgun Ersoy 
+
+Department of Electrical and Electronics Engineering, Ankara Yildirim Beyazit University, Ankara, Turkey nsafaked@gmail.com, yrdeytr4601@gmail.com, sefademirel56@gmail.com, alperen.eem@gmail.com, tahaeren1883@gmail.com, ozgun.ersoy@aybu.edu.tr 
+
+Abstract —Automatic RF modulation recognition is of critical importance in spectrum monitoring, electronic warfare, and cog-nitive radio applications, where low signal-to-noise ratio (SNR) conditions and the growing diversity of modulation schemes limit the performance of existing methods. This paper proposes an uncertainty-driven hybrid deep learning architecture for recognizing RF signals over a broad modulation space. The proposed approach carries out a multi-stage classification process by combining spectral information obtained through low-cost FFT-based preprocessing with time-frequency features extracted from short-time Fourier transform (STFT) spectrograms. The architecture comprises a 2D convolutional neural network (2D CNN)-based path for fast, low-latency primary classification, MC Dropout-supported Bayesian uncertainty estimation for assessing classification reliability, and a BiLSTM-based secondary decision mechanism activated under high-uncertainty conditions. The pro-posed system is evaluated in a controlled simulation environment spanning different SNR levels and modulation classes. Experi-mental results show that the primary 2D CNN path achieves 83.3 ±0.7% accuracy with an inference time of only 0.138 ms per sample, providing superior performance compared with traditional rule-based and classical machine-learning approaches. Furthermore, the obtained findings reveal the limitations of compact spectral feature representations and classifiers lacking temporal modeling, particularly in disambiguating FSK-based modulations. The uncertainty estimation module offers promising results for detecting low-confidence decisions, and the proposed approach demonstrates the potential of a low-latency and scalable solution for real-time RF modulation recognition. 
+
+Index Terms —RF signal recognition, automatic modulation classification, hybrid deep learning, uncertainty estimation, Bayesian learning, MC Dropout, 2D CNN, BiLSTM. 
+
+I. I NTRODUCTION 
+
+The electromagnetic spectrum is a finite, increasingly con-gested resource shared by modern communication, spectrum management, and electronic intelligence systems; growing device counts and signal-environment complexity make auto-matic spectrum monitoring and real-time transmission recog-nition a critical requirement [1]. At the heart of this task lies automatic modulation classification (AMC): determining a received signal’s modulation type without prior information. Traditional AMC relies on expert-knowledge-based rule sets such as likelihood-ratio tests and statistical moment fea-tures [1], which fail noticeably under unknown carrier phase offset, expanding modulation pools, low-SNR conditions, and low-power-spectral-density spread-spectrum signals (DSSS, direct-sequence spread spectrum; FHSS, frequency-hopping spread spectrum). These limitations have markedly increased interest in data-driven deep-learning-based solutions over the past decade [2]–[4], [10], [12]. Neural networks trained end-to-end on raw IQ data or time-frequency representations eliminate the need for hand-crafted feature engineering and exhibit strong generalization [5]. In particular, hybrid CNN–RNN architectures jointly model spatial and temporal features [9], [11]. More recent work advances the field through robust global feature-extraction variants, state-space architectures, and broad surveys [21]– [24]. Nevertheless, existing studies remain deficient in three respects. First, most produce only a point estimate without an uncertainty measure, leading to overconfident misclas-sifications at low SNR and on out-of-distribution signals; uncertainty-based AMC has recently emerged [17], yet its inte-gration with real-time hybrid routing remains under-addressed. Second, classes such as 4-FSK, DSSS, and FHSS are often excluded from evaluation, so reported accuracies understate the operational difficulty. Third, single-architecture solutions cannot dynamically manage the speed–accuracy trade-off. To address these deficiencies, the proposed system com-bines, under a single decision flow, a fast FFT preprocessing layer, a real-time 2D CNN primary path, an MC Dropout-based Bayesian MLP uncertainty estimator, and a high-accuracy BiLSTM secondary path activated when uncertainty exceeds a predefined threshold – dynamically managing the accuracy-latency trade-off while quantifying decision reliabil-ity. The main contributions of this study are summarized as follows:  
+
+> •
+
+An uncertainty-driven, multi-stage hybrid pipeline com-bining FFT-based fast parameter extraction ( O(N log N ),negligible overhead) with real-time 2D CNN classifica-tion (0.138 ms),  
+
+> •
+
+A comparative analysis of rule-based, classical ML, and deep-learning approaches across modulation types and SNR levels,  
+
+> •
+
+Uncertainty-aware classification with MC Dropout and threshold-based dynamic routing to the BiLSTM sec-
+
+979-8-3195-4709-5/26/$31.00 ©2026 IEEE arXiv:2608.00796v1 [eess.SP] 1 Aug 2026 ondary path,  
+
+> •
+
+The 3% recall finding for 4-FSK, quantifying the lim-itation of FSK/4-FSK order disambiguation in compact spectral feature representations. Field validation on real SDR hardware is left to future work; results here are from controlled simulation. II. S YSTEM MODEL 
+
+A. Simulation Environment and Dataset 
+
+A controlled simulation framework (NumPy/SciPy for signal generation and STFT, Python 3.12; models in Py-Torch 2.12.0, trained on a single NVIDIA RTX 5070 laptop GPU) was used to ensure full control of SNR/channel condi-tions and reproducibility. The dataset comprises 14 modulation classes in the three categories of Table I: fs = 200 kHz, fsym = 10 kHz, signal length 4096 samples ( ≈20.5 ms); DSSS uses a 31-chip PN sequence, FHSS an 8-symbol hop; each sample has an independent random seed to prevent leakage. With 2040 samples/class over seven SNR levels ( −5 to +25 dB), an AWGN dataset of 199,920 samples is obtained, unit-power normalized and converted to 32 ×32 log-power spectrograms, with a 70%/10%/20% (train/val/test) split.   
+
+> TABLE I TAXONOMY OF 14 M ODULATION CLASSES
+
+Category Classes 
+
+Analog AM, FM, NFM, WFM Digital OOK, FSK, 4-FSK, BPSK, QPSK, 8PSK, 16QAM, 64QAM Spread Spectrum DSSS, FHSS 
+
+B. STFT Representation 
+
+IQ samples are transferred to the time-frequency plane via STFT ( Nfft = 64 , overlap h = 32 ) and resized to a 
+
+32 ×32 log-power spectrogram for 2D CNN input – a com-pact representation lowering memory/compute cost relative to higher-resolution spectrograms [8] and facilitating real-time operation [14] (ablations in Section IV-A). III. H YBRID MODEL 
+
+A. Hybrid Pipeline and Decision Flow 
+
+The proposed system has a four-stage decision flow shown in Fig. 1. In Stage 1 (Parameter Extraction), the carrier frequency fc, bandwidth B, and power P are computed from the complex IQ stream as defined in Eq. (1): 
+
+fc = arg max  
+
+> f
+
+S(f ), B = fupper − flower , S (f ) ≥ θS max ,
+
+(1) where θ = 0 .5 (−3 dB threshold); this stage is O(N log N )
+
+and negligible compared with the 2D CNN path. Stage 2 
+
+produces a fast decision ˆyCNN from the STFT spectrogram via the 2D CNN (0.138 ms). Stage 3 computes an uncer-tainty score U(x) with the MC Dropout-based Bayesian MLP (0.7 ms). Stage 4 compares this score with a threshold τ :
+
+Algorithm 1 Uncertainty-Driven Hybrid Classification 
+
+Require: x ∈ C4096 : IQ samples 
+
+Ensure: ˆy: class label; (fc, B, P ): RF parameters  
+
+> 1:
+
+S(f ) ← FFT( x) 
+
+> 2:
+
+fc ← arg max f S(f ); B ← fupper − flower ; P ←
+
+> 1
+> N
+
+P |S(f )|2 
+
+> 3:
+
+I ← STFT -logpower( x) 
+
+> 4:
+
+ˆyCNN ← CNN( I) 
+
+> 5:
+
+for t ← 1 to T = 30 do  
+
+> 6:
+
+p(t) ← Softmax(MLP dropout (I))  
+
+> 7:
+
+end for  
+
+> 8:
+
+U(x) ← max c std 
+
+h
+
+{p(t) 
+
+> c
+
+}Tt=1 
+
+i 
+
+> 9:
+
+if U(x) > τ then  
+
+> 10:
+
+ˆy ← BiLSTM( x) 
+
+> 11:
+
+if U(x) ≫ τ then  
+
+> 12:
+
+return OUT -OF -D ISTRIBUTION — R EJECTED 13: end if  
+
+> 14:
+
+else  
+
+> 15:
+
+ˆy ← ˆyCNN  
+
+> 16:
+
+end if  
+
+> 17:
+
+return ˆy, (fc, B, P )
+
+below it, the fast CNN decision is adopted directly; above it, the decision is delegated to the BiLSTM secondary path (15.2 ms), which fully processes the temporal structure, and far above it the signal is rejected as out-of-distribution [18]–[20]. This layered design preserves real-time speed for most signals while engaging the costly secondary path only in difficult cases (Algorithm 1). Table II compares the hybrid system with single approaches across five features: no component provides all of them, whereas the hybrid combines them.                                           
+
+> TABLE II ARCHITECTURAL FEATURE COMPARISON
+> Method Temp. Unc. RT OOD 4-FSK
+> IQ Rule-Based ——✓—Low LinearSVC ——✓—Med. XGBoost ——✓—Med. Bayesian MLP —✓✓✓Low 2D CNN Part. —✓—Med. BiLSTM ✓———High
+> Hybrid (Proposed) ✓✓✓✓High Temp.: Temporal modeling; Unc.: Uncertainty estimation; RT: Real-time ( <1 ms); OOD: Out-of-distribution detection; Low/Med./High: 4-FSK recall level.
+
+B. 2D CNN Primary Path 
+
+The 2D CNN primary path (Fig. 2) has three convolutional blocks (16-, 32-, and 64-channel 3×3 convolutions with batch normalization, ReLU, and 2×2 max pooling), followed by a 256-neuron fully connected layer (40% dropout) and a 14-class softmax output ( ≈289,745 parameters). Trained with Adam (η = 10 −3), cosine learning-rate scheduling, and 60 epochs using a weighted cross-entropy loss for class imbalance, its compact structure enables real-time operation at only 0.138 ms per sample. Fig. 1. Hybrid decision flow: FFT extraction and STFT, 2D CNN (0.138 ms), Bayesian MLP uncertainty (0.7 ms), and fusion — BiLSTM (15.2 ms) or OOD rejection at high uncertainty. 
+
+C. Uncertainty Estimation and BiLSTM Secondary Path 
+
+Uncertainty estimation builds on MC Dropout [6], [15], which approximates Bayesian inference in deep Gaussian processes by keeping dropout active at inference; deep ensem-bles offer an alternative [16], but MC Dropout was preferred here for its single-model real-time advantage. The Bayesian MLP ( p = 0 .3, three 256-neuron hidden layers) is run with 
+
+T = 30 stochastic passes; from the resulting probability vectors {p(t)}Tt=1 , uncertainty is the standard deviation over the highest-probability class: 
+
+U(x) = max 
+
+c std 
+
+h
+
+{p(t)
+
+c }Tt=1 
+
+i
+
+. (2) A low U(x) indicates model stability, a high value boundary cases or OOD signals. Under U(x) > τ (τ = 0 .15 , empirically selected), the decision is routed to the BiLSTM secondary path. 2D CNN Architecture                               
+
+> STFT Spectrogram Input ·14-Class Output
+> Block 1 Block 2 Block 3
+> Input 1 × 32 × 32 log-power spectrogram
+> Conv2d 16×3×3 BN + ReLU 16 × 32 × 32
+> MaxPool 2×2 16 × 16 × 16
+> Conv2d 32×3×3 BN + ReLU 32 × 16 × 16
+> MaxPool 2×2 32 × 8 × 8
+> Conv2d 64×3×3 BN + ReLU 64 × 8 × 8
+> MaxPool 2×2 64 × 4 × 4
+> Flatten Flatten 1 024
+> Fully Connected Dropout 0.30 256 neurons
+> Softmax Output 14 modulation classes
+> ~360 k parameters ·Adam =10 ³ ·Dropout 0.30
+> 60 epochs ·Test Accuracy: 83.3 ± 0.7% (5 runs)
+
+Fig. 2. 2D CNN layer architecture: 1 × 32 × 32 input, three convolutional blocks, 14-class output. 
+
+The BiLSTM secondary path processes the first 1024 IQ samples (instantaneous envelope, frequency, and phase) with bidirectional LSTM layers (hidden size 256, 2 layers; 10% validation, patience = 10), implicitly encoding phase-transition patterns for high accuracy on classes requiring temporal struc-ture such as FSK/4-FSK – letting the system dynamically trade accuracy for latency as needed. ep=60 ep=80 ep=100 50 60 70 80 90 100 Test Accuracy (%)   
+
+> (A) Image Size (nfft=64)
+> Size
+> 32x32 64x64 128x128
+> ep=60 ep=80 ep=100 50 60 70 80 90 100 Test Accuracy (%)
+> (B) FFT Length (size=32x32)
+> FFT
+> nfft=256 nfft=512 nfft=1024
+
+Epoch Snapshot Comparison: 60 / 80 / 100 Epochs Fig. 3. Resolution and FFT length ablation (60/80/100 epochs). (A) image size ( Nfft = 64 ); (B) FFT length ( 32 ×32 image); FFT length has negligible effect. 
+
+IV. E XPERIMENTAL RESULTS 
+
+A. Resolution, FFT Length, and Epoch Ablation 
+
+Two ablation experiments examined input resolution and FFT window length (Fig. 3; 60/80/100 epoch snapshots). With 
+
+Nfft = 64 fixed, accuracy grows with image size (83.2% at 
+
+32 ×32 , 87.8% at 128 ×128 ), but 128 ×128 raises the parameter count ∼14-fold for only a few points; with the image fixed at 32 × 32 , varying Nfft ∈ { 256 , 512 , 1024 } leaves accuracy almost unchanged (82.5–83.3%), showing FFT length has no meaningful effect once rescaled to a fixed size. Both experi-ments plateau around epoch 60 (100 epochs yield no gain and cause mild overfitting), so a 32 ×32 input and 60 epochs were chosen for memory-constrained real-time deployment. 
+
+B. Comparative Performance by SNR 
+
+The 2D CNN, BiLSTM, Bayesian MLP, SVM, XGBoost, and a rule-based IQ analyzer were compared across seven SNR levels ( −5 to +25 dB) on a companion 199,920-sample dataset (2040 samples/class/SNR level, same taxonomy and methodology as Section II-A, 70%/10%/20% split, five runs averaged per model), conducted as part of the same research 5 0 5 10 15 20 25  
+
+> SNR (dB)
+> 020 40 60 80 100
+> Accuracy (%)
+> Model Comparison SNR vs Accuracy
+> IQ-RuleBased CNN-2D BiLSTM Bayesian-MLP SVM XGBoost
+
+Fig. 4. Model accuracy comparison by SNR (14 classes, −5 to +25 dB; companion benchmark, see Section IV-B). IQ-RuleBased CNN-2D BiLSTM Bayesian-MLP SVM XGBoost 020 40 60 80 100 
+
+> Accuracy (%)
+> 9.6% 85.0% 99.3% 79.8% 69.0% 82.6%
+> Model Comparison at SNR = +20 dB
+
+Fig. 5. Model accuracy at +20 dB (same benchmark as Fig. 4). 
+
+program prior to this manuscript and reused here rather than re-run. Fig. 4 presents the accuracy curves by SNR, and Fig. 5 the snapshot at +20 dB: the 2D CNN exhibits the strongest low-SNR performance among fast methods (64.7% at −5 dB), the rule-based analyzer remains in the 6–15% band, classical methods (SVM, XGBoost) show moderate performance, and BiLSTM reaches over 99% at high SNR. Table III summarizes +20 dB accuracy and inference time. The 2D CNN is the fastest at 0.138 ms, giving the best accuracy-latency trade-off for the primary path; the BiLSTM, despite the highest accuracy, runs at 15.2 ms and is engaged only when uncertainty triggers it. 
+
+TABLE III METHOD COMPARISON (+20 DB, C OMPANION BENCHMARK )
+
+Method Accuracy Latency 
+
+IQ Rule-Based 9.6% 2.1 ms SVM 69.0% 1.0 ms Bayesian MLP 79.8% 0.7 ms XGBoost 82.6% 0.8 ms 
+
+2D CNN (Proposed) 85.0% 0.138 ms 
+
+BiLSTM 99.3% 15.2 ms C. Classification Analysis 
+
+Class-wise analysis reveals a failure specific to the compact spectral feature space: the Bayesian MLP yields only 3% recall for 4-FSK, which overlaps heavily with 2-tone FSK there and lacks temporal modeling. The 2D CNN partially captures symbol-timing via convolution (71% recall), while the BiLSTM, using the full temporal IQ structure, resolves it almost without error. This justifies the layered design: the uncertainty estimator produces a high U(x) for spectrally inseparable classes such as 4-FSK, delegating to the temporally-aware BiLSTM. Eval-uation sets without 4-FSK [7] hide this difficulty; our finding quantifies the limitation of compact spectral representations in FSK order disambiguation. 
+
+D. MC Dropout Ablation Analysis 
+
+The uncertainty mechanism’s design choices were exam-ined with three ablations (Fig. 6). Varying MC samples 
+
+T ∈ { 5, 10 , 20 , 30 , 50 } changed accuracy by only 0.1 points (83 .05% → 83 .14% ) while inference cost grew linearly, confirming T = 30 as a suitable balance. Dropout rates 
+
+p ∈ { 0.1, . . . , 0.5} peaked at p = 0 .3 (84.05%), staying in the 82.3–84.1% band, showing robustness. Finally, no-dropout reached 82.59% versus 82.87% with dropout ( p = 0 .4); the small gap is expected, since dropout also enables Bayesian uncertainty estimation. 
+
+E. End-to-End Hybrid Validation 
+
+The proposed hybrid algorithm (Algorithm 1) was addi-tionally validated end-to-end on an independently generated 29,400-sample dataset. Results confirm that the Bayesian MLP uncertainty score reliably predicts CNN misclassifications (AUROC 0.78 at τ = 0 .05 ), with overall system performance summarized in Table IV. 
+
+TABLE IV END -TO -E ND HYBRID VALIDATION — S UMMARY       
+
+> Parameter Value
+> Dataset 29,400 samp. (300/class/SNR), 70/15/15 Threshold τ0.05 (macro-F1-selected) Unc. AUROC 0.78 Hybrid acc. 92.6% (F1 92.3%), 38.0% routed
+
+F. Channel Robustness Analysis 
+
+The AWGN-trained 2D CNN was tested on unseen Rayleigh (h ∼ CN (0 , 1) ) and Rician ( K = 5 dB) fading channels (Fig. 7), attaining 88.2% (AWGN), 83.2% (Rician), and 80.0% (Rayleigh) at +20 dB – Rayleigh drops to 47.7% at −5 dB, while Rician’s line-of-sight component keeps it closer to AWGN – quantifying the performance loss of an AWGN-only-trained model under fading. 
+
+G. Channel-Adaptive Training 
+
+To mitigate this loss, three training scenarios were com-pared: (i) AWGN only, (ii) Rayleigh only, and (iii) mixed 5 10 20 30 50       
+
+> Number of MC Samples T
+> 82.95 83.00 83.05 83.10 83.15 83.20
+> Test Accuracy (%)
+> T=30 (selected)
+> (A) T Ablation
+> Accuracy (%) Uncertainty
+> 0.1 0.2 0.3 0.4 0.5
+> Dropout Rate p
+> 81 82 83 84 85 86
+> Test Accuracy (%)
+> 82.4% 82.8% 84.0% 82.9% 83.9%
+> (B) Dropout Rate Ablation
+> Dropout OFF Dropout ON 79 80 81 82 83 84 85
+> Test Accuracy (%)
+> 82.6% 82.9%
+> =+0.3%
+> (C) Dropout ON vs OFF
+> 0.0380 0.0385 0.0390 0.0395 0.0400 0.0405
+> Mean Uncertainty
+
+MC-Dropout Ablation Analysis 
+
+Fig. 6. MC Dropout ablation. (A) MC samples T : T = 30 vs. T = 50 
+
+differ by <0.2 points. (B) Dropout rate p: best at p = 0 .3. (C) With/without dropout: +0 .3 points and Bayesian uncertainty capability. TABLE V CHANNEL -A DAPTIVE TRAINING COMPARISON (+20 DB T EST 
+
+ACCURACY )
+
+Training Channel AWGN Rayleigh Rician 
+
+AWGN only 87.4% 80.0% 82.9% Rayleigh only 85.6% 84.6% 85.7% Mixed (3 channels) 88.2% 85.6% 86.5% 
+
+(AWGN+Rayleigh+Rician) training. Table V summarizes the 
+
++20 dB test results. Mixed training preserves AWGN accuracy while raising Rayleigh by 5.6 points and Rician by 3.6 points, showing it is an effective, low-cost adaptation strategy for fading channels. 5 0 5 10 15 20 25 
+
+> SNR (dB)
+> 40 50 60 70 80 90
+> Accuracy (%)
+> Channel Model Comparison (AWGN-only training)
+> AWGN Rayleigh Rician (K=5 dB)
+
+Fig. 7. Channel model comparison: AWGN, Rayleigh, Rician ( K = 5 dB); model trained on AWGN only. 
+
+V. C ONCLUSION 
+
+In this study, an uncertainty-driven, multi-stage hybrid deep learning architecture was proposed for automatic RF signal recognition over a broad modulation space. The 2D CNN primary path provides 83.3 ±0.7% accuracy at 0.138 ms, clearly surpassing rule-based and classical ML methods, while the BiLSTM secondary path delivers over 99% accuracy at high SNR; a preliminary end-to-end validation with a gen-uinely separate Bayesian MLP (Section IV-E) confirmed its uncertainty score predicts CNN misclassifications (AUROC 0.78) and raises hybrid accuracy to 92.6% (macro-F1 92.3%), though comprehensive OOD-rejection validation is left to future work. A prominent finding is the Bayesian MLP’s 3% recall for 4-FSK, demonstrating the limitation of compact spectral representations in FSK order disambiguation and justifying the layered design. Ablations confirmed T = 30 and p = 0 .3
+
+as suitable, and mixed AWGN+Rayleigh+Rician training im-proved Rayleigh by 5.6 and Rician by 3.6 points without sacrificing AWGN performance. All results were obtained in a controlled simulation envi-ronment. Future work includes validation on real SDR hard-ware, phase-preserving representations to resolve QPSK/8PSK confusion, and comparison with attention-mechanism architec-tures [13]. REFERENCES [1] O. A. Dobre, A. Abdi, Y. Bar-Ness, and W. Su, “Survey of automatic modulation classification techniques: Classical approaches and new trends,” IET Commun. , vol. 1, no. 2, pp. 137–156, 2007. doi: 10.1049/iet-com:20050176 [2] T. J. O’Shea and J. Hoydis, “An introduction to deep learning for the physical layer,” IEEE Trans. Cogn. Commun. Netw. , vol. 3, no. 4, pp. 563–575, 2017. doi: 10.1109/TCCN.2017.2758370 [3] N. E. West and T. O’Shea, “Deep architectures for modulation recog-nition,” in Proc. IEEE DySPAN , pp. 1–6, 2017. doi: 10.1109/DyS-PAN.2017.7920754 [4] T. J. O’Shea, T. Roy, and T. C. Clancy, “Over-the-air deep learning based radio signal classification,” IEEE J. Sel. Topics Signal Process. ,vol. 12, no. 1, pp. 168–179, 2018. doi: 10.1109/JSTSP.2018.2797022 [5] S. Rajendran, W. Meert, D. Giustiniano, V. Lenders, and S. Pollin, “Deep learning models for wireless signal classification with distributed low-cost spectrum sensors,” IEEE Trans. Cogn. Commun. Netw. , vol. 4, no. 3, pp. 433–445, 2018. doi: 10.1109/TCCN.2018.2835460 [6] Y. Gal and Z. Ghahramani, “Dropout as a Bayesian approximation: Representing model uncertainty in deep learning,” in Proc. ICML ,pp. 1050–1059, 2016. arXiv:1506.02142 [7] X. Liu, D. Yang, and A. El Gamal, “Deep neural network architectures for modulation classification,” in Proc. Asilomar Conf. Signals, Syst. Comput. , pp. 915–919, 2017. doi: 10.1109/ACSSC.2017.8335483 [8] Y. Zeng, M. Zhang, F. Han, Y. Gong, and J. Zhang, “Spectrum analysis and convolutional neural network for automatic modulation recognition,” 
+
+IEEE Wireless Commun. Lett. , vol. 8, no. 3, pp. 929–932, 2019. doi: 10.1109/LWC.2019.2900247 [9] J. Xu, C. Luo, G. Parr, and Y. Luo, “A spatiotemporal multi-channel learning framework for automatic modulation recognition,” 
+
+IEEE Wireless Commun. Lett. , vol. 9, no. 10, pp. 1629–1632, 2020. doi: 10.1109/LWC.2020.2999453 [10] S. Peng, S. Sun, and Y.-D. Yao, “A survey of modulation classification using deep learning: Signal representation and data preprocessing,” IEEE Trans. Neural Netw. Learn. Syst. , vol. 33, no. 12, pp. 7020–7038, 2022. doi: 10.1109/TNNLS.2021.3085433 [11] K. Liao, Y. Zhao, J. Gu, Y. Zhang, and Y. Zhong, “Sequential convolu-tional recurrent neural networks for fast automatic modulation classifi-cation,” IEEE Access , vol. 9, pp. 27182–27188, 2021. doi: 10.1109/AC-CESS.2021.3053427 [12] F. Zhang, C. Luo, J. Xu, Y. Luo, and F.-C. Zheng, “Deep learn-ing based automatic modulation recognition: Models, datasets, and challenges,” Digit. Signal Process. , vol. 129, art. 103650, 2022. doi: 10.1016/j.dsp.2022.103650 [13] D. Wang, M. Lin, X. Zhang, Y. Huang, and Y. Zhu, “Automatic modu-lation classification based on CNN-Transformer graph neural network,” 
+
+Sensors , vol. 23, no. 16, art. 7281, 2023. doi: 10.3390/s23167281 [14] Y. Wang, J. Yang, M. Liu, and G. Gui, “LightAMC: Lightweight automatic modulation classification via deep learning and compressive sensing,” IEEE Trans. Veh. Technol. , vol. 69, no. 3, pp. 3491–3495, 2020. doi: 10.1109/TVT.2020.2971001 [15] A. Kendall and Y. Gal, “What uncertainties do we need in Bayesian deep learning for computer vision?,” in Adv. Neural Inf. Process. Syst. (NeurIPS) , vol. 30, pp. 5574–5584, 2017. arXiv:1703.04977 [16] B. Lakshminarayanan, A. Pritzel, and C. Blundell, “Simple and scal-able predictive uncertainty estimation using deep ensembles,” in Adv. Neural Inf. Process. Syst. (NeurIPS) , vol. 30, pp. 6402–6413, 2017. arXiv:1612.01474 [17] H. Yang and R. Sahay, “An uncertainty quantification frame-work for deep learning-based automatic modulation classification,” 
+
+arXiv:2503.04142 , 2025. [18] S. R. Shebert, B. H. Kirk, and R. M. Buehrer, “Open set wireless signal classification: Augmenting deep learning with expert feature classifiers,” 
+
+arXiv:2302.03749 , 2023. [19] Z. Zhang, M. Zhu, J. Liu, Y. Li, and S. Wang, “Class information guided reconstruction for automatic modulation open-set recognition,” 
+
+arXiv:2312.13023 , 2023. [20] D. Hendrycks and K. Gimpel, “A baseline for detecting misclassified and out-of-distribution examples in neural networks,” in Proc. Int. Conf. Learn. Represent. (ICLR) , 2017. arXiv:1610.02136 [21] Y. Qu, Z. Lu, R. Zeng, J. Wang, and J. Wang, “Enhancing automatic modulation recognition through robust global feature extraction,” sub-mitted to IEEE Trans. Veh. Technol. , 2024. arXiv:2401.01056 [22] Y. Zhang, Z. Zhou, Y. Cao, G. Li, and X. Li, “MAMCA – optimal on accuracy and efficiency for automatic modulation classification with extended signal length,” arXiv:2405.11263 , 2024. [23] E. Jafarigol, B. Alaghband, A. Gilanpour, S. Hosseinipoor, and M. Mir-mozafari, “AI/ML-based automatic modulation recognition: Recent trends and future possibilities,” arXiv:2502.05315 , 2025. [24] D. Padhya, K. Acharya, B. K. Dahal, and D. B. Kshatri, “CNN-LSTM hybrid architecture for over-the-air automatic modulation classification using SDR,” accepted in J. Innov. Eng. Educ. , 2025. arXiv:2511.21040
