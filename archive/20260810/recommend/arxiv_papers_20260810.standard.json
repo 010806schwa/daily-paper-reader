@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-10T21:02:39.010132+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.05705v1",
+      "source": "arxiv",
+      "title": "Spectral Aliasing Pretext: A novel task for Self-Supervised fault diagnosis in rotating machinery",
+      "abstract": "Deep learning is a new way for machinery fault diagnosis but requires extensive labeled data, a scarce resource in industrial settings. We propose Spectral Aliasing Pretext (SAP), a self-supervised learning method that pretrains models on unlabeled vibration data by exploiting spectral aliasing. We deliberately undersample signals to create folded spectrum, then train a Transformer to reconstruct the original unfolded spectrum. This pretext task forces the model to learn frequency-domain invariants characteristic of mechanical faults, without potentially destructive augmentations. Experiments on the CWRU dataset show that SAP learns stable and highly discriminative representations. In a linear probing setting, SAP quickly achieves very high classification performance with only a small fraction of labeled data and low variance. In contrast, full fine-tuning, including fully supervised training, does not lead to more stable or better results. Overall, these findings suggest that SAP combined with linear probing can be more effective and reliable than fully supervised training for fault diagnosis with limited labeled data.",
+      "authors": [
+        "Victor Gialis",
+        "Maxime Metz",
+        "David Esteve",
+        "Abdenour Soualhi"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-06T07:46:51+00:00",
+      "link": "https://arxiv.org/pdf/2608.05705v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "frequency-domain invariant self-supervised learning on vibration signals, transferable to acoustic ship noise high-frequency recognition",
+      "llm_evidence_cn": "基于振动信号的频域不变自监督学习，可迁移至声学船舶噪声高频识别",
+      "llm_evidence": "基于振动信号的频域不变自监督学习，可迁移至声学船舶噪声高频识别",
+      "canonical_evidence": "基于振动信号的频域不变自监督学习，可迁移至声学船舶噪声高频识别",
+      "llm_tldr_en": "Self-supervised Spectral Aliasing Pretext (SAP) pretrains Transformers on unlabeled vibration data by reconstructing unfolded spectra from undersampled signals. It learns frequency-domain invariants for fault recognition, achieving stable discriminative representations on CWRU, offering a transferable method for ship noise high-frequency analysis.",
+      "llm_tldr_cn": "针对旋转机械故障诊断标注数据稀缺的问题，论文提出频谱混叠前置任务（SAP），利用欠采样制造混叠频谱，并训练Transformer重建原始展开谱，从而在无标注振动数据上预训练以学习频域不变特征。在CWRU数据集上，SAP学习到的表征稳定且判别性强，线性评估性能优异。该方法避免破坏性数据增强，为机械故障诊断提供了自监督新思路，也为船舶噪声等振动信号的高频识别提供了可迁移的频域学习方法。",
+      "llm_tldr": "针对旋转机械故障诊断标注数据稀缺的问题，论文提出频谱混叠前置任务（SAP），利用欠采样制造混叠频谱，并训练Transformer重建原始展开谱，从而在无标注振动数据上预训练以学习频域不变特征。在CWRU数据集上，SAP学习到的表征稳定且判别性强，线性评估性能优异。该方法避免破坏性数据增强，为机械故障诊断提供了自监督新思路，也为船舶噪声等振动信号的高频识别提供了可迁移的频域学习方法。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

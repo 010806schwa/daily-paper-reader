@@ -1,0 +1,132 @@
+Title: Spectral Aliasing Pretext: A novel task for Self-Supervised fault diagnosis in rotating machinery
+
+URL Source: https://arxiv.org/pdf/2608.05705v1
+
+Published Time: Fri, 07 Aug 2026 00:38:04 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# Spectral Aliasing Pretext: A novel task for Self-Supervised fault diagnosis in rotating machinery 
+
+Victor Gialis ∗† , Maxime Metz †‡§ , David Esteve †‡ , Abdenour Soualhi ∗∗LASPI, Univ. Jean Monnet, Roanne, 42300, France 
+
+†Pellenc ST, Applied Research Group, Pertuis, 84120, France 
+
+‡LabCom Aioly, Artificial Intelligence and Optics Laboratory, Montpellier, 34196, France 
+
+§IMBE, Univ. Aix-Marseille, UMR CNRS IRD Univ. Avignon, Site de l’Etoile Marseille, France 
+
+{victor.gialis@univ-st-etienne.fr, m.metz@pellencst.com, d.esteve@pellencst.com, abdenour.soualhi@univ-st-etienne.fr }
+
+Abstract —Deep learning is a new way for machinery fault diagnosis but requires extensive labeled data, a scarce resource in industrial settings. We propose Spectral Aliasing Pretext (SAP), a self-supervised learning method that pretrains models on unlabeled vibration data by exploiting spectral aliasing. We delib-erately undersample signals to create folded spectrum, then train a Transformer to reconstruct the original unfolded spectrum. This pretext task forces the model to learn frequency-domain invariants characteristic of mechanical faults, without potentially destructive augmentations. Experiments on the CWRU dataset show that SAP learns stable and highly discriminative representa-tions. In a linear probing setting, SAP quickly achieves very high classification performance with only a small fraction of labeled data and low variance. In contrast, full fine-tuning, including fully supervised training, does not lead to more stable or better results. Overall, these findings suggest that SAP combined with linear probing can be more effective and reliable than fully supervised training for fault diagnosis with limited labeled data. 
+
+Index Terms —frequency domain, transformer, self-supervised learning, fault diagnosis, vibration data 
+
+I. I NTRODUCTION 
+
+Deep learning has transformed machinery fault diagnosis, achieving remarkable accuracy when large labeled datasets are available [1]. However, in operational technology (OT) environments, collecting comprehensive labeled fault data is a major practical limitation [2]. Acquiring vibration signals under diverse fault conditions requires costly test benches, controlled degradation protocols, and expert identification [3] resources rarely available in industrial settings. This data scarcity creates a fundamental bottleneck for deploying deep learning in real-world predictive maintenance. Self-supervised learning (SSL) offers a promising paradigm to address this challenge [4]. Instead of requiring expensive labels upfront, SSL methods first pretrain models on abundant unlabeled data using pretext tasks automatically learning with-out human supervision. For time series analysis, several SSL approaches have emerged in recent years. Contrastive methods like TS2Vec [5] and TS-TCC [6] learn representations by maximizing agreement between augmented views of the same signal, drawing inspiration from successful computer vision frameworks like SimCLR [7]. Generative methods employ masked reconstruction strategies, predicting missing portions of the input similar to BERT’s [8] approach in natural language processing, or Masked Autoencoders (MAE) [9] in computer vision. While Masked Image Modeling (MIM) [10] works well for images due to strong spatial redundancy, its relevance for vibration time series used in fault classification is less clear. In frequency-domain signals, diagnostic information is often concentrated in specific harmonics and in the global relation-ships between frequency components. Random masking may remove or keep these components without control, allowing the model to reconstruct the signal using local correlations without necessarily learning the physical structure of fault signatures. Although these methods have shown promising results for general time-series representation learning and have started to be explored for machinery fault diagnosis [11]. They do not explicitly exploit the deterministic spectral organization produced by mechanical faults. Recent work on semi-supervised and transfer learning for bearing diagnosis [12] has made progress in reducing labeled data requirements, but these approaches still do not exploit frequency-domain physics as a core learning principle. How-ever, current SSL methods face a critical limitation when applied to vibration-based fault diagnosis. Most approaches operate primarily in the time domain and rely heavily on data augmentation strategies adding noise, scaling amplitudes, temporal cropping, or applying random transformations [13]. Furthermore, existing methods do not explicitly leverage the rich physical structure inherent to the frequency domain, where mechanical faults manifest as deterministic, mathematically predictable patterns. We argue that for vibration analysis, working directly with frequency-domain representations offers distinct advantages. Mechanical faults generate vibrations at characteristic fre-quencies determined by geometry and kinematics: a bearing defect produces periodic impacts whose frequencies depend on the bearing dimensions, number of rolling elements, and shaft speed. These deterministic signatures are most clearly visible in the magnitude spectrum. Moreover, the measured vibration signal exhibits a dual nature a superposition of cy-arXiv:2608.05705v1 [cs.LG] 6 Aug 2026 Fig. 1: Spectral Aliasing Pretext (SAP) pretraining: from aliased spectrum generation to reconstruction. fs the original sample frequency, f ′ 
+
+> s
+
+the corrupted sample frequency clostationary components (periodic patterns with deterministic frequencies associated with faults) and stochastic modulation effects (structural resonances and propagation paths that vary randomly). The Fourier transform naturally separates these components, projecting the signal into a space where fault-related features are compact and discriminant [14]. Analyzing these frequency patterns requires capturing long-range dependencies across the spectrum. Fault signatures of-ten appear as low-frequency fundamental peaks followed by high-frequency modulation sidebands distributed across wide frequency bands. Traditional convolutional neural networks (CNNs), which have shown success in supervised vibration-based fault diagnosis [15], are designed to exploit local spa-tial patterns and struggle with these distributed relationships. The Transformer architecture, with its global self-attention mechanism, naturally models dependencies between frequency components. Recent work has demonstrated the effectiveness of Transformers for time series classification [16] and has begun to explore their application to vibration-based condi-tion monitoring though primarily in supervised settings with abundant labeled data. We propose a SSL approach that addresses these limitations. Our core contribution is Spectral Aliasing Pretext (SAP), a novel pretext task that operates directly on magnitude spectra and exploits a fundamental phenomenon in signal processing: spectral aliasing. When a signal is undersampled, high-frequency components fold back into the low-frequency range following deterministic mathematical rules, creating an ambiguous but structured corruption. We train a Transformer encoder-decoder to reverse this folding to reconstruct the non-aliased spectrum from an intentionally aliased version. This task compels the model to learn deep physical constraints about spectral structure without relying on potentially de-structive augmentations. Existing SSL methods do not exploit aliasing in the amplitude spectrum as a pretext task, which represents a gap in leveraging frequency-domain invariants for fault diagnosis. Our main contributions are threefold: 1) We propose Spectral Aliasing Pretext (SAP) , a self-supervised pretraining method based on spectral alias-ing, a signal processing phenomenon for vibration data. 2) We show that a Transformer trained on magnitude spec-tra with SAP learns effective representations, reaching near-optimal fault classification performance on CWRU using only a small amount of labeled data. The remainder of this paper is organized as follows. Section II describes the datasets and our proposed methodology, in-cluding the mathematical formulation of spectral aliasing and the Transformer architecture. Section III details the experi-mental protocol for pretraining and downstream evaluation. Section IV presents comprehensive results on classification performance, followed by discussion of the learned representa-tions. Section V concludes with perspectives on future research directions. II. M ATERIEL AND METHODS 
+
+A. Datasets 
+
+We use the widely adopted Case Western Reserve Univer-sity (CWRU) bearing dataset as a evaluation benchmark. It contains vibration signals acquired under four bearing health conditions: normal , inner-race fault , outer-race fault , and 
+
+ball fault . Fault diameters range from 0.007 to 0.028 inches, covering increasing levels of defect severity. Signals were collected at several load levels from 0 to 3 horsepower (motor speeds of 1797 to 1730 RPM). We use only the Fan End accelerometer sampled at 12 kHz. The dataset provides a controlled environment in which spectral structures, including characteristic fault harmonics are well established. 
+
+B. Proposed Approach 1) Problem Formulation: The problem of spectral un-folding is fundamentally rooted in spectral aliasing, which occurs when a continuous time-domain signal, x(t), is sampled at a frequency fs that is less than twice its maximum frequency component, thereby violating the Nyquist-Shannon sampling theorem. If the signal is undersampled, the new sampling frequency f ′ 
+
+> s
+
+is reduced. Original frequency components f > f ′
+
+> s
+
+/2 are then folded back into the valid range [0 , f ′
+
+> s
+
+/2] .Mathematically, the aliased spectrum X′(f ) is represented as a superposition of the true spectrum X(f ) and its replicas shifted by multiples of the reduced sampling rate Eq. (1). 
+
+X′(f ) = 
+
+> ∞
+
+X
+
+> k=−∞
+
+X(f − kf ′
+
+> s
+
+) (1) When magnitude spectrum is estimated using the Fast Fourier Transform (FFT) on the undersampled signal, this summation manifests as folding, where high-frequency infor-mation is superimposed onto low-frequency information. The theoretical challenge is to reverse this aliasing that is, to infer and reconstruct the uncorrupted frequency distribution, from the mathematically ambiguous folded spectrum. 
+
+2) Pretext Task: We construct a self-supervised pretext task explicitly designed to capture the non-linear relationship between aliased and non-aliased spectral components. The complete preprocessing and corruption pipeline involves six sequential steps: windowing, undersampling, mean centering, discret Fourier transform, symmetric input preparation and normalization. 
+
+Window Slicing. Raw time-domain vibration signals are first segmented using a sliding window of N = 2048 points with a stride of 256 points. This produces overlapping tem-poral segments x(t) ∈ R2048 that capture local vibrational behavior. 
+
+Undersampling. To create the corrupted input for our pretext task, each raw segment x(t) is deliberately undersam-pled by a factor of two. This produces a corrupted segment 
+
+x′(t) ∈ R1024 . By reducing the Nyquist frequency from fs/2
+
+to fs/4, this undersampling causes spectral aliasing range according to the mathematical relationship described in Eq. (1) .TABLE I: Dataset statistics after preprocessing. No Sample refers to the number of normalized magnitude spectrum.        
+
+> Dataset Sample Frequency fsNo. Sample No. Classes CWRU 12 kHz 27593 10
+
+Mean Centering. Both the original segment x(t) and the corrupted segment x′(t) are mean-centered to remove the continu component. This ensures that the spectrum focuses on oscillatory components rather than constant offsets. 
+
+Discret Fourier Transform. We apply the real-valued Fast Fourier Transform to both centered segments, transforming them from the time domain to the frequency domain. Since the input signals are real-valued, we exploit the Hermitian symme-try of the finite Discrete Fourier Transform (DFT) to compute only the non-redundant positive-frequency components. 
+
+Symmetric Input Preparation. The undersampled spec-trum X′(f ) ∈ RN/ 4 has half the dimensionality of the target spectrum X(f ) ∈ RN/ 2, creating a dimensional mismatch for the Transformer encoder-decoder architecture, which requires identical sequence lengths at input and output. To restore the required dimensional consistency, we construct an extended in-put X′′ (f ) by concatenating X′(f ) with its spatially reversed version. 
+
+Normalization. To stabilize training, magnitude spectra are log-compressed and standardized using global statistics (μX , σ X ) from the pretraining dataset: 
+
+Xi(f )norm = log (1 + Xi(f )) − μX
+
+σX
+
+, i ∈ { 0, . . . , n − 1}
+
+(2) Unlike per-sample scaling, using global statistics ensures consistent input distributions and improves robustness to am-plitude variations across operating conditions. Preprocessed dataset statistics are summarized in Table I. 
+
+3) Model architecture: The model architecture (Fig. 1) is based on a symmetric Transformer encoder-decoder structure. The input spectrum is tokenized into patches of size P . The token is projected in embedding dimension fixed at dmodel .Both the encoder and decoder consist of L identical layers, and each layer employs multi-head self-attention with H heads. A learnable class token and Sinusoidal Positional Embeddings are used to maintain sequence integrity. The entire structure is regularized using a dropout rate of ρdrop . For the downstream classification task, the class token from the encoder (the backbone) is passed to a linear head classifier. III. E XPERIMENTS 
+
+A. Dataset Split Strategy 
+
+Two distinct data splitting strategies are employed de-pending on the learning stage. For the self-supervised pre-training, the CWRU dataset is split using a heterogeneous strategy, where all available spectra are randomly partitioned into training and validation sets. A seed is used to ensure reproducibility across all experiments. We acknowledge that Fig. 2: Macro F1-score as a function of the training data ratio for (a) linear probing and (b) full fine-tuning on CWRU. Results are reported for random initialization, SAP pre-training, and MAE pre-training. The masking ratio for MAE is 40%. TABLE II: Transformer encoder-decoder hyperparameters                         
+
+> Parameter Variable Value
+> Patch Size P16 Hidden Dimension dmodel 512 Number of Attention Heads H8Number of Layers (E/D) L3Dropout Rate ρdrop 2.57 ×10 −1
+> Learning Rate α3.67 ×10 −4
+> Weight Decay λ1.11 ×10 −5
+> Batch Size B64
+
+the random partition used during self-supervised pre-training may introduce overlap between training and validation spectra due to the sliding-window procedure. However, the down-stream test sets are built from operating conditions strictly excluded from training (unseen speed or speed-load com-binations), ensuring an independent evaluation protocol and preventing leakage between training and test domains. For the downstream supervised tasks, the data are split according to the operating speeds. For all experiments, the backbone is pre-trained on CWRU and specialized on CWRU using training data collected at 1750, 1772, and 1797 rpm, while evaluation is performed at 1730 rpm. 
+
+B. Pre-training Setup 
+
+Self-supervised pre-training is performed exclusively on the CWRU dataset. Two pre-training strategies are considered: the proposed SAP approach and a Masked Autoencoder (MAE) [9] used as a baseline for comparison. The model is trained to minimize the mean squared reconstruction error (MSE). This choice reflects industrial scenarios where operating conditions may be unknown, and highlights the ability of self-supervised learning to learn robust condition representations. 
+
+C. Downstream Setup 
+
+The downstream task consists of supervised fault classi-fication and is evaluated on both the CWRU dataset. The Transformer encoder learned during the pre-training stage is used as a feature extraction backbone. To assess label efficiency, we use different ratio of the downstream training set is used for supervised learning. Two training regimes are considered for evaluate the models : 
+
+Linear probing : the backbone is initialized with self-supervised pre-trained weights and kept frozen, while a linear classification head is trained on top of the extracted features. 
+
+Full fine-tuning : the backbone is initialized with self-supervised pre-trained weights and jointly optimized with the linear classification head. We compare against a supervised baseline where the back-bone is randomly initialized and trained on the available labeled data. Performance is evaluated using the F1-score on the held-out operating condition, ensuring a fair comparison between self-supervised and supervised methods under limited data and domain shifts. IV. R ESULTS AND DISCUSSION 
+
+We evaluate the proposed Spectral Aliasing Pretext (SAP) on downstream fault classification under varying proportions of labeled data. Performance is reported using the macro F1-score on a held-out operating condition. In the linear probing setting (Fig. 2), SAP consistently outperforms MAE pretraining across all training data ratios. SAP rapidly converges and reaches a macro F1-score close to 1.0 with only 20% of the training set while maintaining very low variance across runs. Since the backbone is frozen in this setting, these results directly reflect the intrinsic quality of the learned representations. The strong performance combined TABLE III: Effect of Mask Ratio on Linear Probing and Full Fine-tuning Performance (%)                       
+
+> Mask Ratio Linear Probing Full Fine-tune
+> 10% 58.6 89.5 20% 54.1 81.5 30% 41.5 82.4 40% 62.9 92.2
+> 50% 53.2 76.3 60% 33.6 88.3 70% 50.8 82.1 75% 42.2 90.1 80% 48.8 81.5 90% 48.1 88.5
+
+with low variance suggests that SAP learns features that are both highly discriminative and well structured in feature space. In other words, samples from different fault classes become linearly separable with minimal supervision. This behavior contrasts with MAE pretraining, which shows lower performance and higher variability. The effectiveness of the MAE baseline is also notably sensitive to its masking hyperparameter (Table III.), the macro F1-score for both linear probing and full fine-tuning reaches its peak at a mask ratio of 40% . Masking-based reconstruction mainly encourages the model to learn local correlations between frequency bins, but does not explicitly enforce the learning of global spectral relationships. As a result, the learned features remain less structured and require additional supervised adaptation to become discriminative. The stability of SAP in linear prob-ing indicates that the pretext task itself provides a strong inductive bias: reconstructing an aliased spectrum requires modeling global relationships and dependencies across fre-quencies. These constraints appear to guide the model toward a representation space that is already aligned with fault classes before any supervised training. In the full fine-tuning setting (Fig. 2), all methods, ran-dom initialization (full supervised), MAE pretraining, and SAP pretraining reach similar average performance, without significant differences. However, the optimization process is less stable, with higher variance across runs. Surprisingly, even fully supervised training from random initialization does not consistently converge toward stable results, and fine-tuning tends to increase performance variability. This may be explained by the large number of parameters updated during fine-tuning, which makes optimization more sensitive to initialization and sampling effects. It may also reflect the relative simplicity of the CWRU dataset. Many models can eventually fit the data, but the optimization trajectory remains unstable. On more complex industrial data, full fine-tuning may become beneficial, but the strong stability observed in linear probing indicates that SAP learns robust representations. Overall, the most informative comparison is therefore ob-tained in the linear probing regime, where representation qual-ity can be assessed independently of full optimization. In this setting, SAP produces stable and linearly separable features that enable near-perfect classification with limited labeled data. The combination of high accuracy, rapid convergence, and low variance suggests that pretext tasks such as spectral aliasing can lead to more robust and better-structured representations for vibration-based fault diagnosis. V. C ONCLUSION AND PERSPECTIVE 
+
+Experimental results on the CWRU dataset show that SAP produces more discriminative representations than masking-based pretraining, achieving strong classification performance with only a small fraction of labeled data. The method provides a stable initialization for downstream learning and improves label efficiency compared with both random initialization and MAE pretraining. These results highlight the benefit of integrating signal processing knowledge into self-supervised learning for industrial condition monitoring. Future work will extend the comparison to additional SSL methods such as TS2Vec and TS-TCC, investigate cross-dataset generalization, analyze the impact of potential data leakage induced by overlapping window segmentation, and further justify key de-sign choices including the symmetric spectrum concatenation strategy. ACKNOWLEDGMENT 
+
+This work was granted access to the HPC resources of IDRIS under the allocation 20XX-AD010114820R2 made by GENCI. REFERENCES [1] H. Su and J. Lee, “Machine learning approaches for diagnostics and prognostics of industrial systems using open source data from PHM data challenges: A review,” vol. 15, no. 2. [2] C. Li, S. Li, Y. Feng, K. Gryllias, F. Gu, and M. Pecht, “Small data challenges for intelligent prognostics and health management: a review,” vol. 57, no. 8, p. 214. [3] “NASA prognostics center of excellence data set repository [mirror].” [4] R. Balestriero, M. Ibrahim, V. Sobal, A. Morcos, S. Shekhar, T. Gold-stein, F. Bordes, A. Bardes, G. Mialon, Y. Tian, A. Schwarzschild, A. G. Wilson, J. Geiping, Q. Garrido, P. Fernandez, A. Bar, H. Pirsiavash, Y. LeCun, and M. Goldblum, “A cookbook of self-supervised learning.” [5] Z. Yue, Y. Wang, J. Duan, T. Yang, C. Huang, Y. Tong, and B. Xu, “TS2vec: Towards universal representation of time series,” vol. 36, no. 8, pp. 8980–8987. Number: 8. [6] E. Eldele, M. Ragab, Z. Chen, M. Wu, C. K. Kwoh, X. Li, and C. Guan, “Time-series representation learning via temporal and contextual con-trasting.” [7] T. Chen, S. Kornblith, M. Norouzi, and G. Hinton, “A simple framework for contrastive learning of visual representations.” [8] J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova, “BERT: Pre-training of deep bidirectional transformers for language understanding.” [9] K. He, X. Chen, S. Xie, Y. Li, P. Doll´ ar, and R. Girshick, “Masked autoencoders are scalable vision learners.” [10] V. Hondru, F. A. Croitoru, S. Minaee, R. T. Ionescu, and N. Sebe, “Masked image modeling: A survey.” [11] K. Rombach, G. Michau, and O. Fink, “Contrastive learning for fault detection and diagnostics in the context of changing operating conditions and novel fault types,” vol. 21, no. 10, p. 3550. [12] E. Eldele, M. Ragab, X. Qing, Edward, Z. Chen, M. Wu, X. Li, and J. Lee, “UniFault: A fault diagnosis foundation model from bearing data.” [13] A. Zhou and A. B. Farimani, “FaultFormer: Pretraining transformers for adaptable bearing fault classification,” vol. 12, pp. 70719–70728. [14] J. Antoni, “Cyclic spectral analysis of rolling-element bearing signals: Facts and fictions,” vol. 304, no. 3, pp. 497–529. [15] C. Lu, Z. Wang, and B. Zhou, “Intelligent fault diagnosis of rolling bearing using hierarchical convolutional network based health state classification,” vol. 32, pp. 139–151. [16] Q. Wen, T. Zhou, C. Zhang, W. Chen, Z. Ma, J. Yan, and L. Sun, “Transformers in time series: A survey.”

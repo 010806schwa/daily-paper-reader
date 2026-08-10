@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-10",
+  "date": "2026-08-10",
+  "generated_at": "2026-08-10T21:03:15",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/10/2608.05705v1-spectral-aliasing-pretext-a-novel-task-for-self-supervised-fault-diagnosis-in-rotating-machinery",
+      "section": "quick",
+      "title_en": "Spectral Aliasing Pretext: A novel task for Self-Supervised fault diagnosis in rotating machinery",
+      "authors": "Victor Gialis, Maxime Metz, David Esteve, Abdenour Soualhi",
+      "date": "2026-08-06",
+      "pdf": "https://arxiv.org/pdf/2608.05705v1",
+      "score": "6.0",
+      "evidence": "基于振动信号的频域不变自监督学习，可迁移至声学船舶噪声高频识别",
+      "tldr": "针对工业故障诊断标注数据稀缺的问题，提出频谱混叠预文本(SAP)自监督方法。通过对未标注振动信号欠采样制造频谱混叠，训练Transformer重建原始频谱，学习频域不变特征。在CWRU数据集上，线性探测仅需少量标签即可获得高分类精度和低方差，优于全监督微调。表明SAP结合线性探测为有限标签下的故障诊断提供了更有效可靠的方案。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Deep learning is a new way for machinery fault diagnosis but requires extensive labeled data, a scarce resource in industrial settings. We propose Spectral Aliasing Pretext (SAP), a self-supervised learning method that pretrains models on unlabeled vibration data by exploiting spectral aliasing. We deliberately undersample signals to create folded spectrum, then train a Transformer to reconstruct the original unfolded spectrum. This pretext task forces the model to learn frequency-domain invariants characteristic of mechanical faults, without potentially destructive augmentations. Experiments on the CWRU dataset show that SAP learns stable and highly discriminative representations. In a linear probing setting, SAP quickly achieves very high classification performance with only a small fraction of labeled data and low variance. In contrast, full fine-tuning, including fully supervised training, does not lead to more stable or better results. Overall, these findings suggest that SAP combined with linear probing can be more effective and reliable than fully supervised training for fault diagnosis with limited labeled data.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
