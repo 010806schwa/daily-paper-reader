@@ -1,0 +1,88 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-11T21:06:48.344883+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2608.08106v1",
+      "source": "arxiv",
+      "title": "SCTD 3.0: Sonar Common Target Detection in the Wild - A Large-Scale, Multi-Scene Dataset from Real Marine Surveys",
+      "abstract": "Synthetic Aperture Sonar (SAS) is core for wide-area detection of small underwater targets. However, large-scale, high-quality SAS datasets are scarce, hindering data-driven recognition. Existing benchmarks are small and limited to single scenarios, failing to reproduce complex acoustic scattering, diverse seabeds, and multi-pose imaging in real detection. To fill this gap, we introduce SCTD 3.0 - a large-scale real-measured dataset for Sonar Common Target Detection in the Wild in natural waters. It contains over 10,000 high-quality real SAS image snippets from multi-frequency systems (240 kHz, 450 kHz, and others), covering ten typical target categories across varied seabed geomorphologies, with multiple observation angles, detection ranges, and frequency bands. We establish a rigorous hierarchical annotation protocol that decouples labeling of intrinsic physical properties, deployment characteristics, and scattering phenomena - covering material, geometry, internal structure, burial state, shadow integrity, specular highlights, edge diffraction, and resonance effects. This enables fine-grained target characterization. We also construct a multi-task benchmark for object detection, fine-grained classification, and attribute prediction, evaluating mainstream deep learning models under cross-domain, cross-scene, cross-frequency, and cross-view generalization. SCTD 3.0 is expected to provide a critical data cornerstone for robust underwater target perception in open-water environments. SCTD 3.0 is available at https://github.com/automlresearch/SCTD-3.0.",
+      "authors": [
+        "Peng Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-08T12:39:22+00:00",
+      "link": "https://arxiv.org/pdf/2608.08106v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Large-scale multi-frequency high-frequency SAS dataset for underwater target detection and recognition",
+      "llm_evidence_cn": "大规模多频高频声呐数据集，面向水下目标检测与识别",
+      "llm_evidence": "大规模多频高频声呐数据集，面向水下目标检测与识别",
+      "canonical_evidence": "大规模多频高频声呐数据集，面向水下目标检测与识别",
+      "llm_tldr_en": "Presents SCTD 3.0, a large-scale real marine SAS dataset with over 10,000 images from multi-frequency high-frequency sonar, covering ten target categories, enabling data-driven underwater target detection and recognition in diverse seabed environments.",
+      "llm_tldr_cn": "针对现有声呐基准数据规模小、场景单一、难以支撑数据驱动识别的问题，本文提出SCTD 3.0，一个来自真实海洋调查的大规模多场景声呐通用目标检测数据集。数据集包含超过一万张来自240 kHz、450 kHz等多频高分辨率合成孔径声呐图像切片，覆盖十类典型目标与多种海底地貌。该数据集能够为水下目标识别与分类研究提供高质量的训练与评测资源，推动声呐目标检测技术在自然水域的落地应用。",
+      "llm_tldr": "针对现有声呐基准数据规模小、场景单一、难以支撑数据驱动识别的问题，本文提出SCTD 3.0，一个来自真实海洋调查的大规模多场景声呐通用目标检测数据集。数据集包含超过一万张来自240 kHz、450 kHz等多频高分辨率合成孔径声呐图像切片，覆盖十类典型目标与多种海底地貌。该数据集能够为水下目标识别与分类研究提供高质量的训练与评测资源，推动声呐目标检测技术在自然水域的落地应用。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic target recognition using high frequency features",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.09174v1",
+      "source": "arxiv",
+      "title": "A Time-Frequency Dual-Domain Multi-Scale Convolutional Neural Network for Bearing Fault Diagnosis under Strong Noise",
+      "abstract": "To address the degradation of bearing fault diagnosis accuracy under strong noise, this paper proposes a time-frequency dual-domain multi-scale convolutional neural network. The time-domain branch employs three parallel convolutional kernels to capture multi-scale impulse features, while the frequency-domain branch applies the Fast Fourier Transform to extract noise-robust spectral structure information. Features from both branches are fused for fault classification, yielding a compact model of 110,122 parameters. Experiments on the CWRU bearing dataset across seven signal-to-noise ratio levels demonstrate that the proposed method achieves 99.75% accuracy under clean conditions and maintains 92.50% at -4 dB SNR, representing a 7.25 percentage-point improvement over the single-domain baseline with monotonically increasing gains under stronger noise. Ablation experiments validate the independent performance contributions of the time-domain multi-scale branch and the frequency-domain branch. Comparative experiments against WDCNN, DRSN-CW, MCNN, and 1D-LeNet confirm the superiority of the proposed method under strong noise conditions.",
+      "authors": [
+        "Yanxi Ding",
+        "Tingyue Jia"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-10T06:38:27+00:00",
+      "link": "https://arxiv.org/pdf/2608.09174v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "time-frequency dual-domain multi-scale CNN for robust classification under strong noise, transferable to acoustic target classification",
+      "llm_evidence_cn": "时频双域多尺度CNN在强噪声下鲁棒分类，可迁移到水声目标分类",
+      "llm_evidence": "时频双域多尺度CNN在强噪声下鲁棒分类，可迁移到水声目标分类",
+      "canonical_evidence": "时频双域多尺度CNN在强噪声下鲁棒分类，可迁移到水声目标分类",
+      "llm_tldr_en": "Proposes a time-frequency dual-domain multi-scale CNN that fuses time and frequency features for bearing fault diagnosis under strong noise, achieving 99.75% clean accuracy and 92.50% at -4 dB.",
+      "llm_tldr_cn": "针对强噪声下轴承故障诊断准确率下降的问题，提出一种时频双域多尺度卷积神经网络。网络通过时域分支的多尺度卷积提取脉冲特征，频域分支利用FFT提取噪声鲁棒的频谱结构信息，并将双分支特征融合进行分类。在CWRU数据集多个信噪比下的实验表明，该方法在干净条件下准确率达99.75%，并在-4dB噪声下保持92.50%。",
+      "llm_tldr": "针对强噪声下轴承故障诊断准确率下降的问题，提出一种时频双域多尺度卷积神经网络。网络通过时域分支的多尺度卷积提取脉冲特征，频域分支利用FFT提取噪声鲁棒的频谱结构信息，并将双分支特征融合进行分类。在CWRU数据集多个信噪比下的实验表明，该方法在干净条件下准确率达99.75%，并在-4dB噪声下保持92.50%。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "using high frequency acoustic features for underwater target classification",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

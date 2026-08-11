@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-11",
+  "date": "2026-08-11",
+  "generated_at": "2026-08-11T21:10:45",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/11/2608.08106v1-sctd-30-sonar-common-target-detection-in-the-wild---a-large-scale-multi-scene-dataset-from-real-marine-surveys",
+      "section": "deep",
+      "title_en": "SCTD 3.0: Sonar Common Target Detection in the Wild - A Large-Scale, Multi-Scene Dataset from Real Marine Surveys",
+      "authors": "Peng Zhang",
+      "date": "2026-08-08",
+      "pdf": "https://arxiv.org/pdf/2608.08106v1",
+      "score": "9.0",
+      "evidence": "大规模多频高频声呐数据集，面向水下目标检测与识别",
+      "tldr": "真实水下目标检测受限于缺乏大规模高质量声纳影像数据，现有数据集规模小且场景单一，难以反映复杂散射与多样海底。为此构建SCTD 3.0，包含超万幅多频SAS图像，覆盖十类目标与多种地貌、视角及频段。引入层次化标注协议，解耦物理属性与散射现象，支持细粒度表征。并搭建检测、分类与属性预测多任务基准，验证主流模型的跨域泛化能力，为开放水域目标感知奠定数据基础。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Synthetic Aperture Sonar (SAS) is core for wide-area detection of small underwater targets. However, large-scale, high-quality SAS datasets are scarce, hindering data-driven recognition. Existing benchmarks are small and limited to single scenarios, failing to reproduce complex acoustic scattering, diverse seabeds, and multi-pose imaging in real detection. To fill this gap, we introduce SCTD 3.0 - a large-scale real-measured dataset for Sonar Common Target Detection in the Wild in natural waters. It contains over 10,000 high-quality real SAS image snippets from multi-frequency systems (240 kHz, 450 kHz, and others), covering ten typical target categories across varied seabed geomorphologies, with multiple observation angles, detection ranges, and frequency bands. We establish a rigorous hierarchical annotation protocol that decouples labeling of intrinsic physical properties, deployment characteristics, and scattering phenomena - covering material, geometry, internal structure, burial state, shadow integrity, specular highlights, edge diffraction, and resonance effects. This enables fine-grained target characterization. We also construct a multi-task benchmark for object detection, fine-grained classification, and attribute prediction, evaluating mainstream deep learning models under cross-domain, cross-scene, cross-frequency, and cross-view generalization. SCTD 3.0 is expected to provide a critical data cornerstone for robust underwater target perception in open-water environments. SCTD 3.0 is available at https://github.com/automlresearch/SCTD-3.0.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/11/2608.09174v1-a-time-frequency-dual-domain-multi-scale-convolutional-neural-network-for-bearing-fault-diagnosis-under-strong-noise",
+      "section": "quick",
+      "title_en": "A Time-Frequency Dual-Domain Multi-Scale Convolutional Neural Network for Bearing Fault Diagnosis under Strong Noise",
+      "authors": "Yanxi Ding, Tingyue Jia",
+      "date": "2026-08-10",
+      "pdf": "https://arxiv.org/pdf/2608.09174v1",
+      "score": "6.0",
+      "evidence": "时频双域多尺度CNN在强噪声下鲁棒分类，可迁移到水声目标分类",
+      "tldr": "强噪声下轴承故障诊断精度下降，本文提出时频双域多尺度卷积网络。时域分支用三种并行卷积核提取多尺度冲击特征，频域分支用快速傅里叶变换提取抗噪谱结构，融合后分类，模型仅11万参数。在CWRU数据集七个信噪比下，干净时99.75%，-4dB时92.50%，比单域提升7.25个百分点，强噪声下增益更大。消融和对比实验验证了各分支优势，优于WDCNN等方法。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "To address the degradation of bearing fault diagnosis accuracy under strong noise, this paper proposes a time-frequency dual-domain multi-scale convolutional neural network. The time-domain branch employs three parallel convolutional kernels to capture multi-scale impulse features, while the frequency-domain branch applies the Fast Fourier Transform to extract noise-robust spectral structure information. Features from both branches are fused for fault classification, yielding a compact model of 110,122 parameters. Experiments on the CWRU bearing dataset across seven signal-to-noise ratio levels demonstrate that the proposed method achieves 99.75% accuracy under clean conditions and maintains 92.50% at -4 dB SNR, representing a 7.25 percentage-point improvement over the single-domain baseline with monotonically increasing gains under stronger noise. Ablation experiments validate the independent performance contributions of the time-domain multi-scale branch and the frequency-domain branch. Comparative experiments against WDCNN, DRSN-CW, MCNN, and 1D-LeNet confirm the superiority of the proposed method under strong noise conditions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -6,28 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-10
-- 运行时间：2026-08-10 21:03:09 UTC
+- 最新运行日期：2026-08-11
+- 运行时间：2026-08-11 21:10:38 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
+- 本次总论文数：2
+- 精读区：1
 - 速读区：1
 
 ### 今日简报（AI）
-今日速读论文1篇，暂无精读；研究方向聚焦旋转机械故障诊断。
-
-最值得关注：论文提出“频谱混叠预文本”新任务，用于自监督故障诊断，评分6.0/10。
-
-建议普通读者可先了解自监督学习在工业故障诊断中的基本思路，再深入该文方法。
-- 详情：[/202608/10/README](/202608/10/README)
+今日精读声纳目标检测数据集SCTD 3.0（9.0分），速读强噪声下轴承故障诊断CNN（6.0分）。  
+最值得关注的是SCTD 3.0：大规模多场景真实海洋调查数据，为水下目标检测研究提供权威基准。  
+建议后续优先深入该数据集的应用与对比实验，同时留意强噪声场景下的轻量化模型改进方向。
+- 详情：[/202608/11/README](/202608/11/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [SCTD 3.0: Sonar Common Target Detection in the Wild - A Large-Scale, Multi-Scene Dataset from Real Marine Surveys](/202608/11/2608.08106v1-sctd-30-sonar-common-target-detection-in-the-wild---a-large-scale-multi-scene-dataset-from-real-marine-surveys)  
+   标签：评分：9.0/10、query:shipnoise-hf
+   evidence：大规模多频高频声呐数据集，面向水下目标检测与识别
 
 ### 速读区论文标签
-1. [Spectral Aliasing Pretext: A novel task for Self-Supervised fault diagnosis in rotating machinery](/202608/10/2608.05705v1-spectral-aliasing-pretext-a-novel-task-for-self-supervised-fault-diagnosis-in-rotating-machinery)  
+1. [A Time-Frequency Dual-Domain Multi-Scale Convolutional Neural Network for Bearing Fault Diagnosis under Strong Noise](/202608/11/2608.09174v1-a-time-frequency-dual-domain-multi-scale-convolutional-neural-network-for-bearing-fault-diagnosis-under-strong-noise)  
    标签：评分：6.0/10、query:shipnoise-hf
-   evidence：基于振动信号的频域不变自监督学习，可迁移至声学船舶噪声高频识别
+   evidence：时频双域多尺度CNN在强噪声下鲁棒分类，可迁移到水声目标分类
 
 
 <div class="dpr-home-promo-card">
