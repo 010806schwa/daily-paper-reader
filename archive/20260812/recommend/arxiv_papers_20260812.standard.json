@@ -1,0 +1,96 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-12T21:07:45.662725+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.04465v1",
+      "source": "arxiv",
+      "title": "Jointly Sparse Blind Deconvolution via Riemannian Optimization",
+      "abstract": "Blind deconvolution has been widely applied in system identification and signal processing. While joint sparsity commonly arises in practical scenarios, effectively exploiting this structure to enhance recovery performance remains a challenging and largely open problem. In this paper, we propose a joint-sparsity-promoting optimization problem and develop a Riemannian optimization algorithm for its accurate and efficient solution. We further establish theoretical guarantees that characterize the non-asymptotic relationship between the estimation error and the sample complexity, showing that exploiting joint sparsity can significantly reduce the sample complexity required for successful recovery. Numerical experiments are provided that validate the theoretical results and demonstrate the effectiveness of the proposed approach.",
+      "authors": [
+        "Wenlong Wang",
+        "Baiyang Guo",
+        "Zai Yang",
+        "Shixiang Chen",
+        "Junpeng Shi"
+      ],
+      "primary_category": "math.OC",
+      "categories": [
+        "math.OC",
+        "cs.IT"
+      ],
+      "published": "2026-08-05T05:38:54+00:00",
+      "link": "https://arxiv.org/pdf/2608.04465v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "general blind deconvolution method for joint sparse signal recovery, applicable to underwater acoustic signal processing",
+      "llm_evidence_cn": "面向联合稀疏信号的盲反卷积优化方法，可迁移至水声信号处理与目标特征恢复",
+      "llm_evidence": "面向联合稀疏信号的盲反卷积优化方法，可迁移至水声信号处理与目标特征恢复",
+      "canonical_evidence": "面向联合稀疏信号的盲反卷积优化方法，可迁移至水声信号处理与目标特征恢复",
+      "llm_tldr_en": "This paper formulates a joint-sparsity-promoting blind deconvolution problem and develops a Riemannian optimization algorithm with non-asymptotic recovery guarantees. Exploiting joint sparsity reduces sample complexity, validated numerically. It is a reusable signal processing tool for underwater acoustic feature recovery.",
+      "llm_tldr_cn": "联合稀疏结构在系统辨识和信号处理中普遍存在，但现有盲反卷积方法未能充分利用该结构。本文提出联合稀疏促进的盲反卷积优化问题，并设计黎曼优化算法进行精确求解，同时给出估计误差与样本复杂度之间的非渐近理论界。数值实验验证了联合稀疏能显著降低成功恢复所需样本量。该算法可作为水声信号前端处理工具，为船舰噪声高频特征恢复和目标识别提供理论支撑。",
+      "llm_tldr": "联合稀疏结构在系统辨识和信号处理中普遍存在，但现有盲反卷积方法未能充分利用该结构。本文提出联合稀疏促进的盲反卷积优化问题，并设计黎曼优化算法进行精确求解，同时给出估计误差与样本复杂度之间的非渐近理论界。数值实验验证了联合稀疏能显著降低成功恢复所需样本量。该算法可作为水声信号前端处理工具，为船舰噪声高频特征恢复和目标识别提供理论支撑。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.08301v1",
+      "source": "arxiv",
+      "title": "Machine-Learning-Based Diagnostic Framework for Passive Ultrasonic Detection of Railway Wheel Defects",
+      "abstract": "Reliable identification of railway wheel defects is important for safety and maintenance. This study develops a machine-learning-based diagnostic framework for multi-class defect identification using passive air-coupled ultrasonic acoustic emission signals. Data were collected from eleven full-scale railway wheelsets representing nine health states. Time- and frequency-domain features were evaluated using Kruskal-Wallis statistical testing and mutual-information analysis to identify the most discriminative indicators. A Random Forest classifier was then trained using the selected features with stratified 5-fold cross-validation. The model achieved a balanced accuracy of approximately 0.66 and a Macro-F1 score of 0.65 across the nine classes. Decay rate, kurtosis, skewness, and envelope low-frequency power emerged as the most influential features, while a compact subset of features retained most of the classification performance. The results demonstrate the feasibility of combining passive ultrasonic sensing, statistical feature selection, and supervised machine learning for non-contact railway wheel defect classification and provide a foundation for future field-deployable inspection systems.",
+      "authors": [
+        "Aashish Shaju",
+        "Steve Southward",
+        "Mehdi Ahmadian"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.RO",
+        "eess.SP"
+      ],
+      "published": "2026-08-08T19:24:24+00:00",
+      "link": "https://arxiv.org/pdf/2608.08301v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "machine learning diagnosis using passive ultrasonic acoustic emission with time-frequency features",
+      "llm_evidence_cn": "利用时频特征的被动超声声发射机器学习缺陷诊断",
+      "llm_evidence": "利用时频特征的被动超声声发射机器学习缺陷诊断",
+      "canonical_evidence": "利用时频特征的被动超声声发射机器学习缺陷诊断",
+      "llm_tldr_en": "Presents a machine-learning diagnostic framework for multi-class railway wheel defect identification using passive air-coupled ultrasonic acoustic emission signals, with statistical feature selection and a Random Forest classifier, achieving a balanced accuracy of 0.66 and Macro-F1 of 0.65.",
+      "llm_tldr_cn": "针对铁路车轮缺陷识别中的可靠性问题，本文提出一种基于被动气耦合超声声发射信号的机器学习诊断框架。通过Kruskal-Wallis检验和互信息分析筛选时域与频域特征，并用随机森林分类器结合分层5折交叉验证进行评估。实验在11个全尺寸车轮上实现了约0.66的平衡准确率和0.65的Macro-F1值，为声发射信号在结构健康监测中的应用提供了可行方案。",
+      "llm_tldr": "针对铁路车轮缺陷识别中的可靠性问题，本文提出一种基于被动气耦合超声声发射信号的机器学习诊断框架。通过Kruskal-Wallis检验和互信息分析筛选时域与频域特征，并用随机森林分类器结合分层5折交叉验证进行评估。实验在11个全尺寸车轮上实现了约0.66的平衡准确率和0.65的Macro-F1值，为声发射信号在结构健康监测中的应用提供了可行方案。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

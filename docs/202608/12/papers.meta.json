@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-12",
+  "date": "2026-08-12",
+  "generated_at": "2026-08-12T21:10:15",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/12/2608.04465v1-jointly-sparse-blind-deconvolution-via-riemannian-optimization",
+      "section": "quick",
+      "title_en": "Jointly Sparse Blind Deconvolution via Riemannian Optimization",
+      "authors": "Wenlong Wang, Baiyang Guo, Zai Yang, Shixiang Chen, Junpeng Shi",
+      "date": "2026-08-05",
+      "pdf": "https://arxiv.org/pdf/2608.04465v1",
+      "score": "6.0",
+      "evidence": "面向联合稀疏信号的盲反卷积优化方法，可迁移至水声信号处理与目标特征恢复",
+      "tldr": "盲反卷积在系统辨识和信号处理中应用广泛，实际场景常常出现联合稀疏结构，但有效利用这一先验以提升恢复性能仍是开放难题。本文构建联合稀疏促进的非凸优化模型，并开发黎曼流形上的优化算法实现精确高效求解。理论分析建立了非渐近框架，刻画估计误差与样本复杂度之间的定量关系，揭示联合稀疏可显著降低成功恢复所需的样本数。数值实验验证了理论结果，并表明所提方法在多种设置下均有效。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Blind deconvolution has been widely applied in system identification and signal processing. While joint sparsity commonly arises in practical scenarios, effectively exploiting this structure to enhance recovery performance remains a challenging and largely open problem. In this paper, we propose a joint-sparsity-promoting optimization problem and develop a Riemannian optimization algorithm for its accurate and efficient solution. We further establish theoretical guarantees that characterize the non-asymptotic relationship between the estimation error and the sample complexity, showing that exploiting joint sparsity can significantly reduce the sample complexity required for successful recovery. Numerical experiments are provided that validate the theoretical results and demonstrate the effectiveness of the proposed approach.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/12/2608.08301v1-machine-learning-based-diagnostic-framework-for-passive-ultrasonic-detection-of-railway-wheel-defects",
+      "section": "quick",
+      "title_en": "Machine-Learning-Based Diagnostic Framework for Passive Ultrasonic Detection of Railway Wheel Defects",
+      "authors": "Aashish Shaju, Steve Southward, Mehdi Ahmadian",
+      "date": "2026-08-08",
+      "pdf": "https://arxiv.org/pdf/2608.08301v1",
+      "score": "6.0",
+      "evidence": "利用时频特征的被动超声声发射机器学习缺陷诊断",
+      "tldr": "铁路车轮缺陷的可靠识别对行车安全与维护至关重要。本文提出基于被动空气耦合超声信号与机器学习的诊断框架，利用Kruskal-Wallis检验和互信息分析筛选时频域特征，采用随机森林分类器并经分层5折交叉验证对九种车轮健康状态进行分类。模型平衡准确率约0.66，宏F1分数为0.65，衰减率、峰度、偏度和包络低频功率等特征最具判别力。研究验证了非接触超声传感结合统计特征选择与监督学习用于车轮缺陷分类的可行性，为现场部署检测系统奠定基础。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Reliable identification of railway wheel defects is important for safety and maintenance. This study develops a machine-learning-based diagnostic framework for multi-class defect identification using passive air-coupled ultrasonic acoustic emission signals. Data were collected from eleven full-scale railway wheelsets representing nine health states. Time- and frequency-domain features were evaluated using Kruskal-Wallis statistical testing and mutual-information analysis to identify the most discriminative indicators. A Random Forest classifier was then trained using the selected features with stratified 5-fold cross-validation. The model achieved a balanced accuracy of approximately 0.66 and a Macro-F1 score of 0.65 across the nine classes. Decay rate, kurtosis, skewness, and envelope low-frequency power emerged as the most influential features, while a compact subset of features retained most of the classification performance. The results demonstrate the feasibility of combining passive ultrasonic sensing, statistical feature selection, and supervised machine learning for non-contact railway wheel defect classification and provide a foundation for future field-deployable inspection systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

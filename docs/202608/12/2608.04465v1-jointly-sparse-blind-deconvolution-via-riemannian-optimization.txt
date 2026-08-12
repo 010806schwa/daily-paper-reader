@@ -1,0 +1,14870 @@
+Title: Jointly Sparse Blind Deconvolution via Riemannian Optimization
+
+URL Source: https://arxiv.org/pdf/2608.04465v1
+
+Published Time: Thu, 06 Aug 2026 00:31:41 GMT
+
+Number of Pages: 60
+
+Markdown Content:
+IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+# Journal Name 
+
+> PAPER
+
+Crossmark 
+
+> RECEIVED
+
+dd Month yyyy 
+
+> REVISED
+
+dd Month yyyy 
+
+# Jointly Sparse Blind Deconvolution via Riemannian Optimization 
+
+Wenlong Wang 1 , Baiyang Guo 2 , Zai Yang 1,∗ , Shixiang Chen 3 and Junpeng Shi 2  
+
+> 1School of Mathematics and Statistics, Xi’an Jiaotong University, Xi’an, China
+> 2College of Electronic Engineering, National University of Defense Technology, Hefei, China
+> 3School of Mathematical Sciences,University of Science and Technology of China, Hefei, China
+> ∗Author to whom any correspondence should be addressed.
+> E-mails: wang1813857265@stu.xjtu.edu.cn, guobaiyang@nudt.edu.cn, yangzai@xjtu.edu.cn, shxchen@ustc.edu.cn and shijunpeng20@nudt.edu.cn
+> Keywords: jointly sparse blind deconvolution, Riemannian manifold optimization, sample complexity
+
+Abstract 
+
+Blind deconvolution has been widely applied in system identification and signal processing. While joint sparsity commonly arises in practical scenarios, effectively exploiting this structure to enhance recovery performance remains a challenging and largely open problem. In this paper, we propose a joint-sparsity-promoting optimization problem and develop a Riemannian optimization algorithm for its accurate and efficient solution. We further establish theoretical guarantees that characterize the non-asymptotic relationship between the estimation error and the sample complexity, showing that exploiting joint sparsity can significantly reduce the sample complexity required for successful recovery. Numerical experiments are provided that validate the theoretical results and demonstrate the effectiveness of the proposed approach. 
+
+1 Introduction 
+
+Blind deconvolution is a fundamental inverse problem in information science and signal processing [1, 2], with broad applications in system identification and signal recovery, including seismic imaging [3], astronomical imaging [4], neuroscience [5, 6], fluorescence microscopy [7, 8], radar systems [9], image restoration [10], and wireless communications [11]. Recovering both an unknown channel and unknown input signals from their convolved output without direct knowledge of either constituent is a cornerstone capability in modern information systems. However, blind deconvolution is fundamentally ill-posed: the convolutive structure introduces inherent identifiability ambiguities that prevent unique recovery without additional constraints. Multichannel observation scenarios arise in many practical applications, where each channel shares a common filter and receives a sparse input signal. Incorporating both multichannel measurement and signal sparsity constraints significantly mitigates the ill-posedness of the problem, enabling identifiable and well-posed recovery [12–18]. This paper focuses on a particularly compelling scenario where the input signals across all channels share the same sparse support, referred to as jointly sparse blind deconvolution. The jointly sparse blind deconvolution model arises naturally in radar sensing and fluorescence microscopy applications. In passive sensing systems, the unknown filter corresponds to the transmitted waveform [19, 20], whereas in active sensing systems it may represent sensor imperfections, such as unknown gains and phases [21–23]. The joint sparsity assumption reflects the fact that multichannel measurements are acquired in the same propagation environment and therefore share a small number of sparse propagation paths [24]. This model underlies a variety of important applications, including the resolution of overlapping echoes with unknown characteristics [19, 20], blind gain and phase calibration [21–23], integrated radar–communication systems [9, 25], and synthetic aperture radar autofocus [26]. Jointly sparse blind deconvolution also arises in certain fluorescence microscopy applications, such as fixed-cell microtubule imaging [27]. In these settings, microtubules constitute sparse cellular structures and can be regarded as approximately stationary over short observation intervals [27, 28]. Meanwhile, the imaging system may suffer from non-ideal effects, including optical aberrations, defocus, and refractive-index 1arXiv:2608.04465v1 [math.OC] 5 Aug 2026 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+mismatch [29, 30]. Consequently, accurate image reconstruction requires the simultaneous estimation of both the underlying specimen structure and the unknown imaging system response. For the jointly sparse blind deconvolution model, the observation in each channel is represented as the circulant convolution of an unknown filter and an input signal: 
+
+yl = g ⊛ xl ∈ RN , l = 1 , · · · , L, (1) where N and L denote the filter length and the number of channels (also referred to as the sample size), respectively, xl ∈ RN represents the input signal of the l-th channel, and g ∈ RN denotes the filter. The symbol ⊛ represents the circulant convolution operator, which can be expressed equivalently as a circulant matrix multiplication: 
+
+g ⊛ x = C (g) x, (2) where x denotes an input signal and 
+
+C (g) = 
+
+
+
+g1 gN · · · g2
+
+g2 g1 · · · g3
+
+... ... . . . ...gN gN −1 · · · g1
+
+ ∈ RN ×N . (3) The circulant convolution formulation is widely adopted in practical scenarios where the filter satisfies periodic boundary conditions [31] or serves as an approximation of linear convolution when the filter has compact support or decays rapidly [13, 32]. Throughout this paper, we assume that the input signals {xl}Ll=1 share a common support set Ω ⊆ { 1, 2, · · · , N } with cardinality |Ω| = K.Our objective is to recover both the filter g and the inputs {xl}Ll=1 from the observations {yl}Ll=1 
+
+under the joint sparsity assumption. The jointly sparse blind deconvolution problem reduces to the general multichannel sparse blind deconvolution problem when the input signals in different channels are sparse but do not necessarily share a common support. Various methods have been proposed to address multichannel sparse blind deconvolution with theoretical recovery guarantees [12–15]. Existing theoretical analyses primarily focus on two aspects: the sample complexity required for successful recovery and the development of optimization algorithms with provable convergence guarantees. This paper aims to further improve both the theoretical guarantees and the algorithmic performance by explicitly leveraging the joint sparsity structure. 
+
+1.1 Contributions 
+
+In this paper, we develop an algorithmic framework and theoretical analysis for jointly sparse blind deconvolution. The main contributions are summarized as follows. 1. We formulate jointly sparse blind deconvolution as a Riemannian optimization problem on the unit sphere. To exploit the common support shared by multiple input signals, we introduce a smooth joint-sparsity-promoting objective function that effectively aggregates information across channels while remaining amenable to both geometric analysis and algorithmic development. 2. We establish a geometric characterization of the proposed optimization landscape. Under a probabilistic model in which the nonzero entries of the input signals are independently drawn from a standard Gaussian distribution, we show that every approximate second-order stationary point lies within a neighborhood of the target solution, provided the number of channels is sufficiently large. This result yields a rigorous recovery guarantee for jointly sparse blind deconvolution via nonconvex optimization. 3. Building on the above landscape analysis, we develop a Riemannian gradient descent algorithm with negative curvature search (RGD-NCS). We prove that the proposed algorithm computes an approximate second-order stationary point within a finite number of iterations. Combined with the landscape characterization, this result guarantees that the underlying filter can be recovered accurately with high probability. Furthermore, we extend both the optimization framework and the proposed algorithm to the complex-valued setting. Extensive numerical experiments are conducted to validate the proposed framework. The results demonstrate the effectiveness of the proposed approach and corroborate the theoretical prediction that exploiting joint sparsity reduces the sample complexity required for successful recovery. Finally, the application in array signal processing is presented to illustrate the usefulness of the proposed method. 2IOP Publishing Journal vv (yyyy) aaaaaa Author et al 1.2 Relations to Prior Art 
+
+The advantages of multichannel observations have been extensively studied in areas such as compressed sensing [33, 34] and spectral analysis [35, 36]. In these settings, the measurements are known linear transformations of unknown input signals, and the objective is to recover the input signals by exploiting their joint sparsity. Related research has shown that, when the nonzero entries of the sparse input signals are generated from an appropriate random distribution, exact recovery can be achieved via convex optimization with high probability, provided that the sample size is sufficiently large. In contrast, the jointly sparse blind deconvolution problem considered in this paper is substantially more challenging because the linear transformation itself is unknown, leading to a highly ill-conditioned bilinear inverse problem. Moreover, the only structural assumption imposed on the transformation is that it admits a circulant matrix representation. Early studies on sparse blind deconvolution are mainly focused on incorporating additional prior information about either the filter or the input signals [2, 16, 37–40]. Some works assume that the filter admits a sparse representation under a known dictionary, thereby significantly reducing the number of unknown parameters and improving identifiability [2, 37–40]. Under these assumptions, convex optimization methods can successfully recover both the filter and input signals when the observation length is sufficiently large. Other studies impose stronger structural assumptions on the input signals. For example, the work in [16] assumes that the support of the input signals is restricted to the first few entries and that the matrix formed by the nonzero entries admits a low-dimensional representation in a known subspace. In contrast to these approaches, which rely on additional structural priors, we consider a fully blind setting in which both the input signals and their support are unknown, the nonzero entries are random, and no specific structural assumptions are imposed on the common support set. The main challenges in sparse blind deconvolution stem from the bilinear nonconvexity and parameter ambiguities induced by the convolution structure. Similar challenges also arise in dictionary learning, which aims to recover sparse representations of observed data [41–47]. Since both the dictionary and the sparse coefficients are unknown, dictionary learning is likewise a bilinear inverse problem, differing from sparse blind deconvolution primarily in that the dictionary in the latter is constrained to have a circulant structure. Extensive research on dictionary learning has inspired reparameterization-based optimization methods for bilinear inverse problems. The key idea is to exploit the assumption that the filter is invertible, i.e., the circulant matrix C (g) is nonsingular. Under this assumption, the unknown input signals {xl}Ll=1 can be recovered from the observations {yl}Ll=1 via xl = C (g)−1 yl once the filter g is known. This paper adopts the same assumption throughout. Consequently, the joint recovery problem can be reduced to the estimation of the filter alone. The work in [48] reformulates sparse blind deconvolution as the problem of finding the sparsest vector in an affine subspace, where a linear structure is exploited to resolve the parameter ambiguities, thereby enabling the use of convex optimization techniques with theoretical recovery guarantees. Although the success of this approach relies on the restrictive Bernoulli model, in which the nonzero entries take values in ±1, it provides an important insight: appropriately designed constraints can effectively alleviate parameter ambiguities. Subsequent work extended this framework to the Bernoulli–Gaussian model, where the Bernoulli distribution determines the support locations and the Gaussian distribution models the nonzero values [49]. However, the resulting guarantees require the filter to be sufficiently close to a spiky signal. The work in [12] further relaxes these assumptions by imposing a unit-sphere constraint to mitigate the parameter ambiguities, employing a negative ℓ4-based objective to promote sparsity, and introducing preconditioning techniques to improve the optimization landscape. More recent studies have adopted ℓ1-based objective functions to further enhance sparsity promotion, including approaches based on the Huber function [14] and the log-cosh function [15]. Our work builds upon these developments by employing a joint-sparsity-promoting objective function while retaining the unit-sphere constraint and preconditioning techniques. The key distinction is that the proposed objective is based on the ℓ2,1 norm (see details in the main context), which explicitly exploits the joint sparsity shared across multiple channels. Existing theoretical analyses of sparse blind deconvolution primarily focus on characterizing the sample complexity required for successful recovery. The work in [13] establishes recovery guarantees using a negative ℓ4-based objective function together with preconditioning techniques. Subsequent studies demonstrate that these sample complexity requirements can be improved through ℓ1-based objective functions [14, 15]. These results generally show that, when the sample size is sufficiently large relative to the filter length, the optimization landscape contains a substantial region in which the gradient points toward the target solution, and iterates initialized within this region remain there and converge to a point sufficiently close to the target solution. In contrast, the 3IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+joint-sparsity-promoting objective function considered in this paper gives rise to a significantly more intricate optimization landscape containing numerous saddle points. Consequently, poor solutions cannot be excluded solely on the basis of first-order stationarity conditions. Similar challenges arise in a variety of nonconvex optimization problems, including low-rank matrix recovery [50], phase retrieval [51], and related settings [52, 53]. In these problems, a central theoretical objective is to establish the absence of spurious local minima, namely, to show that every local minimum is globally optimal. Our theoretical analysis follows a similar line of reasoning. Specifically, we prove that sufficiently accurate approximate second-order stationary points lie sufficiently close to the target solution. This result implies that undesirable first-order stationary points can be ruled out through second-order optimality conditions. Furthermore, our analysis reveals that the sample complexity required for successful recovery depends on both the filter length and the sparsity level, while exhibiting a substantially weaker dependence on the filter length than existing results [14, 15]. This finding further highlights the advantages of exploiting joint sparsity. 
+
+1.3 Notations and Organization 
+
+The notations used throughout this paper are summarized as follows. Boldface letters denote vectors and matrices. The sets of real and complex numbers are denoted by R and C, respectively. For a vector x, its transpose, conjugate transpose, complex conjugate, ℓ1 norm, ℓ2 norm, ℓ4 norm, and ℓ∞ norm are denoted as x⊤, xH , x, ∥x∥1, ∥x∥2, ∥x∥4, and ∥x∥∞, respectively. For a matrix 
+
+X, the notations X⊤, XH , X, X−1, and σmin (X) denote its transpose, conjugate transpose, complex conjugate, inverse, and smallest singular value, respectively. For a symmetric matrix X,
+
+λmin (X) denotes its smallest eigenvalue. The j-th entry of the vector x is denoted by xj , and the 
+
+(i1, i 2)-th entry of the matrix X is denoted by Xi1,i 2 . The i-th row and column of a matrix X are denoted as Xi, : and X:,i , respectively. The ℓ2,1 norm of a matrix X ∈ CN ×L is defined as 
+
+∥X∥2,1 = ∑Nn=1 
+
+∥∥∥X⊤
+
+> n, :
+
+∥∥∥2
+
+. For a vector x and a support set Ω, PΩ (x) denotes the projection operator that retains the subvector of x indexed by Ω. For symmetric matrices X and Y , the notation X ⪰ Y indicates that X − Y is positive semidefinite (PSD). The notation |·| denotes either the absolute value of a scalar or the cardinality of a set. The identity matrix is denoted as I.The set SN −1 = {h ∈ RN : ∥h∥2 = 1 } denotes the unit sphere in RN . The vector em denotes the 
+
+m-th canonical basis vector, whose m-th entry is 1 and all other entries are 0. Jn denotes the n × n
+
+reversal matrix with ones on the anti-diagonal and zeros elsewhere. The notation E [·] denotes expectation, and P [·] denotes probability. The diagonal matrix with vector x on its diagonal is represented as diag (x). For positive integers a and b, the notation a mod b denotes the remainder when a is divided by b. For a manifold M and a point x ∈ M , the tangent space of M at x is denoted by TxM. The matrix F [N ] ∈ CN ×N denotes the N × N unitary discrete Fourier transform (DFT) matrix whose (i1, i 2)-th entry is given by 1√N exp 
+
+{
+
+j2π (i1−1)( i2−1) 
+
+> N
+
+}
+
+. For a vector x ∈ CN ,its DFT spectrum is denoted by ̂ x and defined as ̂ x = √N F [N ]H
+
+x.The remainder of this paper is organized as follows. Section 2 introduces the fundamental concepts of sparse blind deconvolution. Section 3 presents the main results, including the optimization framework for jointly sparse blind deconvolution and the characterization of the optimization landscape under statistical assumptions on the input signals. Section 4 describes the proposed algorithm and establishes its convergence and reconstruction error guarantees. Section 5 extends the proposed framework and algorithm to the complex-valued setting. Section 6 presents numerical experiments, and Section 7 concludes the paper. 
+
+2 Preliminaries 
+
+This section introduces several fundamental concepts in sparse blind deconvolution, including the properties of circulant convolution and circulant matrices, parameter identifiability, and optimization techniques relevant to algorithm design. These concepts provide the theoretical foundation for the developments presented in the subsequent sections. 
+
+2.1 Properties of Circulant Convolution 
+
+This subsection summarizes several fundamental properties of circulant convolution. 
+
+Lemma 1 For vectors u, v, and w of length N , the following results hold true: 1) DFT diagonalization [54, Theorem 3.2.2]: 
+
+C (u) = F [N ]diag (̂ u) F [N ]H
+
+. (4) 4IOP Publishing Journal vv (yyyy) aaaaaa Author et al 2) Commutativity [55, Theorem 7]: 
+
+C (u) C (v) = C (v) C (u) . (5) 
+
+3) Associativity [56, Appendix A.3]: 
+
+u ⊛ v ⊛ w = u ⊛ (v ⊛ w) . (6) 
+
+4) Inverse property [57, (2)]: if a circulant matrix is invertible, then its inverse is also circulant. 
+
+We also introduce a useful matrix representation of circulant convolution: 
+
+u ⊛ v = C (u) v = [u⊤Γ1v · · · u⊤ΓN v]⊤ , (7) where 
+
+{
+
+Γn =
+
+[Jn
+
+JN −n
+
+]} Nn=1 
+
+is a collection of symmetric matrices. We next provide the properties of the special circulant matrix C (em) for m = 1 , · · · , N .
+
+Lemma 2 The matrix C (em) is orthogonal and satisfies 
+
+C (em)⊤ = C (e(( N +1 −m) mod N )+1 
+
+) . (8) 
+
+Proof: Since 
+
+∥u∥2 = ∥u ⊛ em∥2 = ∥C (em) u∥2 (9) the matrix C (em) is orthogonal. Moreover, it is straightforward to verify that 
+
+e1 ⊛ e1 = e1, (10) and 
+
+em ⊛ e(( N +1 −m) mod N )+1 = e1. (11) Therefore, 
+
+C (e(( N +1 −m) mod N )+1 
+
+) C (em) = C (e1) = I, (12) which implies (8) and completes the proof. □
+
+Lemma 2 shows that the filter e(( N +1 −m) mod N )+1 serves as an inverse representation of the filter em.Based on these properties, the remainder of this section presents several fundamental results and algorithmic frameworks for sparse blind deconvolution. 
+
+2.2 Parameter Identifiability for Blind Deconvolution 
+
+The blind deconvolution problem in (1) suffers from inherent parameter ambiguities induced by the circulant convolution model, including global scaling ambiguity and circulant shift ambiguity between the filter g and the input signals {xl}Ll=1 . Consequently, recovery of g and {xl}Ll=1 can only be up to a scaling factor and a circulant shift. Specifically, the filter is considered to be accurately recovered if there exists an estimate ˜g such that 
+
+˜g = sg ⊛ em, (13) or equivalently, 
+
+C (˜g) = sC (g) C (em) , (14) where s̸ = 0 is an unknown scaling factor and em corresponds to a circulant shift. Under this condition, it follows from (1), (14), and Lemma 2 that the corresponding signal estimates satisfy, for l = 1 , · · · , L ,
+
+˜xl =C (˜g)−1 yl
+
+= [ sC (g) C (em)] −1 C (g) xl
+
+=s−1C (em)⊤ xl
+
+=s−1e(( N +1 −m) mod N )+1 ⊛ xl.
+
+(15) 5IOP Publishing Journal vv (yyyy) aaaaaa Author et al 2.3 Multichannel Sparse Blind Deconvolution: Reparameterization and Preconditioning 
+
+The main challenges in multichannel sparse blind deconvolution arise from the nonconvexity induced by the bilinear observation model and the unfavorable optimization landscape caused by an unknown ill-conditioned filter g. Without exploiting joint sparsity, existing approaches typically address these challenges through reparameterization to eliminate the bilinearity and preconditioning to improve the optimization landscape [12–15]. Specifically, these approaches reparameterize the input signals in terms of the filter and the observations, thereby reducing the joint recovery of the filter and input signals to the estimation of the filter alone. In particular, by the inverse property established in Lemma 1, there exists a vector h ∈ RN such that 
+
+C (h) = C (˜g)−1 = s−1C (em)⊤ C (g)−1 = s−1C (g)−1 C (em)⊤ , (16) where the last equality follows from the commutativity of circulant matrices in (5). Furthermore, Lemma 2 implies that 
+
+h = s−1C (g)−1 e(( N +1 −m) mod N )+1 , m = 1 , · · · , N, (17) serves as a valid inverse representation of the filter g. Consequently, once h is estimated, the input signals can be recovered as 
+
+˜xl = C (h) yl = h ⊛ yl, l = 1 , · · · , L. (18) To eliminate the scaling ambiguity and exclude the trivial solution h = 0, h is constrained to lie on the unit sphere, leading to the optimization problem 
+
+min  
+
+> h∈SN−1
+
+f ([ C (h) y1 C (h) y2 · · · C (h) yL
+
+]) = f ([ C (y1) h C (y2) h · · · C (yL) h]) , (19) where f denotes a sparsity-promoting objective function, typically constructed as a sum of component-wise functions. Existing formulations can be broadly categorized into negative ℓ4-based objective f−ℓ4 (X) = − ∑Nn=1 
+
+∑Ll=1 |Xn,l |4 and ℓ1-based objective fℓ1 (X) = ∑Nn=1 
+
+∑Ll=1 |Xn,l |.Compared with negative ℓ4-based objectives, ℓ1-based objective functions typically exhibit a more favorable optimization landscape, as the landscape around the target solution is sharper, thereby enabling probability concentration under lower sample complexity requirements [14, 15]. However, when the filter g is ill-conditioned, i.e., C (g) has a large condition number, the optimization landscape deteriorates, and the optimal solution no longer corresponds to the target. To address this issue, preconditioning is employed to improve the conditioning of the optimization problem, yielding 
+
+min  
+
+> h∈SN−1
+
+f ([ C (y1) Rh C (y2) Rh · · · C (yL) Rh ]) , (20) where R is a preconditioning matrix constructed from the observations {yl}Ll=1 . Existing component-wise sparsity-promoting objective functions typically employ the preconditioning matrix [13–15]: 
+
+R =
+
+[
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+C (yl)⊤ C (yl)
+
+]− 12
+
+. (21) Substituting different sparsity-promoting objective functions into (20) yields different optimization problems. In practice, because the ℓ1 norm is nonsmooth, it is typically replaced by smooth approximations, such as the Huber function [14] and the log-cosh function [15]. Despite their effectiveness, these formulations treat each signal independently and therefore cannot exploit the joint sparsity shared across multiple channels. Developing an optimization framework that effectively incorporates this structural prior is the primary focus of this paper. The next section presents the proposed formulation and establishes the corresponding theoretical guarantees. 
+
+3 Jointly Sparse Blind Deconvolution 
+
+In this section, we propose an optimization framework that exploits the joint sparsity of the input signals to achieve simultaneous recovery of both the filter and the signals. We further investigate the geometric properties of the resulting optimization problem to facilitate algorithm design. Our analysis is based on the following assumptions: 1) the nonzero components PΩ (xl), for 
+
+l = 1 , · · · , L , are i.i.d. Gaussian random vectors with zero mean and covariance matrix I; and 2) 
+
+C (g) is invertible with condition number κ. We begin with a detailed formulation of the optimization problem in the form of (20). 6IOP Publishing Journal vv (yyyy) aaaaaa Author et al 3.1 Optimization Problem 
+
+To clarify the roles of the sparsity-promoting objective function and the preconditioning technique, we reformulate (20) by introducing an auxiliary optimization variable Z, whose columns correspond to the estimated input signals across different channels: 
+
+min   
+
+> h∈SN−1,Z∈RN×L
+
+f (Z) , subject to Z:,l = ( Rh ) ⊛ yl, l = 1 , · · · , L. (22) A key component of this formulation is the design of a joint-sparsity-promoting objective function. A natural choice for promoting joint sparsity is the widely used mixed ℓ2,1 norm. However, its nonsmoothness poses significant challenges for both algorithm design and theoretical analysis. To facilitate the subsequent development of efficient algorithms and rigorous performance guarantees, we instead adopt a smooth approximation of the ℓ2,1 norm, leading to the optimization problem 
+
+min   
+
+> h∈SN−1,Z∈RN×L
+> N
+
+∑
+
+> n=1
+
+( 1
+
+L ∥Zn, :∥22 + ε
+
+) 12
+
+, subject to Z:,l = ( Rh ) ⊛ yl, l = 1 , · · · , L, (23) where ε > 0 is a smoothing parameter. From (7), the n-th entry of (Rh ) ⊛ yl can be expressed as 
+
+y⊤ 
+
+> l
+
+ΓnRh for every n = 1 , · · · , N and l = 1 , · · · , L . Consequently, (23) is equivalent to 
+
+min   
+
+> h∈SN−1,Z∈RN×L
+> N
+
+∑
+
+> n=1
+
+( 1
+
+L ∥Zn, :∥22 + ε
+
+) 12
+
+, subject to Zn,l = y⊤ 
+
+> l
+
+ΓnRh , n = 1 , . . . , N, l = 1 , · · · , L. 
+
+(24) Eliminating the auxiliary variable Z yields the following optimization problem on the sphere: 
+
+min  
+
+> h∈SN−1
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRh ∣∣2 + ε
+
+) 12
+
+. (25) We still employ the same preconditioning matrix R as in (21) and will justify this choice in Section 3.3. Once an optimal solution ˜h is obtained, an estimate of the inverse representation of the filter g is given by 
+
+˜ginv = R˜h. (26) Accordingly, an estimate of the filter g is given by 
+
+˜g = C (˜ginv )−1 e1 = C
+
+(
+
+R˜h
+
+)−1
+
+e1. (27) The remainder of this section is devoted to analyzing the geometric properties of the optimization problem in (25) under the statistical assumptions imposed on the input signals. The primary challenge stems from the fact that the shared support structure plays a dual role. On the one hand, it provides additional information that can potentially improve recovery performance and reduce the sample complexity required for successful recovery. On the other hand, it introduces strong dependencies across channels, fundamentally altering the geometry of the resulting optimization problem. In particular, the joint-sparsity-promoting objective function is no longer separable across channels, thereby preventing the direct application of existing theoretical frameworks developed for sparse blind deconvolution. To address these challenges, we develop a new geometric analysis tailored to the proposed optimization problem. Our objective is to understand how the additional structural information introduced by joint sparsity affects the optimization landscape and, consequently, the recovery guarantees and sample complexity of blind deconvolution. The analysis proceeds in two stages. First, we consider a special case in which the filter g is a unit impulse and show that the optimization problem (25) is simplified in this case and admits recovery of both the filter and the input signals from its approximate second-order stationary points. Second, we study the general setting in which the filter g is an arbitrary invertible filter. We show that, with the preconditioning matrix defined in (21), problem (25) approaches the idealized special-case formulation as the sample size increases. 
+
+3.2 Geometry in the Special Case 
+
+We now consider the special case in which the unknown filter g is the unit impulse e1, namely, 
+
+C (g) = I. (28) 7IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+In this setting, the observations {yl}Ll=1 coincide with the input signals {xl}Ll=1 , and every canonical basis vector em, m = 1 , · · · , N , serves as a valid inverse representation of the filter g. In this case, preconditioning is not required, and the optimization problem in (24) reduces to 
+
+min   
+
+> h∈SN−1,Z∈RN×L
+> N
+
+∑
+
+> n=1
+
+( 1
+
+L ∥Zn, :∥22 + ε
+
+) 12
+
+, subject to Zn,l = h⊤Γnxl, n = 1 , . . . , N, l = 1 , · · · , L, 
+
+(29) or equivalently, 
+
+min  
+
+> h∈SN−1
+
+ψ0 
+
+> ε
+
+(h) = 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣x⊤ 
+
+> l
+
+Γnh∣∣2 + ε
+
+) 12
+
+. (30) The unit sphere becomes a Riemannian manifold when equipped with the Euclidean-induced Riemannian metric 
+
+gh (x, y) = x⊤y, (31) where x and y are tangent vectors in the tangent space at h ∈ SN −1. Therefore, (30) can be viewed as an optimization problem on a Riemannian manifold. Define 
+
+EΩ = 1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+xlx⊤ 
+
+> l
+
+− ΣΩ, (32) where ΣΩ = E [xlx⊤
+
+> l
+
+] ⪰ 0 is a diagonal matrix whose diagonal contains 0/1 entries indicating the support set Ω. Then, the objective function in (30) can be expressed as 
+
+ψ0 
+
+> ε
+
+(h) = 
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+xlx⊤
+
+> l
+
+)
+
+Γnh + ε
+
+] 12
+
+=
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+. (33) The asymptotic optimization problem corresponding to EΩ = 0 is given by 
+
+min  
+
+> h∈SN−1
+> N
+
+∑
+
+> n=1
+
+(
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh + ε
+
+) 12
+
+. (34) The following lemma shows that the desired solution can be exactly recovered in the asymptotic setting. To state the result, we first introduce the notion of a non-uniform support set. Specifically, the common support set Ω is said to be non-uniform if it does not exhibit any nontrivial cyclic symmetry; that is, there exists no nonzero shift s ∈ { 1, 2, · · · , N − 1} such that 
+
+((Ω + s − 1) mod N ) + 1 = Ω . (35) The following property establishes that the non-uniformity of the support set is both necessary and sufficient for exact recovery in the asymptotic setting. 
+
+Proposition 1 The global minimizers of problem (34) are signed canonical basis vectors if and only if Ω is non-uniform. Proof: (⇐) Since ∥h∥2 = 1 and Γ⊤ 
+
+> n
+
+ΣΩΓn is diagonal for each n = 1 , · · · , N , it follows that 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh + ε
+
+) 12
+
+=
+
+> N
+
+∑
+
+> n=1
+
+[ N∑
+
+> m=1
+
+h2
+
+> m
+
+(
+
+e⊤
+
+> m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnem + ε
+
+)] 12
+
+≥
+
+> N
+
+∑
+
+> n=1
+> N
+
+∑
+
+> m=1
+
+h2
+
+> m
+
+(
+
+e⊤
+
+> m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnem + ε
+
+) 12
+
+=
+
+> N
+
+∑
+
+> m=1
+
+h2
+
+> mN
+
+∑
+
+> n=1
+
+(
+
+e⊤
+
+> m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnem + ε
+
+) 12
+
+=
+
+> N
+
+∑
+
+> m=1
+
+h2
+
+> m
+
+[K√1 + ε + ( N − K) √ε]
+
+=K√1 + ε + ( N − K) √ε
+
+=
+
+> N
+
+∑
+
+> n=1
+
+(
+
+e⊤
+
+> m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnem + ε
+
+) 12
+
+,
+
+(36) 8IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+where the inequality follows from the strict concavity of the square-root function. Moreover, equality in (36) holds if and only if, for every n = 1 , · · · , N , the quantity e⊤
+
+> m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnem takes the same value for all indices m satisfying hm̸ = 0 . Suppose that h̸ = ±em for every m = 1 , . . . , N .Then there exist distinct indices m and ˜m such that hm̸ = 0 and h ˜m̸ = 0 . If Ω is non-uniform, there exists at least one n ∈ { 1, · · · , N } such that 
+
+e⊤
+
+> m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnem̸ = e⊤
+
+> ˜m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓne ˜m. (37) This contradicts the equality condition above. Therefore, equality in (36) holds only if h = ±em
+
+for some m = 1 , . . . , N . Consequently, every global minimizer of problem (34) is a signed canonical basis vector. 
+
+(⇒) Suppose that Ω is uniform. Then there exists a nonzero shift s ∈ { 1, 2, · · · , N − 1} such that ((Ω − 1 + s) mod N ) + 1 = Ω . For any m ∈ { 1, 2, · · · , N }, define its cyclically shifted index as 
+
+ms = (( m − 1 + s) mod N ) + 1 . We immediately have that ms̸ = m. Moreover, the cyclic invariance of Ω implies that e⊤
+
+> m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnem = e⊤ 
+
+> ms
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnems for all n = 1 , · · · , N .Consequently, the equality condition in (36) is satisfied by every vector of the form 
+
+h = c1em + c2ems with c21 + c22 = 1 . Hence, every such vector attains the global minimum of (34), contradicting the assumption that all global minimizers are signed canonical basis vectors. Therefore, Ω must be non-uniform. □
+
+Proposition 1 shows that, under the non-uniform support assumption, problem (34) admits no additional global minimizers that are indistinguishable from the target solution. This assumption is mild and is satisfied in most practical scenarios. In contrast, a uniform support pattern imposes stringent algebraic constraints on both the filter length N and the support set Ω, making it highly unlikely to occur in practice. Moreover, it is shown in [58] that EΩ converges to 0 as the sample size L increases. The following lemma provides a non-asymptotic tail bound for the sample covariance matrix of a Gaussian random vector. 
+
+Lemma 3 [58, Example 6.2] For any δ > 0, the following bound holds with probability at least 
+
+1 − 2 exp 
+
+{
+
+− Lδ 2
+
+> 2
+
+}
+
+:
+
+∥EΩ∥2 ≤ 2
+
+(√ KL + δ
+
+)
+
++
+
+(√ KL + δ
+
+)2
+
+. (38) Consequently, when L is sufficiently large, problem (30) can be viewed as a perturbation of its asymptotic counterpart (34). We next establish rigorously that solving (30) recovers the target solution by characterizing the geometric landscape of the objective function over the unit sphere under the non-uniform support assumption. Specifically, we investigate the first- and second-order geometric properties of the objective function in (30) and show that, when the sample size L is sufficiently large, every approximate second-order stationary point lies in a neighborhood of the target solution. According to [59, Proposition 3.53], the Riemannian gradient of ψ0 
+
+> ε
+
+, denoted by grad ψ0 
+
+> ε
+
+(h), is obtained by projecting the Euclidean gradient ∇ ψ0 
+
+> ε
+
+(h) onto the tangent space: grad ψ0 
+
+> ε
+
+(h) = 
+
+(
+
+I − hh ⊤)
+
+∇ ψ0 
+
+> ε
+
+(h)=
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+I − hh ⊤)
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh.
+
+(39) Consider an approximate first-order stationary point h ∈ SN −1 satisfying 
+
+√gh (grad ψ0 
+
+> ε
+
+(h) , grad ψ0 
+
+> ε
+
+(h)) = ∥∥grad ψ0 
+
+> ε
+
+(h)∥∥2 ≤ ξ. (40) To determine whether h is also an approximate second-order stationary point, we further investigate the second-order geometry of ψ0 
+
+> ε
+
+at h. Specifically, we examine whether the Riemannian Hessian of ψ0 
+
+> ε
+
+on the unit sphere, denoted by Hess ψ0 
+
+> ε
+
+(h), is approximately PSD; that is, whether 
+
+λmin 
+
+(Hess ψ0 
+
+> ε
+
+(h)) ≥ − ξ holds for a sufficiently small positive constant ξ. Observe that if there exists a tangent vector d ∈ ThSN −1 such that d⊤Hess ψ0 
+
+> ε(h)d
+> ∥d∥22
+
+is sufficiently negative, then Hess ψ0 
+
+> ε
+
+(h) must possess a sufficiently negative eigenvalue, implying that h cannot be an approximate second-order stationary point. Motivated by this observation, we construct a tangent vector d for the case ∥h∥∞̸ = 1 and show that d⊤Hess ψ0 
+
+> ε(h)d
+> ∥d∥22
+
+is sufficiently negative whenever h is sufficiently far from every canonical basis vector. Without loss of generality (WLOG), let o denote 9IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+the index of the largest-magnitude entry of h. We further assume that ho > 0. This assumption is trivial, since replacing h with −h yields an equivalent solution whenever ho < 0. Consequently, 
+
+ho = ∥h∥∞ ≥ 1
+
+√N . (41) Since eo is the canonical basis vector closest to h, we consider the direction 
+
+d = eo −
+
+(
+
+h⊤eo
+
+)
+
+h = eo − hoh ∈ ThSN −1, (42) which is collinear with the Riemannian logarithmic direction from h to eo. Its length is given by 
+
+∥d∥2 =
+
+√
+
+d⊤d = √1 − h2 
+
+> o
+
+≤ 1. (43) We next characterize the second-order behavior of ψ0 
+
+> ε
+
+along the direction d by deriving a bound for   
+
+> d⊤Hess ψ0
+> ε(h)d
+> ∥d∥22
+
+under the condition ho̸ = 1 .The following lemma establishes the concentration behavior of the quantity h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh,which appears in the objective function of the asymptotic optimization problem (34). This quantity serves as a key indicator of the proximity of h to a canonical basis vector. 
+
+Lemma 4 Let h satisfy (41) . If Ω is non-uniform, then 
+
+min 
+
+> n∈χo
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh ≤ min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
+, (44) 
+
+where 
+
+χo =
+
+{
+
+n : e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+ΣΩΓneo = 1 
+
+}
+
+= {( (i + o − 2) mod N ) + 1 : i ∈ Ω} (45) 
+
+denotes the set of indices n for which the permutation operator Γn maps the index o into the support set Ω.Proof: The proof exploits the non-uniformity of the support set, which ensures that the contributions of different components of h can be distinguished through the objective function in problem (34). The detailed proof is deferred to Section 8 of Supplementary Material. □
+
+Lemma 4 implies that min 
+
+> n∈χo
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh tends to increase as ho becomes larger. This quantity measures the extent to which h is concentrated around its dominant coordinate. In particular, larger values indicate that h is more strongly aligned with a canonical basis vector. Building upon Lemma 4, we next derive an upper bound for d⊤Hess ψ0 
+
+> ε(h)d
+> ∥d∥22
+
+.
+
+Lemma 5 Let h be an approximate first-order stationary point satisfying (40) and (41) . Suppose that Ω is non-uniform. Then there exist positive constants c1, c2, and c3 such that, whenever 
+
+∥EΩ∥2 ≤ c1K−2 max −1 {K2, N }, ε ≤ c2K−6N −2, and ξ ≤ c3K−3N − 12 , the following inequality holds for ho ∈
+
+[√ 1 
+
+> N
+
+, 1
+
+)
+
+:
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ (1 + c1 + c2)− 32 h2
+
+> o
+
+∥d∥22
+
+(
+
+min 
+
+{
+
+1 − 1 − h2
+
+> o
+
+K , Kh 2
+
+> o
+
+}) − 32
+
+min 
+
+{
+
+− 1 − h2
+
+> o
+
+K , Kh 2 
+
+> o
+
+− 1
+
+}
+
++ h2
+
+> o
+
+∥d∥22
+
+(
+
+min 
+
+{
+
+1 − 1 − h2
+
+> o
+
+K , Kh 2
+
+> o
+
+}) − 32
+
+(∥EΩ∥2 + ε)+ 4 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 + 20 
+
+∥d∥22
+
+h−2 
+
+> o
+
+K ∥EΩ∥2 + c1 + c2 + 2 c 12 
+
+> 2
+
++ c3
+
+∥d∥22
+
+K−3,
+
+(46) 
+
+where 
+
+χh =
+
+{
+
+n : h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh > 0
+
+}
+
+. (47) 
+
+Proof: The main objective of the proof is to establish negative curvature of the Riemannian Hessian along the direction d. To this end, we decompose the Hessian into a dominant geometric component and a perturbation component. We then show that the dominant component is strictly negative, while the perturbation component can be controlled by ∥EΩ∥2, ε, and ξ. The detailed proof is provided in Section 9 of Supplementary Material. □
+
+10 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Note that when the smoothing parameter ε, the first-order stationarity residual ξ, and ∥EΩ∥2
+
+are sufficiently small, the positive constants c1, c2, and c3 can be made arbitrarily small. By setting 
+
+c1, c2, and c3 to zero, Lemma 5 implies that the quantity d⊤Hess ψ0 
+
+> ε(h)d
+> ∥d∥22
+
+is asymptotically upper bounded by − h2
+
+> o
+> ∥d∥22
+
+(
+
+1 − 1−h2
+
+> o
+> K
+
+)− 32 1−h2 
+
+> o
+> K
+
+. This upper bound is strictly negative whenever ho < 1.Consequently, any h that remains sufficiently far from all canonical basis vectors cannot be a second-order stationary point. Motivated by this observation, we further refine the upper bound on   
+
+> d⊤Hess ψ0
+> ε(h)d
+> ∥d∥22
+
+based on Lemma 5. In particular, we consider three regimes corresponding to different ranges of ho.
+
+Case 1 (Small ho): We consider the regime Kh 2 
+
+> o
+
+≤ 1 − 1−h2 
+
+> o
+> K
+
+, which is equivalent to 
+
+ho ≤
+
+√ 1 
+
+> K+1
+
+. For this regime, we establish the following proposition. 
+
+Proposition 2 Let h be an approximate first-order stationary point satisfying (40) and (41) .Suppose that Ω is non-uniform and ho ∈
+
+[√ 1 
+
+> N
+
+,
+
+√ 1
+
+> K+1
+
+]
+
+. Then there exist positive constants c1, c2,
+
+c3, c4 such that, whenever ∥EΩ∥2 ≤ c1K− 52 max −1
+
+{
+
+N, KN 12 , K 2
+
+}
+
+, ε ≤ c2K−6N −2, and 
+
+ξ ≤ c3K−3N − 12 , it holds that 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ − c4K−2. (48) 
+
+Proof: The key idea is to specialize the bound in Lemma 5 to the regime ho ∈
+
+[√ 1 
+
+> N
+
+,
+
+√ 1
+
+> K+1
+
+]
+
+by imposing more explicit conditions on ∥EΩ∥2. This yields a concrete negative-curvature bound for the Riemannian Hessian along the direction d. The detailed proof is provided in Section 10 of Supplementary Material. □
+
+Proposition 2 implies that, when ε, ξ, and ∥EΩ∥2 are sufficiently small, no second-order stationary points exist far from any canonical basis vector. 
+
+Case 2 (Moderate ho): We consider the regime 
+
+√
+
+1 − 14K ≥ ho >
+
+√ 1 
+
+> K+1
+
+. For this regime, we establish the following result. 
+
+Proposition 3 Let h be an approximate first-order stationary point satisfying (40) and (41) .Suppose that Ω is non-uniform and ho ∈
+
+(√ 1 
+
+> K+1
+
+,
+
+√
+
+1 − 14K
+
+]
+
+. Then there exist positive constants 
+
+c1, c2, c3, c4 such that, whenever ∥EΩ∥2 ≤ c1K− 52 max −1 {N, K 2}, ε ≤ c2K−6N −2, and 
+
+ξ ≤ c3K−3N − 12 , it holds that 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ − c4K−2. (49) 
+
+Proof: The proof follows the same argument as that of Proposition 2. The detailed proof is provided in Section 11 of Supplementary Material. □
+
+Proposition 3 implies that, when ε, ξ, and ∥EΩ∥2 are sufficiently small, no second-order stationary points exist if the point remains moderately far from every canonical basis vector. 
+
+Case 3 (Large ho): We consider the regime 
+
+√
+
+1 − 14K2 ≥ ho >
+
+√
+
+1 − 14K . For this regime, we establish the following result. 
+
+Proposition 4 Let h be an approximate first-order stationary point satisfying (40) and (41) .Suppose that Ω is non-uniform and ho ∈
+
+(√ 
+
+1 − 14K ,
+
+√
+
+1 − 14K2
+
+]
+
+. Then there exist positive constants c1, c2, c3, c4 such that, whenever ∥EΩ∥2 ≤ c1K− 52 max −1 {N, K 2}, ε ≤ c2K−6N −2, and 
+
+ξ ≤ c3K−3N − 12 , it holds that 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ − c4K−3. (50) 
+
+Proof: The proof follows the same argument as that of Proposition 2. The detailed proof is provided in Section 12 of Supplementary Material. □
+
+Proposition 4 implies that, when ε, ξ, and ∥EΩ∥2 are sufficiently small, no approximate second-order stationary points exist unless the point is sufficiently close to a canonical basis vector. Combining the analyses of the above three regimes yields the following result. 11 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Corollary 1 Let h be an approximate first-order stationary point satisfying (40) and (41) .Suppose that Ω is non-uniform and ho ∈
+
+[√ 1 
+
+> N
+
+,
+
+√
+
+1 − 14K2
+
+]
+
+. Then there exist positive constants c1,
+
+c2, c3, c4 such that, whenever ∥EΩ∥2 ≤ c1K− 52 max −1
+
+{
+
+N, KN 12 , K 2
+
+}
+
+, ε ≤ c2K−6N −2, and 
+
+ξ ≤ c3K−3N − 12 , it holds that 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ − c4K−3. (51) 
+
+Proof: The result follows directly from Propositions 2, 3, and 4. □
+
+Corollary 1 indicates that no approximate second-order stationary points exist unless the point is sufficiently close to a canonical basis vector. We next analyze the distance between an approximate first-order stationary point and its nearest canonical basis vector when the point is sufficiently close to a canonical basis vector, specifically when ho >
+
+√
+
+1 − 14K2 . The following proposition characterizes this result. 
+
+Proposition 5 Let h be an approximate first-order stationary point satisfying (40) and (41) .Suppose that Ω is non-uniform and ho ∈
+
+(√ 
+
+1 − 14K2 , 1
+
+]
+
+. There exist positive constants c1, c2, c3,
+
+c4 such that, whenever ∥EΩ∥2 ≤ c1K−2 and ε ≤ c2K−2, it holds that 
+
+∥h − eo∥2 ≤c3K−1ξ + c4K−1N ∥EΩ∥2 . (52) 
+
+Proof: The key idea is to establish a local error bound using only the approximate first-order stationarity condition when h is already sufficiently close to a canonical basis vector. The detailed proof is provided in Section 13 of Supplementary Material. □
+
+By combining Corollary 1 and Proposition 5, we obtain the following result. 
+
+Theorem 1 Suppose that Ω is non-uniform and h is an approximate first-order stationary point satisfying (40) and (41) . There exist positive constants c1, c2, c3, c4, and c5 such that, whenever 
+
+∥EΩ∥2 ≤ c1K− 52 max −1
+
+{
+
+N, KN 12 , K 2
+
+}
+
+, ε ≤ c2K−6N −2, ξ ≤ c3K−3N − 12 , and Hess ψ0 
+
+> ε
+
+(h) ⪰ − c4K−3I, it holds that 
+
+∥h − eo∥2 ≤c5K−1 (ξ + N ∥EΩ∥2) . (53) 
+
+Proof: Since Ω is non-uniform, h is an approximate first-order stationary point satisfying (40) and (41), Corollary 1 implies that ho ∈
+
+(√ 
+
+1 − 14K2 , 1
+
+]
+
+provided Hess ψ0 
+
+> ε
+
+(h) ⪰ − c4K−3I. Applying Proposition 5 then yields the desired result. □
+
+Theorem 1 establishes a recovery error bound in terms of ∥EΩ∥2. By combining this result with the concentration bound in Lemma 3, we further characterize the dependence of the recovery error on the sample size L in the following theorem. 
+
+Theorem 2 Suppose that Ω is non-uniform and h is an approximate first-order stationary point satisfying (40) and (41) . There exist positive constants c1, c2, c3, c4, and c5 such that, whenever 
+
+ε ≤ c2K−6N −2, ξ ≤ c3K−3N − 12 , and Hess ψ0 
+
+> ε
+
+(h) ⪰ − c4K−3I, for 
+
+L ≥ c1
+
+(√K + √log L
+
+)2
+
+K5 max {N 2, K 2N, K 4} , (54) 
+
+it holds with probability at least 1 − 2L−8 that 
+
+∥h − eo∥2 ≤c5K−1
+
+[
+
+ξ + N
+
+(√ KL +
+
+√ log LL
+
+)] 
+
+. (55) 
+
+Proof: Setting δ =
+
+√ 16 log LL , we obtain from Lemma 3 that, with probability at least 
+
+1 − 2 exp 
+
+{
+
+− 16 log L
+
+> 2
+
+}
+
+= 1 − 2L−8,
+
+∥EΩ∥2 ≤ 2
+
+(√ KL +
+
+√ 16 log LL
+
+)
+
++
+
+(√ KL +
+
+√ 16 log LL
+
+)2
+
+. (56) Moreover, there exists a positive constant c such that, if 
+
+L ≥ 16 c−2 (√K + 4 √log L
+
+)2 (
+
+K 52 max 
+
+{
+
+N, KN 12 , K 2}) 2
+
+, (57) 12 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+then 
+
+∥EΩ∥2 ≤ 4
+
+(√ KL +
+
+√ 16 log LL
+
+)
+
+≤ cK − 52 min 
+
+{
+
+N −1, K −1N − 12 , K −2}
+
+. (58) Applying Theorem 1 completes the proof. □
+
+Theorem 2 explicitly characterizes the recovery error attained by an approximate second-order stationary point. Note that the sample complexity requirement in (54) is approximately of order 
+
+O (K6N 2) when logarithmic factors are ignored and N ≥ K2. A related result was established in [15]. In contrast to the present work, [15] does not assume joint sparsity of the input signals. Instead, each entry of {xl}Ll=1 is modeled as an independent Bernoulli–Gaussian random variable. Under this model, the required sample complexity is approximately of order O (θ−2N 4), where θ
+
+denotes the Bernoulli parameter governing the sparsity ratio; see [15, Theorem 2]. Since θ can be interpreted as θ ≈ KN , this condition becomes O (K−2N 6). Consequently, in the practically relevant regime where K2 ≤ N , the sample complexity requirement established in this paper is less restrictive than that of [15]. Such a regime commonly arises in applications of interest. For example, in radar systems, the filter length N is determined by the number of temporal measurement samples, whereas the sparsity level K corresponds to the number of targets and is typically small [60]. These results demonstrate that exploiting joint sparsity can substantially reduce the sample complexity required for successful recovery. In the next subsection, we extend the preceding analysis to the case of general invertible filters. This setting is considerably more challenging because the target solutions no longer possess the simple structure of canonical basis vectors. 
+
+3.3 Geometry in the General Case 
+
+We now consider the general case, where the filter g is arbitrary but satisfies the invertibility condition that C (g) is nonsingular. An effective strategy is to introduce a suitable preconditioning matrix R so that solving problem (25) becomes nearly equivalent to solving the corresponding problem in the special case (30) [12–15]. Following the existing literature on sparse blind deconvolution, the preconditioning matrix is designed to compensate for the effect of the unknown filter on the input signals. Specifically, the constraints in the multichannel sparse blind deconvolution problem (22) can be rewritten as 
+
+(Rh ) ⊛ yl = ( Rh ) ⊛ (g ⊛ xl) = ( Rh ) ⊛ g ⊛ xl = ( C (g) Rh ) ⊛ xl, l = 1 , · · · , L, (59) where the second equality follows from the associativity of circulant convolution established in (6). Therefore, choosing the preconditioning matrix as 
+
+˜R =
+
+[
+
+C (g)⊤ C (g)
+
+]− 12 (60) and defining the orthogonal matrix 
+
+U = C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]− 12 (61) yield 
+
+C (g) ˜RU ⊤ = I. (62) Consequently, for l = 1 , · · · , L ,
+
+( ˜Rh 
+
+)
+
+⊛ yl =
+
+(
+
+C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+U ⊤q
+
+)
+
+⊛ xl = q ⊛ xl. (63) This transformation converts the estimation of h into that of q, where q interacts directly with the input signals, with the effect of the unknown filter completely removed. Moreover, the preconditioning matrix R defined in (21) provides a non-asymptotic approximation to 1√K
+
+˜R, as established later in Lemma 7, thereby making it a natural candidate for preconditioning from the system perspective. The remainder of this subsection further justifies this choice from the optimization perspective and establishes the geometric properties of the resulting optimization problem. Using the preconditioning matrix R defined in (21), we reformulate problem (25) as 
+
+min  
+
+> h∈SN−1
+> N
+
+∑
+
+> n=1
+
+ 1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣∣∣∣∣y⊤ 
+
+> l
+
+Γn
+
+[
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+C (yl)⊤ C (yl)
+
+]− 12
+
+h
+
+∣∣∣∣∣∣
+
+> 2
+
++ ε
+
+
+
+> 12
+
+. (64) 13 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+For analytical convenience, we further consider the optimization problem 
+
+min  
+
+> h∈SN−1
+
+ψε (h) = 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣∣y⊤ 
+
+> l
+
+ΓnRU ⊤h
+
+∣∣∣2
+
++ ε
+
+) 12
+
+=
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣∣x⊤ 
+
+> l
+
+C (g)⊤ ΓnRU ⊤h
+
+∣∣∣2
+
++ ε
+
+) 12
+
+.
+
+(65) Problems (64) and (65) differ only by the orthogonal transformation U applied to the optimization variable. Since orthogonal transformations preserve the geometry of optimization problems on the unit sphere, the two formulations possess identical geometric properties. Therefore, we focus on the geometric analysis of problem (65), with particular emphasis on quantifying the discrepancy between problems (65) and (30) arising from the finite-sample approximation error of the preconditioning matrix. To proceed, we need the following result. 
+
+Lemma 6 For every n = 1 , · · · , N and any vector u of length N , it holds that 
+
+C (u)⊤ Γn = ΓnC (u) . (66) 
+
+Proof: For any n1, n 2 ∈ { 1, · · · , N }, we have 
+
+e⊤ 
+
+> n1
+
+C (u)⊤ Γnen2 = ( u ⊛ en1 )⊤ e(( n−n2) mod N )+1 
+
+= [u⊤Γ1en1 · · · u⊤ΓN en1
+
+] e(( n−n2) mod N )+1 
+
+=u⊤Γ(( n−n2) mod N )+1 en1
+
+=u⊤e(((( n−n2) mod N )+1 −n1) mod N )+1 ,
+
+(67) where the last equality follows from 
+
+Γnem = e(( n−m) mod N )+1 , n = 1 , · · · , N. (68) On the other hand, 
+
+e⊤ 
+
+> n1
+
+ΓnC (u) en2 =e⊤   
+
+> (( n−n1) mod N)+1
+
+(u ⊛ en2 )= ( u ⊛ en2 )⊤ e(( n−n1) mod N )+1 
+
+=u⊤e(((( n−n1) mod N )+1 −n2) mod N )+1 .
+
+(69) Since 
+
+((( n − n2) mod N ) + 1 − n1) mod N = ((( n − n1) mod N ) + 1 − n2) mod N , (70) the two expressions above are identical. Hence, for all n1, n 2,
+
+e⊤ 
+
+> n1
+
+C (u)⊤ Γnen2 = e⊤ 
+
+> n1
+
+ΓnC (u) en2 , (71) which completes the proof. □
+
+Lemma 6 reveals a reversal-symmetry property of circulant matrices, namely, 
+
+C (u)⊤ = ΓnC (u) Γ⊤ 
+
+> n
+
+, (72) which allows the coupled terms introduced by the joint-sparsity-promoting objective to be manipulated in a manner analogous to that used for entry-wise sparsity-promoting objectives. Specifically, using Lemma 6, we obtain 
+
+C (g)⊤ ΓnRU ⊤ = ΓnC (g) RU ⊤ = Γn
+
+( 1
+
+√K I + C (g) RU ⊤ − 1
+
+√K I
+
+)
+
+. (73) Substituting this identity into (65) yields 
+
+ψε (h) = 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣∣∣x⊤ 
+
+> l
+
+Γn
+
+( 1
+
+√K I + C (g) RU ⊤ − 1
+
+√K I
+
+)
+
+h
+
+∣∣∣∣
+
+> 2
+
++ ε
+
+) 12
+
+=
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣∣∣x⊤ 
+
+> l
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+∣∣∣∣
+
+> 2
+
++ ε
+
+) 12
+
+=
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+,
+
+(74) 14 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+where 
+
+∆ =C (g) RU ⊤ − 1
+
+√K I. (75) It is noteworthy that if ∆ = 0, then problem (65) reduces to 
+
+min  
+
+> h∈SN−1
+> N
+
+∑
+
+> n=1
+
+[ 1
+
+K h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+= 1
+
+√K
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + Kε 
+
+] 12
+
+. (76) It follows immediately that solving problem (76) is equivalent to solving problem (30), up to a rescaling of the smoothing parameter ε by a factor of 1 
+
+> K
+
+. Therefore, problem (65) reduces to the special-case formulation when ∆ = 0, thereby justifying the choice of the preconditioning matrix. We next establish the following lemma for the subsequent analysis of the optimization problem, which provides a bound on ∥∆∥2 as a function of the sample size L. This result will serve as a key ingredient in quantifying the deviation of problem (65) from its ideal counterpart. 
+
+Lemma 7 There exist positive constants c1 and c2 such that for any t ∈
+
+(
+
+0, κ−2
+
+> 2
+
+)
+
+, the following bounds hold with probability at least 1 − 2N exp 
+
+{
+
+− Lt 2     
+
+> c1log 22N+( c2log 2 N)t
+
+}
+
+:
+
+∥∆∥2 ≤ 2κ4t
+
+√K . (77) 
+
+and ∥∥∥∥R − 1
+
+√K
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+∥∥∥∥2
+
+≤ 2κ4t
+
+√Kσ min (C (g)) , (78) 
+
+Proof: The proof is inspired by that of [15, Lemma 2]. The key distinction is that our analysis explicitly exploits the joint sparsity structure of the input signals, which leads to a sharper bound on ∥∆∥2. The main idea is to first establish a relationship between ∥∆∥2 and ∥∥∥ 1
+
+> KL
+
+∑Ll=1 C (xl)⊤ C (xl) − I
+
+∥∥∥2
+
+and then characterize the latter quantity using the DFT diagonalization property of circulant matrices (4) established in Lemma 1. The detailed proof is provided in Section 14 of Supplementary Material. □
+
+Based on Lemma 7, we investigate in the remainder of this subsection the geometric landscape of the objective function in (65) over the unit sphere in the finite-sample regime. Similar to the unit-impulse-filter case, we show that all approximate second-order stationary points of problem (65) lie sufficiently close to the target solution when the sample size is sufficiently large. The Riemannian gradient of ψε is given by grad ψε (h) = 
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]− 12
+
+·
+
+(
+
+I − hh ⊤) ( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h.
+
+(79) Consider a vector h ∈ SN −1 satisfying (41), and suppose that h is an approximate first-order stationary point, i.e., 
+
+√gh (grad ψε (h) , grad ψε (h)) = ∥grad ψε (h)∥2 ≤ ξ. (80) Let eo denote the canonical basis vector closest to h, as in Section 3.2. Furthermore, let d, defined in (42), represent the direction of the Riemannian logarithmic direction from h toward eo. We characterize the second-order behavior of ψε along the direction d through the quantity  
+
+> d⊤Hess ψε(h)d
+> ∥d∥22
+
+. The following lemma establishes an upper bound on d⊤Hess ψε(h)d
+
+> ∥d∥22
+
+in terms of ∥E∥Ω,
+
+∥∆∥2, ε, and ξ.
+
+Lemma 8 Let h be an approximate first-order stationary point satisfying (41) and (80) . Suppose that Ω is non-uniform. Then there exist positive constants c1, c2, c3, and c4 such that, whenever 
+
+∥EΩ∥2 ≤ c1 min 
+
+{
+
+K− 72 N −1, ε 12
+
+}
+
+, ∥∆∥2 ≤ c2 min 
+
+{
+
+K−4N −1, K −3N − 32 , ε 12 K 12 N − 12
+
+}
+
+,
+
+15 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+ε ≤ c3K−7N −2, and ξ ≤ c4K− 72 N − 12 , it holds that 
+
+d⊤Hess ψε (h) d
+
+∥d∥22
+
+≤K− 12 (1 + 2 c1 + 3 c2 + c3)− 32 h2
+
+> o
+
+∥d∥22
+
+(
+
+min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}) − 32
+
+· min 
+
+{
+
+Kh 2 
+
+> o
+
+− 1, − 1 − h2
+
+> o
+
+K
+
+}
+
++ K− 12
+
+h2
+
+> o
+
+∥d∥22
+
+(
+
+min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}) − 32 (
+
+3K 12 ∥∆∥2 + 2 ∥EΩ∥2 + εK 
+
+)
+
++ K− 12
+
+1
+
+∥d∥22
+
+(6c1 + 3 c2 + 2 c3 + c4 + 16 c1c2 + 4 c1c3 + c22 + 2 c1c22
+
+) K−3
+
++ K− 12
+
+1
+
+∥d∥22
+
+(8 c1 + 27 c2 + 20 c1c2) h−1 
+
+> o
+
+K− 52 N − 12 ,
+
+(81) 
+
+Proof: This proof generalizes that of Lemma 5 to the general filter setting. The main challenge arises from the additional perturbation introduced by ∆, which significantly alters the structure of the objective function. The key step is to carefully analyze the spectral properties of 
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+under the influence of ∆. The detailed proof is provided in Section 15 of Supplementary Material. □
+
+Based on Lemma 8, the following proposition establishes that an approximate first-order stationary point that is sufficiently far from every canonical basis vector cannot be a second-order stationary point. 
+
+Proposition 6 Let h be an approximate first-order stationary point satisfying (41) and (80) .Suppose that Ω is non-uniform and ho ∈
+
+(√ 1 
+
+> N
+
+,
+
+√
+
+1 − 14K2
+
+]
+
+. Then there exist positive constants c1,
+
+c2, c3, c4, and c5 such that, whenever ∥EΩ∥2 ≤ c1 min 
+
+{
+
+K− 72 N −1, ε 12
+
+}
+
+,
+
+∥∆∥2 ≤ c2 min 
+
+{
+
+K−4N −1, K −3N − 32 , ε 12 K− 12 , ε 12 K 12 N − 12
+
+}
+
+, ε ≤ c3K−7N −2, and ξ ≤ c4K− 72 N − 12 ,it holds that 
+
+d⊤Hess ψε (h) d
+
+∥d∥22
+
+≤ − c5K− 72 . (82) 
+
+Proof: The proof follows from those of Propositions 2, 3, and 4, together with Corollary 1, by observing that ∥EΩ∥2 ≤ c1K− 52 max −1
+
+{
+
+N, KN 12 , K 2
+
+}
+
+, ∥∆∥2 ≤ K− 12 ∥EΩ∥2, ε ≤ c2K−6N −2, and 
+
+ξ ≤ c3K−3N − 12 . □
+
+Proposition 6 indicates that no approximate second-order stationary points exist unless 
+
+ho >
+
+√
+
+1 − 14K2 . We next investigate the distance between an approximate first-order stationary point and a canonical basis vector in the regime ho >
+
+√
+
+1 − 14K2 . The following proposition characterizes the result. 
+
+Proposition 7 Let h be an approximate first-order stationary point satisfying (41) and (80) .Suppose that Ω is non-uniform and ho ∈
+
+(√ 
+
+1 − 14K2 , 1
+
+]
+
+. There exist positive constants c1, c2, c3,and c4 such that, whenever ∥EΩ∥2 ≤ c1K−2, ∥∆∥2 ≤ c2K− 52 , and ε ≤ c3K−3, it holds that 
+
+∥h − eo∥2 ≤c4K− 32
+
+[
+
+ξ + 2 N (∥EΩ∥2 + ∥∆∥2) + ε− 12 K− 12 N ∥∆∥2
+
+]
+
+. (83) 
+
+Proof: The proof follows the same line of argument as that of Proposition 5, with additional analysis to account for the perturbation induced by ∆. The detailed proof is provided in Section 16 of Supplementary Material. □
+
+Combining Propositions 6 and 7 yields the following result. 
+
+Theorem 3 Suppose that Ω is non-uniform and h is an approximate first-order stationary point satisfying (41) and (80) . There exist positive constants c1, c2, c3, c4, c5, and c6 such that, whenever 
+
+∥EΩ∥2 ≤ c1 min 
+
+{
+
+K− 72 N −1, ε 12
+
+}
+
+, ∥∆∥2 ≤ c2 min 
+
+{
+
+K−4N −1, K −3N − 32 , ε 12 K− 12 , ε 12 K 12 N − 12
+
+}
+
+,
+
+ε ≤ c3K−7N −2, ξ ≤ c4K− 72 N − 12 , and Hess ψε (h) ⪰ − c5K− 72 I, it holds that 
+
+∥h − eo∥2 ≤c6K− 32
+
+[
+
+ξ + 2 N (∥EΩ∥2 + ∥∆∥2) + ε− 12 K− 12 N ∥∆∥2
+
+]
+
+. (84) 16 IOP Publishing Journal vv (yyyy) aaaaaa Author et al Proof: Since Ω is non-uniform and h is an approximate first-order stationary point satisfying (41) and (80), Proposition 6 implies that ho ∈
+
+(√ 
+
+1 − 14K2 , 1
+
+]
+
+provided Hess ψε (h) ⪰ − c5K− 72 I.Applying Proposition 7 then yields the desired result. □
+
+Theorem 3 establishes an explicit relationship between the recovery error and the perturbation terms ∥EΩ∥2 and ∥∆∥2. By combining Lemmas 3 and 7 with Theorem 3, we further characterize the dependence of the recovery error on the sample size L, as stated in the following theorem. 
+
+Theorem 4 Suppose that Ω is non-uniform and h is an approximate first-order stationary point satisfying (41) and (80) . There exist positive constants c1, c2, c3, c4, and c5 such that, whenever 
+
+ε ≤ c2K−7N −2, ξ ≤ c3K− 72 N − 12 , Hess ψε (h) ⪰ − c4K− 72 I, and 
+
+L ≥ c1κ8 log 2 N
+
+(√K + √log L
+
+)2
+
+max {K7N 2, K 5N 3, ε −1, ε −1K−2N } , (85) 
+
+it holds with probability at least 1 − 4L−8 that 
+
+∥h − eo∥2 ≤c5K− 32
+
+(
+
+ξ + κ4ε− 12 N log NK
+
+√ log LL
+
+)
+
+. (86) 
+
+Proof: As in the derivation of (56), setting δ =
+
+√ 16 log LL and applying Lemma 3 imply that (56) holds with probability at least 1 − 2 exp 
+
+{
+
+− 16 log L
+
+> 2
+
+}
+
+= 1 − 2L−8. Moreover, there exists positive constant c1 such that, if 
+
+L ≥ 16 c−21
+
+(√K + 4 √log L
+
+)2 (
+
+max 
+
+{
+
+K 72 N, ε − 12
+
+}) 2
+
+, (87) then 
+
+∥EΩ∥2 ≤ 4
+
+(√ KL +
+
+√ 16 log LL
+
+)
+
+≤ c1 min 
+
+{
+
+K− 72 N −1, ε 12
+
+}
+
+. (88) On the other hand, Lemma 7 implies that there exist positive constants c2 and c3 such that, for any t ∈ (0, 12 κ−2),
+
+∥∆∥2 ≤ 2κ4t
+
+√K (89) holds with probability at least 1 − 2N exp 
+
+{
+
+− Lt 2     
+
+> c2log 22N+( c3log 2 N)t
+
+}
+
+. Choosing 
+
+t =
+
+√ 2c2 log 2 2N log(2 N L 8) 
+
+> L
+
+, we observe that the condition t ≤ min 
+
+{ c2 
+
+> c3
+
+log 2 N, 12 κ−2
+
+}
+
+is satisfied whenever 
+
+L ≥ max 
+
+{ c23
+
+c22 log 2 2N 2c2 log 2 2N log (2N L 8) , 8c2κ4 log 2 2N log (2N L 8)}
+
+= max 
+
+{ 2c23
+
+c2
+
+log (2N L 8) , 8c2κ4 log 2 2N log (2N L 8)}
+
+.
+
+(90) Under this condition, with probability at least 1 − 2N exp 
+
+{
+
+− 2c2 log 2 2N log (2N L 8)  
+
+> 2c2log 22N
+
+}
+
+= 1 − 2L−8, it holds that 
+
+∥∆∥2 ≤ 2κ4
+
+√K
+
+√
+
+2c2 log 2 2N log (2 N L 8)
+
+L . (91) Furthermore, there exists a positive constant c4 such that, if 
+
+L ≥ 8c2c−24 κ8 log 2 2N log (2N L 8) (
+
+max 
+
+{
+
+K 72 N, K 52 N 32 , ε − 12 , ε − 12 K−1N 12
+
+}) 2
+
+, (92) then 
+
+∥∆∥2 ≤ c4 min 
+
+{
+
+K−4N −1, K −3N − 32 , ε 12 K− 12 , ε 12 K 12 N − 12
+
+}
+
+. (93) Applying Theorem 3, we conclude that there exist positive constants c5, c6, c7, and c8 such that, if 
+
+ε ≤ c5K−7N −2, ξ ≤ c6K− 72 N − 12 , Hess ψε (h) ⪰ − c7K− 72 I, and 
+
+L ≥
+
+{
+
+16 c−21
+
+(√K + 4 √log L
+
+)2 (
+
+max 
+
+{
+
+K 72 N, ε − 12
+
+}) 2
+
+, 2c23
+
+c2
+
+log (2N L 8) ,
+
+8c2c−24 κ8 log 2 2N log (2N L 8) (
+
+max 
+
+{
+
+K 72 N, K 52 N 32 , ε − 12 , ε − 12 K−1N 12
+
+}) 2
+
+}
+
+,
+
+(94) 17 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+then 
+
+∥h − eo∥2 ≤c8K− 32
+
+[
+
+ξ + 8 N
+
+(√ KL +
+
+√ 16 log LL
+
+) ] 
+
++ c8K− 32
+
+(
+
+2N + ε− 12 K− 12 N
+
+) 2κ4 log 2 N
+
+√K
+
+√ 2c2 log (2 N L 8)
+
+L
+
+≤c8K− 32
+
+[
+
+ξ + 20 κ4ε− 12 N log 2 NK
+
+√ 2c2 log (2 N L 8)
+
+L
+
+]
+
+.
+
+(95) Note that the right-hand side of (94) is of order 
+
+O
+
+(
+
+κ8 log 2 N
+
+(√K + √log L
+
+)2
+
+max {K7N 2, K 5N 3, ε −1, ε −1K−2N })
+
+,
+
+whereas the right-hand side of (95) is of order 
+
+O
+
+(
+
+K− 32
+
+(
+
+ξ + κ4ε− 12 N log NK
+
+√ log LL
+
+)) 
+
+,
+
+which completes the proof. □
+
+Similar to Theorem 2 for the unit impulse filter case, Theorem 4 explicitly characterizes the recovery error achieved by approximate second-order stationary points in the general filter setting. Ignoring logarithmic factors, the sample complexity requirement in (101) is approximately of order 
+
+O (κ8K6N 3) when N ≥ K2 and ε is chosen on the order of O (K−7N −2). A related result established in [15, Theorem 3] requires a sample complexity of approximately O (κ8θ−4μ−2N 3). In that work, θ ≈ K/N denotes the sparsity ratio, as mentioned previously, and μ is an algorithmic hyperparameter whose order does not exceed that of θ. Consequently, when μ is chosen on the order of O (KN −1), the corresponding sample complexity requirement becomes approximately 
+
+O (κ8K−6N 9). Therefore, when K2 ≤ N , the sample complexity condition derived in this paper is substantially less restrictive than that of [15]. This improvement again highlights the benefits of exploiting joint sparsity in blind deconvolution, as in Section 3.2. At this stage, we have established the optimization landscape of problem (65). Since (65) and (64) share identical first- and second-order optimality properties, this geometric characterization can be directly transferred to problem (64). In the next section, we develop an algorithm for solving (64) based on the established optimization landscape. 
+
+4 Algorithm 
+
+In this section, we develop an algorithm for jointly sparse blind deconvolution by solving the optimization problem (64). According to the optimization landscape established in Theorem 4, successful recovery only requires finding an approximate second-order stationary point of the optimization problem on the unit sphere defined in (64). Motivated by this observation, we develop an efficient algorithm with provable convergence guarantees that exploits the specific structure of the objective function. 
+
+4.1 Riemannian Gradient Descent Algorithm with Negative Curvature Search 
+
+Let 
+
+ρ (h) = 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRh ∣∣2 + ε
+
+) 12
+
+(96) denote the objective function in (64). A straightforward calculation shows that the Riemannian gradient of ρ is given by grad ρ (h) = 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRh ∣∣2 + ε
+
+)− 12 (
+
+I − hh ⊤)
+
+R⊤Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRh , (97) 18 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+and the Riemannian Hessian of ρ is Hess ρ (h) = 
+
+(
+
+I − hh ⊤) { N∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRh ∣∣2 + ε
+
+)− 12
+
+R⊤Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnR
+
+−
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRh ∣∣2 + ε
+
+)− 32
+
+· R⊤Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRhh ⊤R⊤Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnR
+
+−
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRh ∣∣2 + ε
+
+)− 12 [
+
+h⊤R⊤Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRh 
+
+]
+
+I
+
+} (
+
+I − hh ⊤)
+
+.
+
+(98) The point h is an (ϵg , ϵ H )-approximate second-order stationary point, if 
+
+∥grad ρ (h)∥2 ≤ ϵg , (99) and 
+
+λmin (Hess ρ (h)) ≥ − ϵH , (100) where λmin (Hess ρ (h)) denotes the smallest eigenvalue of the Riemannian Hessian, viewed as a self-adjoint linear operator on the tangent space T hM, and εg > 0 and εH > 0 represent the first-and second-order stationarity residuals, respectively. A variety of algorithms have been developed for computing second-order stationary points on Riemannian manifolds, including first-order methods [61, 62] and second-order methods [63]. Since the Riemannian Hessian can be computed efficiently in the present setting, we employ RGD-NCS to compute an approximate second-order stationary point. This algorithm may be viewed as a specialization of perturbed Riemannian gradient descent [61, 62], in which a direction of strictly negative curvature replaces the random perturbation. Similar ideas have been extensively studied in nonconvex optimization over Euclidean spaces [64, 65]; here, we extend them to the Riemannian setting. Specifically, the algorithm performs a gradient descent step whenever the length of the Riemannian gradient exceeds a prescribed threshold, thereby reducing the first-order stationarity residual. Once the gradient norm falls below this threshold, the algorithm computes the eigendirection corresponding to the smallest eigenvalue of the Riemannian Hessian. If a sufficiently negative curvature direction exists, the iterate is updated along this direction to reduce the second-order stationarity residual. Otherwise, the current iterate is declared an approximate second-order stationary point. The complete procedure is summarized in Algorithm 1. Although our numerical experiments in Section 6 indicate that essentially the same recovery performance is achieved by Riemannian gradient descent alone, we retain the negative-curvature search step in the proposed algorithm to facilitate the subsequent theoretical analysis. In the next subsection, we establish convergence guarantees to approximate second-order stationary points together with the corresponding reconstruction error bounds. 
+
+4.2 Convergence and Error Analysis 
+
+We now establish the convergence of the proposed algorithm. Specifically, we show that the algorithm is guaranteed to generate an iterate whose first- and second-order stationarity residuals are below any prescribed tolerances. The result is summarized in the following proposition. 
+
+Proposition 8 For any prescribed tolerances ϵg > 0 and ϵH > 0, there exist a gradient descent step size αg > 0, a negative-curvature step size αH > 0, and a finite integer T of order 
+
+O (max {ϵ−2 
+
+> g
+
+, ϵ −3
+
+> H
+
+}) such that RGD-NCS returns an (ϵg , ϵ H )-approximate second-order stationary point of (64) within at most T iterations. Proof: The proof relies on the smoothness of the objective function and the tractability of the Riemannian Hessian. These properties enable the algorithm to reduce the first-order stationarity residual by taking steps along the Riemannian gradient direction. Once the first-order residual becomes sufficiently small, the algorithm exploits directions of negative curvature identified from the Riemannian Hessian to decrease the second-order stationarity residual. The detailed proof is provided in Section 17 of Supplementary Material. □
+
+Proposition 8 establishes that an approximate second-order stationary point with arbitrarily small stationarity residuals can be obtained in a finite number of iterations. Combining this result 19 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Algorithm 1 Riemannian Gradient Descent Algorithm with Negative Curvature Search (RGD-NCS) 
+
+Input: Observations {yl}Ll=1 , initial point h0, first-order tolerance ϵg > 0, second-order tolerance 
+
+ϵH > 0, gradient descent step size αg > 0, negative-curvature step size αH > 0.
+
+Output: Estimate of the inverse filter representation ˜ginv .1: for t = 1 , · · · do 
+
+2: Compute the Riemannian gradient grad ρ (ht−1);3: if ∥grad ρ (ht−1)∥2 > ϵ g then 
+
+4: Update ht = ht−1 − αg grad ρ (ht−1)
+
+∥ht−1 − αg grad ρ (ht−1)∥2
+
+;5: else 
+
+6: Compute the smallest eigenvalue λmin (Hess ρ (ht−1)) of the Riemannian Hessian and its associated unit eigenvector vt ∈ Tht−1 SN −1;7: if λmin (Hess ρ (ht−1)) < −ϵH then 
+
+8: Choose ηt ∈ { 1, −1} such that ηtght−1 (grad ρ (ht−1) , vt) ≥ 0;9: Update ht = ht−1 − αH ηtvt
+
+∥ht−1 − αH ηtvt∥2
+
+;10: else 
+
+11: Set ˜h = ht−1 and break ;12: end if 
+
+13: end if 
+
+14: end for 
+
+15: return ˜ginv = R˜h.with the geometric analysis developed in the previous subsections, we obtain the following theorem, which characterizes the filter estimation accuracy achieved by the proposed algorithm. 
+
+Theorem 5 Suppose that Ω is non-uniform. There exist positive constants c1, c2, c3, c4, and c5
+
+such that, whenever ε ≤ c2K−7N −2 and 
+
+L ≥ c1κ8 log 2 N
+
+(√K + √log L
+
+)2
+
+max {K7N 2, K 5N 3, ε −1, ε −1K−2N } , (101) 
+
+the following statement holds with probability at least 1 − 4L−8: if RGD-NCS is executed with first-order tolerance ϵg ≤ c3K− 72 N − 12 and second-order tolerance ϵH ≤ c4K− 72 , then the resulting estimate of the inverse filter representation ˜ginv satisfies 
+
+min  
+
+> s=±1,n =1 ,··· ,N
+
+∥∥∥K− 12 C (g)−1 en − s˜ginv 
+
+∥∥∥2
+
+≤ c5
+
+σmin (C (g)) 
+
+[
+
+κ4ε− 12 K− 52 N log N
+
+√ log LL + K− 32 ϵg
+
+]
+
+.
+
+(102) 
+
+Proof: It follows from Proposition 8 that RGD-NCS produces an (ϵg , ϵ H )-approximate second-order stationary point ˜h. Combining this result with Theorem 4, we conclude that there exists a positive constant c6 such that 
+
+∥∥∥U ˜h − seo
+
+∥∥∥2
+
+=
+
+∥∥∥˜h − sU ⊤eo
+
+∥∥∥2
+
+≤c6K− 32
+
+(
+
+ϵg + κ4ε− 12 N log NK
+
+√ log LL
+
+)
+
+, (103) where eo denotes the canonical basis vector closest to U ˜h, and s denotes the sign of the o-th entry of U ˜h. Therefore, 
+
+∥∥∥sK − 12 C (g)−1 eo − ˜ginv 
+
+∥∥∥2
+
+=
+
+∥∥∥sK − 12 C (g)−1 eo − R˜h
+
+∥∥∥2
+
+≤
+
+∥∥∥C (g)−1∥∥∥2
+
+∥∥∥sK − 12 eo − C (g) RU ⊤U ˜h
+
+∥∥∥2
+
+≤
+
+∥∥∥C (g)−1∥∥∥2
+
+∥∥∥sK − 12 eo − sC (g) RU ⊤eo
+
+∥∥∥2
+
++
+
+∥∥∥C (g)−1∥∥∥2
+
+∥∥∥sC (g) RU ⊤eo − C (g) RU ⊤U ˜h
+
+∥∥∥2
+
+≤
+
+∥∥∥C (g)−1∥∥∥2
+
+∥∥∥K− 12 I − C (g) RU ⊤
+
+∥∥∥2
+
++
+
+∥∥∥C (g)−1∥∥∥2
+
+∥∥∥C (g) RU ⊤
+
+∥∥∥2
+
+∥∥∥seo − U ˜h
+
+∥∥∥2
+
+.
+
+(104) 20 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Furthermore, Lemma 7 implies that 
+
+min  
+
+> s=±1,n =1 ,··· ,N
+
+∥∥∥K− 12 C (g)−1 en − s˜ginv 
+
+∥∥∥2
+
+≤ 2
+
+σmin (C (g)) 
+
+∥∥∥seo − U ˜h
+
+∥∥∥2
+
++ 1
+
+σmin (C (g)) ∥∆∥2 .
+
+(105) Substituting the bound in (91) into the above inequality yields that there exists a positive constant 
+
+c7 such that 
+
+min  
+
+> s=±1,n =1 ,··· ,N
+
+∥∥∥K− 12 C (g)−1 en − s˜ginv 
+
+∥∥∥2
+
+≤ 2
+
+σmin (C (g)) c6K− 32
+
+(
+
+ϵg + κ4ε− 12 N log NK
+
+√ log LL
+
+)
+
++ 1
+
+σmin (C (g)) 2κ4
+
+√K
+
+√
+
+2c7 log 2 2N log (2 N L 8)
+
+L .
+
+(106) Under the condition ε ≤ c2K−7N −2, the second term is of lower order than the first and can therefore be absorbed into the leading term. The desired result then follows by redefining the constant c5, which completes the proof. □
+
+Theorem 5 shows that, provided the sample size is sufficiently large, the estimation error can be made arbitrarily small through an appropriate choice of the smoothing parameter ε and the algorithmic tolerances ϵg and ϵH .
+
+5 Extension to the Complex-valued Setting 
+
+Jointly sparse blind deconvolution in the complex domain arises in a wide range of applications in array and radar signal processing [9, 19–23, 25, 26]. In this setting, the signal model is the complex-valued counterpart of (1), where the input signals {xl}Ll=1 , the filter g, and the observations {yl}Ll=1 are all complex-valued. In this section, we show that the optimization framework and algorithm developed for the real-valued problem can be naturally extended to the complex-valued setting. We first formulate the optimization problem for complex-valued jointly sparse blind deconvolution, following the optimization framework developed in Section 3. Similar to the framework (23) in the real-valued setting, we propose the following formulation: 
+
+min    
+
+> h∈SN−1
+> C,Z∈CN×L
+> N
+
+∑
+
+> n=1
+
+( 1
+
+L ∥Zn, :∥22 + ε
+
+) 12
+
+, subject to Z:,l = ( RCh) ⊛ yl, l = 1 , · · · , L, (107) where SN −1 
+
+> C
+
+= {h ∈ CN : ∥h∥2 = 1 } is the complex-valued counterpart of SN −1, and the preconditioning matrix in the complex-valued setting is naturally defined as 
+
+RC =
+
+[
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+C (yl)H C (yl)
+
+]− 12
+
+. (108) Furthermore, since the representation (7) remains valid in the complex-valued setting, problem (107) is equivalent to 
+
+min  
+
+> h∈SN−1
+> C
+
+ρC (h) = 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRCh∣∣2 + ε
+
+) 12
+
+, (109) which is the complex-valued counterpart of the optimization problem (64). Next, we justify the optimization problem (109). As in the real-valued case, to facilitate the analysis of its geometric properties, we consider the rotated optimization problem 
+
+min  
+
+> h∈SN−1
+> C
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣∣y⊤ 
+
+> l
+
+ΓnRCU H 
+
+> C
+
+h
+
+∣∣∣2
+
++ ε
+
+) 12
+
+. (110) where U C is the unitary matrix defined by 
+
+U C = C (g)
+
+[
+
+C (g)H C (g)
+
+]− 12
+
+. (111) Problems (109) and (110) differ only by the unitary transformation U C applied to the optimization variable and therefore possess identical geometric properties. As in the real-valued case, we make 21 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+the following assumptions: 1) the nonzero components PΩ (xl), for l = 1 , · · · , L , are i.i.d. circularly symmetric Gaussian random vectors with zero mean and covariance matrix I; and 2) Ω is non-uniform. Under the first assumption, Lemma 3 can be extended directly to the complex-valued setting [66]. Moreover, by following arguments analogous to those in the proof of Lemma 7, Lemma 7 can likewise be extended to the complex-valued setting. Consequently, as the sample size 
+
+L tends to infinity, the following quantities converge to zero: 
+
+EC = 1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+xlxHl − ΣΩ, (112) 
+
+RC − 1
+
+√K
+
+[
+
+C (g)H C (g)
+
+]− 12
+
+, (113) and 
+
+∆C = C (g) RCU H 
+
+> C
+
+− 1
+
+√K I. (114) Moreover, it is straightforward to verify that 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣∣y⊤ 
+
+> l
+
+ΓnRCU H 
+
+> C
+
+h
+
+∣∣∣2
+
++ ε
+
+) 12
+
+=
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣∣∣x⊤ 
+
+> l
+
+Γn
+
+( 1
+
+√K I + C (g) RCU H 
+
+> C
+
+− 1
+
+√K I
+
+)
+
+h
+
+∣∣∣∣
+
+> 2
+
++ ε
+
+) 12
+
+=
+
+> N
+
+∑
+
+> n=1
+
+[
+
+hH
+
+( 1
+
+√K I + ∆C
+
+)H
+
+ΓHn
+
+(ΣΩ + EC
+
+) Γn
+
+( 1
+
+√K I + ∆C
+
+)
+
+h + ε
+
+] 12
+
+.
+
+(115) Therefore, when EC = 0 and ∆C = 0, the asymptotic optimization problem reduces to 
+
+min  
+
+> h∈SN−1
+> C
+> N
+
+∑
+
+> n=1
+
+( 1
+
+K hH Γ⊤ 
+
+> n
+
+ΣΩΓnh + ε
+
+) 12
+
+=
+
+> N
+
+∑
+
+> n=1
+
+[ N∑
+
+> m=1
+
+|hm|2
+
+( 1
+
+K e⊤
+
+> m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnem + ε
+
+)] 12
+
+. (116) Following arguments similar to those used in the proof of Proposition 1, it can be shown that the global minimizers of problem (116) are precisely the complex signed canonical basis vectors, namely 
+
+exp {jϕ } en for ϕ ∈ [0 , 2π) and n = 1 , · · · , N , if and only if Ω is non-uniform. Consequently, problem (109), which serves as a non-asymptotic counterpart of problem (116), is expected to recover the desired solution when the sample size is sufficiently large. Furthermore, theoretical guarantees analogous to those established in Theorem 4 can be derived through a similar line of analysis. However, a complete proof requires substantial technical derivations to characterize the geometric landscape rigorously, including the distance between the current iterate and the target solution, as well as the local second-order properties of the objective function. For the sake of brevity, these technical details are omitted. Finally, we turn to the algorithm for solving problem (109). Observe that SN −1 
+
+> C
+
+is a Riemannian manifold equipped with the Riemannian metric 
+
+gC 
+
+> h
+
+(x, y) = ℜ {xH y} , (117) where x and y are tangent vectors in the tangent space at h ∈ SN −1 
+
+> C
+
+, and ℜ {·} denotes the real-part operator. Accordingly, the proposed algorithm in Section 4 can be extended naturally to the complex-valued setting by replacing the expressions for the Riemannian gradient and the Riemannian Hessian with their complex-valued counterparts. It follows from (117) that the Riemannian gradient of ρC is given by grad ρC (h) = 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRCh∣∣2 + ε
+
+)− 12 (
+
+I − hh H )
+
+RH 
+
+> C
+
+Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRCh,
+
+(118) 22 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+and the Riemannian Hessian of ρC is Hess ρC (h) [ η] = 
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRCh∣∣2 + ε
+
+)− 12
+
+RH 
+
+> C
+
+Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRCη
+
+−
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRCh∣∣2 + ε
+
+)− 12
+
+ℜ
+
+{
+
+hH RH 
+
+> C
+
+Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRCη
+
+}
+
+h
+
+−
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRCh∣∣2 + ε
+
+)− 32
+
+ℜ
+
+{
+
+hH RH 
+
+> C
+
+Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRCη
+
+}
+
+· RH 
+
+> C
+
+Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRCh
+
++
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRCh∣∣2 + ε
+
+)− 32
+
+ℜ
+
+{
+
+hH RH 
+
+> C
+
+Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRCη
+
+}
+
+· ℜ 
+
+{
+
+hH RH 
+
+> C
+
+Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRCh
+
+}
+
+h
+
+−
+
+> N
+
+∑
+
+> n=1
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+∣∣y⊤ 
+
+> l
+
+ΓnRCh∣∣2 + ε
+
+)− 12 [
+
+hH RH 
+
+> C
+
+Γ⊤
+
+> n
+
+(
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+yly⊤
+
+> l
+
+)
+
+ΓnRCh
+
+]
+
+η,
+
+(119) where η is a tangent vector in the tangent space at h ∈ SN −1 
+
+> C
+
+. Consequently, the algorithmic framework of Algorithm 1 remains unchanged, with only the Riemannian gradient and the Riemannian Hessian replaced by their complex-valued counterparts. 
+
+6 Numerical Experiments 
+
+In this section, we evaluate the performance of the proposed method. The proposed algorithm is implemented with a maximum of 2 × 10 3 iterations. The smoothing parameter is set to 
+
+ε = min {10 5N −5, 10 −4}, the first-order stationarity tolerance is chosen as ϵg = 10 −2, and the second-order stationarity tolerance is set to ϵH = 10 −6N −3. For computational efficiency, the initial step sizes for the gradient descent and the negative-curvature search are set to 10 −2 and 10 −4,respectively. These step sizes are subsequently refined using a backtracking line search strategy [67]. 
+
+6.1 Random Signals 
+
+In this subsection, we compare the proposed method with the existing approach developed in [15]. The method in [15] addresses the general multichannel sparse blind deconvolution problem using a general sparsity-promoting objective function, specifically the log-cosh objective 
+
+∑Ll=1 μ log cosh 
+
+( 1 
+
+> μ
+
+C (yl) Rh 
+
+)
+
+, where log cosh is applied entry-wise. The resulting optimization problem is solved using Riemannian gradient descent with multiple random initializations to seek a desirable solution. For the implementation of the method in [15], we adopt the parameter settings recommended by the authors. Specifically, the maximum number of iterations is set to 2 × 10 2, the smoothing parameter is chosen as μ = min 
+
+{
+
+10 N − 54 , 0.05 
+
+}
+
+, and the initial step size is set to 10 −1
+
+and subsequently refined using a backtracking line search strategy. In addition, the number of random initializations is set to 10 .In Experiment 1, we investigate the optimization landscapes induced by different sparsity-promoting objective functions for jointly sparse blind deconvolution. Specifically, we compare the exact ℓ1-based objective function, ∑Ll=1 ∥C (yl) Rh ∥1, the exact ℓ2,1-based objective function, ∑Nn=1 
+
+( 1
+
+> L
+
+∑Ll=1 
+
+∣∣y⊤ 
+
+> l
+
+ΓnRh ∣∣2) 12
+
+, and the smooth objective function proposed in (64), 
+
+∑Nn=1 
+
+( 1
+
+> L
+
+∑Ll=1 
+
+∣∣y⊤ 
+
+> l
+
+ΓnRh ∣∣2 + ε
+
+) 12
+
+, where ε = 10 −4. We set N = 3 , K = 2 , and κ = 16 . The objective landscapes corresponding to L = 20 and L = 2 are shown in Fig. 1. It can be observed that, when the sample size is sufficiently large, all three objective functions exhibit favorable optimization landscapes, as their global minima coincide with the target solution. However, when the sample size is small, the global minimum of the ℓ1-based objective function no longer coincides with the target solution, suggesting that the corresponding optimization algorithm may fail to 23 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+(a) ℓ1 objective, L = 20 
+
+(b) ℓ1 objective, L = 2 
+
+(c) ℓ2,1 objective, L = 20 
+
+(d) ℓ2,1 objective, L = 2 
+
+(e) Proposed objective, L = 20 
+
+(f) Proposed objective, L = 2  
+
+> Figure 1. Optimization landscapes corresponding to different sparsity-promoting objective functions. Darker colors indicate smaller objective values, whereas lighter colors indicate larger objective values. The red dots mark the target solutions.
+
+recover the true filter. In contrast, the global minimum of the exact ℓ2,1-based objective function remains aligned with the target solution. Moreover, the landscape induced by the proposed smooth objective function closely resembles that of the exact ℓ2,1 objective. These observations demonstrate that exploiting joint sparsity can substantially reduce the sample size required for successful recovery, while the proposed smooth objective function provides an accurate approximation to the exact ℓ2,1 objective. In Experiment 2, we evaluate the recovery success rate under different parameter settings. We adopt a simulation setup similar to that in [15]. The sparse input signals share a common support, where the support locations are generated at random and the nonzero entries are drawn independently from a standard Gaussian distribution. The filter g is synthesized such that the circulant matrix C (g) has an approximately prescribed condition number ˜κ. Specifically, the filter is generated as follows. First, the magnitudes of ̂ g are sampled independently from a uniform distribution over [1 , ˜κ], while their phases are sampled independently from a uniform distribution over [0 , 2π]. Second, Hermitian symmetry is imposed on ̂ g to ensure that g is real-valued, namely, ̂
+
+gn =̂ g(N +2 −n) mod N for n = 1 , · · · , N , where · denotes complex conjugation. Recovery is declared successful if the estimated inverse representation of the filter, denoted by ˜ginv , satisfies 
+
+∥g ⊛ ˜ginv ∥∞ / ∥g ⊛ ˜ginv ∥2 > 0.99 . For each parameter setting, 100 independent Monte Carlo trials are conducted to estimate the success rate. First, we fix N = 64 and ˜κ = 16 , and vary 
+
+K ∈ { 1, 3, . . . , 59 } and L ∈ { 1, 2, . . . , 30 }. The corresponding results are shown in Fig. 2(a) and Fig. 2(b). Next, we fix K = 27 and ˜κ = 16 , and vary N ∈ { 32 , 34 , . . . , 64 } and L ∈ { 1, 2, . . . , 30 }.The results are presented in Fig. 2(c) and Fig. 2(d). Finally, we fix N = 64 and K = 27 , and vary 
+
+˜κ ∈ {2, 4, . . . , 216 } and L ∈ { 1, 2, . . . , 20 }. The corresponding results are shown in Fig. 2(e) and Fig. 2(f). It can be observed that the proposed method consistently exhibits a substantially larger success region than the method of [15] and achieves successful recovery with significantly lower sample size across all parameter settings. These observations are consistent with the theoretical analysis and validate that exploiting joint sparsity reduces the sample complexity required for successful recovery. 
+
+6.2 Array Signal Processing Application 
+
+In this subsection, we apply the proposed algorithm to a array signal processing application: multipath time-difference-of-arrival (TDOA) estimation with unknown transmitted waveforms [68], which plays an important role in passive localization [69]. We consider a reference-free passive radar receiver equipped with a uniform linear array consisting of L antennas with half-wavelength inter-element spacing. The transmitted waveform propagates through a multipath environment with K paths. Let s denote the unknown transmitted waveform. The delay, complex path gain, 24 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 12345678910 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 
+
+> Sample size L
+> 1357911 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59
+> Sparsity level K
+> 00.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+
+(a) [15], K versus L12345678910 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 
+
+> Sample size L
+> 1357911 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59
+> Sparsity level K
+> 00.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+
+(b) Proposed, K versus L12345678910 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 
+
+> Sample size L
+> 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64
+> Filter length N
+> 00.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+
+(c) [15], N versus L12345678910 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 
+
+> Sample size L
+> 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64
+> Filter length N
+> 00.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+
+(d) Proposed, N versus L12345678910 11 12 13 14 15 16 17 18 19 20 
+
+> Sample size L
+> 2.00e+00 4.00e+00 8.00e+00 1.60e+01 3.20e+01 6.40e+01 1.28e+02 2.56e+02 5.12e+02 1.02e+03 2.05e+03 4.10e+03 8.19e+03 1.64e+04 3.28e+04 6.55e+04
+> Condition number
+> 00.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+
+(e) [15], ˜κ versus L12345678910 11 12 13 14 15 16 17 18 19 20 
+
+> Sample size L
+> 2.00e+00 4.00e+00 8.00e+00 1.60e+01 3.20e+01 6.40e+01 1.28e+02 2.56e+02 5.12e+02 1.02e+03 2.05e+03 4.10e+03 8.19e+03 1.64e+04 3.28e+04 6.55e+04
+> Condition number
+> 00.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+
+(f) Proposed, ˜κ versus L
+
+Figure 2. Phase-transition behavior of jointly sparse blind deconvolution under different parameter settings. White indicates a success rate of 100% , whereas black indicates a success rate of 0% .
+
+and direction-of-arrival (DOA) associated with the k-th path are denoted by τk, βk, and ωk,respectively. WLOG, we assume that τ1 ≤ τ2 ≤ · · · ≤ τK . The received signal at time t at the l-th antenna is modeled as 
+
+yl (t) = 
+
+K∑
+
+k=1 
+
+βk exp 
+
+{
+
+j2π (l − 1) cos ωk
+
+2
+
+}
+
+s (t − τk) + n (t) , t ∈ [Tp, T PRI ] , (120) where Tp denotes the pulse duration, i.e., s (t)̸ = 0 only for t ∈ [0 , T p), TPRI denotes the pulse repetition interval (PRI), and n (t) denotes additive noise. Sampling the received signal at a frequency fs yields the discrete-time observation matrix Y ∈ CN ×L, where N = fs (TPRI − Tp).Suppose that fsτk is an integer for each k = 1 , · · · , K , which can be ensured when the sampling rate is sufficiently high. Then the discrete-time observations satisfy 
+
+Yn,l =
+
+K∑
+
+k=1 
+
+βk exp 
+
+{
+
+j2π (l − 1) cos ωk
+
+2
+
+}
+
+s [n − fsτk] + Nn,l , (121) where N ∈ CN ×L denotes the noise matrix and 
+
+s [n − fsτk] = s
+
+(
+
+Tp + n − fsτk
+
+fs
+
+)
+
+= s
+
+( nfs
+
++ Tp − τk
+
+)
+
+. (122) Furthermore, assume that τk ∈ [Tp, T PRI − Tp), which ensures that the received signals from a single pulse remain within a single PRI and do not overlap with the transmission interval. Define the filter g ∈ CN and the input matrix X ∈ CN ×L as 
+
+gn =s [n] ,Xn,l =βk exp 
+
+{
+
+j2π (l − 1) cos ωk
+
+2
+
+}
+
+I (n, f sτk) , (123) where I (n1, n 2) = 1 if n1 = n2, and I (n1, n 2) = 0 otherwise. It follows that 
+
+Y = C (g) X + N , (124) where X contains only K nonzero rows. Therefore, the TDOA estimation problem can be formulated as a jointly sparse blind deconvolution problem. In practice, however, two important challenges must be taken into account: 1) the delays generally do not coincide with the sampling grid; and 2) the observations are polluted by noise. In the following experiments, we evaluate the 25 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 1 1.5 2 2.5 3 3.5 4 
+
+> Delay (s) 10 -5
+> -60 -50 -40 -30 -20 -10 0
+> Power (dB)
+> Ground Truth Proposed
+
+(a) Set 1, SNR = 20 dB 1 1.5 2 2.5 3 3.5 4 
+
+> Delay (s) 10 -5
+> -60 -50 -40 -30 -20 -10 0
+> Power (dB)
+> Ground Truth Proposed
+
+(d) Set 2, SNR = 20 dB 1 1.5 2 2.5 3 3.5 4 
+
+> Delay (s) 10 -5
+> -45 -40 -35 -30 -25 -20 -15 -10 -5 0
+> Power (dB)
+> Ground Truth Proposed
+
+(b) Set 1, SNR = 10 dB 1 1.5 2 2.5 3 3.5 4 
+
+> Delay (s) 10 -5
+> -45 -40 -35 -30 -25 -20 -15 -10 -5 0
+> Power (dB)
+> Ground Truth Proposed
+
+(e) Set 2, SNR = 10 dB 1 1.5 2 2.5 3 3.5 4 
+
+> Delay (s) 10 -5
+> -35 -30 -25 -20 -15 -10 -5 0
+> Power (dB)
+> Ground Truth Proposed
+
+(c) Set 1, SNR = 0 dB 1 1.5 2 2.5 3 3.5 4 
+
+> Delay (s) 10 -5
+> -35 -30 -25 -20 -15 -10 -5 0
+> Power (dB)
+> Ground Truth Proposed
+
+(f) Set 2, SNR = 0 dB 
+
+Figure 3. Estimated delay spectra under different SNR levels for two parameter sets. 
+
+TDOA estimation performance of the proposed algorithm under these two non-ideal factors through the estimated delay spectrum. The true power associated with the k-th path is given by 
+
+|βk|2. The estimated delay spectrum is computed from the average row-wise energy of the recovered input signal matrix ˜X. Specifically, let ˜p denote the estimated delay spectrum, whose 
+
+n-th entry is defined as ˜pn = 1
+
+> L
+
+∑Ll=1 
+
+∣∣∣˜Xn,l 
+
+∣∣∣2
+
+. Note that blind deconvolution-based methods can recover only the relative delays, namely {τk − τ1}Kk=2 . Therefore, when plotting the delay spectrum, we assume that the delay of the first path is known exactly and use it as the reference. For ease of comparison, both the true and estimated delay spectra are normalized so that their maximum values are equal to 1. The pulse duration and PRI are set to Tp = 10 μs and 
+
+TPRI = 40 μs, respectively, the sampling rate is fs = 100 MHz, yielding N = 3000 , and the number of antennas is L = 32 . The unknown transmitted waveform s is chosen as a chirp signal with a bandwidth of 20 MHz. We consider a multipath propagation environment with K = 3 propagation paths, where the DOAs, delays, and complex path gains are generated randomly. In Experiment 3, we investigate the performance of the proposed algorithm under different signal-to-noise ratio (SNR) levels, defined as ∥C (g)X∥22 
+
+> ∥N∥22
+
+, with values of 20 dB , 10 dB , and 0 dB . Note that it is highly nontrivial to extend the algorithm in [15] to the complex-valued setting, no comparison is provided. We consider two randomly generated sets of DOAs and propagation delays. The first set corresponds to a larger delay separation, whereas the second set represents a more challenging case with closely spaced delays: 1) DOAs are {142 .3612 , 59 .3150 , 114 .7363 }◦ and delays are {15 .8764 , 17 .2490 , 18 .5540 } μs; and 2) DOAs are {125 .6770 , 40 .8769 , 53 .2631 }◦ and delays are {17 .3662 , 26 .8032 , 26 .9704 } μs. Note that the delays in both cases do not lie on the sampling grid. The results are shown in Fig. 3. The proposed algorithm provides stable TDOA estimates across all SNR levels, despite the combined effects of off-grid delays and additive noise. In summary, the simulation results demonstrate the performance gains achieved by exploiting joint sparsity in blind deconvolution and validate the effectiveness of the proposed algorithm. 
+
+7 Conclusion 
+
+This paper develops an optimization framework and establishes theoretical guarantees for jointly sparse blind deconvolution. Specifically, we formulate the jointly sparse blind deconvolution problem as a Riemannian optimization problem on the unit sphere and propose an algorithm that is guaranteed to compute an approximate second-order stationary point within a finite number of iterations. Furthermore, we establish a non-asymptotic relationship between the estimation error and the sample size, thereby characterizing the recovery performance of the proposed method under finite-sample conditions. Numerical experiments validate both the theoretical analysis and the effectiveness of the proposed algorithm, including its application to array signal processing. 26 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+While our analysis demonstrates that exploiting joint sparsity can substantially reduce the sample complexity required for successful recovery, several important directions remain for future research. In particular, it is of interest to extend the proposed framework to more realistic noisy settings and to develop corresponding theoretical guarantees. This includes the design of robust algorithms and the derivation of non-asymptotic error bounds that explicitly characterize the impact of measurement noise on recovery performance. 
+
+Supplementary Material 
+
+The proofs of several auxiliary lemmas and technical propositions are provided in the Supplementary Material. These results primarily involve technical estimates and intermediate arguments used in the analysis of the main theorems. 
+
+References 
+
+[1] A. Levin, Y. Weiss, F. Durand, and W. T. Freeman, “Understanding and evaluating blind deconvolution algorithms,” in 2009 IEEE Conference on Computer Vision and Pattern Recognition . IEEE, 2009, pp. 1964–1971. [2] A. Ahmed, B. Recht, and J. Romberg, “Blind deconvolution using convex programming,” 
+
+IEEE Transactions on Information Theory , vol. 60, no. 3, pp. 1711–1732, 2014. [3] K. F. Kaaresen and T. Taxt, “Multichannel blind deconvolution of seismic signals,” 
+
+Geophysics , vol. 63, no. 6, pp. 2093–2107, 1998. [4] M. Prato, A. L. Camera, S. Bonettini, and M. Bertero, “A convergent blind deconvolution method for post-adaptive-optics astronomical imaging,” Inverse Problems , vol. 29, no. 6, p. 065017, 2013. [5] A. Benfenati, A. Catozzi, and V. Ruggiero, “Neural blind deconvolution with Poisson data,” 
+
+Inverse Problems , vol. 39, no. 5, p. 054003, 2023. [6] C. Ekanadham, D. Tranchina, and E. Simoncelli, “A blind sparse deconvolution method for neural spike identification,” Advances in Neural Information Processing Systems , vol. 24, 2011. [7] R. Zhang, H. Du, N. Zhou, Z. Zhou, H. Tang, J. Qian, Q. Chen, and C. Zuo, “Computational adaptive optics for fluorescence microscopy via sparse blind deconvolution,” Laser & Photonics Reviews , vol. 19, no. 17, p. 2500032, 2025. [8] P. Sarder and A. Nehorai, “Deconvolution methods for 3-D fluorescence microscopy images,” 
+
+IEEE Signal Processing Magazine , vol. 23, no. 3, pp. 32–45, 2006. [9] E. Vargas, K. V. Mishra, R. Jacome, B. M. Sadler, and H. Arguello, “Dual-blind deconvolution for overlaid radar-communications systems,” IEEE Journal on Selected Areas in Information Theory , vol. 4, pp. 75–93, 2023. [10] X.-G. Lv, F. Li, and T. Zeng, “Convex blind image deconvolution with inverse filtering,” 
+
+Inverse Problems , vol. 34, no. 3, p. 035003, 2018. [11] A. Ahmed and L. Demanet, “Leveraging diversity and sparsity in blind deconvolution,” IEEE Transactions on Information Theory , vol. 64, no. 6, pp. 3975–4000, 2018. [12] Y. Li and Y. Bresler, “Multichannel sparse blind deconvolution on the sphere,” IEEE Transactions on Information Theory , vol. 65, no. 11, pp. 7415–7436, 2019. [13] ——, “Global geometry of multichannel sparse blind deconvolution on the sphere,” Advances in Neural Information Processing Systems , vol. 31, 2018. [14] Q. Qu, X. Li, and Z. Zhu, “Exact recovery of multichannel sparse blind deconvolution via gradient descent,” SIAM Journal on Imaging Sciences , vol. 13, no. 3, pp. 1630–1652, 2020. [15] L. Shi and Y. Chi, “Manifold gradient descent solves multi-channel sparse blind deconvolution provably and efficiently,” IEEE Transactions on Information Theory , vol. 67, no. 7, pp. 4784–4811, 2021. [16] K. Lee, N. Tian, and J. Romberg, “Fast and guaranteed blind multichannel deconvolution under a bilinear system model,” IEEE Transactions on Information Theory , vol. 64, no. 7, pp. 4792–4818, 2018. 27 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+[17] S. Akhavan, S. Esmaeili, M. Kamarei, and H. Soltanian-Zadeh, “Multichannel blind deconvolution via maximum likelihood estimator: application in neural recordings,” Inverse Problems , vol. 35, no. 3, p. 035001, 2019. [18] Q. Cao, D. Han, X. Wang, and W. Zhang, “Generalized variational framework with minimax optimization for parametric blind deconvolution,” Inverse Problems , vol. 40, no. 4, p. 045019, 2024. [19] Y. Bresler and A. Delaney, “Resolution of overlapping echoes of unknown shape,” in 
+
+International Conference on Acoustics, Speech, and Signal Processing, , 1989, pp. 2657–2660 vol.4. [20] A. Swindlehurst and J. Gunther, “Methods for blind equalization and resolution of overlapping echoes of unknown shape,” IEEE Transactions on Signal Processing , vol. 47, no. 5, pp. 1245–1254, 1999. [21] Y. Li, K. Lee, and Y. Bresler, “Identifiability in bilinear inverse problems with applications to subspace or sparsity-constrained blind gain and phase calibration,” IEEE Transactions on Information Theory , vol. 63, no. 2, pp. 822–842, 2017. [22] M. Kalra and K. Lee, “Stable estimation of pulses of unknown shape from multiple snapshots via ESPRIT,” IEEE Transactions on Signal Processing , vol. 72, pp. 2637–2648, 2024. [23] Y. C. Eldar, W. Liao, and S. Tang, “Sensor calibration for off-the-grid spectral estimation,” 
+
+Applied and Computational Harmonic Analysis , vol. 48, no. 2, pp. 570–598, 2020. [24] M. Rossi, A. M. Haimovich, and Y. C. Eldar, “Spatial compressive sensing for MIMO radar,” 
+
+IEEE Transactions on Signal Processing , vol. 62, no. 2, pp. 419–430, 2013. [25] R. Jacome, E. Vargas, K. V. Mishra, B. M. Sadler, and H. Arguello, “Multi-antenna dual-blind deconvolution for joint radar-communications via soman minimization,” Signal Processing , vol. 221, p. 109484, 2024. [26] R. L. Morrison, M. N. Do, and D. C. Munson, “MCA: A multichannel approach to SAR autofocus,” IEEE Transactions on Image Processing , vol. 18, no. 4, pp. 840–853, 2009. [27] J. Min, J. Jang, D. Keum, S.-W. Ryu, C. Choi, K.-H. Jeong, and J. C. Ye, “Fluorescent microscopy beyond diffraction limits using speckle illumination and joint support recovery,” 
+
+Scientific reports , vol. 3, no. 1, p. 2075, 2013. [28] T. Vavrdová, O. Šamajová, P. Křenek, M. Ovečka, P. Floková, R. Šnaurová, J. Šamaj, and G. Komis, “Multicolour three dimensional structured illumination microscopy of immunolabeled plant microtubules and associated proteins,” Plant Methods , vol. 15, no. 1, p. 22, 2019. [29] F. Soulez, L. Denis, Y. Tourneur, and É. Thiébaut, “Blind deconvolution of 3D data in wide field fluorescence microscopy,” in 2012 9th IEEE International Symposium on Biomedical Imaging (ISBI) . IEEE, 2012, pp. 1735–1738. [30] F. Soulez and M. Unser, “Superresolution with optically-motivated blind deconvolution,” in 
+
+Laser Applications to Chemical, Security and Environmental Analysis . Optica Publishing Group, 2016, pp. JT3A–38. [31] S. Cho and S. Lee, “Fast motion deblurring,” in ACM SIGGRAPH Asia 2009 papers , 2009, pp. 1–8. [32] T. Strohmer, “Four short stories about Toeplitz matrix calculations,” Linear Algebra and its Applications , vol. 343, pp. 321–344, 2002. [33] J. Chen and X. Huo, “Theoretical results on sparse representations of multiple-measurement vectors,” IEEE Transactions on Signal Processing , vol. 54, no. 12, pp. 4634–4643, 2006. [34] Y. C. Eldar and H. Rauhut, “Average case analysis of multichannel sparse recovery using convex relaxation,” IEEE Transactions on Information Theory , vol. 56, no. 1, pp. 505–519, 2009. 28 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+[35] Z. Yang and L. Xie, “Exact joint sparse frequency recovery via optimization methods,” IEEE Transactions on Signal Processing , vol. 64, no. 19, pp. 5145–5157, 2016. [36] Z. Yang, J. Tang, Y. C. Eldar, and L. Xie, “On the sample complexity of multichannel frequency estimation via convex optimization,” IEEE Transactions on Information Theory ,vol. 65, no. 4, pp. 2302–2315, 2019. [37] D. Yang, G. Tang, and M. B. Wakin, “Super-resolution of complex exponentials from modulations with unknown waveforms,” IEEE Transactions on Information Theory , vol. 62, no. 10, pp. 5809–5830, 2016. [38] S. Daei, S. Razavikia, M. Skoglund, G. Fodor, and C. Fischione, “Timely and painless breakups: Off-the-grid blind message recovery and users’ demixing,” IEEE Transactions on Information Theory , vol. 71, no. 7, pp. 5226–5257, 2025. [39] J. Chen, W. Gao, S. Mao, and K. Wei, “Vectorized Hankel lift: A convex approach for blind super-resolution of point sources,” IEEE Transactions on Information Theory , vol. 68, no. 12, pp. 8280–8309, 2022. [40] W. Huang and P. Hand, “Blind deconvolution by a steepest descent algorithm on a quotient manifold,” SIAM Journal on Imaging Sciences , vol. 11, no. 4, pp. 2757–2785, 2018. [41] J. Sun, Q. Qu, and J. Wright, “Complete dictionary recovery over the sphere I: Overview and the geometric picture,” IEEE Transactions on Information Theory , vol. 63, no. 2, pp. 853–884, 2016. [42] ——, “Complete dictionary recovery over the sphere II: Recovery by Riemannian trust-region method,” IEEE Transactions on Information Theory , vol. 63, no. 2, pp. 885–914, 2017. [43] C. J. Hillar and F. T. Sommer, “When can dictionary learning uniquely recover sparse data from subsamples?” IEEE Transactions on Information Theory , vol. 61, no. 11, pp. 6290–6297, 2015. [44] K. Luh and V. Vu, “Dictionary learning with few samples and matrix concentration,” IEEE Transactions on Information Theory , vol. 62, no. 3, pp. 1516–1527, 2016. [45] Y. Sun and K. Huang, “Global identifiability of overcomplete dictionary learning via l1 and volume minimization,” in The Thirteenth International Conference on Learning Representations , 2025. [46] S. Ruetz and K. Schnass, “Convergence regions of alternating minimization algorithms for dictionary learning,” SIAM Journal on Optimization , vol. 36, no. 1, pp. 320–349, 2026. [47] G. Liang, G. Zhang, S. Fattahi, and R. Y. Zhang, “Simple alternating minimization provably solves complete dictionary learning,” SIAM Journal on Mathematics of Data Science , vol. 7, no. 3, pp. 855–883, 2025. [48] A. Cosse, “A note on the blind deconvolution of multiple sparse signals from unknown subspaces,” in Wavelets and Sparsity XVII , vol. 10394. SPIE, 2017, pp. 330–347. [49] L. Wang and Y. Chi, “Blind deconvolution from multiple sparse inputs,” IEEE Signal Processing Letters , vol. 23, no. 10, pp. 1384–1388, 2016. [50] R. Ge, C. Jin, and Y. Zheng, “No spurious local minima in nonconvex low rank problems: A unified geometric analysis,” in International conference on machine learning . PMLR, 2017, pp. 1233–1242. [51] J.-F. Cai, J. Li, and J. You, “Provable sample-efficient sparse phase retrieval initialized by truncated power method,” Inverse Problems , vol. 39, no. 7, p. 075008, 2023. [52] Y. Carmon, J. C. Duchi, O. Hinder, and A. Sidford, “Accelerated methods for nonconvex optimization,” SIAM Journal on Optimization , vol. 28, no. 2, pp. 1751–1772, 2018. [53] S. Chen, A. Garcia, M. Hong, and S. Shahrampour, “On the local linear rate of consensus on the Stiefel manifold,” IEEE Transactions on Automatic Control , vol. 69, no. 4, pp. 2324–2339, 2023. 29 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+[54] P. J. Davis, Circulant matrices . Wiley New York, 1979, vol. 120. [55] R. M. Gray, “Toeplitz and circulant matrices: A review,” 2006. [56] B. Bamieh, “Discovering transforms: A tutorial on circulant matrices, circular convolution, and the discrete fourier transform,” arXiv preprint arXiv:1805.05533 , 2018. [57] S.-Q. Shen, J.-M. Cen, and Y. Hao, “On the determinants and inverses of circulant matrices with Fibonacci and Lucas numbers,” Applied Mathematics and Computation , vol. 217, no. 23, pp. 9790–9797, 2011. [58] M. J. Wainwright, High-dimensional statistics: A non-asymptotic viewpoint . Cambridge university press, 2019, vol. 48. [59] N. Boumal, An introduction to optimization on smooth manifolds . Cambridge University Press, 2023. [60] M. A. Richards, J. Scheer, W. A. Holm, and W. L. Melvin, “Principles of modern radar,” 2010. [61] C. Criscitiello and N. Boumal, “Efficiently escaping saddle points on manifolds,” Advances in Neural Information Processing Systems , vol. 32, 2019. [62] Y. Sun, N. Flammarion, and M. Fazel, “Escaping from saddle points on Riemannian manifolds,” Advances in Neural Information Processing Systems , vol. 32, 2019. [63] P.-A. Absil, C. G. Baker, and K. A. Gallivan, “Trust-region methods on Riemannian manifolds,” Foundations of Computational Mathematics , vol. 7, no. 3, pp. 303–330, 2007. [64] M. Liu, Z. Li, X. Wang, J. Yi, and T. Yang, “Adaptive negative curvature descent with applications in non-convex optimization,” Advances in Neural Information Processing Systems ,vol. 31, 2018. [65] F. E. Curtis and D. P. Robinson, “Exploiting negative curvature in deterministic and stochastic optimization,” Mathematical Programming , vol. 176, no. 1, pp. 69–94, 2019. [66] J. A. Tropp, “User-friendly tail bounds for sums of random matrices,” Foundations of computational mathematics , vol. 12, no. 4, pp. 389–434, 2012. [67] S. Hosseini, W. Huang, and R. Yousefpour, “Line search algorithms for locally Lipschitz functions on Riemannian manifolds,” SIAM Journal on Optimization , vol. 28, no. 1, pp. 596–619, 2018. [68] H. D. Griffiths and C. J. Baker, An introduction to passive radar . Artech House, 2022. [69] G. Fabrizio and A. Heitmann, “A multipath-driven approach to HF geolocation,” Signal Processing , vol. 93, no. 12, pp. 3487–3503, 2013. 30 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+# Supplementary Material for Jointly Sparse Blind Deconvolution via Riemannian Optimization 
+
+Wenlong Wang 1 , Baiyang Guo 2 , Zai Yang 1,∗ , Shixiang Chen 3 and Junpeng Shi 2
+
+> 1
+
+School of Mathematics and Statistics, Xi’an Jiaotong University, Xi’an, China 
+
+> 2
+
+College of Electronic Engineering, National University of Defense Technology, Hefei, China 
+
+> 3
+
+School of Mathematical Sciences,University of Science and Technology of China, Hefei, China 
+
+> ∗
+
+Author to whom any correspondence should be addressed. 
+
+E-mails: wang1813857265@stu.xjtu.edu.cn, guobaiyang@nudt.edu.cn, yangzai@xjtu.edu.cn, shxchen@ustc.edu.cn and shijunpeng20@nudt.edu.cn 
+
+This supplementary material provides complete proofs of the theoretical results presented in the main manuscript. In particular, it contains the proofs of several auxiliary lemmas and technical propositions stated in the main text, whose proofs are deferred here to improve the readability of the manuscript. 
+
+8 Proof of Lemma 4 
+
+It follows from (41) that 
+
+min 
+
+> n∈χo
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh ≤ Kh 2
+
+> o
+
+. (125) It remains to show that 
+
+min 
+
+> n∈χo
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh ≤ 1 − 1 − h2
+
+> o
+
+K . (126) We establish (126) by contradiction. Suppose that, for all n ∈ χo,
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh > 1 − 1 − h2
+
+> o
+
+K . (127) Then 
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh − h2 
+
+> o
+
+> (K − 1) (1 − h2
+
+> o
+
+)
+
+K . (128) Consequently, there exists an index ˜o such that 
+
+h2 
+
+> ˜o
+
+> 1 − h2
+
+> o
+
+K . (129) Since Ω is non-uniform, there exists ˜n ∈ χo such that ˜n / ∈ χ˜o, namely, 
+
+h⊤Γ⊤ 
+
+> ˜n
+
+ΣΩΓ˜nh ≤ 1 − h2 
+
+> ˜o
+
+< 1 − 1 − h2
+
+> o
+
+K , (130) which contradicts (127). Therefore, (126) holds, completing the proof. 
+
+9 Proof of Lemma 5 
+
+The Riemannian Hessian of ψ0 
+
+> ε
+
+is Hess ψ0 
+
+> ε
+
+(h) = 
+
+(
+
+I − hh ⊤) { N∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+−
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnhh ⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+−
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 [
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]
+
+I
+
+} (
+
+I − hh ⊤)
+
+=
+
+(
+
+I − hh ⊤) { N∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
+Hn
+
+} (
+
+I − hh ⊤)
+
+,
+
+(131) 31 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+where 
+
+Hn =
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] { 
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn −
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]
+
+I
+
+}
+
+− Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnhh ⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn.
+
+(132) It is straightforward to verify that 
+
+d⊤Hnd =d⊤
+
+{ [
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] { 
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn −
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]
+
+I
+
+}
+
+− Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnhh ⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+}
+
+d
+
+=
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] { 
+
+d⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnd −
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]
+
+∥d∥22
+
+}
+
+− d⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnhh ⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnd,
+
+(133) where 
+
+d⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnd =e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γneo − 2hoh⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γneo
+
++ h2
+
+> o
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh, (134) and 
+
+d⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnhh ⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnd
+
+=
+
+[
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]2
+
+− 2hoe⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnhh ⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
++ h2
+
+> o
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]2
+
+.
+
+(135) Consequently, 
+
+d⊤Hnd = −
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] [ 
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]
+
+∥d∥22
+
++
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+ΣΩΓneo
+
++
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓneo
+
++
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] [ 
+
+−2hoh⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γneo
+
+]
+
++
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] [ 
+
+h2
+
+> o
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]
+
+−
+
+[
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]2
+
+− h2
+
+> o
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]2
+
++ 2 ho
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh.
+
+(136) Furthermore, we have 
+
+d⊤Hnd = −
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] [ 
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]
+
+∥d∥22
+
++
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+ΣΩΓneo
+
+−
+
+[
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+]2
+
+− 2hoε
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γneo
+
+]
+
++
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓneo
+
++ εh 2
+
+> o
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh.
+
+(137) Summing over n yields 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+= 1
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
+d⊤Hnd = main + res , (138) 32 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+where main = −
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+)
+
++ 1
+
+∥d∥22
+
+∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+− h2
+
+> o
+
+∥d∥22
+
+∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
+,
+
+(139) and res = −
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)
+
+− 2ho
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓneo
+
+)
+
+− 1
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32 [
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓnh
+
+]2
+
+− 2h2
+
+> o
+
+ε
+
+∥d∥22
+
+∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
+− 2hoε
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32 [
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓneo
+
+]
+
++ 1
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓneo
+
++ εh 2
+
+> o
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh.
+
+(140) By discarding nonpositive terms, the residual term can be further bounded as res ≤ − 
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)
+
+− 2ho (1 + ε)
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓneo
+
+)
+
++ 1
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓneo
+
++ εh 2
+
+> o
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+≤ − 
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)
+
++ 2ho (1 + ε)
+
+∥d∥22
+
+(h2 
+
+> o
+
+− ∥ EΩ∥2 + ε)− 32 K ∥EΩ∥2
+
++ 1
+
+∥d∥22
+
+(h2 
+
+> o
+
+− ∥ EΩ∥2 + ε)− 12 K ∥EΩ∥2 + h2
+
+> o
+
+∥d∥22
+
+ε 12 N
+
+≤ − 
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)
+
++ 8 (1 + ε)
+
+∥d∥22
+
+h−2 
+
+> o
+
+K ∥EΩ∥2 + 2
+
+∥d∥22
+
+Kh −1 
+
+> o
+
+∥EΩ∥2 + h2
+
+> o
+
+∥d∥22
+
+ε 12 N. 
+
+(141) 33 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Note that ∣∣∣∣∣
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)∣∣∣∣∣
+
+≤ ∑
+
+> n∈χh
+
+[( 
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)
+
+/ ∥P Ω (Γnh)∥22
+
+]
+
+∥P Ω (Γnh)∥2
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh/ ∥P Ω (Γnh)∥22 + ε/ ∥P Ω (Γnh)∥22
+
+] 12
+
+≤ ∥EΩ∥2
+
+(1 − ∥ EΩ∥2 + ε) 12
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 .
+
+(142) Substituting (142) into the preceding bound yields res ≤2 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 + 8 (1 + ε)
+
+∥d∥22
+
+h−2 
+
+> o
+
+K ∥EΩ∥2 + 2
+
+∥d∥22
+
+Kh −1 
+
+> o
+
+∥EΩ∥2 + h2
+
+> o
+
+∥d∥22
+
+ε 12 N. 
+
+(143) To provide an upper bound for the main term, we establish the following lemma. 
+
+Lemma 9 Let h be an approximate first-order stationary point satisfying (40) and (41) . Then, for 
+
+∥EΩ∥2 ≤ 12 , it holds that 
+
+∣∣∣∣∣∣∣∑
+
+> n∈χo
+
+1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+−
+
+> N
+
+∑
+
+> n=1
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+∣∣∣∣∣∣∣
+
+≤ 1
+
+ho
+
+(ξ + 2 K ∥EΩ∥2) + 2 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 .
+
+(144) 
+
+Proof: It follows from (39) that the o-th entry of grad ψ0 
+
+> ε
+
+(h) is given by 
+
+Po
+
+(grad ψ0 
+
+> ε
+
+(h)) = ∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+ho
+
+−
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+)
+
+ho
+
++ Po
+
+( N∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)
+
+− P o
+
+( N∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)
+
+h
+
+)
+
+.
+
+(145) By the first-order stationarity condition (40), 
+
+∣∣Po
+
+(grad ψ0 
+
+> ε
+
+(h))∣ ∣ ≤ ξ, (146) which implies 
+
+ho
+
+∣∣∣∣∣∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+−
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+)∣∣∣∣∣
+
+≤ξ +
+
+∣∣∣∣∣Po
+
+( N∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)∣ ∣∣∣∣
+
++
+
+∣∣∣∣∣Po
+
+( N∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)
+
+h
+
+)∣ ∣∣∣∣
+
+≤ξ +
+
+∣∣∣∣∣Po
+
+( ∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)∣ ∣∣∣∣
+
++ ho
+
+∣∣∣∣∣
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)∣∣∣∣∣ .
+
+(147) 34 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Moreover, ∣∣∣∣∣Po
+
+( ∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+Γ⊤ 
+
+> n
+
+EΩΓnh
+
+)∣ ∣∣∣∣
+
+≤ ∑
+
+> n∈χo
+
+(
+
+h⊤Γ⊤ 
+
+> n
+
+E⊤ 
+
+> Ω
+
+EΩΓnh
+
+)
+
+/ ∥P Ω (Γnh)∥22
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh/ ∥P Ω (Γnh)∥22 + ε/ ∥P Ω (Γnh)∥22
+
+
+
+> 12
+
+≤K ∥EΩ∥2
+
+(1 − ∥ EΩ∥2 + ε) 12
+
+.
+
+(148) Substituting (148) and (142) into the inequality (147) yields 
+
+ho
+
+∣∣∣∣∣∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+−
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12 (
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+)∣∣∣∣∣
+
+≤ξ + K ∥EΩ∥2
+
+(1 − ∥ EΩ∥2 + ε) 12
+
++ ho
+
+∥EΩ∥2
+
+(1 − ∥ EΩ∥2 + ε) 12
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2
+
+≤ξ + 2 K ∥EΩ∥2 + 2 ho ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 .
+
+(149) Dividing both sides by ho completes the proof. □
+
+It follows from Lemma 9 that main ≤
+
+(
+
+1
+
+∥d∥22
+
+− 1
+
+) ∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+− h2
+
+> o
+
+∥d∥22
+
+∑
+
+> n∈χo
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
++ 1
+
+ho
+
+(ξ + 2 K ∥EΩ∥2) + 2 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2
+
+= h2
+
+> o
+
+∥d∥22
+
+∑
+
+> n∈χo
+
+{[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+−
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
+}
+
++ 1
+
+ho
+
+(ξ + 2 K ∥EΩ∥2) + 2 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 .
+
+(150) Applying Lemma 4 yields 
+
+∑
+
+> n∈χo
+
+{[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+−
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 32
+
+}
+
+≤
+
+(
+
+min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ ∥EΩ∥2 + ε
+
+)− 12
+
+−
+
+(
+
+min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ ∥EΩ∥2 + ε
+
+)− 32
+
++ ( K − 1) 
+
+[
+
+(1 + ∥EΩ∥2 + ε)− 12 − (1 + ∥EΩ∥2 + ε)− 32
+
+]
+
+≤
+
+(
+
+min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ ∥EΩ∥2 + ε
+
+)− 32 (
+
+min 
+
+{
+
+Kh 2 
+
+> o
+
+− 1, − 1 − h2
+
+> o
+
+K
+
+}
+
++ ∥EΩ∥2 + ε
+
+)
+
++ ( K − 1) (1 + ∥EΩ∥2 + ε)− 32 (∥EΩ∥2 + ε) .
+
+(151) 35 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Consequently, we obtain that main ≤ h2
+
+> o
+
+∥d∥22
+
+(
+
+min 
+
+{
+
+1 − 1 − h2
+
+> o
+
+K , Kh 2
+
+> o
+
+}
+
++ ∥EΩ∥2 + ε
+
+)− 32 (
+
+min 
+
+{
+
+− 1 − h2
+
+> o
+
+K , Kh 2 
+
+> o
+
+− 1
+
+}
+
++ ∥EΩ∥2 + ε
+
+)
+
++ h2
+
+> o
+
+∥d∥22
+
+(K − 1) (1 + ∥EΩ∥2 + ε)− 32 (∥EΩ∥2 + ε)+ 1
+
+ho
+
+(ξ + 2 K ∥EΩ∥2) + 2 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2
+
+≤ h2
+
+> o
+
+∥d∥22
+
+(
+
+min 
+
+{
+
+1 − 1 − h2
+
+> o
+
+K , Kh 2
+
+> o
+
+}
+
++ ∥EΩ∥2 + ε
+
+)− 32 (
+
+min 
+
+{
+
+− 1 − h2
+
+> o
+
+K , Kh 2 
+
+> o
+
+− 1
+
+}
+
++ ∥EΩ∥2 + ε
+
+)
+
++ h2
+
+> o
+
+∥d∥22
+
+K (∥EΩ∥2 + ε) + 1
+
+ho
+
+(ξ + 2 K ∥EΩ∥2) + 2 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 .
+
+(152) Substituting (143) and (152) into (138) yields 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ h2
+
+> o
+
+∥d∥22
+
+(
+
+min 
+
+{
+
+1 − 1 − h2
+
+> o
+
+K , Kh 2
+
+> o
+
+}
+
++ ∥EΩ∥2 + ε
+
+)− 32
+
+·
+
+(
+
+min 
+
+{
+
+− 1 − h2
+
+> o
+
+K , Kh 2 
+
+> o
+
+− 1
+
+}
+
++ ∥EΩ∥2 + ε
+
+)
+
++ 1
+
+∥d∥22
+
+h2
+
+> o
+
+K ∥EΩ∥2 + 4 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 + 4
+
+∥d∥22
+
+h−1 
+
+> o
+
+K ∥EΩ∥2
+
++ 8
+
+∥d∥22
+
+h−2 
+
+> o
+
+(1 + ε) K ∥EΩ∥2 + 1
+
+∥d∥22
+
+h2
+
+> o
+
+εK + 2
+
+∥d∥22
+
+h2
+
+> o
+
+ε 12 N + h−1 
+
+> o
+
+ξ, 
+
+(153) Therefore, there exist positive constants c1 ≤ 12 , c2 ≤ 1, and c3 such that, whenever 
+
+∥EΩ∥2 ≤ c1K−2 max −1 {K2, N }, ε ≤ c2K−6N −2, and ξ ≤ c3K−3N − 12 , it holds that 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ (1 + c1 + c2)− 32 h2
+
+> o
+
+∥d∥22
+
+(
+
+min 
+
+{
+
+1 − 1 − h2
+
+> o
+
+K , Kh 2
+
+> o
+
+}) − 32
+
+min 
+
+{
+
+− 1 − h2
+
+> o
+
+K , Kh 2 
+
+> o
+
+− 1
+
+}
+
++ h2
+
+> o
+
+∥d∥22
+
+(
+
+min 
+
+{
+
+1 − 1 − h2
+
+> o
+
+K , Kh 2
+
+> o
+
+}) − 32
+
+(∥EΩ∥2 + ε)+ c1
+
+∥d∥22
+
+K−3 + 4 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2
+
++ 20 
+
+∥d∥22
+
+h−2 
+
+> o
+
+K ∥EΩ∥2 + c2
+
+∥d∥22
+
+K−3 + 2c 12
+
+> 2
+
+∥d∥22
+
+K−3 + c3K−3,
+
+(154) which completes the proof. 
+
+10 Proof of Proposition 2 
+
+By Lemma 5 and the assumption ho ∈
+
+[√ 1 
+
+> N
+
+,
+
+√ 1
+
+> K+1
+
+]
+
+, there exist positive constants c1, c2, and c3
+
+such that, whenever ∥EΩ∥2 ≤ c1K−2 max −1 {K2, N }, ε ≤ c2K−6N −2, and ξ ≤ c3K−3N − 12 , it holds that 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ (1 + c1 + c2)− 32 h−1
+
+> o
+
+∥d∥22
+
+K− 32
+
+(Kh 2 
+
+> o
+
+− 1) + 1
+
+∥d∥22
+
+(c1 + c2) K−2
+
++ 4 c1K−2 + 20 
+
+∥d∥22
+
+h−2 
+
+> o
+
+K ∥EΩ∥2 + c1 + c2 + 2 c 12
+
+> 2
+
+∥d∥22
+
+K−3 + c3K−3.
+
+(155) 36 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Furthermore, if ∥EΩ∥2 ≤ c1K− 72 N − 12 , then 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ − (1 + c1 + c2)− 32 h−1
+
+> o
+
+∥d∥22
+
+K− 52
+
+2 + ( c1 + c2) h−1
+
+> o
+
+∥d∥22
+
+K− 52
+
++ 4 c1
+
+h−1
+
+> o
+
+∥d∥22
+
+K− 52 + 20 c1
+
+h−1
+
+> o
+
+∥d∥22
+
+K− 52 + c1 + c2 + 2 c 12 
+
+> 2
+
++ c3
+
+∥d∥22
+
+K−3
+
+≤ − h−1
+
+> o
+
+∥d∥22
+
+[
+
+(1 + c1 + c2)− 32
+
+2 −
+
+(
+
+26 c1 + 2 c2 + 2 c 12 
+
+> 2
+
++ c3
+
+)]
+
+K− 52
+
+≤ − 1
+
+∥d∥22
+
+[
+
+(1 + c1 + c2)− 32
+
+2 −
+
+(
+
+26 c1 + 2 c2 + 2 c 12 
+
+> 2
+
++ c3
+
+)]
+
+K−2,
+
+(156) which completes the proof. 
+
+11 Proof of Proposition 3 
+
+By Lemma 5 and the assumption ho ∈
+
+(√ 1 
+
+> K+1
+
+,
+
+√
+
+1 − 14K
+
+]
+
+, there exist positive constants c1, c2,and c3 such that, whenever ∥EΩ∥2 ≤ c1K−2 max −1 {K2, N }, ε ≤ c2K−6N −2, and ξ ≤ c3K−3N − 12 ,it holds that 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ (1 + c1 + c2)− 32 h2
+
+> o
+
+∥d∥22
+
+(
+
+1 − 1 − h2
+
+> o
+
+K
+
+)− 32 (
+
+− 1 − h2
+
+> o
+
+K
+
+)
+
++ 4 ( c1 + c2)
+
+∥d∥22
+
+K−4
+
++ 4 N ∥EΩ∥2 + 20 
+
+∥d∥22
+
+h−2 
+
+> o
+
+K ∥EΩ∥2 + c1 + c2 + 2 c 12 
+
+> 2
+
++ c3
+
+∥d∥22
+
+K−3.
+
+(157) Furthermore, if ∥EΩ∥2 ≤ c1K− 52 max −1 {N, K 2}, then 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ − (1 + c1 + c2)− 32
+
+81
+
+∥d∥22
+
+K−2 + 4 ( c1 + c2)
+
+∥d∥22
+
+K−4
+
++ 4 c1K− 52 + 40 c1
+
+1
+
+∥d∥22
+
+K− 52 + c1 + c2 + 2 c 12 
+
+> 2
+
++ c3
+
+∥d∥22
+
+K−3
+
+≤ − 1
+
+∥d∥22
+
+[
+
+(1 + c1 + c2)− 32
+
+8 −
+
+(
+
+49 c1 + 5 c2 + 2 c 12 
+
+> 2
+
++ c3
+
+)]
+
+K−2,
+
+(158) which completes the proof. 
+
+12 Proof of Proposition 4 
+
+By Lemma 5 and the assumption ho ∈
+
+(√ 
+
+1 − 14K ,
+
+√
+
+1 − 14K2
+
+]
+
+, there exist positive constants c1, c2,and c3 such that, whenever ∥EΩ∥2 ≤ c1K−2 max −1 {K2, N }, ε ≤ c2K−6N −2, and ξ ≤ c3K−3N − 12 ,it holds that 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ − (1 + c1 + c2)− 32 h2
+
+> o
+
+∥d∥22
+
+(
+
+1 − 1 − h2
+
+> o
+
+K
+
+)− 32 1 − h2
+
+> o
+
+K + 4 ( c1 + c2)
+
+∥d∥22
+
+K−4
+
++ 4 ∥EΩ∥2
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 + 80 c1
+
+∥d∥22
+
+K−3 + c1 + c2 + 2 c 12 
+
+> 2
+
++ c3
+
+∥d∥22
+
+K−3.
+
+(159) Next, observe that 
+
+∑
+
+> n∈χh
+
+∥P Ω (Γnh)∥2 = ∑
+
+> n∈χh∩χo
+
+∥P Ω (Γnh)∥2 + ∑
+
+> n∈χh\χo
+
+∥P Ω (Γnh)∥2 ≤ K + N − K
+
+2√K . (160) 37 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Therefore, if ∥EΩ∥2 ≤ c1K− 52 max −1 {N, K 2}, it holds that 
+
+d⊤Hess ψ0 
+
+> ε
+
+(h) d
+
+∥d∥22
+
+≤ − (1 + c1 + c2)− 32
+
+81
+
+∥d∥22
+
+K−3 + 4 ( c1 + c2)
+
+∥d∥22
+
+K−4
+
++ (8 c1 + 2 c1) K−3 + 80 c1
+
+∥d∥22
+
+K−3 + c1 + c2 + 2 c 12 
+
+> 2
+
++ c3
+
+∥d∥22
+
+K−3
+
+≤ − 1
+
+∥d∥22
+
+[
+
+(1 + c1 + c2)− 32
+
+8 −
+
+(
+
+95 c1 + 5 c2 + 2 c 12 
+
+> 2
+
++ c3
+
+)]
+
+K−3,
+
+(161) which completes the proof. 
+
+13 Proof of Proposition 5 
+
+From (39) and (42), we obtain 
+
+d⊤grad ψ0 
+
+> ε
+
+(h) = 
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+]− 12
+
+d⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh
+
+=
+
+> N
+
+∑
+
+> n=1
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnh − hoh⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
++
+
+> N
+
+∑
+
+> n=1
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓnh − hoh⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+= ∑
+
+> n∈χo
+
+ho
+
+(
+
+1 − h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+)[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+− ∑
+
+> n∈χC
+> o
+
+hoh⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
++
+
+> N
+
+∑
+
+> n=1
+
+d⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+,
+
+(162) where χC 
+
+> o
+
+denotes the complement of χo in {1, 2, · · · , N }. Next, observe that 
+
+∑
+
+> n∈χo
+
+ho
+
+(
+
+1 − h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+)[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+− ∑
+
+> n∈χC
+> o
+
+hoh⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+≤ ho
+
+[h2 
+
+> o
+
+− ∥ EΩ∥2 + ε] 12
+
+∑
+
+> n∈χo
+
+(
+
+1 − h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+)
+
+− ho
+
+[1 − h2 
+
+> o
+
++ ∥EΩ∥2 + ε] 12
+
+∑
+
+> n∈χC
+> o
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+≤ Kh o
+
+(1 − h2
+
+> o
+
+)
+
+(h2 
+
+> o
+
+− ∥ EΩ∥2 + ε) 12
+
+− ho
+
+(1 − h2
+
+> o
+
+)
+
+(1 − h2 
+
+> o
+
++ ∥EΩ∥2 + ε) 12
+
+=ho
+
+(1 − h2
+
+> o
+
+) [
+
+K
+
+(h2 
+
+> o
+
+− ∥ EΩ∥2 + ε) 12
+
+− 1(1 − h2 
+
+> o
+
++ ∥EΩ∥2 + ε) 12
+
+]
+
+,
+
+(163) where the second inequality follows from the nonuniformity of Ω. Specifically, for every m̸ = o,there exists Γn such that e⊤
+
+> m
+
+Γ⊤ 
+
+> n
+
+ΣΩΓnem = 1 and e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+ΣΩΓneo = 0 . Consequently, 
+
+∑
+
+> n∈χC
+> o
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh ≥ 1 − h2
+
+> o
+
+. (164) 38 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Moreover, 
+
+∣∣∣∣∣∣∣
+
+> N
+
+∑
+
+> n=1
+
+d⊤Γ⊤ 
+
+> n
+
+EΩΓnh
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+∣∣∣∣∣∣∣
+
+≤ ∥ d∥2
+
+> N
+
+∑
+
+> n=1
+
+∥EΩΓnh∥2
+
+[
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh + ε
+
+] 12
+
+≤ ∥ d∥2
+
+∑
+
+> n∈χh
+
+(
+
+h⊤Γ⊤ 
+
+> n
+
+E⊤ 
+
+> Ω
+
+EΩΓnh
+
+)
+
+/ ∥P Ω (Γnh)∥22
+
+h⊤Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γnh/ ∥P Ω (Γnh)∥22 + ε/ ∥P Ω (Γnh)∥22
+
+
+
+> 12
+
+≤N ∥d∥2
+
+∥EΩ∥2
+
+(1 − ∥ EΩ∥2 + ε) 12
+
+.
+
+(165) Since h satisfies (40), ∣∣∣d⊤grad ψ0 
+
+> ε
+
+(h)
+
+∣∣∣
+
+∥d∥2
+
+≤ ∥∥grad ψ0 
+
+> ε
+
+(h)∥∥2 ≤ ξ. (166) Therefore, if K
+
+(h2
+
+> o−∥ EΩ∥2+ε
+
+) 12
+
+− 1
+
+(1−h2
+
+> o+∥EΩ∥2+ε
+
+) 12
+
+< 0, then 
+
+ho
+
+(1 − h2
+
+> o
+
+) 12
+
+∣∣∣∣∣
+
+1(1 − h2 
+
+> o
+
++ ∥EΩ∥2 + ε) 12
+
+− K
+
+(h2 
+
+> o
+
+− ∥ EΩ∥2 + ε) 12
+
+∣∣∣∣∣ ≤ ξ + N ∥EΩ∥2
+
+(1 − ∥ EΩ∥2 + ε) 12
+
+. (167) Now choose c1 = 132 , c2 = 132 . Under the conditions ∥EΩ∥2 ≤ c1K−2 and ε ≤ c2K−2, we obtain 
+
+ho
+
+(1 − h2
+
+> o
+
+) 12
+
+∣∣∣∣∣∣
+
+4K
+
+√5 −√2K
+
+√
+
+1 − 14K2
+
+∣∣∣∣∣∣ ≤ ξ + 2 N ∥EΩ∥2 . (168) Consequently, 
+
+(1 − h2
+
+> o
+
+) 12 ≤2− 12
+
+(√ 85 −
+
+√ 43
+
+)−1
+
+1
+
+Kh o
+
+(ξ + 2 N ∥EΩ∥2) ≤
+
+(√ 85 −
+
+√ 43
+
+)−1
+
+K−1 (ξ + 2 N ∥EΩ∥2) .
+
+(169) Choosing c3 = √2
+
+(√ 85 −
+
+√ 43
+
+)−1
+
+, c4 = 2 √2
+
+(√ 85 −
+
+√ 43
+
+)−1
+
+yields 
+
+(1 − h2
+
+> o
+
+) 12 ≤ 1
+
+√2
+
+(c3K−1ξ + c4K−1N ∥EΩ∥2
+
+) . (170) Finally, since 
+
+∥h − eo∥2 ≤ √2 (1 − h2
+
+> o
+
+) 12 , (171) the proof is complete. 
+
+14 Proof of Lemma 7 
+
+Observe that 
+
+∥∆∥2 =
+
+∥∥∥∥C (g) RU ⊤ − 1
+
+√K I
+
+∥∥∥∥2
+
+=
+
+∥∥∥∥C (g) R − 1
+
+√K U
+
+∥∥∥∥2
+
+=
+
+∥∥∥∥C (g) R − 1
+
+√K C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+∥∥∥∥2
+
+≤ ∥C (g)∥2
+
+∥∥∥∥R − 1
+
+√K
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+∥∥∥∥2
+
+.
+
+(172) 39 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+It follows from [1, Theorem 6.2] that 
+
+∥∥∥∥R − 1
+
+√K
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+∥∥∥∥2
+
+=
+
+∥∥∥∥∥∥[
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+C (yl)⊤ C (yl)
+
+]− 12
+
+− 1
+
+√K
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+∥∥∥∥∥∥2
+
+≤
+
+∥∥∥∥[ 1
+
+> L
+
+∑Ll=1 C (yl)⊤ C (yl)
+
+]−1
+
+− 1
+
+> K
+
+[
+
+C (g)⊤ C (g)
+
+]−1∥∥∥∥2
+
+λmin 
+
+(
+
+> 1√K
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+) .
+
+(173) Hence, 
+
+∥∆∥2 ≤ ∥C (g)∥2
+
+∥∥∥∥[
+
+C (g)⊤ QC (g)
+
+]−1
+
+− 1
+
+> K
+
+[
+
+C (g)⊤ C (g)
+
+]−1∥∥∥∥2
+
+λmin 
+
+(
+
+> 1√K
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+)
+
+≤ ∥C (g)∥2
+
+∥∥∥∥[
+
+C (g)⊤ C (g)
+
+]−1∥∥∥∥2
+
+∥∥∥∥C (g)⊤ C (g)
+
+[
+
+C (g)⊤ QC (g)
+
+]−1
+
+− 1 
+
+> K
+
+I
+
+∥∥∥∥2
+
+λmin 
+
+(
+
+> 1√K
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+)
+
+=√K ∥C (g)∥22
+
+∥∥∥∥[
+
+C (g)⊤ C (g)
+
+]−1∥∥∥∥2
+
+∥∥∥∥C (g)⊤ C (g)
+
+[
+
+C (g)⊤ QC (g)
+
+]−1
+
+− 1
+
+K I
+
+∥∥∥∥2
+
+=√Kκ 2
+
+∥∥∥∥C (g)⊤ C (g)
+
+[
+
+C (g)⊤ QC (g)
+
+]−1
+
+− 1
+
+K I
+
+∥∥∥∥2
+
+,
+
+(174) where 
+
+Q = 1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+C (xl)⊤ C (xl) . (175) Furthermore, ∥∥∥∥C (g)⊤ C (g)
+
+[
+
+C (g)⊤ QC (g)
+
+]−1
+
+− 1
+
+K I
+
+∥∥∥∥2
+
+=
+
+∥∥∥∥∥(
+
+KI + C (g)⊤ (Q − KI) C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]−1)−1
+
+− 1
+
+K I
+
+∥∥∥∥∥2
+
+= 1
+
+K
+
+∥∥∥∥∥(
+
+I + C (g)⊤
+
+( 1
+
+K Q − I
+
+)
+
+C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]−1)−1
+
+− I
+
+∥∥∥∥∥2
+
+≤ 1
+
+K
+
+∥∥∥∥∥(
+
+I + C (g)⊤
+
+( 1
+
+K Q − I
+
+)
+
+C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]−1)−1∥∥∥∥∥2
+
+·
+
+∥∥∥∥C (g)⊤
+
+( 1
+
+K Q − I
+
+)
+
+C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]−1∥∥∥∥2
+
+.
+
+(176) We next derive a bound on ∥∥ 1 
+
+> K
+
+Q − I∥∥2 using the following moment-controlled Bernstein inequality. 
+
+Lemma 10 ( [2, Lemma 7]) Let {Zl}Ll=1 be a set of independent random matrices with dimension N × N . Assume there exist σ and R such that for all m ≥ 2, E [∥Zl∥m 
+
+> 2
+
+] ≤ m!2 σ2Rm−2.Denote S = 1
+
+> L
+
+∑Ll=1 Zl, then we have for any t > 0, the following bound holds with probability at least 1 − 2N exp 
+
+{
+
+− Lt 2
+
+> 2σ2+2 Rt
+
+}
+
+:
+
+∥S − E [S]∥2 ≤ t. (177) Following Lemma 10, define Zl = 1 
+
+> K
+
+C (xl)⊤ C (xl) for l = 1 , · · · , L . It follows immediately that 
+
+S = 1 
+
+> K
+
+Q. Furthermore, E [S] = I, since the (n1, n 2)-th entry of E
+
+[
+
+C (xl)⊤ C (xl)
+
+]
+
+satisfies 
+
+E
+
+[
+
+C (xl)⊤ C (xl)
+
+]
+
+=
+
+{E
+
+[
+
+∥xl∥22
+
+]
+
+= K, n1 = n2,
+
+0, n1̸ = n2, (178) 40 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+since {P Ω (xl)}Ll=1 are i.i.d. Gaussian random vectors with zero mean and covariance matrix I.Therefore, if there exist constants σ and R such that E [∥Zl∥m 
+
+> 2
+
+] ≤ m!2 σ2Rm−2 for m ≥ 2, then a bound on ∥S − E [S]∥2 = ∥∥ 1 
+
+> K
+
+Q − I∥∥2 follows directly from Lemma 10. It follows from Lemma 1 that the circulant matrix C (xl) admits the diagonalization 
+
+C (xl) = F [N ]diag (̂ xl) F [N ]H
+
+. (179) Note that the n-th entry of ̂ xl, given by Pn (̂ xl), is a complex Gaussian random variable with zero mean and variance 
+
+E
+
+[
+
+|P n (̂ xl)|2]
+
+=E
+
+[
+
+N F [N ]H
+
+> :,n
+
+xlx⊤ 
+
+> l
+
+F [N ]:,n 
+
+]
+
+= N F [N ]H
+
+> :,n
+
+ΣΩF [N ]:,n = K. (180) Hence, by [3, Proposition 2.5.8], Pn (̂ xl) is a sub-Gaussian random variable. Consequently, there exists a positive constant c1 such that the sub-Gaussian norm of Pn (̂ xl) satisfies 
+
+∥P n (̂ xl)∥sub-Gaussian ≤ c1
+
+√K. (181) Consequently, 
+
+P [∥C (xl)∥2 ≥ t] = P
+
+[∥ ∥∥F [N ]H
+
+diag (̂ xl) F [N ]
+
+∥∥∥2
+
+≥ t
+
+]
+
+=P
+
+[
+
+max   
+
+> n=1 ,··· ,N
+
+|P n (̂ xl)| ≥ t
+
+]
+
+≤
+
+> N
+
+∑
+
+> n=1
+
+P [|P n (̂ xl)| ≥ t] .
+
+(182) Applying the union bound in (182) together with the tail bound for sub-Gaussian random variables in [3, Eq. (2.14)], we conclude that there exists a positive constant c2 such that 
+
+P (∥C (xl)∥2 ≥ t) ≤ 2N exp 
+
+{
+
+− c2t2
+
+c1K
+
+}
+
+. (183) Furthermore, 
+
+E
+
+[
+
+∥C (xl)∥2m
+
+> 2
+
+]
+
+=
+
+∫ ∞
+
+> 0
+
+P
+
+(
+
+∥C (xl)∥2m 
+
+> 2
+
+≥ u
+
+)
+
+du =
+
+∫ ∞
+
+> 0
+
+P (∥C (xl)∥2 ≥ t) 2 mt 2m−1dt. (184) Note that if t ≥
+
+√ 2c1Kc2 log 2 N , then 
+
+2N exp 
+
+{
+
+− c2t2
+
+c1K
+
+}
+
+≤ exp 
+
+{
+
+− c2t2
+
+2c1K
+
+}
+
+. (185) Therefore, 
+
+E
+
+[
+
+∥C (xl)∥2m
+
+> 2
+
+]
+
+=
+
+∫ ∞
+
+> 0
+
+P
+
+(
+
+∥C (xl)∥2m 
+
+> 2
+
+≥ u
+
+)
+
+du 
+
+=
+
+∫ ∞
+
+> 0
+
+P (∥C (xl)∥2 ≥ t) 2 mt 2m−1dt 
+
+≤
+
+∫ √ 2c1Kc2 log 2 N
+
+> 0
+
+2mt 2m−1dt +
+
+∫ ∞
+
+> 0
+
+exp 
+
+{
+
+− c2t2
+
+2c1K
+
+}
+
+2mt 2m−1dt 
+
+≤
+
+∫ √ 2c1Kc2 log 2 N
+
+> 0
+
+2mt 2m−1dt +
+
+∫ ∞
+
+> 0
+
+exp 
+
+{
+
+− c2t2
+
+2c1K
+
+}
+
+2mt 2m−1dt 
+
+=
+
+(√ 2c1Kc2
+
+log 2 N
+
+)2m
+
++ m
+
+∫ ∞
+
+> 0
+
+exp {− v}
+
+( 2c1Kv c2
+
+) 2m−12 ( 2c1Kc2
+
+) 12
+
+v− 12 dv 
+
+=
+
+( 2c1Kc2
+
+log 2 N
+
+)m
+
++ m
+
+( 2c1Kc2
+
+)m ∫ ∞
+
+> 0
+
+exp {− v} vm−1dv 
+
+=
+
+( 2c1Kc2
+
+log 2 N
+
+)m
+
++
+
+( 2c1Kc2
+
+)m
+
+m!,
+
+(186) 41 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+where the last equality follows from the definition of the Gamma function [4]. Moreover, 
+
+E
+
+[
+
+∥C (xl)∥2m
+
+> 2
+
+]
+
+≤
+
+( 2c1Kc2
+
+log 2 N
+
+)m
+
++
+
+( 2c1Kc2
+
+)m
+
+m! ≤ 2m!
+
+( 2c1Kc2
+
+log 2 N
+
+)m
+
+. (187) It follows immediately that 
+
+E
+
+[∥ ∥∥∥
+
+1
+
+K C (xl)⊤ C (xl)
+
+∥∥∥∥
+
+> m
+> 2
+
+]
+
+= 1
+
+Km E
+
+[
+
+∥C (xl)∥2m
+
+> 2
+
+]
+
+≤ 2m!
+
+( 2c1
+
+c2
+
+log 2 N
+
+)m
+
+. (188) Therefore, we may choose σ2 = 4 
+
+( 2c1 
+
+> c2
+
+log 2 N
+
+)2
+
+and R = 2c1 
+
+> c2
+
+log 2 N such that 
+
+E [∥Zl∥m 
+
+> 2
+
+] ≤ m!2 σ2Rm−2. Applying Lemma 10 then yields that, for any t > 0, the following bound holds with probability at least 1 − 2N exp 
+
+{
+
+− Lt 2
+
+> 2σ2+2 Rt
+
+}
+
+:
+
+∥∥∥∥
+
+1
+
+K Q − I
+
+∥∥∥∥2
+
+≤ t. (189) Furthermore, for any t ∈ (0, 12 κ−2), it follows that 
+
+∥∥∥∥C (g)⊤
+
+( 1
+
+K Q − I
+
+)
+
+C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]−1∥∥∥∥2
+
+≤ κ2t ≤ 12 . (190) Consequently, by (176), 
+
+∥∥∥∥C (g)⊤ C (g)
+
+[
+
+C (g)⊤ QC (g)
+
+]−1
+
+− 1
+
+K I
+
+∥∥∥∥2
+
+≤ 1
+
+K
+
+∥∥∥∥C (g)⊤ ( 1 
+
+> K
+
+Q − I) C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]−1∥∥∥∥2
+
+1 −
+
+∥∥∥∥C (g)⊤ ( 1 
+
+> K
+
+Q − I) C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]−1∥∥∥∥2
+
+≤ 2
+
+K
+
+∥∥∥∥C (g)⊤
+
+( 1
+
+K Q − I
+
+)
+
+C (g)
+
+[
+
+C (g)⊤ C (g)
+
+]−1∥∥∥∥2
+
+≤ 2κ2
+
+K
+
+∥∥∥∥
+
+1
+
+K Q − I
+
+∥∥∥∥2
+
+.
+
+(191) Therefore, by (174), 
+
+∥∆∥2 ≤ 2κ4t
+
+√K . (192) Substituting this bound into (172) further gives 
+
+∥∥∥∥R − 1
+
+√K
+
+[
+
+C (g)⊤ C (g)
+
+]− 12
+
+∥∥∥∥2
+
+≤ 1
+
+σmin (C (g)) ∥∆∥2
+
+≤ 2κ4t
+
+√Kσ min (C (g)) .
+
+(193) This completes the proof. 42 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+15 Proof of Lemma 8 
+
+The Riemannian Hessian of ψε is given by Hess ψε (h) = 
+
+(
+
+I − hh ⊤) { N∑
+
+> n=1
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]− 12
+
+·
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+−
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]− 32
+
+·
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+hh ⊤
+
+·
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+−
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]− 12
+
+·
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+]
+
+I
+
+} (
+
+I − hh ⊤)
+
+=
+
+> N
+
+∑
+
+> n=1
+
+(
+
+I − hh ⊤) ˜Hn
+
+(
+
+I − hh ⊤)[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+,
+
+(194) where 
+
+˜Hn =
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]
+
+·
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+−
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+hh ⊤
+
+·
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+−
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]
+
+·
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+]
+
+I.
+
+(195) 43 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+We obtain 
+
+d⊤ ˜Hnd =
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]
+
+· d⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+d
+
+− d⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+· h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+d
+
+−
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]
+
+·
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+]
+
+∥d∥22 .
+
+(196) Furthermore, 
+
+d⊤ ˜Hnd =
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]
+
+· e⊤
+
+> o
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+eo
+
++ εh 2
+
+> o
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+− 2εh oh⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+eo
+
+−
+
+[
+
+e⊤
+
+> o
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+]2
+
+−
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]
+
+·
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+]
+
+∥d∥22 .
+
+(197) Consequently, by defining 
+
+χ∆,h =
+
+{
+
+n : h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1
+
+√K I + ∆
+
+)
+
+h > 0
+
+}
+
+, (198) and following derivations similar to those in the proof of Lemma 5, we obtain 
+
+d⊤Hess ψε (h) d
+
+∥d∥22
+
+= 1
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+d⊤ ˜Hnd
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+= ˜main + ˜res ,
+
+(199) 44 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+where 
+
+˜main = 1
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− ∑
+
+> n∈χ∆,h
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− 1
+
+∥d∥22
+
+∑
+
+> n∈χ∆,h
+
+[
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+]2
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+,
+
+(200) and 
+
+˜res ≤ 1
+
+∥d∥22
+
+∑
+
+> n∈χ∆,h
+
+εh 2
+
+> o
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+− 1
+
+∥d∥22
+
+∑
+
+> n∈χ∆,h
+
+2εh oh⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
++ 1
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− ∑
+
+> n∈χ∆,h
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− 1
+
+∥d∥22
+
+∑
+
+> n∈χ∆,h
+
+[
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+]2
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+− 2
+
+∥d∥22
+
+∑
+
+> n∈χ∆,h
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+· e⊤
+
+> o
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1
+
+√K I + ∆
+
+)
+
+h.
+
+(201) First, we derive an upper bound for the term ˜res. By discarding all nonpositive terms, ˜res can 45 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+be further bounded as 
+
+˜res ≤ − ∑
+
+> n∈χ∆,h
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
++ 1
+
+∥d∥22
+
+∑
+
+> n∈χ∆,h
+
+εh 2
+
+> o
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
++ 1
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− 2εh o
+
+∥d∥22
+
+∑
+
+> n∈χ∆,h
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+− 2
+
+∥d∥22
+
+∑
+
+> n∈χ∆,h
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+· e⊤
+
+> o
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+− 2εh o
+
+∥d∥22
+
+∑ 
+
+> n∈χ∆,h
+> 1√K
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓn∆eo + 1√K h⊤∆⊤Γ⊤ 
+
+> n
+
+ΣΩΓneo + h⊤∆⊤Γ⊤ 
+
+> n
+
+ΣΩΓn∆eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+.
+
+(202) Next, observe that 
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+≤ ∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
+,
+
+(203) and 
+
+∑
+
+> n∈χ∆,h
+
+εh 2
+
+> o
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+≤ h2
+
+> o
+
+ε 12 N. (204) 46 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Moreover, we obtain 
+
+> N
+
+∑
+
+> n=1
+
+∣∣∣∣e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+eo
+
+∣∣∣∣[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+≤
+
+> K
+
+∑
+
+> n=1 1
+> K
+
+∣∣∣e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓneo
+
+∣∣∣[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
++
+
+> N
+
+∑
+
+> n=1 1√K
+
+∣∣∣e⊤ 
+
+> o
+
+∆⊤Γ⊤ 
+
+> n
+
+EΩΓneo
+
+∣∣∣ + 1√K
+
+∣∣∣e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓn∆eo
+
+∣∣∣ +
+
+∣∣∣e⊤ 
+
+> o
+
+∆⊤Γ⊤ 
+
+> n
+
+EΩΓn∆eo
+
+∣∣∣[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+≤ ∥EΩ∥2
+
+( h2 
+
+> o
+> K
+
+− 2∥∆∥2√K − ∥ ∆∥22 −
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2
+
+) 12
+
++ ε− 12 N
+
+[ 2 ∥EΩ∥2 ∥∆∥2
+
+√K + ∥EΩ∥2 ∥∆∥22
+
+]
+
+.
+
+(205) Similarly, we have 
+
+∑
+
+> n∈χ∆,h
+
+∣∣∣∣e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+∣∣∣∣[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+≤ ∥EΩ∥2
+
+( h2 
+
+> o
+> K
+
+− 2∥∆∥2√K − ∥ ∆∥22 −
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2
+
+) 32
+
++ ε− 32 N
+
+[ 2 ∥EΩ∥2 ∥∆∥2
+
+√K + ∥EΩ∥2 ∥∆∥22
+
+]
+
+.
+
+(206) 47 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Furthermore, we obtain 
+
+∑
+
+n∈χ∆,h
+
+∣∣∣∣e⊤
+
+o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤
+
+n ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+∣∣∣∣[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤
+
+n (ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+·
+
+∣∣∣∣∣e⊤
+
+o
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤
+
+n EΩΓn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+∣∣∣∣∣
+
+≤ ∑
+
+n∈χ∆,h∩χo
+
+ho
+
+K
+
+∣∣∣∣e⊤
+
+o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤
+
+n EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+∣∣∣∣[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤
+
+n (ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
++ ∑
+
+n∈χ∆,h∩χo
+
+∥EΩ∥2
+
+K
+
+( 2∥∆∥2√K + ∥∆∥22
+
+)[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤
+
+n (ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
++ ∑
+
+n∈χ∆,h∩χo
+
+1√K
+
+∣∣∣e⊤
+
+o Γ⊤
+
+n ΣΩΓn∆h
+
+∣∣∣( 2∥∆∥2√K + ∥∆∥22
+
+)
+
+∥EΩ∥2
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤
+
+n (ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
++ ∑
+
+n∈χ∆,h∩χo
+
+1√K
+
+∣∣∣e⊤
+
+o Γ⊤
+
+n EΩΓn∆h
+
+∣∣∣( ∥∆∥2√K + ∥∆∥22
+
+)[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤
+
+n (ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
++ ∑
+
+n∈χ∆,h
+
+∣∣∣e⊤
+
+o ∆⊤Γ⊤
+
+n ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+∣∣∣∣∣∣e⊤
+
+o ∆⊤Γ⊤
+
+n EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+∣∣∣[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤
+
+n (ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+≤ ho
+
+KK
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2
+
+( h2
+
+> o
+
+K − 2∥∆∥2√K − ∥ ∆∥22 −
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2
+
+) 32
+
++
+
+( 2 ∥∆∥2
+
+√K + ∥∆∥22
+
+) ∥EΩ∥2
+
+( h2
+
+> o
+
+K − 2∥∆∥2√K − ∥ ∆∥22 −
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2
+
+) 32
+
++
+
+( 2 ∥∆∥2
+
+√K + ∥∆∥22
+
+) √K ∥∆∥2 ∥EΩ∥2
+
+( h2
+
+> o
+
+K − 2∥∆∥2√K − ∥ ∆∥22 −
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2
+
+) 32
+
++
+
+( ∥∆∥2
+
+√K + ∥∆∥22
+
+) √K ∥∆∥2 ∥EΩ∥2
+
+( h2
+
+> o
+
+K − 2∥∆∥2√K − ∥ ∆∥22 −
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2
+
+) 32
+
++ ε− 12 N ∥∆∥22 ∥EΩ∥2
+
+1 − ∥ EΩ∥2
+
+,
+
+(207) 48 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+and 
+
+ε ∑ 
+
+> n∈χ∆,h
+> 1√K
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓn∆eo + 1√K h⊤∆⊤Γ⊤ 
+
+> n
+
+ΣΩΓneo + h⊤∆⊤Γ⊤ 
+
+> n
+
+ΣΩΓn∆eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+≤ ∑
+
+> n∈χ∆,h
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn∆eo + 1√K h⊤∆⊤Γ⊤ 
+
+> n
+
+ΣΩΓneo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+≤ 1(1 − ∥ EΩ∥2) 12
+
+N ∥∆∥2 +
+
+√K ∥∆∥2
+
+( h2 
+
+> o
+> K
+
+− 2∥∆∥2√K − ∥ ∆∥22 −
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2
+
+) 12
+
+.
+
+(208) Therefore, for ∥EΩ∥2 ≤ 132 N −1 and ∥∆∥2 ≤ 132 K− 12 N −1, we obtain 
+
+˜res ≤2 ∥EΩ∥2
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
++ 1
+
+∥d∥22
+
+h2
+
+> o
+
+ε 12 N
+
++ 1
+
+∥d∥22
+
+2h−1 
+
+> o
+
+K 12 ∥EΩ∥2 + 1
+
+∥d∥22
+
+4ε− 12 K− 12 N ∥EΩ∥2 ∥∆∥2
+
++ 1
+
+∥d∥22
+
+4h−2 
+
+> o
+
+εK 32 ∥EΩ∥2 + 1
+
+∥d∥22
+
+8hoε− 12 K− 12 N ∥EΩ∥2 ∥∆∥2
+
++ 1
+
+∥d∥22
+
+4h−2 
+
+> o
+
+K 12 ∥EΩ∥2 + 1
+
+∥d∥22
+
+18 h−3 
+
+> o
+
+K ∥EΩ∥2 ∥∆∥2 + 1
+
+∥d∥22
+
+2ε− 12 N ∥∆∥22 ∥EΩ∥2
+
++ 1
+
+∥d∥22
+
+2ho
+
+(2N + 2 h−1 
+
+> o
+
+K) ∥∆∥2 .
+
+(209) We next derive an upper bound for the term ˜main. To this end, we first establish the following result. 
+
+Lemma 11 Let h be an approximate first-order stationary point satisfying (41) and (80) . Then, for ∥EΩ∥2 ≤ 12 , the following inequality holds: 
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+(eo − hoh)⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+≤ξ + 2 K 12 ∥EΩ∥2 + 2 N ∥∆∥2 ∥EΩ∥2 + 2 ho ∥EΩ∥2
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
+.
+
+(210) 
+
+Proof: From (79), the o-th entry of grad ψε (h) can be expressed as 
+
+Po (grad ψε (h)) = ∑
+
+> n∈χ∆,h
+
+d⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
++ ∑
+
+> n∈χ∆,h
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− ho
+
+∑
+
+> n∈χ∆,h
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+.
+
+(211) By the first-order stationarity condition (80), 
+
+|P o (grad ψε (h)) | ≤ ξ, (212) 49 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+which implies 
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+d⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+≤ξ +
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
++
+
+∣∣∣∣∣∣∣∣∣
+
+ho
+
+∑
+
+> n∈χ∆,h
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+.
+
+(213) Moreover, we have 
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+≤ 1
+
+√K
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
++
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+e⊤ 
+
+> o
+
+∆⊤Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+.
+
+(214) The two terms on the right-hand side can be bounded as 
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+≤ ∑
+
+> n∈χo∩χ∆,h
+
+(
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+E⊤ 
+
+> Ω
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+)
+
+/
+
+∥∥∥PΩ
+
+(
+
+Γn
+
+( 1√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥22
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h/
+
+∥∥∥PΩ
+
+(
+
+Γn
+
+( 1√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥22
+
+
+
+> 12
+
+≤K ∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
+,
+
+(215) 50 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+and 
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+e⊤ 
+
+> o
+
+∆⊤Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+≤ ∥ ∆∥2
+
+∑
+
+> n∈χ∆,h
+
+(
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+E⊤ 
+
+> Ω
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+)
+
+/
+
+∥∥∥PΩ
+
+(
+
+Γn
+
+( 1√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥22
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h/
+
+∥∥∥PΩ
+
+(
+
+Γn
+
+( 1√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥22
+
+
+
+> 12
+
+≤N ∥∆∥2
+
+∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
+.
+
+(216) Consequently, 
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+≤K 12
+
+∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
++ N ∥∆∥2
+
+∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
+(217) Following an argument similar to that used in deriving (142), we obtain 
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+≤ ∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
+.
+
+(218) Substituting (217) and (218) into (213) yields 
+
+∣∣∣∣∣∣∣∣∣∑
+
+> n∈χ∆,h
+
+(eo − hoh)⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+∣∣∣∣∣∣∣∣∣
+
+≤ξ + K 12 ∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
++ N ∥∆∥2 ∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
++ ho ∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
+.
+
+(219) Finally, recalling that ∥EΩ∥2 ≤ 12 completes the proof. □
+
+51 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+It follows from Lemma 11 that 
+
+˜main ≤ 1
+
+∥d∥22
+
+> N
+
+∑
+
+> n=1
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− h−1
+
+> o
+
+∑
+
+> n∈χ∆,h
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− 1
+
+∥d∥22
+
+∑
+
+> n∈χ∆,h
+
+∣∣∣∣e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+∣∣∣∣
+
+> 2
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
++ h−1
+
+> o
+
+(
+
+ξ + 2 K 12 ∥EΩ∥2 + 2 N ∥∆∥2 ∥EΩ∥2
+
+)
+
++ 2 ∥EΩ∥2
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
+.
+
+(220) For ∥EΩ∥2 ≤ 132 N −1 and ∥∆∥2 ≤ 132 K− 12 N −1, it holds that 
+
+> N
+
+∑
+
+> n=1
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+≤ 1
+
+K
+
+∑
+
+> n∈χo
+
+1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
++
+
+> N
+
+∑
+
+> n=1
+
+∣∣∣ 2√K e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn∆eo
+
+∣∣∣ + e⊤ 
+
+> o
+
+∆⊤Γ⊤ 
+
+> n
+
+ΣΩΓn∆eo
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+≤ 1
+
+K
+
+∑
+
+> n∈χo
+
+1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
++ 4 h−1 
+
+> o
+
+K ∥∆∥2 + ε− 12 N ∥∆∥22 .
+
+(221) Similarly, 
+
+h−1
+
+> o
+
+∑
+
+> n∈χ∆,h
+
+e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+≥ 1
+
+K
+
+∑
+
+> n∈χo
+
+1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− h−1
+
+> o
+
+(2N + 2 h−1 
+
+> o
+
+K) ∥∆∥2 ,
+
+(222) 52 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+and 
+
+∑
+
+> n∈χ∆,h
+
+∣∣∣∣e⊤
+
+> o
+
+( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+∣∣∣∣
+
+> 2
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+≥ 1
+
+K
+
+∑
+
+> n∈χo
+
+h2
+
+> o
+
+K−1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+− ∑
+
+> n∈χo
+
+2hoK−1
+
+∣∣∣ 1√K e⊤ 
+
+> o
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn∆h
+
+∣∣∣[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+− ∑
+
+> n∈χo
+
+2hoK−1
+
+∣∣∣e⊤ 
+
+> o
+
+∆⊤Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+∣∣∣[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+.
+
+(223) Therefore, 
+
+˜main ≤ 1
+
+K ∥d∥22
+
+∑
+
+> n∈χo
+
+1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− h2
+
+> o
+
+K ∥d∥22
+
+∑
+
+> n∈χo
+
+K−1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+− 1
+
+K
+
+∑
+
+> n∈χo
+
+1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
++ 1
+
+∥d∥22
+
+(
+
+4h−1 
+
+> o
+
+K ∥∆∥2 + ε− 12 N ∥∆∥22 + 12 h−2 
+
+> o
+
+K ∥∆∥2
+
+)
+
++ h−1
+
+> o
+
+(2N + 2 h−1 
+
+> o
+
+K) ∥∆∥2
+
++ h−1
+
+> o
+
+(
+
+ξ + 2 K 12 ∥EΩ∥2 + 2 N ∥∆∥2 ∥EΩ∥2
+
+)
+
++ 2 ∥EΩ∥2
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
+≤ h2
+
+> o
+
+K ∥d∥22
+
+∑
+
+> n∈χo
+
+1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− h2
+
+> o
+
+K ∥d∥22
+
+∑
+
+> n∈χo
+
+K−1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
++ 1
+
+∥d∥22
+
+(
+
+4h−1 
+
+> o
+
+K ∥∆∥2 + ε− 12 N ∥∆∥22 + 12 h−2 
+
+> o
+
+K ∥∆∥2
+
+)
+
++ h−1
+
+> o
+
+(2N + 2 h−1 
+
+> o
+
+K) ∥∆∥2
+
++ h−1
+
+> o
+
+(
+
+ξ + 2 K 12 ∥EΩ∥2 + 2 N ∥∆∥2 ∥EΩ∥2
+
+)
+
++ 2 ∥EΩ∥2
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
+.
+
+(224) 53 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+It follows from Lemma 4 that 
+
+∑
+
+> n∈χo
+
+1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− ∑
+
+> n∈χo
+
+K−1
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 32
+
+≤
+
+[
+
+1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ 2 ∥∆∥2
+
+√K + ∥∆∥22 +
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12
+
+− K−1
+
+[
+
+1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ 2 ∥∆∥2
+
+√K + ∥∆∥22 +
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 32
+
++ ( K − 1) 
+
+[
+
+1
+
+K + 2 ∥∆∥2
+
+√K + ∥∆∥22 +
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12
+
+− (K − 1) K−1
+
+[
+
+1
+
+K + 2 ∥∆∥2
+
+√K + ∥∆∥22 +
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 32
+
+≤
+
+( 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 + ε
+
+)− 32
+
+·
+
+( 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 − 1
+
+K + ε
+
+)
+
++ K 52
+
+( 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 + ε
+
+)
+
+.
+
+(225) Thus, 
+
+˜main ≤ h2
+
+> o
+
+K ∥d∥22
+
+( 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 + ε
+
+)− 32
+
+·
+
+( 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 − 1
+
+K + ε
+
+)
+
++ h2
+
+> o
+
+K ∥d∥22
+
+K 52
+
+( 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 + ε
+
+)
+
++ 1
+
+∥d∥22
+
+(
+
+4h−1 
+
+> o
+
+K ∥∆∥2 + ε− 12 N ∥∆∥22 + 12 h−2 
+
+> o
+
+K ∥∆∥2
+
+)
+
++ h−1
+
+> o
+
+(2N + 2 h−1 
+
+> o
+
+K) ∥∆∥2
+
++ h−1
+
+> o
+
+(
+
+ξ + 2 K 12 ∥EΩ∥2 + 2 N ∥∆∥2 ∥EΩ∥2
+
+)
+
++ 2 ∥EΩ∥2
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
+.
+
+(226) 54 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Consequently, 
+
+d⊤Hess ψε (h) d
+
+∥d∥22
+
+≤ h2
+
+> o
+
+K ∥d∥22
+
+( 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 + ε
+
+)− 32
+
+·
+
+( 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 − 1
+
+K + ε
+
+)
+
++ h2
+
+> o
+
+K ∥d∥22
+
+K 52
+
+( 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 + ε
+
+)
+
++ 1
+
+∥d∥22
+
+(
+
+4h−1 
+
+> o
+
+K ∥∆∥2 + ε− 12 N ∥∆∥22 + 12 h−2 
+
+> o
+
+K ∥∆∥2
+
+)
+
++ h−1
+
+> o
+
+(2N + 2 h−1 
+
+> o
+
+K) ∥∆∥2
+
++ h−1
+
+> o
+
+(
+
+ξ + 2 K 12 ∥EΩ∥2 + 2 N ∥∆∥2 ∥EΩ∥2
+
+)
+
++ 2 ∥EΩ∥2
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
++ 2 ∥EΩ∥2
+
+∑
+
+> n∈χ∆,h
+
+∥∥∥∥PΩ
+
+(
+
+Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+)∥ ∥∥∥2
+
++ 1
+
+∥d∥22
+
+h2
+
+> o
+
+ε 12 N
+
++ 1
+
+∥d∥22
+
+2h−1 
+
+> o
+
+K 12 ∥EΩ∥2 + 1
+
+∥d∥22
+
+4ε− 12 K− 12 N ∥EΩ∥2 ∥∆∥2
+
++ 1
+
+∥d∥22
+
+4h−2 
+
+> o
+
+εK 32 ∥EΩ∥2 + 1
+
+∥d∥22
+
+8hoε− 12 K− 12 N ∥EΩ∥2 ∥∆∥2
+
++ 1
+
+∥d∥22
+
+4h−2 
+
+> o
+
+K 12 ∥EΩ∥2 + 1
+
+∥d∥22
+
+18 h−3 
+
+> o
+
+K ∥EΩ∥2 ∥∆∥2
+
++ 1
+
+∥d∥22
+
+2ε− 12 N ∥∆∥22 ∥EΩ∥2 + 1
+
+∥d∥22
+
+2ho
+
+(2N + 2 h−1 
+
+> o
+
+K) ∥∆∥2 .
+
+(227) Therefore, there exist positive constants c1 ≤ 132 and c2 ≤ 132 such that, for 
+
+∥EΩ∥2 ≤ c1 min 
+
+{
+
+K− 72 N −1, ε 12
+
+}
+
+and ∥∆∥2 ≤ c2 min 
+
+{
+
+K−4N −1, K −3N − 32 , ε 12 K 12 N − 12
+
+}
+
+, it holds 55 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+that 
+
+d⊤Hess ψε (h) d
+
+∥d∥22
+
+≤ h2
+
+> o
+
+K ∥d∥22
+
+( 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ 3 c2K− 92 N −1 + 2 c1K− 92 N −1 + ε
+
+)− 32
+
+·
+
+( 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
+− 1
+
+K + 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 + ε
+
+)
+
++ h2
+
+> o
+
+K ∥d∥22
+
+(3c2K−2N −1 + 2 c1K−2N −1 + ε)
+
++ 1
+
+K ∥d∥22
+
+(
+
+4c2h−1 
+
+> o
+
+K−2N −1 + c22K− 52 N − 12 + 12 c2h−2 
+
+> o
+
+K−2N −1)
+
++ 1
+
+K ∥d∥22
+
+(
+
+6c2h−1 
+
+> o
+
+K−2N − 12 + 6 c2h−2 
+
+> o
+
+K−2N −1)
+
++ 1
+
+K ∥d∥22
+
+h−1
+
+> o
+
+(2c1K−2N −1 + 2 c1c2K−2N −1)
+
++ 1
+
+K ∥d∥22
+
+(4c1K−3 + 4 c1c2K−3) + 1
+
+K ∥d∥22
+
+ε 12 KN 
+
++ 1
+
+K ∥d∥22
+
+2c1h−1 
+
+> o
+
+K−2N −1 + 1
+
+K ∥d∥22
+
+4c1c2K− 52 N − 12
+
++ 1
+
+K ∥d∥22
+
+4c1h−2 
+
+> o
+
+εK −1N −1 + 1
+
+K ∥d∥22
+
+8c1c2hoK− 52 N − 12
+
++ 1
+
+K ∥d∥22
+
+4c1h−2 
+
+> o
+
+K−2N −1 + 1
+
+K ∥d∥22
+
+18 c1c2h−3 
+
+> o
+
+K− 11 2 N −2
+
++ 1
+
+K ∥d∥22
+
+2c1c22K−7N −1 + h−1 
+
+> o
+
+ξ. 
+
+(228) Neglecting higher-order terms, we obtain that there exist positive constants c3 ≤ 1, and c4 such that, for ε ≤ c3K−7N −2, and ξ ≤ c4K− 72 N − 12 , it holds that 
+
+d⊤Hess ψε (h) d
+
+∥d∥22
+
+≤ h2
+
+> o
+
+K ∥d∥22
+
+[ 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
++ (2 c1 + 3 c2 + c3) K− 92 N −1
+
+]− 32
+
+·
+
+[ 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
+− 1
+
+K + 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 + ε
+
+]
+
++ 1
+
+K ∥d∥22
+
+(6c1 + 3 c2 + 2 c3 + 4 c1c3 + c22 + 2 c1c22 + 16 c1c2
+
+) K− 52
+
++ 1
+
+K ∥d∥22
+
+(8 c1 + 27 c2 + 20 c1c2) h−1 
+
+> o
+
+K−2N − 12 + 1
+
+K ∥d∥22
+
+c4K− 52 .
+
+(229) Note that 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
+≥ 1
+
+N . (230) Hence, 
+
+d⊤Hess ψε (h) d
+
+∥d∥22
+
+≤ (1 + 2 c1 + 3 c2 + c3)− 32 h2
+
+> o
+
+∥d∥22
+
+K− 12
+
+(
+
+min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}) − 32
+
+·
+
+(
+
+min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}
+
+− 1
+
+)
+
++ h2
+
+> o
+
+K ∥d∥22
+
+( 1
+
+K min 
+
+{
+
+Kh 2
+
+> o
+
+, 1 − 1 − h2
+
+> o
+
+K
+
+}) − 32 ( 3
+
+√K ∥∆∥2 + 2
+
+K ∥EΩ∥2 + ε
+
+)
+
++ 1
+
+K ∥d∥22
+
+(6c1 + 3 c2 + 2 c3 + 4 c1c3 + c22 + 2 c1c22 + 16 c1c2 + c4
+
+) K− 52
+
++ 1
+
+K ∥d∥22
+
+(8 c1 + 27 c2 + 20 c1c2) h−1 
+
+> o
+
+K−2N − 12 ,
+
+(231) which completes the proof. 56 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+16 Proof of Proposition 7 
+
+From (42) and (79), we obtain 
+
+d⊤grad ψε (h) = 
+
+> N
+
+∑
+
+> n=1
+
+[
+
+h⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + ε
+
+]− 12
+
+· d⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+=
+
+> N
+
+∑
+
+> n=1
+
+d⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
++
+
+> N
+
+∑
+
+> n=1
+
+d⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+.
+
+(232) Moreover, 
+
+d⊤
+
+( 1
+
+√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1
+
+√K I + ∆
+
+)
+
+h
+
+= 1
+
+K d⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh + d⊤∆⊤Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1
+
+√K I + ∆
+
+)
+
+h + 1
+
+√K d⊤Γ⊤ 
+
+> n
+
+ΣΩΓn∆h.
+
+(233) It follows from (164) that 
+
+> N
+
+∑ 
+
+> n=1 1
+> K
+
+d⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+= 1
+
+K
+
+∑
+
+> n∈χo
+
+ho
+
+(
+
+1 − h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+)[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+− 1
+
+K
+
+∑
+
+> n∈χC
+> o
+
+hoh⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+≤ 1
+
+Kho
+
+[ h2 
+
+> o
+> K
+
+− 2∥∆∥2√K − ∥ ∆∥22 −
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+] 12
+
+∑
+
+> n∈χo
+
+(
+
+1 − h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+)
+
+− 1
+
+Kho
+
+[ 1−h2 
+
+> o
+> K
+
++ 2∥∆∥2√K + ∥∆∥22 +
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+] 12
+
+∑
+
+> n∈χC
+> o
+
+h⊤Γ⊤ 
+
+> n
+
+ΣΩΓnh
+
+≤ 1
+
+Kho
+
+[ h2 
+
+> o
+> K
+
+− 2∥∆∥2√K − ∥ ∆∥22 −
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+] 12
+
+K (1 − h2
+
+> o
+
+)
+
+− 1
+
+Kho
+
+[ 1−h2 
+
+> o
+> K
+
++ 2∥∆∥2√K + ∥∆∥22 +
+
+( 1√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+] 12
+
+(1 − h2
+
+> o
+
+)
+
+= 1
+
+K ho
+
+(1 − h2
+
+> o
+
+) {
+
+K
+
+[
+
+h2
+
+> o
+
+K − 2 ∥∆∥2
+
+√K − ∥ ∆∥22 −
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12
+
+−
+
+[
+
+1 − h2
+
+> o
+
+K + 2 ∥∆∥2
+
+√K + ∥∆∥22 +
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12 }
+
+.
+
+(234) 57 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+Furthermore, 
+
+> N
+
+∑
+
+> n=1
+
+d⊤∆⊤Γ⊤ 
+
+> n
+
+ΣΩΓn
+
+( 1√K I + ∆
+
+)
+
+h + 1√K d⊤Γ⊤ 
+
+> n
+
+ΣΩΓn∆h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+≤N ∥d∥2 ∥∆∥2 (1 − ∥ EΩ∥2)− 12 + ε− 12 K− 12 N ∥d∥2 ∥∆∥2 ,
+
+(235) and 
+
+> N
+
+∑
+
+> n=1
+
+d⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+EΩΓn
+
+( 1√K I + ∆
+
+)
+
+h
+
+[
+
+h⊤ ( 1√K I + ∆
+
+)⊤
+
+Γ⊤ 
+
+> n
+
+(ΣΩ + EΩ) Γn
+
+( 1√K I + ∆
+
+)
+
+h + ε
+
+] 12
+
+≤ N ∥d∥2
+
+∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
+. (236) Since h satisfies (80), ∣∣∣d⊤grad ψε (h)
+
+∣∣∣
+
+∥d∥2
+
+≤ ∥ grad ψε (h)∥2 ≤ ξ. (237) Consequently, if 
+
+{
+
+K
+
+[
+
+h2
+
+> o
+
+K − 2 ∥∆∥2
+
+√K − ∥ ∆∥22 −
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12
+
+−
+
+[
+
+1 − h2
+
+> o
+
+K + 2 ∥∆∥2
+
+√K + ∥∆∥22 +
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12 }
+
+< 0,
+
+(238) then 
+
+1
+
+K ho
+
+(1 − h2
+
+> o
+
+) 12
+
+{ [ 
+
+1 − h2
+
+> o
+
+K + 2 ∥∆∥2
+
+√K + ∥∆∥22 +
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12
+
+− K
+
+[
+
+h2
+
+> o
+
+K − 2 ∥∆∥2
+
+√K − ∥ ∆∥22 −
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12 }
+
+≤ξ + N ∥∆∥2 (1 − ∥ EΩ∥2)− 12 + ε− 12 K− 12 N ∥∆∥2 + N ∥EΩ∥2
+
+(1 − ∥ EΩ∥2) 12
+
+.
+
+(239) Therefore, there exist positive constants c1 ≤ 12 , c2 ≤ 1, and c3 ≤ 1 such that, whenever 
+
+∥EΩ∥2 ≤ c1K−2, ∥∆∥2 ≤ c2K− 52 , and ε ≤ c3K−3, the following inequality holds for all 
+
+ho ∈
+
+(√ 
+
+1 − 14K2 , 1
+
+]
+
+:
+
+{ [ 
+
+1 − h2
+
+> o
+
+K + 2 ∥∆∥2
+
+√K + ∥∆∥22 +
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12
+
+− K
+
+[
+
+h2
+
+> o
+
+K − 2 ∥∆∥2
+
+√K − ∥ ∆∥22 −
+
+( 1
+
+√K + ∥∆∥2
+
+)2
+
+∥EΩ∥2 + ε
+
+]− 12 }
+
+≥
+
+[
+
+2 (1 + 4 c1 + 3 c2 + c3)− 12 − (1 − 4c1 − 3c2)− 12
+
+]
+
+K 32 .
+
+(240) It follows that 
+
+(1 − h2
+
+> o
+
+) 12 ≤√2
+
+[
+
+2 (1 + 4 c1 + 3 c2 + c3)− 12 − (1 − 4c1 − 3c2)− 12
+
+]−1
+
+K− 32
+
+·
+
+[
+
+ξ + 2 N (∥EΩ∥2 + ∥∆∥2) + ε− 12 K− 12 N ∥∆∥2
+
+]
+
+.
+
+(241) Finally, applying (171) yields 
+
+∥h − eo∥2 ≤2
+
+[
+
+2 (1 + 4 c1 + 3 c2 + c3)− 12 − (1 − 4c1 − 3c2)− 12
+
+]−1
+
+K− 32
+
+·
+
+[
+
+ξ + 2 N (∥EΩ∥2 + ∥∆∥2) + ε− 12 K− 12 N ∥∆∥2
+
+]
+
+,
+
+(242) which completes the proof. 58 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+17 Proof of Proposition 8 
+
+The proof relies on the fact that the objective function in (64) is three-times continuously differentiable and that 
+
+Rh (v) = h + v
+
+∥h + v∥2
+
+(243) defines a second-order retraction on SN −1; see [5, Example 5.41]. Specifically, since SN −1 is compact, the Riemannian gradient grad ρ (h) and Hess ρ (h) are bounded and Lipschitz continuous on SN −1. Let Lg denote the corresponding Lipschitz constant of the Riemannian gradient. We separately analyze the gradient descent steps and the negative-curvature search steps. For ∥grad ρ (ht−1)∥2 > ϵ g , the algorithm performs a gradient descent step. By [5, Exercise 10.56], 
+
+ρ (ht) = ρ (Rht−1 (−αg grad ρ (ht−1)) )
+
+≤ρ (ht−1) + ght−1 (−αg grad ρ (ht−1) , grad ρ (ht−1)) + Lg
+
+2 ∥αg grad ρ (ht−1)∥22 . (244) Choosing αg = L−1 
+
+> g
+
+yields 
+
+ρ (ht) − ρ (ht−1) ≤ − 12Lg
+
+∥grad ρ (ht−1)∥22 ≤ − ϵ2
+
+> g
+
+2Lg
+
+. (245) Next, suppose that ∥grad ρ (ht−1)∥2 ≤ ϵg and λmin (Hess ρ (ht−1)) < −ϵH . In this case, the algorithm performs a negative-curvature search step. Define γ (α) = Rht−1 (−αη tvt). Since 
+
+ρ (γ (α)) is three-times continuously differentiable in a neighborhood of α = 0 , Taylor theorem with Lagrange remainder implies that, for some ν,
+
+ρ (γ (α)) = ρ (ht−1) + αg ht−1 (grad ρ (ht−1) , −ηtvt) + α2
+
+2 ght−1 (−ηtvt, −ηtHess ρ (ht−1) vt)+ α3
+
+6 (ρ ◦ γ)′′′ (ν) ,
+
+(246) where ρ ◦ γ denotes the composition of ρ and γ. Since SN −1 is compact and γ (α) ∈ SN −1 for all α,there exists a constant Lγ > 0 such that 
+
+∣∣(ρ ◦ γ)′′′ (ν)∣∣ ≤ Lγ (247) Therefore, ∣∣∣∣
+
+α3
+
+6 (ρ ◦ γ)′′′ (ν)
+
+∣∣∣∣ ≤ α3Lγ
+
+6 . (248) Substituting α = αH gives 
+
+ρ (ht) = ρ (Rht−1 (−αH ηtvt))
+
+≤ρ (ht−1) + αH ght−1 (grad ρ (ht−1) , −ηtvt) + α2
+
+> H
+
+2 ght−1 (−ηtvt, −ηtHess ρ (ht−1) vt)+ α3 
+
+> H
+
+Lγ
+
+6 .
+
+(249) Choosing αH = 3ϵH 
+
+> 2Lγ
+
+yields 
+
+ρ (ht) − ρ (ht−1) ≤ − α2 
+
+> H
+
+ϵH
+
+2 + α3 
+
+> H
+
+Lγ
+
+6 = − 9ϵ3
+
+> H
+
+16 L2
+
+> γ
+
+. (250) Combining the two cases, every iteration decreases the objective function by at least 
+
+ρ∆ = min 
+
+{ ϵ2
+
+> g
+
+2Lg
+
+, 9ϵ3
+
+> H
+
+16 L2
+
+> γ
+
+}
+
+. (251) Since ρ (h) ≥ 0, the algorithm can perform at most 
+
+ρ (h0)
+
+ρ∆
+
+= ρ (h0)min 
+
+{ ϵ2 
+
+> g
+> 2Lg
+
+, 9ϵ3
+
+> H
+> 16 L2
+> γ
+
+} (252) 59 IOP Publishing Journal vv (yyyy) aaaaaa Author et al 
+
+iterations. Therefore, the algorithm terminates after a finite number of iterations, with iteration complexity 
+
+T = O (max {ϵ−2 
+
+> g
+
+, ϵ −3
+
+> H
+
+}) . (253) Upon termination, neither the gradient descent condition nor the negative-curvature condition is satisfied, implying that the returned iterate is an (ϵg , ϵ H )-approximate second-order stationary point. 
+
+References 
+
+[1] N. J. Higham, Functions of matrices: theory and computation . SIAM, 2008. [2] L. Shi and Y. Chi, “Manifold gradient descent solves multi-channel sparse blind deconvolution provably and efficiently,” IEEE Transactions on Information Theory , vol. 67, no. 7, pp. 4784–4811, 2021. [3] R. Vershynin, High-dimensional probability: An introduction with applications in data science .Cambridge university press, 2018, vol. 47. [4] P. Sebah and X. Gourdon, “Introduction to the gamma function,” American Journal of Scientific Research , vol. 2, pp. 1–10, 2002. [5] N. Boumal, An introduction to optimization on smooth manifolds . Cambridge University Press, 2023. 60
