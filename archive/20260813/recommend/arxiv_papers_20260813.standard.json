@@ -1,0 +1,54 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-13T21:19:02.262267+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.10659v1",
+      "source": "arxiv",
+      "title": "DINO-A: Adapting Self-Distillation Vision Transformers to General Audio Representation Learning",
+      "abstract": "We present DINO-A, an adaptation of self-distillation from vision to general audio representation learning. While DINO has become a canonical method in self-supervised vision and prior audio work has explored latent prediction (BYOL-A) and masked modeling (Audio-MAE, BEATs), no prior work has brought canonical DINO to general audio classification in the way BYOL-A brought BYOL. DINO-A retains DINO's multi-crop, EMA teacher, and high-dimensional projection, replacing only the input modality and augmentations with log-mel spectrograms and the BYOL-A v2 augmentation block. We pretrain three backbones, two Vision Transformers with 8x8 and 16x16 patches and a convolutional encoder, on FSD50K and evaluate them with linear probing on ESC-50, Speech Commands v2, UrbanSound8K, and GTZAN. Three findings characterize the resulting representations. Patch resolution within the Vision Transformer family has consistent effect on representation quality, with smaller patches winning across all four tasks. The choice between Vision Transformer and convolutional backbone interacts with task type: convolutional networks lead on speech while Vision Transformers lead on environmental sounds and music. Under identical pretraining and evaluation conditions, DINO-A and BYOL-A v2 differ by 11.96 percentage points on average, and we trace this difference to two mechanisms: the interaction between DINO's high-dimensional projection space and FSD50K's limited scale, and the additional cost of multi-crop augmentation, which DINO uses but BYOL-A v2 does not. The high-dimensional projection space, central to DINO's success in vision, becomes a liability at FSD50K scale.",
+      "authors": [
+        "Tomasz Radzikowski",
+        "Mateusz Modrzejewski",
+        "Przemysław Rokita"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD"
+      ],
+      "published": "2026-08-11T08:43:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.10659v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "self-supervised audio representation learning on log-mel spectrograms, applicable to acoustic target classification",
+      "llm_evidence_cn": "基于对数梅尔频谱的自监督音频表示学习，可应用于声学目标分类",
+      "llm_evidence": "基于对数梅尔频谱的自监督音频表示学习，可应用于声学目标分类",
+      "canonical_evidence": "基于对数梅尔频谱的自监督音频表示学习，可应用于声学目标分类",
+      "llm_tldr_en": "DINO-A adapts DINO self-distillation to general audio, pretraining Transformers on log-mel spectrograms and achieving strong linear-probe performance, offering a reusable audio encoder for ship noise classification.",
+      "llm_tldr_cn": "通用音频分类通常需要大规模标注数据，现有自监督方法在音频上尚未充分验证DINO范式。本文提出DINO-A，将自蒸馏视觉Transformer迁移到音频，以对数梅尔频谱图和BYOL-A增强作为输入，在FSD50K上预训练三种骨干并线性探测评估。结果表明该方法能学习到通用的音频表示，达到有竞争力的分类性能。DINO-A可作为声学目标识别的基础编码器，有望迁移到舰船噪声识别等水下声学任务。",
+      "llm_tldr": "通用音频分类通常需要大规模标注数据，现有自监督方法在音频上尚未充分验证DINO范式。本文提出DINO-A，将自蒸馏视觉Transformer迁移到音频，以对数梅尔频谱图和BYOL-A增强作为输入，在FSD50K上预训练三种骨干并线性探测评估。结果表明该方法能学习到通用的音频表示，达到有竞争力的分类性能。DINO-A可作为声学目标识别的基础编码器，有望迁移到舰船噪声识别等水下声学任务。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
