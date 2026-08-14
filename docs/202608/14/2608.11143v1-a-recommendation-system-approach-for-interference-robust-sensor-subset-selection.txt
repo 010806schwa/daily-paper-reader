@@ -1,0 +1,243 @@
+Title: A Recommendation System Approach for Interference-Robust Sensor Subset Selection
+
+URL Source: https://arxiv.org/pdf/2608.11143v1
+
+Published Time: Wed, 12 Aug 2026 01:24:55 GMT
+
+Number of Pages: 6
+
+Markdown Content:
+# A Recommendation System Approach for Interference-Robust Sensor Subset Selection 
+
+Kaan Buyukkalayci †, Kyle Pak †, Merve Karakas †, and Christina Fragouli ††University of California, Los Angeles Email: {kaanbkalayci, whilewak, mervekarakas, christina.fragouli }@ucla.edu 
+
+Abstract —This paper develops a method for sensor-subset selection for tracking. Prior work showed that low-cost acoustic Received Signal Strength Indicator (RSSI) measurements can be used to recommend subsets of sensor nodes whose expensive sensing modalities, such as cameras, can achieve high tracking accuracy. While efficient, RSSI-based approaches are challenged by acoustic interference. We propose a recommendation-system-inspired framework that instead leverages frequency-band acous-tic features and a Two-Tower Multi-Layer Perceptron (MLP) architecture to efficiently score candidate sensor subsets. Exper-imental results on outdoor vehicle-tracking deployments show that the proposed method can improve accuracy by around 20% over the RSSI baseline while maintaining the low computational overhead required for real-time selective sensing. 
+
+I. I NTRODUCTION 
+
+With the recent growth of edge capabilities in sensing environments, a central problem is the efficient usage of assets with heterogeneous sensing modalities [1]–[4] as the operating cost of such sensors varies considerably in aspects including, but not limited to, computation, battery, bandwidth, and equipment degradation. For example, the computational and bandwidth cost of processing images can be considerably higher than that of processing audio or vibration data. In this paper, we contribute to the problem of group sensor selection using an approach inspired by recommendation systems. Our recent line of work studied the case where a vehicle traverses a field equipped with sensor nodes containing hetero-geneous sensing modalities. Using low-cost acoustic sensing, we recommend a small subset of nodes whose higher-cost sensing modalities (e.g., cameras) should be activated [5]–[7]. The recommendation is based on Received Signal Strength Indicator (RSSI) measurements extracted from acoustic data and model-based posterior inference. The appeal of this ap-proach is its simplicity: RSSI measurements are compact and inexpensive to compute, enabling real-time sensor recommen-dation with minimal communication and processing overhead. Yet, the use of scalar RSSI measurements also introduces limitations. Because RSSI aggregates all received acoustic energy into a single value, it becomes sensitive to interference from other audio sources in the environment. As a result, interference that alters the acoustic environment can degrade the quality of the recommended subset of nodes. At the same time, acoustic signals contain substantially richer information than what is captured by RSSI alone. Although acoustic sens-ing cannot replace vision-based sensing, a growing body of work has demonstrated that acoustic information can support meaningful localization and tracking capabilities, particularly in situations where visual sensing is degraded by occlusions, poor lighting, or limited field of view [8]. This suggests that richer acoustic representations may provide more robust recommendations while preserving the advantages of low-cost sensing. Motivated by these observations, in this paper we seek to extract more information from acoustic measurements without losing the low-complexity, real-time nature that makes selec-tive sensing attractive. Our goal is still not to replace high-cost modalities such as cameras, but to activate them selectively and only when they are most likely to be useful. To this end, we revisit the subset sensor selection problem from a recommendation-systems perspective. We note that, at each sensing interval, the network observes a low-cost acoustic description of its current state and must select a small subset of sensing assets whose higher-cost modalities should be ac-tivated. This mirrors the structure of modern recommendation systems, where a context is matched against a collection of candidate items and the most relevant items are selected. In our setting, the network-wide acoustic state serves as the context, while candidate sensor subsets serve as the items to be recom-mended. This perspective allows us to move beyond explicit target localization and posterior inference, and instead learn a direct mapping from acoustic observations to sensor-subset utility. We propose a recommendation framework based on a Two-Tower Multi-Layer Perceptron (MLP) architecture that learns compact representations of both the network acoustic state and candidate sensor subsets. Similar to retrieval and recommendation systems, the separate representations enable efficient scoring of many candidate subsets while maintaining low online computational cost. We evaluate the proposed approach using real-world outdoor vehicle-tracking deployments collected on an IoT sensing plat-form [4]. Experimental results demonstrate that the proposed recommendation framework substantially improves robustness under acoustic interference, up to 20% as compared to the RSSI baseline. The main contributions of the paper are:  
+
+> •
+
+We formulate subset sensor activation as a recommenda-tion problem in which network observations define the context and candidate sensor subsets define the recom-mendable items.  
+
+> •
+
+We introduce a Two-Tower recommendation architecture arXiv:2608.11143v1 [cs.LG] 11 Aug 2026 that learns separate embeddings of network state and sensor subsets, enabling efficient real-time scoring of sensing actions.  
+
+> •
+
+We demonstrate that frequency-band acoustic features significantly improve robustness to acoustic interference, increasing accuracy from 80 .4% to 98 .4% in one of our experiments.  
+
+> •
+
+We show through real-world deployments that the pro-posed method remains computationally lightweight, re-quiring sub-millisecond to approximately 1 ms of online computation while outperforming prior RSSI-based sen-sor recommendation approaches. II. R ELATED WORK 
+
+Selective sensing and sensor management for tracking. 
+
+Target tracking in wireless sensor networks is commonly formulated as the problem of estimating a target’s location or maintaining its trajectory over time [9], [10]. Since continuous sensing, communication, and processing across all nodes can impose substantial battery, bandwidth, and computation costs, prior work has studied resource-aware sensor management mechanisms, including information-driven sensor selection, energy-aware activation, dynamic clustering, and joint allo-cation of sensing and computation [10]–[12]. These methods reduce resource usage while preserving tracking or localization quality. However, these methods primarily optimize tracking or localization accuracy in homogeneous sensing settings. The selective-sensing problem of keeping a moving target “on the radar” was first introduced in [5], where low-cost sensing modalities are used to recommend a small subset of nodes for activating higher-cost sensing capabilities. This approach was later formalized in [6], which provided error bounds for a simplified group subset-selection strategy aimed at identifying the p most informative nodes. Both works show that estimating compact RSSI measurement models for each node and computing posteriors over possible target locations can provide a computationally efficient and accurate approach to selective sensor activation in sensor networks with acoustic capabilities. We keep the goal of these works but replace the model-based posterior selection with a learned Two-Tower recommendation model that maps richer multi-band acoustic features directly to subset scores. 
+
+Two-Tower recommendation models. Two-Tower (dual-encoder) architectures originate in information retrieval, where separate networks embed a query and a candidate into a shared space for efficient scoring [13]. They now underpin large-scale recommendation and retrieval systems [14]–[16], in which one tower encodes context and the other encodes a candidate, so the candidate embeddings can be precomputed and scored cheaply online. We propose for the first time, to the best of our knowledge, selective sensing in a similar paradigm: a context tower encodes the time-varying acoustic state of the network and a candidate tower encodes a sensor subset, allowing all candidate subsets to be scored within the sensing interval through a learned interaction. This gives us additional flexibility for rarely seen subsets, unlike recent neural sensor-selection methods such as the one introduced in [17], which learns input-dependent binary masks end-to-end and does not directly score explicit candidate subsets. 
+
+Edge AI and collaborative sensing. Our setting is an instance of edge intelligence for collaborative sensing, in which compute-limited nodes cooperate under tight latency and energy budgets [18]–[20]. Tiered architectures that use cheap, always-on modalities to trigger expensive sensing have long been used in surveillance sensor networks [21], [22]; we follow this cheap-triggers-expensive paradigm but learn the triggering policy from data rather than relying on hand-designed rules. III. P ROBLEM FORMULATION 
+
+We consider a setting in which a vehicle traverses a field equipped with a set of sensing nodes V = {si}Vi=1 whose positions are known. All nodes in V continuously collect data of a lower-cost modality and transmit them to a central decision-making authority. We assume that all nodes contain both low- and high-cost modalities; however, the method can be easily implemented in cases where they are not colocated. The objective is to output a set of nodes S ⊂ V such that 
+
+S contains the most informative node for high-cost sensing activation. For simplicity, we define this most informative node as the closest node in Euclidean distance to the vehicle, although other metrics can be used by changing the associated utility function depending on the properties of the downstream higher-cost sensing asset. 
+
+Evaluation metrics. At each time t, we select a subset St
+
+using samples from the interval (t − 1, t ). The objective is to maximize P (s∗ 
+
+> t
+
+∈ S t), where s∗ 
+
+> t
+
+denotes the node closest to the target location at time t while minimizing the subset size 
+
+|S t|. In our experiments, this is implemented using a fixed subset size. We also report the mean time required for feature construction and real-time inference. IV. T WO -T OWER MODEL 
+
+The model takes two inputs: a context vector describing the acoustic state of the network at a given time, and an action vector specifying a subset of nodes and their relative geometry. These inputs are passed into separate towers, and the resulting embeddings are combined and fed into an MLP head to output a scalar utility score. At inference time, the model scores all candidate subsets and the subset with the highest predicted utility is selected. 
+
+A. Feature Construction 
+
+We define the model input as the pair (ct, a(S)) , consisting of the time-varying context vector ct ∈ RC and action vector 
+
+a(S) ∈ RA. The context vector ct describes the acoustic state of the full sensor network at time t while the action vector 
+
+a(S) describes the identity and geometry of the candidate subset S. Thus, each training example corresponds to a pair 
+
+(t, S) with target value ut(S).Context Vector. We construct the context vector by aggregat-ing node-level coordinate and acoustic band-power features as 
+
+ct =
+
+hpi, ψi,t i∈V 
+
+i
+
+,
+
+where pi denotes the normalized coordinates of node i, and 
+
+ψi,t denotes the audio-band power features extracted from the lower-cost acoustic modality at time t.The audio-band block ψi,t contains dB-scale band-power features. Each component is computed as the acoustic power received by node i within a predefined frequency band over the sampling interval (t−1, t ). In our experiments, these bands are listed as: 
+
+• 20 –80 Hz • 80 –160 Hz • 160 –400 Hz 
+
+• 400 –900 Hz • 900 –2000 Hz • 2000 –3500 Hz 
+
+• 3500 –6000 Hz 
+
+The choice of band edges for our purposes is based on a coarse logarithmic partition of the vehicle-acoustic spectrum, where lower frequencies, in which engine and tire-road energy are concentrated [23], are resolved more finely, while higher frequencies are grouped more coarsely. The required computa-tion at each node is limited to coarse spectral-energy extraction over a small number of frequency bands, after which only a short vector of band-power values must be transmitted to the central decision-making authority. Since the resulting context and action representations are low-dimensional, the decision-making authority can score all candidate subsets within the sensing interval. 
+
+Action Vector. We construct the action vector as 
+
+a(S) = [ m(S), p(S), |S| ] .
+
+Here, m(S) ∈ { 0, 1}|V| is the binary membership mask of the candidate subset, with mi(S) = 1 if si ∈ S and mi(S) = 0 
+
+otherwise. The vector p(S) stores the normalized coordinates of the selected nodes using a fixed ordering and padding up to the subset-size budget, and |S| records the subset size. Since 
+
+a(S) depends only on the subset identity and node geometry, it is independent of t and can be precomputed for all candidate subsets. 
+
+B. Architecture and Training Objective 
+
+We train the model to predict a smooth distance-based utility for each candidate subset. For a candidate subset S at time t,let 
+
+d(1)  
+
+> t
+
+(S) ≤ d(2)  
+
+> t
+
+(S) ≤ · · · ≤ d(|S| ) 
+
+> t
+
+(S)
+
+denote the sorted distances from the vehicle to the nodes in 
+
+S. The utility of selecting S is defined as 
+
+ut(S) = 
+
+> |S|
+
+X
+
+> j=1
+
+wj
+
+1 + d(j) 
+
+> t
+
+(S)/ρ ,
+
+where ρ > 0 is a distance scaling parameter and w1 ≥
+
+w2 ≥ · · · ≥ 0 are decreasing weights. This utility gives larger reward to subsets containing nodes close to the vehicle with higher weights assigned to the closest selected nodes, and is chosen to align with our closest-node containment metric. However, the framework is not tied to this particular choice. In other deployments, ut(S) can be replaced by a task-specific utility that reflects the downstream sensing objective such as visibility, expected detection quality, localization accuracy, or the value of activating a particular high-cost modality. We use a Two-Tower architecture to predict ut(S) from the pair (ct, a(S)) with one tower representing the time-varying network context and the other representing the candidate sen-sor subset. The context tower maps ct ∈ RC to an embedding 
+
+zc(t) = fc(ct) ∈ RE while the action tower maps a(S) ∈ RA
+
+to an embedding za(S) = fa(a(S)) ∈ RE , where E is the embedding dimension. Each tower is a small fully connected network with hidden width H.We combine the two embeddings using their concatenation and elementwise product, 
+
+rt(S) = [ zc(t), za(S), zc(t) ⊙ za(S)] ∈ R3E .
+
+The elementwise product acts as a learned compatibility feature between the current acoustic state and the candidate subset, so the prediction head can model how different subset geometries align with the observed network-wide acoustic pattern. The combined representation is passed through a prediction head g to produce the predicted utility ˆut(S) = 
+
+g(rt(S)) . The model is trained by minimizing the mean-squared error between the predicted and true subset utilities. The loss function L is defined as 
+
+L = 1
+
+|D| 
+
+X
+
+> (t, S)∈D
+
+(ˆ ut(S) − ut(S)) 2 ,
+
+where D denotes the training set of timestamp–subset pairs 
+
+(t, S). At inference time, the decision-making authority scores each candidate subset and selects bSt = arg max S ˆut(S).V. E XPERIMENTAL RESULTS 
+
+A. Datasets 
+
+We collect data from outdoor experimental deployments in which a target vehicle traverses a field equipped with spatially distributed sensing nodes. Target vehicle GPS measurements are recorded throughout each run and are used to construct the ground truth for distance-based utilities. Each sensing node is based on an NVIDIA Jetson Orin NX platform and records audio using a reSpeaker 4 Mic Array (UAC1.0) enclosed in a plastic housing. The GPS positions of the sensing nodes are also recorded. During each experiment, the target vehicle follows a nonuni-form outdoor trajectory over an approximately 25 -minute run, with typical speed on the order of 3 m /s. The sensing nodes operate within an IoT framework [4] and continuously transmit acoustic measurements over an MQTT network. The microphone service records multichannel audio at 16 kHz 
+
+using 16 -bit samples. We synchronize the acoustic streams with the vehicle GPS measurements so that sensor-subset recommendations can be produced at 200 ms intervals. After Fig. 1: Sketch of the interference-rich experiment site. preprocessing, each deployment yields on the order of 7,500 
+
+synchronized timestamps with the chronological training split containing roughly 15 minutes of data. We evaluate the pro-posed method on two distinct outdoor deployments and report the results for each. For training, each timestamp is paired with every candidate subset of the fixed recommendation budget, producing timestamp–subset examples separately for each deployment. 
+
+Interference-Rich Deployment. This deployment uses six sensing nodes and a cargo-van target vehicle in an outdoor area of approximately 4,000 m2. The site contains hilly terrain, buildings, and a nearby construction zone. During data collection, additional acoustic interference was present intermittently, including human speech, wind, and occasional audio from nearby passing vehicles. These interference sources are sporadic rather than continuously active, allowing us to evaluate robustness under realistic nonstationary acoustic conditions. The target vehicle follows a nonuniform trajectory through the site, rather than moving along a single straight path. The vehicle path, sensing-node locations, buildings, terrain boundaries, and representative interference sources are shown in Fig. 1. 
+
+Open-Field Deployment. This deployment uses ten sensing nodes in a larger outdoor area of approximately 10 ,000 m 2.Compared with the interference-rich deployment, this site has fewer external acoustic interference sources although wind, ambient outdoor noise, and nearby buildings are still present. The terrain is mostly flat while the buildings create potential acoustic blockage and multipath effects. The target vehicle is an ATV-type vehicle following a nonuniform trajectory through the site. A sketch of this deployment is shown in Figure 2. 
+
+B. Results on the Interference-Rich Deployment 
+
+We evaluate a set of algorithms with a fixed recommen-dation budget of |S| = 3 . We compare against the model-based selective-sensing framework of [5], which showed that low-cost acoustic Received Signal Strength Indicator (RSSI) measurements can be used to learn compact propagation Node2 Node4 Node5 Node1 Node7 Node8 Node9 Node3 
+
+> Vehicle Trajectory Node Microphone
+> Node10 Node6
+
+Fig. 2: Sketch of the open-field experiment site. models offline and use them for posterior-based sensor-subset recommendation online. From this line, we include the linear path-loss posterior and KDE-hybrid posterior baselines. The linear path-loss posterior uses a sensor-specific log-distance attenuation model, while the KDE-hybrid posterior uses em-pirical RSSI likelihoods when sufficient data is available and falls back to the path-loss model in data-sparse regions. We also compare against the top-p sensor-selection frame-work of [6], which studies list-valued sensor recommendation as the primary objective and shows how normalized RSSI rules and geometry-aware posterior construction can support low-compute subset selection. From this line, we include the normalized RSSI top-3 baseline and the spline posterior baseline. The normalized RSSI baseline selects the three nodes with the largest normalized received signal strengths, while the spline posterior replaces the single global attenuation curve with a piecewise log-distance model to better capture distance-dependent RSSI behavior. Finally, we include a Two-Tower (RSSI-only) ablation, which uses the same learned context–action architecture as the proposed method but replaces the frequency band powers with the overall RSSI for each node, reflecting the information used in the presented RSSI-based algorithms. Table I reports the mean closest-node containment accuracy over test timestamps on the interference-rich deployment, as defined in Section III. For the two-tower model, we use hidden width H = 512 , two fully connected layers in each tower, and a one-hidden-layer prediction head. The utility weights are set to (w1, w 2, w 3) = (1 , 0.45 , 0.2) . Empirically, the closest-node containment accuracy is not very sensitive to the choice of these weights, but assigning small nonzero weights to the selected sensors beyond the closest one gives the best results and makes training more stable. This sensi-tivity is reported in Table II, where the mean accuracy of the Two-Tower model with frequency-band features is given for different utility-weight configurations. Overall, the results show that the Two-Tower model with frequency-band features is substantially more robust to acoustic interference than the RSSI-only learned model and the model-based RSSI baselines. TABLE I: Mean closest-node containment accuracy in the interference-rich deployment.               
+
+> Method Mean accuracy (%) Std. error (%)
+> Two-Tower 98.39 0.33
+> Two-Tower (RSSI-only) 80.44 1.03 Linear path-loss posterior 77.03 1.09 Normalized RSSI top-3 75.95 1.11 KDE-hybrid posterior 72.74 1.15 Spline posterior 71.33 1.17 All methods are evaluated on 1493 held-out test timestamps.
+
+TABLE II: Sensitivity of mean accuracy to utility weights in the interference-rich deployment.               
+
+> Weights (1 , . 45 , . 2) (1 ,1,1) (1 ,0,0) (1 , . 8, . 6) (1 , . 8, . 8)
+> Mean acc. (%) 98.39 97.32 95.78 97.92 97.66 Accuracy is measured over 1493 held-out test timestamps using the Two-Tower model.
+
+Table III reports the corresponding online computation cost, including real-time feature construction and inference for each of the compared approaches. The frequency-band representation increases computation and storage relative to scalar RSSI methods, but the total runtime remains well below the 200 ms sensing interval. Thus, the additional spectral information improves containment accuracy while preserving real-time deployability. Additionally, Fig. 3 shows closest-node containment accuracy over a rolling time window. While RSSI-based algorithms drop sharply in performance during in-tervals with interference, the Two-Tower model with integrated band-power features maintains substantially higher accuracy during those intervals. 
+
+C. Results on Open-Field Deployment 
+
+Table IV reports closest-node containment accuracy on the open-field deployment under the same evaluation protocol as Section V-B. On this site, every method performs substantially better than on the interference-rich deployment, with even the weakest baseline exceeding 92% , reflecting the cleaner acoustic conditions and the larger, more regular node layout. The RSSI-only Two-Tower model attains the highest accuracy (99 .40% ), marginally ahead of the full frequency-band Two-Tower model ( 97 .80% ), with both learned models outper-forming the model-based posterior baselines. Table V reports the corresponding online computation times, which remain feasible within the 200 ms sensing interval. Comparing the two deployments reveals when the richer spectral representation can be worth the extra computational and storage cost. On the interference-rich deployment, the frequency-band Two-Tower model is dramatically more robust than its RSSI-only counterpart ( 98 .39% vs. 80 .44% ): the band-power features let the model separate the target’s acoustic signature from intermittent interference such as speech, wind, and passing vehicles, whereas using only RSSI is more likely to fail in distinguishing target-generated acoustic power from TABLE III: Online computation time per timestamp in the interference-rich deployment.                        
+
+> Method Feat. mean Total mean Total 99th pct. (ms) (ms) (ms) Normalized RSSI top-3 0.0801 0.1074 0.3326 Linear path-loss posterior 0.0801 0.1366 0.4144 Spline posterior 0.0801 0.1396 0.4351 Two-Tower (RSSI-only) 0.0801 0.4817 1.2865
+> Two-Tower 0.3560 0.7173 1.7026
+> KDE-hybrid posterior 0.0801 0.8516 2.7207 Runtime is measured on a Windows 10 Pro 64-bit machine with an Intel Core i7-9750H CPU, 12 logical processors, and 16 GB RAM. Benchmarks are run on CPU using PyTorch over one thread. “Feat. mean” denotes the mean time for online feature construction, while “Total mean” includes feature construction, streaming state/context assembly where applicable, and decision computation. “Total 99th pct.” reports the 99th-percentile total computation time.
+
+0 50 100 150 200 250 300 Time (s) 0.0 0.5 1.0 Accuracy 
+
+> Two-Tower
+> Two-Tower (RSSI) Linear Spline KDE Norm.
+
+Fig. 3: Rolling test accuracy over the test partition over a 100-sample window in the interference-rich deployment. interference sources. The practical takeaway is that frequency-band features are most valuable precisely when the acoustic environment is contested; in benign conditions a lightweight RSSI-only model is sufficient and even slightly preferable. VI. C OMPUTATIONAL COMPLEXITY 
+
+Posterior-based scalar-RSSI methods compute a likelihood for every spatial hypothesis. For one target, the dominant online cost is O(|H| Vℓ), where |H| is the number of grid locations and Vℓ is the number of low-cost acoustic nodes. For M jointly modeled targets, direct posterior inference becomes O(|H| M Vℓ). The cost is therefore dominated by the latent spatial grid, and multi-target inference quickly becomes expensive if no additional assumptions narrowing the search space are present. For fixed audio window length, band count, and network width, the online cost of the Two-Tower method is 
+
+O(Vℓ + V Kh ),
+
+where Vℓ is the number of low-cost acoustic nodes, Vh is the number of recommendable high-cost assets, and K is the subset-size budget. The O(Vℓ) term results from constructing and transmitting the network-wide acoustic context, while the O(V Kh ) term results from exact scoring of candidate subsets. Thus, the Two-Tower model removes dependence TABLE IV: Mean closest-node containment accuracy in the open-field deployment. 
+
+Method Mean accuracy (%) Std. error (%) 
+
+Two-Tower (RSSI-only) 99.40 0.20 
+
+Two-Tower 97.80 0.38 Spline posterior 95.93 0.51 Linear path-loss posterior 93.19 0.65 KDE-hybrid posterior 92.99 0.66 Normalized RSSI top-3 92.26 0.69 All methods are evaluated on 1498 held-out test timestamps. 
+
+TABLE V: Online computation time per timestamp in the open-field deployment. 
+
+Method Feat. mean Total mean Total 99th (ms) (ms) pct. (ms) Normalized RSSI top-3 0.0011 0.0095 0.0376 Linear path-loss posterior 0.0011 0.1036 0.2909 Spline posterior 0.0011 0.1358 0.3136 
+
+Two-Tower (RSSI-only) 0.0011 0.4453 1.3542 
+
+KDE-hybrid posterior 0.0011 0.9520 3.0650 Two-Tower 0.6845 1.0854 2.5439 Runtime is measured on a Windows 10 Pro 64-bit machine with an Intel Core i7-9750H CPU, 12 logical processors, and 16 GB RAM. Benchmarks are run on CPU using PyTorch over one thread. 
+
+on the spatial hypothesis grid and joint multi-target posterior enumeration. On the other hand, a naive scaling of the Two-Tower infer-ence becomes costly as Vh increases. In larger deployments, this can be addressed by replacing exhaustive enumeration with utility aggregation over smaller subsets or individual nodes, hierarchical narrowing from larger to smaller regions, two-stage retrieval/reranking, or graph-based subset encoders. VII. C ONCLUSION 
+
+In this paper, we formulate selective sensor activation as a recommendation problem, where network-wide acoustic observations define the context and candidate sensor subsets define the items to be ranked. Using a Two-Tower architecture and frequency-band acoustic features, we show that the pro-posed method improves robustness to acoustic interference. Through experiments, we also show that the model outper-forms previous approaches while remaining computationally feasible for real-time tracking. More broadly, our results sug-gest that recommendation-style architectures can be adapted to efficient sensor-subset selection. REFERENCES [1] S. He, K. Shi, C. Liu, B. Guo, J. Chen, and Z. Shi, “Collaborative sensing in internet of things: A comprehensive survey,” Commun. Surveys Tuts. , vol. 24, no. 3, pp. 1435–1474, Jul. 2022. [Online]. Available: https://doi.org/10.1109/COMST.2022.3187138 [2] S. I. Siam, H. Ahn, L. Liu, S. Alam, H. Shen, Z. Cao, N. Shroff, B. Krishnamachari, M. Srivastava, and M. Zhang, “Artificial intelligence of things: A survey,” ACM Trans. Sen. Netw. , vol. 21, no. 1, Jan. 2025. [Online]. Available: https://doi.org/10.1145/3690639 [3] Z. Li, J. Liu, K. Chen, X. Gao, C. Tang, C. Xie, and X. Lu, “Heteroge-neous sensing for target tracking: architecture, techniques, applications and challenges,” Measurement Science and Technology , vol. 34, no. 7, p. 072002, Jul. 2023. [4] B. M. Marlin, N. Suri, S. Fang, M. B. Srivastava, C. Samplawski, Z. Wang, and M. Wigness, “Iobt-max: a multimodal analytics exper-imentation testbed for iobt research,” in MILCOM 2023 - 2023 IEEE Military Communications Conference (MILCOM) , 2023, pp. 127–132. [5] K. Buyukkalayci, X. Li, M. Karakas, T. Sarkar, C. Fragouli, and B. Krishnamachari, “Keeping a target “on the radar”, using model-based group sensor selection algorithms,” in MILCOM 2025 - 2025 IEEE Military Communications Conference (MILCOM) , 2025, pp. 856–861. [6] K. Buyukkalayci, K. Pak, M. Karakas, X. Li, and C. Fragouli, “Top-p sensor selection for target localization,” in IEEE International Symposium on Information Theory (ISIT) , 2026, (Accepted). [Online]. Available: https://arxiv.org/abs/2604.07020 [7] K. Buyukkalayci, M. Karakas, X. Li, and C. Fragouli, “Enhancing binary search via overlapping partitions,” in 2025 IEEE International Symposium on Information Theory (ISIT) , 2025, pp. 1–6. [8] P. Chakravarthula, J. A. D’Souza, E. Tseng, J. Bartusek, and F. Heide, “Seeing with sound: Long-range acoustic beamforming for multimodal scene understanding,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , June 2023. [9] X. Li, M. Karakas, O. A. Hanna, M. Kiamari, J. Coleman, C. Fragouli, B. Krishnamachari, and G. Verma, “Online allocation of sensing and computation in large graphs,” in IEEE 9th International Conference on Collaboration and Internet Computing (CIC) , Nov. 2023, pp. 28–34. [10] F. Zhao, J. Shin, and J. Reich, “Information-driven dynamic sensor collaboration,” IEEE Signal Processing Magazine , vol. 19, no. 2, pp. 61–72, 2002. [11] S. Meguerdichian, F. Koushanfar, M. Potkonjak, and M. Srivastava, “Coverage problems in wireless ad-hoc sensor networks,” in Proceedings IEEE INFOCOM 2001. Conference on Computer Communications. ,vol. 3, 2001, pp. 1380–1387 vol.3. [12] W.-P. Chen, J. Hou, and L. Sha, “Dynamic clustering for acoustic target tracking in wireless sensor networks,” in 11th IEEE International Conference on Network Protocols , 2003, pp. 284–294. [13] P.-S. Huang, X. He, J. Gao, L. Deng, A. Acero, and L. Heck, “Learning deep structured semantic models for web search using clickthrough data,” in Proceedings of the 22nd ACM International Conference on Information & Knowledge Management (CIKM) , 2013, pp. 2333–2338. [14] P. Covington, J. Adams, and E. Sargin, “Deep neural networks for youtube recommendations,” in Proceedings of the 10th ACM Conference on Recommender Systems (RecSys) , 2016, pp. 191–198. [15] X. Yi, J. Yang, L. Hong, D. Z. Cheng, L. Heldt, A. Kumthekar, Z. Zhao, L. Wei, and E. Chi, “Sampling-bias-corrected neural modeling for large corpus item recommendations,” in Proceedings of the 13th ACM Conference on Recommender Systems (RecSys) , 2019, pp. 269– 277. [16] J.-T. Huang, A. Sharma, S. Sun, L. Xia, D. Zhang, P. Pronin, J. Padman-abhan, G. Ottaviano, and L. Yang, “Embedding-based retrieval in face-book search,” in Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD) , 2020, pp. 2553–2561. [17] T. Strypsteen and A. Bertrand, “A distributed neural network architecture for dynamic sensor selection with application to bandwidth-constrained body-sensor networks,” IEEE Journal of Biomedical and Health Infor-matics , 2025. [18] A. Kott, A. Swami, and B. J. West, “The internet of battle things,” 
+
+Computer , vol. 49, no. 12, pp. 70–75, 2016. [19] Y. Baek, B. Bae, H. Shin et al. , “Edge intelligence through in-sensor and near-sensor computing for the artificial intelligence of things,” npj Unconventional Computing , vol. 2, p. 25, 2025. [20] X. Zou, L. Li, H. Du, and L. Zhou, “Intelligent sensing and computing in wireless sensor networks for multiple target tracking,” Journal of Sensors , vol. 2022, pp. 1–11, 2022. [21] P. Kulkarni, D. Ganesan, P. Shenoy, and Q. Lu, “Senseye: a multi-tier camera sensor network,” in Proceedings of the 13th Annual ACM International Conference on Multimedia , 2005, pp. 229–238. [22] R. Jurdak, P. Corke, D. Dharman, and G. Salagnac, “Adaptive gps duty cycling and radio ranging for energy-efficient localization,” in 
+
+Proceedings of the 8th ACM Conference on Embedded Networked Sensor Systems (SenSys) , 2010, pp. 57–70. [23] A. Pascale, C. Guarnaccia, and M. C. Coelho, “Analysis of single vehicle noise emissions in the frequency domain for two different motorizations,” Journal of Environmental Management , vol. 370, p. 122905, Nov. 2024.

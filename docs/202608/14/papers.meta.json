@@ -1,0 +1,69 @@
+{
+  "label": "2026-08-14",
+  "date": "2026-08-14",
+  "generated_at": "2026-08-14T19:45:50",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202608/14/2608.08301v1-machine-learning-based-diagnostic-framework-for-passive-ultrasonic-detection-of-railway-wheel-defects",
+      "section": "quick",
+      "title_en": "Machine-Learning-Based Diagnostic Framework for Passive Ultrasonic Detection of Railway Wheel Defects",
+      "authors": "Aashish Shaju, Steve Southward, Mehdi Ahmadian",
+      "date": "2026-08-08",
+      "pdf": "https://arxiv.org/pdf/2608.08301v1",
+      "score": "6.0",
+      "evidence": "利用高频超声声发射信号进行机器学习分类，可迁移至舰船噪声识别",
+      "tldr": "铁路车轮缺陷识别对安全维护至关重要。本研究利用被动空气耦合超声声发射信号，提出一种基于特征筛选与随机森林分类的机器学习诊断框架。对十一个全尺寸车轮组的时频域特征进行Kruskal-Wallis检验与互信息分析，筛选出衰减率、峭度等关键指标，在多分类任务中取得约零点六六的平衡准确率。实验验证了非接触式超声检测与机器学习结合的有效性，为现场部署智能车轮检测系统提供了基础。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Reliable identification of railway wheel defects is important for safety and maintenance. This study develops a machine-learning-based diagnostic framework for multi-class defect identification using passive air-coupled ultrasonic acoustic emission signals. Data were collected from eleven full-scale railway wheelsets representing nine health states. Time- and frequency-domain features were evaluated using Kruskal-Wallis statistical testing and mutual-information analysis to identify the most discriminative indicators. A Random Forest classifier was then trained using the selected features with stratified 5-fold cross-validation. The model achieved a balanced accuracy of approximately 0.66 and a Macro-F1 score of 0.65 across the nine classes. Decay rate, kurtosis, skewness, and envelope low-frequency power emerged as the most influential features, while a compact subset of features retained most of the classification performance. The results demonstrate the feasibility of combining passive ultrasonic sensing, statistical feature selection, and supervised machine learning for non-contact railway wheel defect classification and provide a foundation for future field-deployable inspection systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/14/2608.10659v1-dino-a-adapting-self-distillation-vision-transformers-to-general-audio-representation-learning",
+      "section": "quick",
+      "title_en": "DINO-A: Adapting Self-Distillation Vision Transformers to General Audio Representation Learning",
+      "authors": "Tomasz Radzikowski, Mateusz Modrzejewski, Przemysław Rokita",
+      "date": "2026-08-11",
+      "pdf": "https://arxiv.org/pdf/2608.10659v1",
+      "score": "6.0",
+      "evidence": "通用音频表示学习方法可直接应用于舰船噪声等声学分类任务",
+      "tldr": "自监督视觉范式DINO尚未被用于一般音频分类。本文提出DINO-A，保留其多裁剪、EMA教师和高维投影，将输入换成log-mel谱图，在FSD50K预训练ViT与CNN。线性探针下小patch全任务领先；卷积胜语音、ViT胜环境声与音乐；与BYOL-A v2差11.96个百分点，源于高维投影与FSD50K规模不匹配及多裁剪开销。贡献在于揭示DINO迁移到音频小数据时的适用边界。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "We present DINO-A, an adaptation of self-distillation from vision to general audio representation learning. While DINO has become a canonical method in self-supervised vision and prior audio work has explored latent prediction (BYOL-A) and masked modeling (Audio-MAE, BEATs), no prior work has brought canonical DINO to general audio classification in the way BYOL-A brought BYOL. DINO-A retains DINO's multi-crop, EMA teacher, and high-dimensional projection, replacing only the input modality and augmentations with log-mel spectrograms and the BYOL-A v2 augmentation block. We pretrain three backbones, two Vision Transformers with 8x8 and 16x16 patches and a convolutional encoder, on FSD50K and evaluate them with linear probing on ESC-50, Speech Commands v2, UrbanSound8K, and GTZAN. Three findings characterize the resulting representations. Patch resolution within the Vision Transformer family has consistent effect on representation quality, with smaller patches winning across all four tasks. The choice between Vision Transformer and convolutional backbone interacts with task type: convolutional networks lead on speech while Vision Transformers lead on environmental sounds and music. Under identical pretraining and evaluation conditions, DINO-A and BYOL-A v2 differ by 11.96 percentage points on average, and we trace this difference to two mechanisms: the interaction between DINO's high-dimensional projection space and FSD50K's limited scale, and the additional cost of multi-crop augmentation, which DINO uses but BYOL-A v2 does not. The high-dimensional projection space, central to DINO's success in vision, becomes a liability at FSD50K scale.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/14/2608.11143v1-a-recommendation-system-approach-for-interference-robust-sensor-subset-selection",
+      "section": "quick",
+      "title_en": "A Recommendation System Approach for Interference-Robust Sensor Subset Selection",
+      "authors": "Kaan Buyukkalayci, Kyle Pak, Merve Karakas, Christina Fragouli",
+      "date": "2026-08-11",
+      "pdf": "https://arxiv.org/pdf/2608.11143v1",
+      "score": "6.0",
+      "evidence": "利用频带声学特征进行抗干扰目标跟踪的传感器选择",
+      "tldr": "目标跟踪中，传感器子集选择需兼顾精度与能耗，但基于RSSI的廉价方法易受声学干扰，导致推荐质量下降。针对该问题，本文提出推荐系统启发的子集选择框架，以频带声学特征替代RSSI，并采用Two-Tower MLP架构为候选子集及状态向量建模，从而快速预测子集跟踪精度。在户外车辆跟踪实测数据上，该方法相比RSSI基线精度提升约20%，同时保持低延迟，适合实时选择性感知。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "This paper develops a method for sensor-subset selection for tracking. Prior work showed that low-cost acoustic Received Signal Strength Indicator (RSSI) measurements can be used to recommend subsets of sensor nodes whose expensive sensing modalities, such as cameras, can achieve high tracking accuracy. While efficient, RSSI-based approaches are challenged by acoustic interference. We propose a recommendation-system-inspired framework that instead leverages frequency-band acoustic features and a Two-Tower Multi-Layer Perceptron (MLP) architecture to efficiently score candidate sensor subsets. Experimental results on outdoor vehicle-tracking deployments show that the proposed method can improve accuracy by around 20\\% over the RSSI baseline while maintaining the low computational overhead required for real-time selective sensing.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/14/2608.11518v1-new-orthogonal-multiwavelet-filters-derived-by-matrix-spectral-factorization",
+      "section": "quick",
+      "title_en": "New Orthogonal Multiwavelet Filters Derived by Matrix Spectral Factorization",
+      "authors": "Vasil Kolev, Todor Cooklev, Fritz Keinert",
+      "date": "2026-08-12",
+      "pdf": "https://arxiv.org/pdf/2608.11518v1",
+      "score": "6.0",
+      "evidence": "新的正交多小波滤波器用于一维/二维信号去噪，可支撑高频声学特征提取",
+      "tldr": "多小波设计需平衡正交性、对称性与紧支撑等特性。本文利用快速Bauer矩阵谱分解，从CL多小波滤波器构造出两个新型正交多小波，具有超紧支撑和对称/反对称性，其中一种在编码与平滑性上更优。在边缘检测、图像压缩及信号去噪对比中，新滤波器较GHM、SA4等取得更高SSIM与MS-SSIM。为多小波理论及图像处理应用提供了新选择。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "The paper considers the construction of two new orthogonal multiwavelets with supercompact support by using the Fast Bauer's method for matrix spectral factorization on the matrix product filter of the orthogonal CL multiwavelet filter. The new multiwavelets possess orthogonality, symmetry/antisymmetry, and one of them provides better coding and smoothness than other supercompact multiwavelets.   The performance of the new multiwavelet filters in subband-based edge detection, grayscale and color image compression and 1D and 2D signal denoising is compared with the GHM, SA4, CL, Integer Haar and Alpert multifilters. The comparative analysis shows that new multiwavelets can provides better human visual measures, SSIM and MS-SSIM in image compression and denoising applications.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

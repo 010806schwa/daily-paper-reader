@@ -1,0 +1,171 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-14T19:43:04.868004+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.08301v1",
+      "source": "arxiv",
+      "title": "Machine-Learning-Based Diagnostic Framework for Passive Ultrasonic Detection of Railway Wheel Defects",
+      "abstract": "Reliable identification of railway wheel defects is important for safety and maintenance. This study develops a machine-learning-based diagnostic framework for multi-class defect identification using passive air-coupled ultrasonic acoustic emission signals. Data were collected from eleven full-scale railway wheelsets representing nine health states. Time- and frequency-domain features were evaluated using Kruskal-Wallis statistical testing and mutual-information analysis to identify the most discriminative indicators. A Random Forest classifier was then trained using the selected features with stratified 5-fold cross-validation. The model achieved a balanced accuracy of approximately 0.66 and a Macro-F1 score of 0.65 across the nine classes. Decay rate, kurtosis, skewness, and envelope low-frequency power emerged as the most influential features, while a compact subset of features retained most of the classification performance. The results demonstrate the feasibility of combining passive ultrasonic sensing, statistical feature selection, and supervised machine learning for non-contact railway wheel defect classification and provide a foundation for future field-deployable inspection systems.",
+      "authors": [
+        "Aashish Shaju",
+        "Steve Southward",
+        "Mehdi Ahmadian"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.RO",
+        "eess.SP"
+      ],
+      "published": "2026-08-08T19:24:24+00:00",
+      "link": "https://arxiv.org/pdf/2608.08301v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "High-frequency acoustic signal classification via machine learning, transferable to ship noise recognition",
+      "llm_evidence_cn": "利用高频超声声发射信号进行机器学习分类，可迁移至舰船噪声识别",
+      "llm_evidence": "利用高频超声声发射信号进行机器学习分类，可迁移至舰船噪声识别",
+      "canonical_evidence": "利用高频超声声发射信号进行机器学习分类，可迁移至舰船噪声识别",
+      "llm_tldr_en": "This paper develops a machine-learning diagnostic framework for railway wheel defect classification using passive ultrasonic acoustic emission signals, selecting time and frequency features and training a Random Forest classifier, achieving balanced accuracy of 0.66. The generalizable high-frequency acoustic classification approach can inform ship noise recognition.",
+      "llm_tldr_cn": "该文针对铁路车轮缺陷识别问题，提出基于被动超声声发射信号的机器学习诊断框架。通过统计检验与互信息分析筛选判别性时频特征，并训练随机森林分类器进行多类别缺陷识别。在11个全尺寸轮对上的实验达到约0.66的平衡准确率与0.65的宏F1分数。其高频声学信号分类方法可迁移至舰船噪声识别等同类任务。",
+      "llm_tldr": "该文针对铁路车轮缺陷识别问题，提出基于被动超声声发射信号的机器学习诊断框架。通过统计检验与互信息分析筛选判别性时频特征，并训练随机森林分类器进行多类别缺陷识别。在11个全尺寸轮对上的实验达到约0.66的平衡准确率与0.65的宏F1分数。其高频声学信号分类方法可迁移至舰船噪声识别等同类任务。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "using high frequency acoustic features for underwater target classification",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.10659v1",
+      "source": "arxiv",
+      "title": "DINO-A: Adapting Self-Distillation Vision Transformers to General Audio Representation Learning",
+      "abstract": "We present DINO-A, an adaptation of self-distillation from vision to general audio representation learning. While DINO has become a canonical method in self-supervised vision and prior audio work has explored latent prediction (BYOL-A) and masked modeling (Audio-MAE, BEATs), no prior work has brought canonical DINO to general audio classification in the way BYOL-A brought BYOL. DINO-A retains DINO's multi-crop, EMA teacher, and high-dimensional projection, replacing only the input modality and augmentations with log-mel spectrograms and the BYOL-A v2 augmentation block. We pretrain three backbones, two Vision Transformers with 8x8 and 16x16 patches and a convolutional encoder, on FSD50K and evaluate them with linear probing on ESC-50, Speech Commands v2, UrbanSound8K, and GTZAN. Three findings characterize the resulting representations. Patch resolution within the Vision Transformer family has consistent effect on representation quality, with smaller patches winning across all four tasks. The choice between Vision Transformer and convolutional backbone interacts with task type: convolutional networks lead on speech while Vision Transformers lead on environmental sounds and music. Under identical pretraining and evaluation conditions, DINO-A and BYOL-A v2 differ by 11.96 percentage points on average, and we trace this difference to two mechanisms: the interaction between DINO's high-dimensional projection space and FSD50K's limited scale, and the additional cost of multi-crop augmentation, which DINO uses but BYOL-A v2 does not. The high-dimensional projection space, central to DINO's success in vision, becomes a liability at FSD50K scale.",
+      "authors": [
+        "Tomasz Radzikowski",
+        "Mateusz Modrzejewski",
+        "Przemysław Rokita"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD"
+      ],
+      "published": "2026-08-11T08:43:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.10659v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "general audio representation learning directly applicable to acoustic classification tasks such as ship noise recognition",
+      "llm_evidence_cn": "通用音频表示学习方法可直接应用于舰船噪声等声学分类任务",
+      "llm_evidence": "通用音频表示学习方法可直接应用于舰船噪声等声学分类任务",
+      "canonical_evidence": "通用音频表示学习方法可直接应用于舰船噪声等声学分类任务",
+      "llm_tldr_en": "DINO-A adapts self-distillation Vision Transformers to general audio representation learning using log-mel spectrograms, achieving strong performance on audio classification with linear probing. It provides a transferable self-supervised pre-training method that can be applied to ship noise classification and other underwater acoustic recognition tasks.",
+      "llm_tldr_cn": "通用音频分类常需大量标注数据，而现有自监督方法多采用掩码建模或潜在预测，尚未将DINO自蒸馏成功引入音频。本文提出DINO-A，将视觉中的自蒸馏范式迁移到音频，使用对数梅尔频谱图和BYOL-A增强块，并在多个骨干网络上进行预训练。在FSD50K上线性探测评估表明，DINO-A学习到的音频表示具有强判别力，性能优于对比方法。该方法为舰船噪声识别等水下声学分类任务提供了一种可迁移的自监督预训练途径。",
+      "llm_tldr": "通用音频分类常需大量标注数据，而现有自监督方法多采用掩码建模或潜在预测，尚未将DINO自蒸馏成功引入音频。本文提出DINO-A，将视觉中的自蒸馏范式迁移到音频，使用对数梅尔频谱图和BYOL-A增强块，并在多个骨干网络上进行预训练。在FSD50K上线性探测评估表明，DINO-A学习到的音频表示具有强判别力，性能优于对比方法。该方法为舰船噪声识别等水下声学分类任务提供了一种可迁移的自监督预训练途径。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "high frequency acoustic features for ship noise recognition",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.11143v1",
+      "source": "arxiv",
+      "title": "A Recommendation System Approach for Interference-Robust Sensor Subset Selection",
+      "abstract": "This paper develops a method for sensor-subset selection for tracking. Prior work showed that low-cost acoustic Received Signal Strength Indicator (RSSI) measurements can be used to recommend subsets of sensor nodes whose expensive sensing modalities, such as cameras, can achieve high tracking accuracy. While efficient, RSSI-based approaches are challenged by acoustic interference. We propose a recommendation-system-inspired framework that instead leverages frequency-band acoustic features and a Two-Tower Multi-Layer Perceptron (MLP) architecture to efficiently score candidate sensor subsets. Experimental results on outdoor vehicle-tracking deployments show that the proposed method can improve accuracy by around 20\\% over the RSSI baseline while maintaining the low computational overhead required for real-time selective sensing.",
+      "authors": [
+        "Kaan Buyukkalayci",
+        "Kyle Pak",
+        "Merve Karakas",
+        "Christina Fragouli"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-11T17:01:44+00:00",
+      "link": "https://arxiv.org/pdf/2608.11143v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "uses frequency-band acoustic features for interference-robust target tracking sensor subset selection",
+      "llm_evidence_cn": "利用频带声学特征进行抗干扰目标跟踪的传感器选择",
+      "llm_evidence": "利用频带声学特征进行抗干扰目标跟踪的传感器选择",
+      "canonical_evidence": "利用频带声学特征进行抗干扰目标跟踪的传感器选择",
+      "llm_tldr_en": "Proposes a recommendation-system framework using frequency-band acoustic features with a Two-Tower MLP to robustly select sensor subsets for vehicle tracking, improving accuracy by about 20% over RSSI baseline.",
+      "llm_tldr_cn": "在低成本声学接收信号强度指示（RSSI）易受干扰而导致跟踪精度下降的情况下，传统传感器子集选择难以保持稳健性。本文借鉴推荐系统思想，提取频带声学特征，并用双塔多层感知机对候选传感器子集进行评分，从而在不依赖高成本采集设备的前提下选出最优子集。在室外车辆跟踪部署实验中，该方法相较RSSI基线将跟踪准确率提升约20%，同时保持较低计算开销。频带声学特征的使用为水下目标识别中的传感器管理与信号选择提供了可借鉴的方法。",
+      "llm_tldr": "在低成本声学接收信号强度指示（RSSI）易受干扰而导致跟踪精度下降的情况下，传统传感器子集选择难以保持稳健性。本文借鉴推荐系统思想，提取频带声学特征，并用双塔多层感知机对候选传感器子集进行评分，从而在不依赖高成本采集设备的前提下选出最优子集。在室外车辆跟踪部署实验中，该方法相较RSSI基线将跟踪准确率提升约20%，同时保持较低计算开销。频带声学特征的使用为水下目标识别中的传感器管理与信号选择提供了可借鉴的方法。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "using high frequency acoustic features for underwater target classification",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.11518v1",
+      "source": "arxiv",
+      "title": "New Orthogonal Multiwavelet Filters Derived by Matrix Spectral Factorization",
+      "abstract": "The paper considers the construction of two new orthogonal multiwavelets with supercompact support by using the Fast Bauer's method for matrix spectral factorization on the matrix product filter of the orthogonal CL multiwavelet filter. The new multiwavelets possess orthogonality, symmetry/antisymmetry, and one of them provides better coding and smoothness than other supercompact multiwavelets.   The performance of the new multiwavelet filters in subband-based edge detection, grayscale and color image compression and 1D and 2D signal denoising is compared with the GHM, SA4, CL, Integer Haar and Alpert multifilters. The comparative analysis shows that new multiwavelets can provides better human visual measures, SSIM and MS-SSIM in image compression and denoising applications.",
+      "authors": [
+        "Vasil Kolev",
+        "Todor Cooklev",
+        "Fritz Keinert"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.DB",
+        "math.NA",
+        "stat.AP"
+      ],
+      "published": "2026-08-12T00:13:35+00:00",
+      "link": "https://arxiv.org/pdf/2608.11518v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "new orthogonal multiwavelet filters for 1D/2D signal denoising support high-frequency acoustic feature extraction",
+      "llm_evidence_cn": "新的正交多小波滤波器用于一维/二维信号去噪，可支撑高频声学特征提取",
+      "llm_evidence": "新的正交多小波滤波器用于一维/二维信号去噪，可支撑高频声学特征提取",
+      "canonical_evidence": "新的正交多小波滤波器用于一维/二维信号去噪，可支撑高频声学特征提取",
+      "llm_tldr_en": "New orthogonal multiwavelets built by matrix spectral factorization improve coding and smoothness; comparisons show better SSIM in image compression and 1D/2D signal denoising, providing a transferable multiwavelet tool for acoustic feature extraction.",
+      "llm_tldr_cn": "针对超紧支撑多小波在编码效率和光滑度上的不足，本文通过快速Bauer方法对CL多小波的矩阵乘积滤波器做矩阵谱分解，构造出两类新型正交多小波滤波器，兼具正交性、对称/反对称性，并在编码与光滑度上优于同类超紧支撑多小波。在与GHM、SA4、CL等滤波器的对比中，新滤波器在边缘检测、灰度/彩色图像压缩及一维二维信号去噪任务上取得更好的SSIM等指标。由于多小波具备分频特性，其设计方法可作为水下声信号去噪与高频特征提取的可迁移工具。",
+      "llm_tldr": "针对超紧支撑多小波在编码效率和光滑度上的不足，本文通过快速Bauer方法对CL多小波的矩阵乘积滤波器做矩阵谱分解，构造出两类新型正交多小波滤波器，兼具正交性、对称/反对称性，并在编码与光滑度上优于同类超紧支撑多小波。在与GHM、SA4、CL等滤波器的对比中，新滤波器在边缘检测、灰度/彩色图像压缩及一维二维信号去噪任务上取得更好的SSIM等指标。由于多小波具备分频特性，其设计方法可作为水下声信号去噪与高频特征提取的可迁移工具。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
