@@ -1,0 +1,436 @@
+Title: 2608.09821v1.pdf
+
+URL Source: https://arxiv.org/pdf/2608.09821v1
+
+Published Time: Tue, 11 Aug 2026 02:35:47 GMT
+
+Number of Pages: 44
+
+Markdown Content:
+1
+
+An open-source, scalable workflow for organizing echosounder data for machine learning applications 
+
+Caesar Tuguinay 1,2 , Wu-Jung Lee 1,a , Valentina Staneva 3, Elizabeth M. Phillips 4, Rebecca E. Thomas 4, Alicia Billings 4, Julia Clemons 4
+
+> 1
+
+Applied Physics Laboratory, University of Washington, Seattle, Washington, United States 
+
+> 2
+
+Department of Electrical and Computer Engineering, University of Washington, Seattle, Washington, United States 
+
+> 3
+
+eScience Institute, University of Washington, Seattle, Washington, United States 
+
+> 4
+
+Fisheries Engineering and Acoustic Technologies Team, Northwest Fisheries Science Center, National Marine Fisheries Service, National Oceanic and Atmospheric Administration, Seattle, Washington, United States 
+
+> a
+
+Corresponding author: leewj@uw.edu 
+
+Keywords: data workflow, fisheries acoustics, echosounders, open-source software, machine learning, deep learning 
+
+Running head: Fisheries acoustics data workflow 2
+
+# Abstract 
+
+Echosounders, or high-frequency active sonar systems, have become standard tools for quantifying and mapping the distribution of marine organisms in fisheries or ecological surveys. Conventional echosounder data analysis often relies on human annotation of echograms, which are sonar imagery formed by echo intensity. Over the past decade, in parallel with the exponentially growing volume of echosounder data, there has been a corresponding increase in the development of machine learning (ML) methods that operate primarily on echograms as images. However, echograms are not simply images: they are associated with specific spatiotemporal coordinates that are essential for alignment with survey events, human annotations, and other oceanographic datasets. We present a generalizable two-stage workflow for constructing analysis-ready datasets for ML development tailored for echograms from transect-based surveys, in which (1) acoustic data are partitioned according to transect designation, and (2) masks are created from annotations referencing user-defined uniform spatiotemporal echo data grid. Importantly, ancillary information, such as geospatial coordinates and oceanographic measurements, is propagated across processing stages to preserve the essential contextual information for downstream analyses. We demonstrate the scalability of our workflow implementation based on two open-source software libraries, Echopype and Echoregions, using two example fisheries survey datasets. We additionally provide an executable tutorial that guides readers through the computational implementation of this workflow. Together, these elements provide a scalable and generalizable framework for creating analysis-ready echosounder datasets for ML applications. 3
+
+# Introduction 
+
+Over the past decades, high-frequency active sonar systems, or echosounders, have been widely used to map the distribution of pelagic fish and zooplankton and to delineate seafloor 
+
+topology  (Medwin and Clay, 1998; Brown and Blondel, 2009; Stanton, 2012). These instruments operate by generating acoustic signals and capturing the returning echoes, which contain information about the scatterers, or objects that reflect the sound. The intensity of an echo is a function of the sound frequency and physical properties of the scatterer(s), and is often used in the echo interpretation process (Medwin and Clay, 1998; Simmonds and MacLennan, 2005; Jech and Michaels, 2006; Stanton, 2012). 
+
+To sustainably manage economically significant commercial fisheries, acoustic-trawl surveys are conducted to deliver estimates of fish biomass to support fishery stock assessments (Koslow, 2009; Greene et al., 2014). In these surveys, echosounders are typically mounted on the hull or a retractable keel of a vessel and directed downwards to acoustically profile the water column. As the echosounder transmits acoustic signals, or pings, along the vessel track, the intensity of the returning echoes can be aligned and color-coded to form two-dimensional echograms, in which each pixel is a digitized echo sample at a specific time and depth (top panel of Fig. 1C) (Maclennan, 2002). 
+
+Fisheries scientists use a variety of specialized software (e.g., Echoview (Echoview Software Pty Ltd, 2025), ESP3 (Ladroit et al., 2020), LSSS (Korneliussen et al., 2006), MOVIES3D (Trenkel et al., 2009), and Matecho (Perrot et al., 2018)) to perform both manual and automated echo data analysis. For automated analysis, many software packages provide rule-based algorithms or allow users to create their own routines to perform identification of specific animal taxa, aggregation types, seafloor, noise, etc  (e.g., Weill et al., 1993; Jech and Michaels, 4
+
+2006; Kang et al., 2006; De Robertis and Higginbottom, 2007; Trenkel et al., 2009; Ryan et al., 2015; Perrot et al., 2018; Phillips et al., 2022) . For example, age-0 walleye pollock off Hokkaido, Japan have frequency response characteristics that allow for rule-based identification and separation from other pollock age-groups by comparing differences in echo strengths received at two frequencies (Kang et al., 2006).  However, many animals exhibit aggregation behaviors that vary with the oceanographic environment, resulting in diverse echogram signatures that are challenging to identify with fixed rules.  To identify such animals, scientists rely on past experience and other contextual information (e.g., geographic locations, water depth, and season) to create interpretation labels by drawing polygons enclosing these aggregations on echograms (top panel of Fig. 1C).  For example, Pacific hake ( Merluccius productus ) is a semi-pelagic groundfish that can aggregate both in midwater or near the seafloor, and can form mixed assemblages with other biological scatterers such as euphausiids and rockfish (Bailey et al., 1982; Phillips et al., 2023; Godínez-Pérez et al., 2025). 5
+
+Fig 1. Example data from the NOAA Northwest Fisheries Science Center’s Pacific Hake Survey along the 
+
+West Coast  of the United States, a typical fisheries acoustic-trawl survey. (A) Survey transects and the distribution of hake detection. The size of the orange circles scales with the acoustically inferred hake abundance. (B) Zoomed-in section showing the within-transect (WT) and off-transect (OT) segments of the ship track. Only the WT segments are used for hake abundance estimation. (C) Top: Echogram and annotations. Bottom: binary masks indicating echogram pixels containing hake (fish; mask value = 1) and non-hake (mask value = 0). 
+
+The dramatic increase in the number of echosounder deployments on ocean observing platforms has contributed to a substantial growth of data volume in the past decade. Hundreds of terabytes of echosounder data have been collected from echosounders operating across a wide range of frequencies, signal bandwidths, and sensor configurations (e.g., single-beam, split-beam, multibeam, etc.) mounted on ships, autonomous vehicles, and surface and seafloor 6
+
+moorings (NOAA National Centers for Environmental Information, 2011; Wall et al., 2018; Lee and Staneva, 2020).  More flexible automated methods are needed to effectively analyze this new influx of data. 
+
+There is a history of using classical machine learning (ML) methods to perform echo analysis, including clustering (Petitgas, 2003; Burgos and Horne, 2008; Campanella and Taylor, 2016), tree-based algorithms (Fernandes, 2009; Fallon et al., 2016; Ji et al., 2020; Proud et al., 2020), and tensor and matrix decomposition (Lee and Staneva, 2019, 2020). More recently, computer vision-based deep learning (DL) models are being rapidly developed to classify echogram features (Brautaset et al., 2020; Choi et al., 2021; Marques et al., 2021b, 2021a; Ordoñez et al., 2022; Slonimer et al., 2022; Pala et al., 2023; Yassir et al., 2023; Culhane et al., 2025; Handegard et al., 2025; Wibowo et al., 2025; Agarwal et al., 2026). Object detection is one class of such methods, through which a box is drawn around detected scatterers (Marques et al., 2021b). Segmentation is another class of methods that label each pixel on an echogram as a specific taxon or class. These pixel-wise labels are referred to as “masks,” and are paired with echograms to train segmentation models (Fig. 1C) (Brautaset et al., 2020; Marques et al., 2021a; Ordoñez et al., 2022; Slonimer et al., 2022; Choi et al., 2023; Vohra et al., 2023).  For semantic segmentation, each pixel of an echogram is assigned a class label (e.g., fish species), whereas for instance segmentation, individual instances of the same class (e.g., separate labels for distinct schools of the same fish species) are distinguished (Brautaset et al., 2020; Ordoñez et al., 2022; Choi et al., 2023; Vohra et al., 2023). 
+
+Existing literature on DL-based echo analysis focuses on latter stages of echo data preparation, such as concatenating auxiliary non-acoustic data onto the echogram or applying image augmentation methods such as resampling (Ordoñez et al., 2022), or thresholding echo 7
+
+measurements to refine labels (Calin et al., 2026), with little emphasis on how the acoustic data are organized into formats suitable for ML development and analysis in the first place.  For example, acoustic-trawl surveys are typically conducted based on straight-line transects, which are discrete navigational segments designed to enable rigorous statistical analysis of survey observations. Because acoustic data are continuously collected, they must be filtered to remove the off-transect (OT) periods and retain only within-transect (WT) segments (red and black lines, respectively, in Fig. 1B) for downstream analysis.  Depending on the target species and survey protocol, human annotators may not label the echograms in a manner suitable for direct usage in ML development. For example, delineating the seafloor is typically a procedure separate from labeling fish aggregations, necessitating additional steps in data organization to remove seafloor echo contamination. In addition, non-acoustic data properties, such as geographic position and depth of echo observations, may be important in the analysis and should be integrated and propagated downstream in the organized dataset. This consideration is characteristic of echograms and similar geospatial datasets, where pixel values are intrinsically linked to physical coordinates rather than purely visual content as in generic images. 
+
+To address this gap, we present a data organization workflow designed to produce echogram and mask datasets that share the same coordinate s and are suitable for semantic segmentation, and provide recommendations for adapting this workflow to generate datasets suitable for other ML tasks. We also discuss challenges arising from potentially differing spatiotemporal resolutions among acoustic data, including across different transducer channels, annotation labels, and associated environmental datasets. To support transparency and computational scalability, we further provide code and example notebooks that implement the workflow using open-source software, Echopype and Echoregions (Lee et al., 2024a, 2024b), 8
+
+along with performance benchmarks to demonstrate the capability of the workflow to process large survey datasets. 
+
+# Materials and Procedures 
+
+In this section, we first describe the datasets we use to develop and test this workflow, discuss workflow details, and our software implementation. 
+
+# Example acoustic-trawl survey datasets 
+
+Over the past two decades, fisheries scientists from the United States (U.S.) National Oceanic and Atmospheric Administration (NOAA) Northwest Fisheries Science Center (NWFSC) and Canada’s Department of Fisheries and Oceans (DFO) conducted the Joint U.S.-Canada Integrated Ecosystem and Pacific Hake Acoustic-Trawl Survey (hereafter referred to as the “Hake Survey”) on a biennial basis. Effective management of Pacific hake is critical as they are a key trophic link in the California Current Large Marine Ecosystem and are one of the most abundant commercial fish stocks along the West Coast of the U.S. (Fleischer et al., 2005; Ressler et al., 2007). During 2005-2025, narrowband “power-angle” data (raw echo magnitude and electric split-beam angles) were collected consistently at 18, 38, and 120 kHz, with other transducer channels added depending on the configuration of a specific year. Kongsberg Simrad EK60 and EK80 scientific echosounders were used from 2005-2019 and 2021-2025, with data saved into 25 MB and 100 MB echosounder files, respectively. These files are publicly available through the National Centers for Environmental Information (NCEI) Water-Column Sonar Data Collection (NOAA National Centers for Environmental Information, 2011). 9
+
+The survey typically runs from June to September from Point Conception, California, U.S. to Dixon Entrance north of Haida Gwaii, British Columbia, Canada, with the vessel traversing parallel transects spaced 10-20 nautical miles apart (Fig. 1A). Generally, transects were oriented east-west between the 50-meter and the 1500-meter isobaths, encompassing the continental shelf, shelf break, slope, and edges of the ocean basin. When hake acoustic signature was observed at the end of a transect, the transect was extended until hake acoustic signature was not seen for at least 0.5 nautical mile, to ensure that the full geographic range of the hake stock was surveyed (Fleischer et al., 2005). Concurrent with the acoustic sampling, midwater trawls were conducted to collect biological ground truth data to help confirm the identity of acoustically identified fish aggregations and to provide biometric data such as fish lengths and weights (Simmonds et al., 1992; Fleischer et al., 2005; Thomas et al., 2024). 
+
+Conventional echo data analysis was carried out in Echoview (Echoview Software Pty Ltd, 2025) by manually drawing polygons enclosing hake aggregations on echograms (the hake “regions”). As hake aggregate both pelagically and semi-demersally, the lowermost boundaries of the hake regions often trace the seafloor (Fig. 1C). Analysis therefore also included careful delineation of the water column interface with the seafloor to avoid contamination from high-intensity seafloor echoes on near-seafloor hake aggregations. Specifically, an additional 1m offset was applied to the seafloor delineation to further ensure no seafloor contamination occurs. In addition, echogram regions containing false bottom (strong seafloor echoes from previous pings that persist in the water column during subsequent pings), or other transient noises were also annotated and removed from further analyses. 10 
+
+Based on these annotations, the noise-removed echo energy at 38 kHz enclosed within hake regions is  integrated along depth  and used to estimate the abundance and biomass of hake in reference to trawl biological data (Fleischer et al., 2005; Thomas et al., 2024). 
+
+# Workflow overview 
+
+The data organization workflow described in this paper aims at producing analysis-ready datasets for ML developments. In two stages, the workflow integrates expert annotations with echosounder data files to generate gridded data segments with spatially and temporally aligned acoustic data and masks that can be used for semantic segmentation. In the first workflow stage focused on transect data organization (Fig. 2A), we parse and calibrate raw acoustic measurements into physically meaningful quantities, and organize the resulting data into segments consistent with transect designations. Here, the transect breakpoints that define the transect start and end time stored in the annotation files are used, since acoustic data are typically collected continuously during the survey independent of the ship maneuvers or trawling operations. In the second workflow stage focused on generating clean fish masks (Fig. 2B), we convert annotations of fish, noise interference, and water column-seafloor interface from the annotation files to pixel-wise “masks” at the same resolution as the organized echo data from the first workflow stage. The masking process is crucial, because the annotations are recorded as polygons or lines delineated by a series of time-depth points, which are different from the discrete time-depth echogram pixel coordinates of the acoustic data. At the end of the two stages, the organized echo data from transect segments and the corresponding masks jointly form an analysis-ready dataset suitable for ML model developments. Under the hood, the workflow uses 11 
+
+the Echopype and Echoregions software packages (Lee et al., 2024a, 2024b), which are discussed in section Computational implementation .
+
+Fig 2. Workflow overview. (A) Transect data organization: Acoustic data, ancillary data (e.g., geospatial locations and environmental variables), and transect breakpoints (e.g., start and end times) are consolidated into standardized transect datasets stored as individual .zarr files. The acoustic and ancillary data are typically raw instrument-generated data files, such as Simrad echosounder .raw files. The transect breakpoints are typically recorded in tabular format, such as .csv files. (B) Clean fish mask creation: Fish region and seafloor annotations are combined with the consolidated echo data to create clean fish masks free from non-fish scattering sources. Annotations may be produced manually or automatically. In our example, Echoview .evr and .evl files define hake aggregations and the water column-seafloor interface, respectively. The workflow uses the open-source Echopype and Echoregions package to generate organized datasets aligned along the same set of coordinates. 12 
+
+# Transect data organization 
+
+The first stage of the workflow involves (1) organizing echo data into non-overlapping segments defined by transect breakpoints, and (2) regridding echo measurements in each segment onto a uniform grid along the time-depth coordinates (Fig. 3) conducive to ML developments (uniform image pixels). 
+
+The Hake Survey defines four transect breakpoints: start transect (ST), break transect (BT), resume transect (RT), and end transect (ET). The ST-BT, ST-ET, RT-ET, and RT-BT segments are within-transect (WT) segments (black lines in Fig. 1B) for which the acoustic data are processed for biomass estimation. The BT-RT and ET-ST segments are off-transect (OT) segments not considered in the analysis (red lines in Fig. 1B). OT segments are typically related to transiting between transects or during trawl operations. 
+
+The first step of the transect data organization stage is to parse, calibrate, and partition raw acoustic data files into OT and WT segments (Fig. 3A and 3B). During data collection, the echosounder systems created files based on a user-specified maximum file size (25 MB prior to 2021 on the EK60 echosounder and 100 MB starting from 2021 on the EK80 echosounder). Therefore, the files generally do not align with the transect breakpoints (Fig. 3B). For each echosounder data file, calibration coefficients are applied to the raw echo measurements to compensate for transmission loss to obtain physically meaningful volume backscattering strength (Sv; dB re 1 m -1 ). The OT data sections are then trimmed to retain only WT segments. 
+
+In the second step of this stage, the calibrated Sv data segments are regridding into uniform time and depth bins (Fig. 3C). The regridding operation is necessary because the time-depth bins in the echo measurement may not be uniform across transducer channels depending on the echosounder configuration. For example, the ping rate can be configured to vary 13 
+
+depending on the water column depth, and different transducer channels can be configured to sample at different along-range resolution; the depth coordinate in the recorded echo time series may also be non-uniform due to sound speed changes along depth. The regridding operation ensures that echograms passed into an ML model have uniform time-depth coordinates to avoid stretching or shrinking the appearance of fish aggregations which negatively impacts ML model training and performance. 
+
+In our implementation, the regridding operation is performed by computing the mean volume backscattering strength (MVBS; dB re 1 m -1 ) using 5 s × 1 m bins. There are other methods for regridding, such as “match geometry”  (Echoview Software Pty Ltd, 2025) and 
+
+weighted mean based on echo strength (Met Office, 2013; Ordoñez et al., 2022). We chose to compute MVBS to form a uniform time-depth grid because of its simplicity and wide usage in fisheries acoustics (Madureira et al., 1993; Maclennan, 2002; Fielding et al., 2004; Simmonds and MacLennan, 2005). MVBS regridding is done by computing binned averages of volume backscattering coefficient (sv; m -1 ) measurements enclosed in each regrid box in the linear domain and converted back into log domain (blue boxes in Fig. 3C and Fig. 3D). 14 
+
+Fig 3. Summary of the steps involved in the transect data organization workflow stage. Detail procedures are illustrated in panels B-D. (B) WT echo data is generated by combining all echo data intersecting with the WT time points and trimming off any OT sections. (C) WT echo data are regridded by computing MVBS for each regrid bin, since the original echo measurements may not be uniformly spaced along the time and depth coordinates (see text for detail). (D) An illustration of how the regridding operation creates an effective shift of the time-depth coordinate of the echo data. In panels C-D, each square represents an echo intensity measurement (an echogram pixel at the raw resolution). 15 
+
+# Clean fish mask creation 
+
+The next stage of the workflow converts manually annotated fish region polygons into echogram labels in the form of pixel-wise masks generated in the previous stage (Fig. 4). For supervised ML methods, these masks serve as ground truth labels that assign echogram pixels to different classes according to echogram features, and this assignment is what the model aims to learn during the training phase. The classes in the context of fisheries acoustics are typically different scattering sources, such as specific marine animal taxa, seafloor echoes, or noise features. 
+
+In our implementation, the goal is to create clean hake masks free from any non-fish scattering sources to train a binary (hake vs non-hake) semantic segmentation model. The procedure described below can be easily adapted to generate multi-class masks that include other animal species occurring in the same ecosystem.  To emphasize generalization across other echosounder datasets, hereafter we will use “fish regions” in lieu of hake regions. 
+
+In this stage, clean fish masks are created by: (1) converting manual labels in continuous time-depth coordinates to pixel-based masks, (2) removing portions of fish masks that intersect with seafloor masks, and (3) regridding the clean fish masks onto the uniform time-depth grid matching the organized echo data generated in transect data organization. Importantly, step 1 needs to be carried out at the same time-depth echogram resolution that the manual annotation was based on before regridding (step 3), to avoid including seafloor echo samples into the fish mask. Due to the effective shift of seafloor location during regridding (Fig. 3D), deviating from this sequence of operations may create erroneous inclusion of seafloor echo samples ( see section 
+
+Supplemental Information Text S1 for details). 16 
+
+Polygon scan conversion, a computational geometry algorithm (Preparata and Shamos, 1985), is used to convert coordinate-based manual labels (polygon defined by a sequence of time-depth vertices) into pixel-based echogram labels (Fig. 4B). Let  (𝑡, 𝑑)  denote a time-depth coordinate of a pixel in the echogram, and let  𝑅 𝑖  represent the i-th annotated fish region (out of  𝐾 
+
+regions).  𝑀 𝑖  is the i-th fish region mask defined pixel-wise using the ray-casting rule: 
+
+𝑀 𝑖 (𝑡, 𝑑) = (number of intersections of a rightward ray with 𝑅 𝑖 boundary) mod 2 
+
+Therefore, if pixel  (𝑡, 𝑑)  lies inside  𝑅 𝑖 , 𝑀 𝑖 (𝑡, 𝑑) = 1 . If pixel  (𝑡, 𝑑)  is outside of  𝑅 𝑖 , 𝑀 𝑖 (𝑡, 𝑑) = 0. The same operation can be performed on the seafloor annotation vertices to create seafloor masks. Note that the ray direction can be chosen arbitrarily. 
+
+For fish species aggregating near the seafloor, it is often necessary to clean the fish masks via: 
+
+𝑀 𝑖,𝑐𝑙𝑒𝑎𝑛𝑒𝑑 (𝑡, 𝑑) = 𝑀 𝑖 (𝑡, 𝑑) ∧ ¬𝑀 𝑠𝑒𝑎𝑓𝑙𝑜𝑜𝑟 (𝑡, 𝑑) 
+
+where  ∧ denotes the logical ‘AND’ operation, and the negation operator  ¬ inverts the seafloor mask values. As such, a pixel is within the cleaned mask if it is within the original fish mask and outside of the seafloor mask (Fig. 4C). 
+
+For semantic segmentation, fish masks of the same WT segment are combined: 
+
+𝑀 𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑,𝑐𝑙𝑒𝑎𝑛𝑒𝑑 (𝑡, 𝑑) = ⋁ 𝑖=1 𝐾 𝑀 𝑖,𝑐𝑙𝑒𝑎𝑛𝑒𝑑 (𝑡, 𝑑) 
+
+where  ⋁ denotes the logical ‘OR’ operation. For instance segmentation, where each instance of the same class is distinguished, this mask combination step should be omitted to preserve the separate identity of individual fish aggregations ( see section Workflow adaptation for other ML approaches ). 17 
+
+Finally, the clean fish masks are regridded (Fig. 4D) to match the resolution of the organized echo data generated from the transect data organization stage by performing the following operation for each regridding bin containing  𝑁  points: 
+
+𝑀′(𝑡′, 𝑑′) = ⋀ (𝑡,𝑑) 𝑖𝑛 𝑀𝑉𝐵𝑆 𝑏𝑖𝑛 𝑁  𝑀 𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑,𝑐𝑙𝑒𝑎𝑛𝑒𝑑 (𝑡, 𝑑) 18 
+
+Fig 4. (A) Summary of the steps involved in the clean fish mask creation workflow stage. Detailed procedures are illustrated in panels B-D. (B) Illustration of polygon scan conversion: pixels with an odd or an even number of ray–boundary intersections are inside and outside the polygon, respectively. (C) Echogram pixels within a fish mask that are also covered by seafloor masks are removed to create a clean fish mask. (D) The clean fish mask is regridded to match the resolution of the organized echo data from transect data organization. 19 
+
+# Computational implementation 
+
+The computational implementation of the workflow is performed using two open-source Python packages, Echopype (for transect data organization) and Echoregions (for clean fish mask creation). While some workflow steps can be performed using other software, such as pyEcholab (Wall et al., 2018) and Echopy (Ariza et al., 2023), we choose to use Echopype and Echoregions as they are designed to scale with increasing data volumes and computation resources without major code changes. Both packages use Xarray for performing coordinate-aware computations on N-dimensional arrays, with data products following the NetCDF data model that can be serialized in NetCDF or Zarr file formats and stored locally or on the cloud (Lee et al., 2024a, 2024b). Importantly, Xarray interfaces with Dask, an open-source Python package using Directed Acyclic Graphs (DAGs) to perform out-of-core computations (Rocklin, 2015; Moreno et al., 2022). This allows us to enhance specific functions of these two packages to ensure workflow scalability, which we discuss below. 
+
+The  most computationally expensive step in the transect data organization stage is to regrid the organized echo data by computing MVBS, due to the required grouping of echo data samples that are contained within specific time-depth bins (blue “regrid boxes” in Fig. 3C). We enhanced the Echopype compute_MVBS function using the Xarray-integrated Flox package (Cherian, 2023) alongside Dask to efficiently perform this operation. Specifically, Xarray defaults to grouping with the “split-apply-combine” method, through which the data samples are split into groups, the desired function (e.g., mean) is applied on each of these groups, and the group outputs are combined into a single dataset. However, this approach does not perform well with large data volume, as the memory and computation cost increases with the number of 20 
+
+groups. Flox circumvents this limitation by analyzing the dataset to understand how data samples are positioned with respect to their groupmates, and making use of these relationships in an efficient vectorized algorithm to perform the grouping operation.  With the Flox integration, users can use compute_MVBS to run on arbitrarily large acoustic datasets using regular personal laptop specifications (e.g., 4 CPUs and  16 GB  of RAM). 
+
+The most computationally expensive step in the clean fish mask creation stage is to perform polygon scan conversion to create fish masks (Fig. 4B). This is performed using the Echoregions  Regions2D.region_mask  method, in which we accelerated the mask creation by wrapping functions from the Regionmask package with Dask to enable parallelization. The Regionmask package uses the Shapely package, which calls functions in the C++ Geometry Engine Open Source (GEOS) package to perform the polygon scan conversion operation (Gillies et al., 2024; Hauser et al., 2024; GEOS contributors, 2025). 
+
+We  provide a minimally reproducible example of the workflow in the form of an executable Jupyter notebook containing interactive Python code, visualizations, and corresponding text explanations (https://github.com/echostack-org/echopype-examples/blob/main/notebooks/single_transect_data_organization.ipynb). The notebook starts with example EK80 echosounder .raw data files and Echoview-exported region annotation 
+
+.evr and seafloor delineation .evl files. Echopype and Echoregions convert these proprietary formatted files into  interoperable  formats native to the scientific Python ecosystem, enabling further processing and analysis without proprietary software. Alongside the workflow-specific steps, the notebook describes optional echo data processing steps (e.g., rule-based noise removal), and how to modify the masks into forms suited for other ML approaches (see section 
+
+Workflow adaptation for other ML approaches ). Note that the workflow is generally 21 
+
+applicable to other acoustic and annotation datasets that can be converted into similar intermediate .zarr and tabular formats, such as other echosounder data annotation format supported by Echopype (e.g., .01A files from AZFP echosounders) and Echoregions (e.g., 
+
+.csv files). 
+
+# Assessment 
+
+# Computation scalability 
+
+We benchmarked the computational scalability of our workflow implementation on the U.S. sections of the 2019 and 2023 Hake Survey data. The 2019 and 2023 acoustic datasets were collected with an EK60 and an EK80 echosounder, respectively. Given the same echosounder configuration for ping rate and recording range, EK80 samples the echo time series at a much higher resolution along range than EK60, resulting in a large difference of the total data volume (Table I). The annotation files are small (<100 KB) and do not contribute significantly to the total data volume. However, the number of regions annotated within each transect segment does impact the computing speed (see below).   
+
+> Table I. Total data volume and compute time across computing resources for the 2019 and 2023 data.
+
+Year  Echosounder system 
+
+Total acoustic data size 
+
+Number of files 
+
+4 CPUs, 15 GB RAM 
+
+8 CPUs, 30 GB RAM 
+
+16 CPUs, 60 GB RAM 
+
+64 CPUs, 250 GB RAM 
+
+2019  EK60  120.9 GB  5020  17345.7 s  13846.5 s  10944.9 s  10928.6 s 
+
+2023  EK80  868.8 GB  8971  76697.6 s  47887.6 s  32834.6 s  27759.3 s 22 
+
+In general, the total and per-file compute time increases with increasing data volume or decreasing computing resources (Table I and Fig. 5). Specifically, in Fig. 5, the slope of the fitted regression line represents the general trend of computational speed: the lower the slope, the shorter the compute time given the same size of data. Importantly, for the clean fish mask creation stage (Fig. 5B and Fig. 5D), the transect segments with compute times far above their respective regression line contain many more fish regions than those near the regression line. The benchmarking results also show that the computational efficiency gain plateaus for the transect data organization stage with larger resources, whereas the efficiency continues to improve for the clean fish mask creation stage (Fig. 5, comparing the change from the  magenta  to red lines between the left and the right panels). This can be understood by observing the associated Dask 
+
+graphs  that represent computational tasks as nodes and their interdependencies as edges. In general, larger Dask graphs introduce more complex scheduling and larger communication overhead across workers, which negatively impacts the efficiency of parallel computation. The computations in the transect data organization stage involve deeper Dask graphs, suggesting that many tasks cannot run in parallel and depend on outputs from upstream tasks. Therefore, increasing the number of CPUs and thus the number of workers capable of executing parallel tasks may not necessarily shorten the compute time for this stage. 23 
+
+Fig 5. Distributions of compute time for 2019 (A-B) and 2023 (C-D) WT segments across input data size given different levels of computing resources. Only WT segments containing both fish and seafloor annotations are included, as these segments require all processing steps within each workflow stage. Dashed lines are the best fit linear regression given a computing resource level with slope (m) and coefficient of determination (R 2). In general, the larger the computing resources, the smaller the slope, indicating a decrease in total compute time. The box in the lower-left corners of panels C-D indicate the extent of panels A-B, since the data volume is much smaller for 2019 than for 2023. An outlier 2019 WT 
+
+segment with input data size 1.3 GB (for transect data organization) and 0.5 GB (for clean fish mask creation) is omitted in the regression calculation and the plots. 24 
+
+# Workflow adaptation for other ML approaches 
+
+The workflow presented here is designed to organize data for semantic segmentation tasks but can be adapted to organize data for other ML tasks with only small modifications. For example, to create data for instance segmentation that requires each instance of the same class to be separately labeled (Marques et al., 2021a; Slonimer et al., 2022), the step to combine individual fish masks in the clean fish mask creation stage can be skipped to preserve the identity of different fish region annotations in the resulting masks (Fig. 6A). To create data for object detection that requires a bounding box for each object (Marques et al., 2021b), the four vertices of each rectangular box can be calculated from each time-depth polygon annotation or each fish mask (Fig. 6A) and merged for multi-object detection (Fig. 6C). In addition, the WT echo data products from the transect data organization stage can be directly leveraged for unsupervised ML methods such as clustering and autoencoders (Petitgas, 2003; Burgos and Horne, 2008; Campanella and Taylor, 2016; Culhane et al., 2025), tree-based algorithms (Fernandes, 2009; Fallon et al., 2016; Ji et al., 2020; Proud et al., 2020), and tensor and matrix decomposition (Lee and Staneva, 2019, 2020). 25  
+
+> Fig 6. Illustration of workflow variations to generate data for other ML tasks. (A) Separate individual masks for three distinct fish regions that are used for instance segmentation. (B) A combined mask for semantic segmentation created by merging the individual region masks in panel A. (C) Multiple bounding boxes for object detection derived from individual masks. Each bounding box is defined by the extents of an individual mask in panel A.
+
+# Discussion 
+
+In this paper, we present a two-stage workflow to generate analysis-ready fisheries acoustic datasets to support ML development and applications. We detail the operations and our computational implementation in each workflow stage and evaluate the performance on two example fisheries acoustic-trawl datasets. We also provide a minimally reproducible executable notebook that demonstrates the workflow, and discuss modifications required to adapt it to organize data for other ML approaches. Below we discuss additional considerations in applying and extending this workflow, and highlight the need for creating benchmark datasets in fisheries acoustics to accelerate data science and ML development in this field. 26 
+
+The transect data organization workflow stage provides a framework to partition echosounder data into conceptually meaningfu l segments  according to the data collection scenario. For the two example datasets, the acoustic data are partitioned into interleaving WT and OT segments before further operations (Fig. 4B). For surveys that employ a zig-zag traversing pattern (Overholtz et al., 2006; Lian et al., 2022), the data can be partitioned based on the turning points, or corners, of the ship track. For mooring deployments at fixed locations (De Robertis et al., 2018; Lee and Staneva, 2020), the data can be partitioned on a daily, weekly, or monthly basis depending on the exact sampling scheme. For glider and profiler-based deployments (Suberg et al., 2014; Benoit‐Bird et al., 2018; Grassian et al., 2023), the data can be partitioned according to the down-up dive cycles. In addition to post-processing, this data partitioning framework can also be employed in real-time data collection scenarios if temporal or spatial “breakpoints” can be clearly defined through either manual annotation or automatic methods. Following data partitioning, the  coordinate on which regridding is performed should be chosen based on the survey design. For the Hake Survey datasets, vessel speed along-transect was maintained relatively constant at 10.5 knots, allowing the regridding to be conducted along the time coordinate. If vessel speed varies significantly, regridding along a geospatial coordinate (e.g., distance traveled) would be more suitable for maintaining fish aggregation morphological features in the echogram images. 
+
+The clean fish mask creation stage assumes that the annotations are sufficient to create clean fish masks and does not itself improve the annotation quality. For the example datasets, the two primary assumptions are that some fish region annotations may overlap with the seafloor, and that the seafloor annotations encompass the entire WT echo data segment. Consequently, any portions of the fish region annotations extending below the seafloor will be removed during 27 
+
+clean fish mask creation. If seafloor annotations are unavailable, there exist automated seafloor detection methods that can be applied on echograms to extract the seafloor boundary (Trenkel et al., 2009; Ladroit et al., 2020; Echoview Software Pty Ltd, 2025). Alternatively, the fish mask outputs of clean fish mask creation can be further refined potentially by thresholding the corresponding echo intensity values to exclude seafloor pixels, extending the use of threshold-based label refinement described by Calin et al. (2026). 
+
+A key property of the presented workflow is that every pixel of the resulting echogram images and corresponding masks is strictly aligned with a physically meaningful coordinate, specifically transducer channel ( channel ), ping transmission time ( ping_time ), and water column depth ( depth ) (see Fig. 2). This explicit coordinate alignment enables the propagation of ancillary data, such as geospatial position (e.g., latitude and longitude) and other environmental measurements (e.g., salinity, temperature), alongside the acoustic data throughout the workflow, preserving contextual information that can be important for ML model inference and data interpretation. For example, water column attributes such as depth may provide useful information for ML decision-making (Ordoñez et al., 2022). Environmental context, such as spatial relationships with eddies and submarine canyons, is known to influence distribution patterns for hake and important prey species such as euphausiids (Santora et al., 2018; Phillips et al., 2023; Derville et al., 2025; Díaz-Astudillo et al., 2025). Further downstream, many biological quantities are estimated as a function of geospatial locations, in particular when the estimation procedure requires incorporating data from other sources, such as trawl catches (Thomas et al., 2024). 
+
+This workflow presented here establishes a structured and computationally scalable pathway to organize fisheries acoustic data for ML developments. It is an important step toward 28 
+
+developing benchmark datasets that can be used to evaluate and compare ML models and approaches in this field. Such benchmark datasets have proven instrumental in driving rapid advances in computer vision (e.g., Imagenet (Deng et al., 2009) and COCO (Lin et al., 2014)), and have also recently been developed in passive acoustic monitoring (PAM), a field closely related to fisheries acoustics for facilitating research for automatic animal call detection and classification (e.g., DeepShip (Irfan et al., 2021), BEANS (Hagiwara et al., 2023), and  whale 
+
+detections (Palmer et al., 2025)). 
+
+Looking ahead, we view the workflow and the accompanying software implementation presented here not as a prescriptive standard, but as a starting point for discussion and experimentation around datasets and annotation structures for ML development in the fisheries acoustics community. We envision community-wide efforts to collaboratively refine these procedures and tools, define data sharing conventions, and develop practical mechanisms for data sharing, which will help support transparency, reproducibility, and meaningful comparison across models. Such coordinated efforts would lower barriers to entry for ML research, accelerate methodological progress, and help ensure that these advances in automated echo data analysis are robust, interpretable, and broadly transferable. 
+
+# Supplemental Information 
+
+# Supplemental Information Text S1 - Sequence of operations to create clean fish masks 
+
+In clean fish mask creation, we present a sequence of operations to create clean fish masks that match the resolution of the organized echo data generated from the transect data 29 
+
+organization stage: the fish and seafloor masks are created at the original echo data resolution, and the fish masks are cleaned by removing overlapping seafloor mask pixels before the fish masks are regridded (Fig. S1A). We  analyzed  other possible sequences of operations and found that exact order of mask creation, mask cleaning, and regridding is crucial to ensure seafloor echoes are correctly removed from the final fish masks. Below we discuss three other possible sequences of operations, from which only one correctly produces the clean fish mask at the regridded resolution: 
+
+1.  Fish and seafloor masks are created at the regridded resolution before the fish mask is cleaned. Due to the shift of the echo data coordinates introduced by regridding (see Fig. 3D), the masking operation may miss the seafloor annotation, resulting in seafloor echoes not correctly removed in the final fish mask (Fig. S1B). 
+
+2.  Fish and seafloor masks are created at the original resolution, with logical ‘AND’ used during regridding. The resulting empty seafloor mask causes the seafloor echoes not correctly removed in the final fish mask (Fig. S1C). 
+
+3.  Fish and seafloor masks are created at the original resolution, with logical ‘AND’ used during regridding (Fig. S1D). This sequence of operations generates the equivalent correct clean fish mask as the sequence used in the presented workflow. 30 
+
+Fig S1. Illustration of four possible sequences of operations attempting to generate clean fish masks at the regridded resolution. See Supplemental Information Text S1 for detailed descriptions. 31 
+
+# References 
+
+Agarwal, K., Rooper, C. N., and Williams, K. ( 2026 ). “Seabed classification in the Gulf of Alaska from acoustic surveys using deep learning,” Limnology and Oceanography: Methods, 24 , e70037. doi:10.1002/lom3.70037 
+
+Ariza, A., Lebourges‐Dhaussy, A., Nerini, D., Pauthenet, E., Roudaut, G., Assunção, R., Tosetto, E., et al. ( 2023 ). “Acoustic seascape partitioning through functional data analysis,” Journal of Biogeography, 50 , 1546–1560. doi:10.1111/jbi.14534 
+
+Bailey, K. M., Francis, R. C., and Stevens, P. R. ( 1982 ). The life history and fishery of Pacific whiting, Merluccius productus (NWAFC processed report No. 82–03), pp. 1–81. 
+
+Benoit‐Bird, K. J., Patrick Welch, T., Waluk, C. M., Barth, J. A., Wangen, I., McGill, P., Okuda, C., et al. ( 2018 ). “Equipping an underwater glider with a new echosounder to explore ocean ecosystems,” Limnology and Oceanography: Methods, 16 , 734–749. doi:10.1002/lom3.10278 
+
+Brautaset, O., Waldeland, A. U., Johnsen, E., Malde, K., Eikvil, L., Salberg, A.-B., and Handegard, N. O. ( 2020 ). “Acoustic classification in multifrequency echosounder data using deep convolutional neural networks,” ICES Journal of Marine Science, 77 , 1391– 1400. doi:10.1093/icesjms/fsz235 
+
+Brown, C. J., and Blondel, P. ( 2009 ). “Developments in the application of multibeam sonar backscatter for seafloor habitat mapping,” Applied Acoustics, 70 , 1242–1247. doi:10.1016/j.apacoust.2008.08.004 
+
+Burgos, J. M., and Horne, J. K. ( 2008 ). “Characterization and classification of acoustically detected fish spatial distributions,” ICES Journal of Marine Science, 65 , 1235–1247. doi:10.1093/icesjms/fsn087 32 
+
+Calin, A., Le Chenadec, G., Mopin, I., Berger, L., Doray, M., and Tarek, H. ( 2026 ). “Refining expert annotation for echogram semantic segmentation: a method based on pseudo-labels, confidence maps, and acoustic criteria,” In International Conference on Underwater Acoustics, Glasgow, United Kingdom, 2116–2125. 
+
+Campanella, F., and Taylor, J. C. ( 2016 ). “Investigating acoustic diversity of fish aggregations in coral reef ecosystems from multifrequency fishery sonar surveys,” Fisheries Research, 
+
+181 , 63–76. doi:10.1016/j.fishres.2016.03.027 
+
+Cherian, D. ( 2023 ). Fast & Furious GroupBy Calculations at Scale with Flox, Dask, and Xarray .Presented at the American Meteorological Society 103rd Annual Meeting 
+
+Choi, C., Kampffmeyer, M., Handegard, N. O., Salberg, A.-B., Brautaset, O., Eikvil, L., and Jenssen, R. ( 2021 ). “Semi-supervised target classification in multi-frequency echosounder data,” ICES Journal of Marine Science, 78 , 2615–2627. doi:10.1093/icesjms/fsab140 
+
+Choi, C., Kampffmeyer, M., Handegard, N. O., Salberg, A.-B., and Jenssen, R. ( 2023 ). “Deep Semisupervised Semantic Segmentation in Multifrequency Echosounder Data,” IEEE Journal of Oceanic Engineering, 48 , 384–400. doi:10.1109/JOE.2022.3226214 
+
+Culhane, E. F., Della Penna, A., Proud, R., and Braun, C. D. ( 2025 ). “Image-based machine learning reveals structural ‘fingerprints’ of pelagic seascapes in shipboard echograms,” ICES Journal of Marine Science, 82 , fsaf221. doi:10.1093/icesjms/fsaf221 
+
+De Robertis, A., and Higginbottom, I. ( 2007 ). “A post-processing technique to estimate the signal-to-noise ratio and remove echosounder background noise,” ICES Journal of Marine Science, 64 , 1282–1291. doi:10.1093/icesjms/fsm112 33 
+
+De Robertis, A., Levine, R., and Wilson, C. D. ( 2018 ). “Can a bottom-moored echo sounder array provide a survey-comparable index of abundance?,” Canadian Journal of Fisheries and Aquatic Sciences, 75 , 629–640. doi:10.1139/cjfas-2017-0013 
+
+Deng, J., Dong, W., Socher, R., Li, L.-J., Kai Li, and Li Fei-Fei ( 2009 ). “ImageNet: A large-scale hierarchical image database,” In 2009 IEEE Conference on Computer Vision and Pattern Recognition, IEEE, Miami, Florida, United States, 248–255. doi:10.1109/CVPR.2009.5206848 
+
+Derville, S., Fisher, J. L., Kaplan, R. L., Bernard, K. S., Phillips, E. M., and Torres, L. G. ( 2025 ). “A predictive krill distribution model for Euphausia pacifica and Thysanoessa spinifera 
+
+using scaled acoustic backscatter in the Northern California Current,” Progress in Oceanography, 231 , 103388. doi:10.1016/j.pocean.2024.103388 
+
+Díaz-Astudillo, M., Castillo, M. I., Figueroa, P. A., Castro, L. R., Riquelme-Bugueño, R., Pérez-Santos, I., Pizarro, O., et al. ( 2025 ). “Cross-canyon variability in zooplankton backscattering strength in a river-influenced upwelling area,” Ocean Science, 21 , 1833– 1848. doi:10.5194/os-21-1833-2025 
+
+Echoview Software Pty Ltd ( 2025 ). “Echoview.,” Retrieved from https://echoview.com 
+
+Fallon, N. G., Fielding, S., and Fernandes, P. G. ( 2016 ). “Classification of Southern Ocean krill and icefish echoes using random forests,” ICES Journal of Marine Science, 73 , 1998– 2008. doi:10.1093/icesjms/fsw057 
+
+Fernandes, P. G. ( 2009 ). “Classification trees for species identification of fish-school echotraces,” ICES Journal of Marine Science, 66 , 1073–1080. doi:10.1093/icesjms/fsp060 34 
+
+Fielding, S., Griffiths, G., and Roe, H. S. J. ( 2004 ). “The biological validation of ADCP acoustic backscatter through direct comparison with net samples and model predictions based on acoustic-scattering models,” ICES Journal of Marine Science, 61 , 184–200. doi:10.1016/j.icesjms.2003.10.011 
+
+Fleischer, G. W., Cooke, K. D., Ressler, P. H., Thomas, R. E., Blois, S. K. de, Hufnagle, L. C., Kronlund, A. R., et al. ( 2005 ). The 2003 integrated acoustic and trawl survey of Pacific hake, Merluccius productus, in US and Canadian waters off the Pacific coast ( No. NMFS-NWFSC-65), NOAA Technical Memorandum, U.S. Department of Commerce, NOAA, p. 45. 
+
+GEOS contributors ( 2025 ). “GEOS computational geometry library.,” Retrieved from https://libgeos.org/ 
+
+Gillies, S., van der Wel, C., Van den Bossche, J., Taves, M. W., Arnott, J., Ward, B. C., and others (2024 ). “Shapely.,” doi:10.5281/zenodo.13345370 
+
+Godínez-Pérez, C. A., Zwolinski, J. P., Demer, D. A., Arizmendi-Rodríguez, D. I., Nevárez-Martínez, M. O., and Villalobos, H. ( 2025 ). “Identification of echoes from demersal aggregations of hake, Merluccius productus , in the Gulf of California,” ICES Journal of Marine Science, 82 , fsaf133. doi:10.1093/icesjms/fsaf133 
+
+Grassian, B., Roman, C., Warren, J. D., and Casagrande, D. ( 2023 ). “High‐resolution measurements of the epipelagic and mesopelagic ocean by a profiling vehicle equipped with environmental sensors and a broadband echosounder,” Limnology and Oceanography: Methods, 21 , 106–125. doi:10.1002/lom3.10532 
+
+Greene, C., Meyer-Gutbrod, E., McGarry, L., Hufnagle, L., Chu, D., McClatchie, S., Packer, A., et al. ( 2014 ). “A Wave Glider Approach to Fisheries Acoustics: Transforming How We 35 
+
+Monitor the Nation’s Commercial Fisheries in the 21st Century,” Oceanography, 27 , 168– 174. doi:10.5670/oceanog.2014.82 
+
+Hagiwara, M., Hoffman, B., Liu, J.-Y., Cusimano, M., Effenberger, F., and Zacarian, K. ( 2023 ). “BEANS: The Benchmark of Animal Sounds,” ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). doi:10.1109/ICASSP49357.2023.10096686 
+
+Handegard, N. O., Holmin, A. J., Pala, A., Utseth, I., and Johnsen, E. ( 2025 ). “Integrating and assessing machine learning acoustic target classification models for fish survey estimations,” ICES Journal of Marine Science, 82 , fsaf069. doi:10.1093/icesjms/fsaf069 
+
+Hauser, M., Spring, A., Busecke, J., Driel, M. van, and Lorenz, R. ( 2024 ). “regionmask/regionmask: version 0.12.1.” doi:10.5281/zenodo.10849860 
+
+Irfan, M., Jiangbin, Z., Ali, S., Iqbal, M., Masood, Z., and Hamid, U. ( 2021 ). “DeepShip: An underwater acoustic benchmark dataset and a separable convolution based autoencoder for classification,” Expert Systems with Applications, 183 , 115270. doi:10.1016/j.eswa.2021.115270 
+
+Jech, J. M., and Michaels, W. L. ( 2006 ). “A multifrequency method to classify and evaluate fisheries acoustics data,” Canadian Journal of Fisheries and Aquatic Sciences, 63 , 2225– 2235. doi:10.1139/F06-126 
+
+Ji, X., Yang, B., and Tang, Q. ( 2020 ). “Seabed sediment classification using multibeam backscatter data based on the selecting optimal random forest model,” Applied Acoustics, 
+
+167 , 107387. doi:10.1016/j.apacoust.2020.107387 36 
+
+Kang, M., Honda, S., and Oshima, T. ( 2006 ). “Age characteristics of walleye pollock school echoes,” ICES Journal of Marine Science, 63 , 1465–1476. doi:10.1016/j.icesjms.2006.06.007 
+
+Korneliussen, R. J., Ona, E., and Eliassen, I. ( 2006 ). “The large scale survey system-LSSS,” Proceedings of the 29th Scandinavian Symposium on Physical Acoustics. 
+
+Koslow, J. A. ( 2009 ). “The role of acoustics in ecosystem-based fishery management,” ICES Journal of Marine Science, 66 , 966–973. doi:10.1093/icesjms/fsp082 
+
+Ladroit, Y., Escobar-Flores, P. C., Schimel, A. C. G., and O’Driscoll, R. L. ( 2020 ). “ESP3: An open-source software for the quantitative processing of hydro-acoustic data,” SoftwareX, 
+
+12 , 100581. doi:10.1016/j.softx.2020.100581 
+
+Lee, W.-J., Setiawan, L., Tuguinay, C., Mayorga, E., and Staneva, V. ( 2024a ). “Interoperable and scalable echosounder data processing with Echopype,” ICES Journal of Marine Science, 
+
+81 , 1941–1951. doi:10.1093/icesjms/fsae133 
+
+Lee, W.-J., and Staneva, V. ( 2019 ). “Tensor decomposition of multi-frequency echosounder time series,” In OCEANS 2019 MTS/IEEE SEATTLE, IEEE, Seattle, Washington, United States, 1–6. doi:10.23919/OCEANS40490.2019.8962566 
+
+Lee, W.-J., and Staneva, V. ( 2020 ). “Compact representation of temporal processes in echosounder time series via matrix decomposition,” The Journal of the Acoustical Society of America, 148 , 3429–3442. doi:10.1121/10.0002670 
+
+Lee, W.-J., Staneva, V., Setiawan, L. “Don,” Mayorga, E., Tuguinay, C., Butala, S., Lucca, B., et al. ( 2024b ). “Echostack: A flexible and scalable open-source software suite for echosounder data processing,” In SciPy Proceedings 2024, Tacoma, Washington, United States, 386–397. doi:10.25080/WXRH8633 37 
+
+Lian, Y., Ye, S., Godlewska, M., Huang, G., Wang, J., Liu, J., and Li, Z. ( 2022 ). “Comparison of Two Types of Survey Designs for Acoustic Estimates of Fish Resources in the Three Gorges Reservoir, China,” Water, 14 , 2745. doi:10.3390/w14172745 
+
+Lin, T.-Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ramanan, D., Dollár, P., et al. ( 2014 ). “Microsoft COCO: Common Objects in Context,” In Computer Vision – ECCV 2014, Lecture Notes in Computer Science, Springer International Publishing, Cham, Switzerland, Vol. 8693, pp. 740–755. doi:10.1007/978-3-319-10602-1_48 
+
+Maclennan, D. ( 2002 ). “A consistent approach to definitions and symbols in fisheries acoustics,” ICES Journal of Marine Science, 59 , 365–369. doi:10.1006/jmsc.2001.1158 
+
+Madureira, L., Ward, P., and Atkinson, A. ( 1993 ). “Differences in backscattering strength determined at 120 and 38 kHz for three species of Antarctic macroplankton,” Marine Ecology Progress Series, 93 , 17–24. doi:10.3354/meps093017 
+
+Marques, T. P., Cote, M., Rezvanifar, A., Branzan Albu, A., Ersahin, K., Mudge, T., and Gauthier, S. ( 2021a ). “Instance Segmentation-based Identification of Pelagic Species in Acoustic Backscatter Data,” In 2021 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW), IEEE, Nashville, Tennessee, United States, 4373– 4382. doi:10.1109/CVPRW53098.2021.00494 
+
+Marques, T. P., Rezvanifar, A., Cote, M., Albu, A. B., Ersahin, K., Mudge, T., and Gauthier, S. (2021b ). “Detecting Marine Species in Echograms via Traditional, Hybrid, and Deep Learning Frameworks,” In 2020 25th International Conference on Pattern Recognition (ICPR), IEEE, Milan, Italy, 5928–5935. doi:10.1109/ICPR48806.2021.9412969 
+
+Medwin, H., and Clay, C. S. ( 1998 ). Fundamentals of Acoustical Oceanography , Elsevier. doi:10.1016/B978-0-12-487570-8.X5000-4 38 
+
+Met Office ( 2013 ). “Iris: A Python package for analysing and visualising meteorological and oceanographic data sets.” 
+
+Moreno, M., Vilaça, R., and Ferreira, P. G. ( 2022 ). “Scalable transcriptomics analysis with Dask: applications in data science and machine learning,” BMC Bioinformatics, 23 , 514. doi:10.1186/s12859-022-05065-3 
+
+NOAA National Centers for Environmental Information ( 2011 ). “Water Column Sonar Data Collection.” doi:10.7289/V5HT2M7C 
+
+Ordoñez, A., Utseth, I., Brautaset, O., Korneliussen, R., and Handegard, N. O. ( 2022 ). “Evaluation of echosounder data preparation strategies for modern machine learning models,” Fisheries Research, 254 , 106411. doi:10.1016/j.fishres.2022.106411 
+
+Overholtz, W. J., Jech, J. M., Michaels, W. L., Jacobson, L. D., and Sullivan, P. J. ( 2006 ). “Empirical comparisons of survey designs in acoustic surveys of Gulf of Maine-Georges Bank Atlantic herring,” Journal of Northwest Atlantic Fishery Science, 36 , 127–144. doi:10.2960/J.v36.m575 
+
+Pala, A., Oleynik, A., Utseth, I., and Handegard, N. O. ( 2023 ). “Addressing class imbalance in deep learning for acoustic target classification,” ICES Journal of Marine Science, 80 ,2530–2544. doi:10.1093/icesjms/fsad165 
+
+Palmer, K. J., Cummings, E., Dowd, M. G., Frasier, K., Frazao, F., Harris, A., Houweling, A., et al. ( 2025 ). “A Public Dataset of Annotated Orcinus orca Acoustic Signals for Detection and Ecotype Classification,” Scientific Data, 12 , 1137. doi:10.1038/s41597-025-05281-5 
+
+Perrot, Y., Brehmer, P., Habasque, J., Roudaut, G., Behagle, N., Sarré, A., and Lebourges-Dhaussy, A. ( 2018 ). “Matecho: An Open-Source Tool for Processing Fisheries Acoustics Data,” Acoustics Australia, 46 , 241–248. doi:10.1007/s40857-018-0135-x 39 
+
+Petitgas, P. ( 2003 ). “A method for the identification and characterization of clusters of schools along the transect lines of fisheries-acoustic surveys,” ICES Journal of Marine Science, 
+
+60 , 872–884. doi:10.1016/S1054-3139(03)00025-0 
+
+Phillips, E. M., Chu, D., Gauthier, S., Parker-Stetter, S. L., Shelton, A. O., and Thomas, R. E. (2022 ). “Spatiotemporal variability of euphausiids in the California Current Ecosystem: insights from a recently developed time series,” ICES Journal of Marine Science, 79 ,1312–1326. doi:10.1093/icesjms/fsac055 
+
+Phillips, E. M., Malick, M. J., Gauthier, S., Haltuch, M. A., Hunsicker, M. E., Parker‐Stetter, S. L., and Thomas, R. E. ( 2023 ). “The influence of temperature on Pacific hake co‐ occurrence with euphausiids in the California Current Ecosystem,” Fisheries Oceanography, 32 , 267–279. doi:10.1111/fog.12628 
+
+Preparata, F. P., and Shamos, M. I. ( 1985 ). Computational Geometry , Springer New York, New York, New York, United States. doi:10.1007/978-1-4612-1098-6 
+
+Proud, R., Mangeni-Sande, R., Kayanda, R. J., Cox, M. J., Nyamweya, C., Ongore, C., Natugonza, V., et al. ( 2020 ). “Automated classification of schools of the silver cyprinid 
+
+Rastrineobola argentea in Lake Victoria acoustic survey data using random forests,” ICES Journal of Marine Science, 77 , 1379–1390. doi:10.1093/icesjms/fsaa052 
+
+Ressler, P. H., Holmes, J. A., Fleischer, G. W., Thomas, R. E., and Cooke, K. C. ( 2007 ). “Pacific hake, Merluccius productus , autecology: a timely review,” Marine Fisheries Review, 69 ,1. 
+
+Rocklin, M. ( 2015 ). “Dask: Parallel Computation with Blocked algorithms and Task Scheduling,” In Proceedings of the 14th Python in Science Conference, Austin, Texas, United States, 126–132. doi:10.25080/Majora-7b98e3ed-013 40 
+
+Ryan, T. E., Downie, R. A., Kloser, R. J., and Keith, G. ( 2015 ). “Reducing bias due to noise and attenuation in open-ocean echo integration data,” ICES Journal of Marine Science, 72 ,2482–2493. doi:10.1093/icesjms/fsv121 
+
+Santora, J. A., Zeno, R., Dorman, J. G., and Sydeman, W. J. ( 2018 ). “Submarine canyons represent an essential habitat network for krill hotspots in a Large Marine Ecosystem,” Scientific Reports, 8, 7579. doi:10.1038/s41598-018-25742-9 
+
+Simmonds, J., and MacLennan, D. ( 2005 ). Fisheries Acoustics: Theory and Practice , Wiley, 1st ed. doi:10.1002/9780470995303 
+
+Simmonds, J., Williamson, N. J., Gerlotto, F., and Aglen, A. ( 1992 ). Acoustic survey design and analysis procedure: a comprehensive review of current practice (report), ICES Cooperative Research Reports (CRR). doi:10.17895/ices.pub.4606 
+
+Slonimer, A. L., Cote, M., Marques, T. P., Rezvanifar, A., Dosso, S. E., Albu, A. B., Ersahin, K., et al. ( 2022 ). “Instance Segmentation of Herring and Salmon Schools in Acoustic Echograms using a Hybrid U-Net,” In 2022 19th Conference on Robots and Vision (CRV), IEEE, Toronto, Ontario, Canada, 8–15. doi:10.1109/CRV55824.2022.00010 
+
+Stanton, T. K. ( 2012 ). “30 years of advances in active bioacoustics: A personal perspective ,” Methods in Oceanography, 1–2 , 49–77. doi:10.1016/j.mio.2012.07.002 
+
+Suberg, L., Wynn, R. B., Kooij, J. V. D., Fernand, L., Fielding, S., Guihen, D., Gillespie, D., et al. ( 2014 ). “Assessing the potential of autonomous submarine gliders for ecosystem monitoring across multiple trophic levels (plankton to cetaceans) and pollutants in shallow shelf seas,” Methods in Oceanography, 10 , 70–89. doi:10.1016/j.mio.2014.06.002 41 
+
+Thomas, R. E., Gauthier, S., Grandin, C., Hicks, A., and Parker-Stetter, S. ( 2024 ). “To trawl or not to trawl: Questioning core assumptions of trawl placement choice in fisheries acoustics surveys,” Fisheries Research, 270 , 106897. doi:10.1016/j.fishres.2023.106897 
+
+Trenkel, V. M., Berger, L., Bourguignon, S., Doray, M., Fablet, R., Massé, J., Mazauric, V., et al. (2009 ). “Overview of recent progress in fisheries acoustics made by Ifremer with examples from the Bay of Biscay,” Aquatic Living Resources, 22 , 433–445. doi:10.1051/alr/2009027 
+
+Vohra, R., Senjaliya, F., Cote, M., Dash, A., Albu, A. B., Chawarski, J., Pearce, S., et al. ( 2023 ). “Detecting Underwater Discrete Scatterers in Echograms with Deep Learning-Based Semantic Segmentation,” In 2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW), IEEE, Vancouver, British Columbia, Canada, 375–384. doi:10.1109/CVPRW59228.2023.00043 
+
+Wall, C. C., Towler, R., Anderson, C., Cutter, R., and Jech, J. M. ( 2018 ). “PyEcholab: An open-source, python-based toolkit to analyze water-column echosounder data,” The Journal of the Acoustical Society of America, 144 , 1778–1778. doi:10.1121/1.5067860 
+
+Weill, A., Scalabrin, C., and Diner, N. ( 1993 ). “MOVIES-B: an acoustic detection description software. Application to shoal species’ classification,” Aquatic Living Resources, 6, 255– 267. doi:10.1051/alr:1993026 
+
+Wibowo, S., Lubis, F. F., and Supangkat, S. H. ( 2025 ). “Automatic Segmentation and Spatial Feature Extraction for Echogram Labeling in Acoustic Target Classification,” In 2025 International Conference on ICT for Smart Society (ICISS), IEEE, Bandung, Indonesia, 1–7. doi:10.1109/ICISS66954.2025.11389678 42 
+
+Yassir, A., Jai Andaloussi, S., Ouchetto, O., Mamza, K., and Serghini, M. ( 2023 ). “Acoustic fish species identification using deep learning and machine learning algorithms: A systematic review,” Fisheries Research, 266 , 106790. doi:10.1016/j.fishres.2023.106790 
+
+# Conflict of interest 
+
+The authors declare no conflicts of interest to disclose. 
+
+# Author contribution statement 
+
+The author contributions are as follows: Wu-Jung Lee and Valentina Staneva conceived the workflow and developed the initial codebase. Caesar Tuguinay developed the scalable implementation, tested it on multiple datasets, and evaluated its performance together with Wu-Jung Lee. Elizabeth M. Phillips, Rebecca E. Thomas, Alicia Billings, and Julia Clemons collected and annotated the echosounder data and contributed contextual knowledge that informed workflow development. Caesar Tuguinay and Wu-Jung Lee wrote the manuscript, and all other authors reviewed and edited the manuscript. 
+
+# Data availability statement 
+
+The ship data were collected as part of the 2019 and 2023 Joint U.S. and Canada Pacific Hake Integrated Acoustic and Trawl Survey and are available in the NOAA NCEI Water-Column Sonar Data Archive Amazon Web Service S3 bucket: registry.opendata.aws/ncei-wcsd-archive/. The annotations used in this workflow and the full workflow code are available with permission 43 
+
+from the corresponding author and the NOAA NWFSC Fisheries Engineering and Acoustic Technologies (FEAT) team upon reasonable request. 44 
+
+# Acknowledgements 
+
+We thank Steve de Blois, John Pohl, and Dezhang Chu from the NOAA Northwest Fisheries Science Center for their effort in data collection and echogram annotation. This work used computational and storage resources from Jetstream2 at Indiana University and the Open Storage Network through allocations CIS240371 and AGR230002 from the Advanced Cyberinfrastructure Coordination Ecosystem: Services & Support (ACCESS) program, which is supported by U.S. National Science Foundation grants #2138259, #2138286, #2138307, #2137603, and #2138296.  This work was supported by NOAA grants #NA20OAR4320271 and #NA24NMFX405C0016 awarded through the Cooperative Institute for Climate, Ocean, and Ecosystem Studies (CICOES), University of Washington.
