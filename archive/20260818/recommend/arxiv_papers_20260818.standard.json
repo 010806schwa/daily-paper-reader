@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-18T19:18:56.487273+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.14287v1",
+      "source": "arxiv",
+      "title": "Acoustic UAV Detection in Battlefield Scenarios: Handling Noise, Domain Shift, and Weak Labels",
+      "abstract": "Passive acoustic sensing offers a critical, cost-efficient, and, crucially, passive alternative for detecting small unmanned aerial vehicles. However, the practical deployment of acoustic systems is discouraged by extreme environmental noise and sensor-induced domain shift caused by heterogeneous hardware. This paper addresses these challenges by introducing a robust framework optimized for real-world battlefield conditions. We propose the integration of Per-Channel Energy Normalization (PCEN) and attention-based pooling to enhance feature extraction under low signal-to-noise ratio scenarios. We further propose a domain-aware training strategy that leverages auxiliary classes and multi-microphone data to mitigate cross-domain performance degradation. Evaluated on a unique dataset of combat-zone recordings from the Ukrainian frontlines, our approach significantly outperforms existing baselines, increasing the F1 score from 55.4% to 78.6%. This paper was originally presented at the International Conference on Military Communication and Information Systems (ICMCIS), organized by the Information Systems Technology (IST) Scientific and Technical Committee, IST-224-RSY - the ICMCIS, held in Bath, United Kingdom, 12-13 May 2026.",
+      "authors": [
+        "Vadym Vilhurin",
+        "Volodymyr Sydorskyi",
+        "Andrii Shevtsov"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-08-14T13:20:46+00:00",
+      "link": "https://arxiv.org/pdf/2608.14287v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "robust acoustic feature extraction (PCEN, attention pooling) for target detection under noise and domain shift; transferable to underwater high-frequency recognition",
+      "llm_evidence_cn": "面向噪声与域偏移的鲁棒声学特征提取，可迁移至水下高频目标识别",
+      "llm_evidence": "面向噪声与域偏移的鲁棒声学特征提取，可迁移至水下高频目标识别",
+      "canonical_evidence": "面向噪声与域偏移的鲁棒声学特征提取，可迁移至水下高频目标识别",
+      "llm_tldr_en": "Presents a robust passive acoustic UAV detection framework using PCEN and attention-based pooling to handle extreme noise, domain shift, and weak labels. The feature extraction and domain-aware training are transferable to acoustic target recognition tasks such as ship noise classification.",
+      "llm_tldr_cn": "该文针对战场场景下无人机声学探测中的环境噪声、传感器域偏移和弱标签问题，提出结合每通道能量归一化（PCEN）与注意力池化的鲁棒特征提取框架，并设计域感知训练策略利用辅助类别和多麦克风数据缓解跨域性能下降。虽以无人机探测为目标，其抗噪声特征提取与域自适应方法可迁移到水下舰船辐射噪声的高频识别中，为低信噪比下的水下目标分类提供可借鉴的技术路线。",
+      "llm_tldr": "该文针对战场场景下无人机声学探测中的环境噪声、传感器域偏移和弱标签问题，提出结合每通道能量归一化（PCEN）与注意力池化的鲁棒特征提取框架，并设计域感知训练策略利用辅助类别和多麦克风数据缓解跨域性能下降。虽以无人机探测为目标，其抗噪声特征提取与域自适应方法可迁移到水下舰船辐射噪声的高频识别中，为低信噪比下的水下目标分类提供可借鉴的技术路线。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

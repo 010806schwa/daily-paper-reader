@@ -1,0 +1,269 @@
+Title: Acoustic UAV Detection in Battlefield Scenarios: Handling Noise, Domain Shift, and Weak Labels
+
+URL Source: https://arxiv.org/pdf/2608.14287v1
+
+Published Time: Mon, 17 Aug 2026 00:48:49 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Acoustic UAV Detection in Battlefield Scenarios: Handling Noise, Domain Shift, and Weak Labels 
+
+Vadym Vilhurin 1,2 , Volodymyr Sydorskyi 1,2,3 , Andrii Shevtsov 2,3 ,
+
+> 1
+
+Institute for Applied System Analysis, Igor Sikorsky Kyiv Polytechnic Institute, Kyiv, Ukraine 
+
+> 2
+
+Zvook, Lviv, Ukraine 
+
+> 3
+
+Computer Science Department, Kyiv School of Economics, Kyiv, Ukraine Emails: vilhurin.vadym@lll.kpi.ua, volodymyr.sydorskyi@gmail.com, ashevtsov@zvook.tech 
+
+Abstract —Passive acoustic sensing offers a critical, cost-efficient, and, crucially, passive alternative for detecting small unmanned aerial vehicles. However, the practical deployment of acoustic systems is discouraged by extreme environmental noise and sensor-induced domain shift caused by heterogeneous hardware. This paper addresses these challenges by introduc-ing a robust framework optimized for real-world battlefield conditions. We propose the integration of Per-Channel Energy Normalization (PCEN) and attention-based pooling to enhance feature extraction under low signal-to-noise ratio scenarios. We further propose a domain-aware training strategy that leverages auxiliary classes and multi-microphone data to mitigate cross-domain performance degradation. Evaluated on a unique dataset of combat-zone recordings from the Ukrainian frontlines, our approach significantly outperforms existing baselines, increasing the F1 score from 55.4% to 78.6%. This paper was originally presented at the International Con-ference on Military Communication and Information Systems (ICMCIS), organized by the Information Systems Technology (IST) Scientific and Technical Committee, IST-224-RSY – the ICMCIS, held in Bath, United Kingdom, 12-13 May 2026. 
+
+Index Terms —acoustic UAV detection, domain shift, robust au-dio classification, heterogeneous sensor networks, deep learning, convolutional neural networks, audio augmentations. 
+
+I. I NTRODUCTION 
+
+The rapid development and mass deployment of small unmanned aerial vehicles (UAVs) pose a growing challenge for reliable detection in military and security-critical envi-ronments. In battlefield and contested-area scenarios, UAVs represent a direct threat to critical infrastructure, personnel safety, and operational secrecy. Early and robust detection un-der realistic conditions characterized by strong environmental interference, clutter, and heterogeneous sensing hardware is es-sential for estimating UAV trajectories, identifying operational zones, and enabling timely countermeasures [1], [2]. A wide range of approaches have been explored for UAV detection, including vision-based methods using RGB or ther-mal imagery [3]–[5], radio-frequency (RF) sensing [2], [6], and radar- or infrared-based systems [7]. While effective in controlled settings, these techniques face significant limita-tions in real operational environments. Vision-based detection requires clear line-of-sight, favorable lighting, large storage and computational resources, which complicates large-scale deployment. RF-based methods depend on prior knowledge of communication protocols and are vulnerable to interference from other RF-emitting devices common in battlefield settings. Infrared and radar systems require specialized, costly hardware and may be constrained by environmental or operational factors. In contrast, acoustic UAV detection is passive, low-cost, protocol-agnostic, and largely invariant to visual occlu-sion, making it particularly attractive for early detection in cluttered and contested environments. These properties are especially valuable in battlefield scenarios, where stealth, rapid deployment, and robustness to partial occlusion are critical [2], [6]. Despite these advantages, practical acoustic UAV detection remains challenging. Real-world environments contain strong and highly variable background noise from wind, vehicles, machinery, and human activity, which can obscure UAV sig-natures and significantly degrade detection performance [1]. Moreover, acoustic data collected from different microphones and deployment locations often exhibit substantial domain shift, driven by variations in sensor frequency response, place-ment, and environmental conditions [8]. These challenges are further compounded by severe data scarcity in the operational domain, where only limited labeled recordings are typically available. Existing work addresses environmental interference, cross-microphone generalization, and data scarcity jointly. This paper focuses on this combined setting, investigating acoustic UAV detection under realistic noise conditions and strong sensor-induced domain shift. The contributions of this work include:  
+
+> •
+
+We introduce a novel challenge of adapting a model trained across two acoustic domains that differ in record-ing device configuration, sensor location, typical back-ground noise, and target classes.  
+
+> •
+
+We propose a robust Convolutional Neural Network (CNN)-based acoustic classification framework that com-bines Per-Channel Energy Normalized (PCEN) spectro-grams with an attention-based pooling mechanism to improve robustness to environmental noise and weakly-labeled data  
+
+> •
+
+We introduce a domain-aware training strategy that lever-ages data from multiple microphone domains and em-ploys noise-driven and curriculum-based augmentations to mitigate cross-domain shift between microphone do-mains. arXiv:2608.14287v1 [cs.SD] 14 Aug 2026 • We show that including auxiliary UAV classes from the auxiliary domain in the training dataset improves gener-alization to the target UAV class in the target domain. All the data used for this research are provided by Zvook [9] and collected from Ukrainian frontlines, training polygons, and active anti-aircraft acoustic sensors. This increases the practical value of this research. II. R ATIONALE TO MILITARY APPLICATION 
+
+Acoustic UAV detectors offer effective and efficient solu-tions to the modern small UAV sensing problem. As passive systems, they are far less susceptible to radio jamming or elec-tronic countermeasures, enhancing their reliability and stealth in contested environments. This makes them particularly valu-able in real warfare scenarios of drone-centric Russia-Ukraine war, or NATO’s border surveillance, where they can integrate into a multi-layered defense against drone swarms. Their low cost and ease of mass production further enable deployment in large-scale battlefield operations. Additionally, acoustic sensors deliver high performance and accuracy at short- to medium-range distances. In acoustic detection, domain shift mitigation is essential for maintaining operational effectiveness in modern warfare. As environmental conditions fluctuate with seasons and new UAV models introduce novel acoustic signatures, gathering vast datasets for every possible scenario becomes resource-intensive and impractical [8]. Unaddressed domain shifts could result in critical failures, such as missed detections or false alarms, especially under adversarial tactics like sound mimicry. Therefore, any machine learning-based military system must incorporate adaptability to changing conditions from the out-set, ensuring resilience in dynamic and high-stakes theaters. III. R ELATED WORK 
+
+Acoustic UAV detection typically relies on identifying me-chanical signatures such as blade-pass frequency harmonics and amplitude modulations, which form distinct patterns. Early work demonstrated that spectral features combined with Support Vector Machine can separate drones from background noise under controlled conditions [10], [11]. The study on amateur drone detection [12] utilizes Mel-Frequency Cepstral Coefficients in the setting of supervised learning and finds that the performance degrades on low signal-to-noise ratio (SNR) settings. Deep learning (DL) approaches significantly improved ro-bustness: outdoor CNN-based systems outperform handcrafted features [13], and such CNN-based UAV recognition models can operate in noisy outdoor environments, but the perfor-mance degrades under strong environmental interference [14] like strong low-frequency wind and mechanical noises that overlap with drone spectral signatures. Microphone array approach [15] further revealed that microphone placement and device response introduce strong variability that impacts classification performance. DL flexibility resulted in multi-modal experiments like TRIDENT [16], mixing audio models with video, radio-frequency, or infra-red video modalities and resulting in even more robust drone detection. However, existing studies rarely address cross-microphone domain shift or extreme class imbalance, both of which are common in real operational deployments. In general audio classification, CNNs remain the com-mon architectural choice due to their efficiency and local inductive biases. Modern CNN variants such as Efficient-Net [17] and ConvNeXt [18] employ optimized convolutions and expanded receptive fields, achieving superior performance on spectrogram-based representations. Convolutional neural network–recurrent neural network hybrids (CRNNs) capture temporal dependencies and have been widely used for weakly labeled sound event detection problems [19]. Attention-based pooling further improves clip-level detection by focusing on salient regions of the spectrogram [20]. This results in large pre-trained models like SAM-Audio [21] becoming a more common choice for zero-shot classification and segmentation task. Recent studies show that CNNs continue to outperform Transformer models on limited UAV datasets due to their stronger inductive biases and, more importantly, lower data requirements [22]. However, Transformers are also being actively introduced to the field with the AST-Drone model [23]. Domain shift is a major challenge in audio machine learn-ing. In their study on acoustic scene classification, Heittola et al. [24] demonstrate significant performance drops when models are tested across microphones with different frequency responses. Recent studies incorporate explicit alignment tech-niques, including a two-branch network processing the audio from different sources and aligning the features from the CNN layers via specialized losses [25], and a CycleGAN mapping features from the source to the target domain [26]. PCEN provides adaptive gain control and suppresses sta-tionary noise, thereby improving robustness under varying acoustic conditions [27] and for long-distance detection sce-narios [28]. Despite its proven effectiveness, PCEN has not been systematically evaluated for UAV detection under ex-treme domain imbalance. Operational UAV recordings are often scarce and imbal-anced, making augmentations critical. Between-Class Learn-ing [29] and Mixup [30] regularize decision boundaries by mixing samples, while time–frequency masking methods such as SpecAugment [31] improve generalization by forcing mod-els to rely on distributed acoustic cues. These methods provide useful foundations for robustness under data scarcity and motivate augmentation strategies tailored to UAV acoustics. To sum up, prior work shows that acoustic UAV detection is feasible and that CNN-based models outperform classical methods in noisy outdoor environments. However, existing studies typically assume that training data sufficiently rep-resent deployment conditions and report clear performance degradation under strong environmental interference, partic-ularly low-frequency wind and mechanical noise that overlap with UAV signatures. Moreover, microphone placement and hardware response are known to affect performance substan-tially, yet cross-microphone generalization and extreme target-domain data scarcity in single scenarios are largely unad-dressed. As a result, current literature does not fully capture the challenges of real-world UAV monitoring, where models must generalize across heterogeneous sensors and operate reliably with very limited operational data. IV. D ATASET 
+
+The dataset consists of more than 300,000 audio recordings, each 9 seconds long and sampled at 32 kHz. The recordings were captured as continuous audio streams before being seg-mented into 9-second clips, making adjacent segments par-tially dependent: consecutive chunks may contain overlapping or highly similar acoustic content. The splitting procedure (Section V) ensures all clips from the same stream remain in a single split by construction to prevent data leakage. All samples were manually annotated using weak (file-level) labels. No timestamp-level segmentations are provided. Data were collected using two distinct microphone types, each representing a different acoustic domain. Device Type 1 (Mic-1) is mounted on communication towers at heights ranging from 10 to 40 m (Fig. 1). These recordings exhibit relatively stable environmental conditions but include char-acteristic noise sources such as mechanical vibrations, wind, and animal vocalizations. In addition, the device hardware introduces a distinct frequency response. Device Type 2 (Mic-2) is deployed at approximately 1 m above ground level in frontline settings (Fig. 2). This domain is more challenging, containing highly variable noise sources including human speech, music, machinery, and general battlefield clutter. As a result, Mic-2 samples exhibit broader spectral diversity and stronger nonstationary noise patterns. The Mic-1 dataset contains four sound classes of interest in addition to a background environmental noise class:  
+
+> •
+
+Drones – predominantly Shahed-type and other long-range UAVs powered by electric or internal combustion engines.  
+
+> •
+
+Jet Aircraft – aircraft powered by jet turbines.  
+
+> •
+
+Helicopters – rotary-wing aircraft.  
+
+> •
+
+Propeller Aircraft – light aircraft with piston or turbo-prop engines driven by propellers.  
+
+> •
+
+Environmental Noise – background recordings including wind, animals, anthropogenic sounds, and other non-target noise sources. The Mic-2 dataset contains a single sound class of interest along with a background environmental noise class:  
+
+> •
+
+Small Drone – predominantly radio-guided first-person view (FPV) drones and DJI Mavic platforms, including night bombers, fiber-optic FPVs, and other small-to-medium UAVs operating at short to medium ranges. This class aggregates multiple drone types, as it is often infeasible to reliably distinguish between them based solely on human perception.  
+
+> •
+
+Environmental Noise – same as Environmental Noise 
+
+for Mic-1. It is important to note that the Environmental Noise class differs substantially between Mic-1 and Mic-2. This domain-specific discrepancy is analyzed in detail in Section VI. Mic-2 represents the target domain, while Mic-1 serves as an auxiliary domain. The training dataset may contain recordings from only Mic-2 or both devices, whereas the validation and test sets are evaluated on both Mic-1 and Mic-2 data and their corresponding classes. As shown in Table I, two datasets are considered in this study: a small set and a 
+
+full set. The small set is a subset of the full set and contains approximately 10.5 × fewer Small drone samples, 2.1 × fewer Mic-2 Noise samples and 6 × fewer Mic-1 samples. This small set represents a typical early-stage development scenario for acoustic detection algorithms, in which only a limited amount of data is available for model training; therefore, it is used as the primary dataset in this research. The best-performing model is additionally retrained on the full set to evaluate performance in a setting where a larger training dataset is available. For the small set, the label distribution across devices is highly imbalanced: Mic-1 accounts for more than 99% of the training data, while Mic-2 contains approximately 3,000 samples ( < 1% ). Moreover, only 441 samples correspond to the Small drone class, making it extremely rare. This class does not appear in Mic-1, resulting in a partially disjoint label space. A complete per-class, per-device distribution is presented in Table I. TABLE I: Train classes distribution                                   
+
+> Train set Device Class Samples statistics
+> Count Length (hours)
+> Small Mic-1 Drone 4758 11.9 Jet Aircraft 6012 15.0 Helicopter 2559 6.4 Propeller Aircraft 1797 4.5 Noise 50000 125.0 Mic-2 Small Drone 441 1.1 Noise 2519 6.3 Full Mic-1 Drone 5421 13.7 Jet Aircraft 7141 18.1 Helicopter 3225 8.0 Propeller Aircraft 2194 5.6 Noise 304919 761.2 Mic-2 Small Drone 4648 11.6 Noise 5316 13.1
+
+Representative Mel and PCEN spectrograms for UAV sig-nals are shown in Figure 3. V. V ALIDATION PROTOCOL 
+
+We opt out of K-fold cross-validation to reduce computa-tional cost and instead evaluate models using fixed validation and test splits based on time and location. The three sets are completely time independent.  
+
+> •
+
+Training Set: Collected during controlled field tests in non-combat zones. This represents the initial data available during development. Fig. 1: Microphone-based acoustic sensing system mounted on a cell tower [32]. 
+
+Fig. 2: Portable microphone-based acoustic sensing system. 
+
+Fig. 3: Example of a Mel spectrogram (top) and PCEN representation (bottom) for a UAV audio sample.  
+
+> •
+
+Validation Set: Collected during the Winter season .This set contains recordings from both active combat zones and field tests. We use this set to tune hyperpa-rameters and check for overfitting.  
+
+> •
+
+Test Set: Collected during the Spring season , strictly from active combat zones. This is the final evaluation set to see how the model performs in a new season and in unseen locations. Validation and test set class distributions are depicted in Table II. Although the primary objective is binary detection ( Small Drone vs. All other classes), we select the best model check-point using the Macro F1-score calculated across all classes, including the auxiliary categories from Mic-1. However, we also track the binary metric, ensuring the model does not overfit to auxiliary classes. This strategy addresses the extreme data scarcity of the target class in the validation set. Relying exclusively on binary metrics for such a small sample size can lead to high variance in model selection. By optimizing for performance across a broader range of acoustic sources, we ensure the backbone learns robust, discriminative spectral features. This serves as a proxy for generalization capability, leading to more reliable detection of the target class. For the final results on the Test and Validation sets, we report Binary Metrics (Small Drone vs. All other classes): Precision, Recall, and F1-score. TABLE II: Validation and test classes distribution                                   
+
+> Set Device Class Samples statistics
+> Count Length (hours)
+> Val Mic-1 Drone 1969 4.92 Jet Aircraft 1502 3.75 Helicopter 2800 7.0 Propeller Aircraft 412 1.03 Noise 10765 26.91 Mic-2 Small Drone 805 2.01 Noise 343 0.86 Test Mic-1 Drone 32876 82.19 Jet Aircraft 2217 5.54 Helicopter 2408 6.02 Propeller Aircraft 662 1.66 Noise 11496 28.73 Mic-2 Small Drone 2545 6.13 Noise 2549 6.28
+
+VI. D OMAIN SHIFT 
+
+To illustrate domain differences in a cross-device setting, we provide t-SNE [33] projections of model embeddings for a data subset. The embedding spaces for the baseline model and for the model with all proposed enhancements are shown in Figures 4 and 5. Embeddings from all classes form distinct clusters, indicating that the enhanced model reasonably separates the data space; however, Environmental Noise from Fig. 4: t-SNE projection of model embeddings obtained from the enhanced model (Log-Mel). 
+
+Fig. 5: t-SNE projection of model embeddings obtained from the baseline model.                 
+
+> Common legend (Validation / Test set signs): ♦/■Small Drone ▼/•Jet ▲/•Propeller Aircraft ◀/•Helicopter ▶/•Drone
+> •/■Environmental Noise (Mic 1) •/■Environmental Noise (Mic 2)
+
+Fig. 6: t-SNE projection of model embeddings of class ”Small Drone” obtained from the enhanced model (Log-Mel) for the validation and test sets. 
+
+Fig. 7: t-SNE projection of model embeddings of class ”Noise” obtained from the enhanced model (Log-Mel) for the valida-tion and test sets and for Mic-1 and Mic-2. Mic-2 forms a distinct cluster, which clearly illustrates the presence of domain shift between the two domains. While noises from the two domains are partially separated from each other (Fig. 7), they remain well separated from other classes. This suggests that although the domain shift problem is not fully resolved, it should not significantly affect model performance in this particular scenario. In contrast, the same projections for the baseline model show that the embedding space is much less separable. Additionally, embeddings from the validation and test sets are also separable and form two distinct clusters (Fig. 6). Table III evaluates the framework’s robustness across sensor and seasonal shifts via quantitative metrics such as the Sil-houette Coefficient (Sil.) [34] and k-NN cluster purity ( k=10, cosine similarity). The Global Noise Sensor Shift experiment unites validation and test noise samples, forming two groups based on the microphone difference. The metrics suggest that the enhanced models struggle to align the domains, as the clusters appear more distinct compared to the baseline model. The results for Seasonal Shift, calculated by comparing validation and test distributions, hint at the absence of a seasonal shift for the signals. TABLE III: Analysis of domain invariance with respect to seasonal and sensor variability (lower clustering metrics cor-respond to higher invariance)                      
+
+> Shift Type Model Frontend Sil. ( ↓)k-NN (%) ( ↓)
+> Global Noise Sensor Shift (Mic-1 vs. Mic-2) Baseline (Log-Mel) 0.1346 97.56 Enhanced (Log-Mel) 0.2084 97.84 Enhanced (PCEN) 0.1700 96.13
+> Seasonal Shift (Winter vs. Spring) Baseline (Log-Mel) 0.0093 74.60 Enhanced (Log-Mel) 0.0086 72.94 Enhanced (PCEN) 0.0048 70.85
+> Mic-2 Noise Seasonal Shift (Winter vs. Spring) Baseline (Log-Mel) 0.3851 98.79 Enhanced (Log-Mel) 0.3072 95.96 Enhanced (PCEN) 0.2592 93.91
+
+In contrast, a significant shift is present between noise classes. Mic-2 Noise Seasonal Shift metrics indicate that the baseline model distinguishes between environmental noise classes with high clarity (Sil. 0.3851, k-NN > 98% ). The Enhanced (PCEN) model mitigates this effect by design via blurring the non-stationary environmental textures, reducing the silhouette to 0.2592 and k-NN purity to 93.91%, which suggests a higher cluster overlap. We additionally perform adversarial validation [35] by training two model variants to distinguish noise samples originating from two different sources. The corresponding validation results are reported in Table IV. We consider two setups: a baseline modeling approach described in Section VII, and an enhanced variant used throughout this work. The baseline model achieves ROC AUC close to 100% on both the validation and test sets, indicating near-perfect separability of samples recorded with different microphones. In contrast, the enhanced model largely loses this discriminative ability, yielding an ROC AUC of approximately 70% on the test set. While this performance remains above random guessing, it suggests that a substantial portion of the audio samples have become more similar with respect to microphone-specific char-acteristics. While the validation ROC AUC for the enhanced model remains close to 100%, we hypothesize that this is due to the limited number of noise classes available for Mic-2, which results in reduced data diversity. TABLE IV: Adversarial validation results                
+
+> Model setup Validation set Test set
+> ROC AUC F1 ROC AUC F1
+> Baseline model setup 99.99% 100% 97.07% 66% Enhanced model setup based on Section VII 99.67% 97% 69.1% 62%
+
+VII. M ETHOD 
+
+Our framework follows the architecture proposed in Bird-CLEF+ 2025 second-place solution [36]. Similar to the pro-posed approach, we employ a ConvNeXt-Tiny [18] backbone as a feature extractor and an sound event detection (SED)-style attention head to accommodate weak labels. In low-SNR scenarios, the standard pooling strategy can lead to destructive aggregation: high-energy low-frequency noise may overlap with the UAV signal, effectively masking discriminative features. To address this issue, we remove the Generalized Mean (GeM) frequency pooling layer and replace it with a learnable frequency projector implemented as a convolutional block, with convolutions applied along the frequency dimension. Unlike pooling, which collapses spec-tral resolution, this projection preserves convolved frequency structure and enables the model to learn non-linear, weighted combinations of frequency bands. For multiclass classification, we remove the tanh con-straint from the attention mechanism, allowing unbounded scores that sharpen temporal focus. We also replace the final sigmoid with a class-wise softmax on the aggregated output to enforce mutual exclusivity between classes. 
+
+A. Audio Representation 
+
+All inputs are converted into PCEN [27] spectrograms. We experimented with PCEN to address the extreme dy-namic range variance caused by environmental factors. PCEN suppresses the stationary background noise and normalizes loudness variations, which improves the visibility of weak spectral structures that are otherwise dominated by persistent noise patterns, making the representation especially robust to high-energy low-frequency noise. 
+
+B. Data Augmentation 
+
+To address the severe data imbalance, particularly in Mic-2, we apply a broad set of augmentations. The following transformations operate directly on the waveform:  
+
+> •
+
+Time stretching.  
+
+> •
+
+Random gain.  
+
+> •
+
+Waveform reversal.  
+
+> •
+
+Spec augment-style masking [31]. These augmentations introduce temporal and amplitude vari-ability without drastically altering the underlying spectral signatures. We further employ noise injection via mixup [30], where noise samples are mixed into training audio while preserving the original class label. This serves two purposes: (1) gener-ating additional training examples for the minority domain, and (2) gradually pulling the Mic-1 representation toward the Mic-2 acoustic space. A second critical augmentation is the random removal of the segment with the highest root mean square (RMS) amplitude for all classes except noise. We locate a 2-second region of maximum energy and randomly replace 0.5–1.0 seconds inside it with noise, following a curriculum that starts from 0.3–0.5 s in early epochs and increases to 0.5–1.0s . This forces the model to focus on other features besides the loudest chunk, since the signal is almost guaranteed to exist around it. 
+
+C. Training Setup 
+
+The model is trained on the combined dataset from both microphones. Classes from Mic-1 are used as auxiliary classes, enabling the backbone and attention head to learn generaliz-able acoustic structure while still optimizing the model for the primary task of distinguishing Small drone vs. all other classes. VIII. E XPERIMENTS AND DISCUSSION 
+
+A. External Baseline Models 
+
+Several open-source and open-weight models were selected and taken as-is as baselines for our experiments:  
+
+> •
+
+SAM Audio [21] is a recent foundational model for audio segmentation. It is included to assess the feasibility of zero-shot UAV detection. The model was evaluated in FP16 inference mode using the prompt Small UAV FPV flight . The resulting target-only audio was post-processed by thresholding its maximum absolute ampli-tude to obtain a clip-level class decision based on detected segments. This approach was selected among several alternatives that relied on combinations of extracted target and residual signals. However, its main objective is unre-lated to military domain, which likely led to the relatively poor performance (Table V).  
+
+> •
+
+AST-Drone [23] is a fine-tuned variant of the Au-dio Spectrogram Transformer (AST) [38], specifically adapted for UAV detection. It represents one of the largest publicly available models tailored to this task. It performed the best among open source baselines due to its capacity and clever architecture, still lacking real-world training data and cross-environment generalization.  
+
+> •
+
+TRIDENT LeNet-Audio [16], [37] is a lightweight audio model originating from a multimodal UAV detection framework. It is included to evaluate the standalone per-formance of a compact, resource-efficient UAV detection model and to compare it against larger and more special-ized approaches. Unfortunately, its compact size led to inability to handle drone detection scenarios effectively (Table V). Additionally, a proprietary 5-fold ensemble model from Zvook [9] trained on the same full training set was used as a main baseline for the paper. 
+
+B. Detailed Training Setup 
+
+The extreme class imbalance (with the target class compris-ing < 1% of the data) poses a risk of the model collapsing into a trivial noise detector. To mitigate this, we employed a square-root sampling strategy with replacement in the data loader. Crucially, while environmental noise from both domains is mapped to a single class label, we sample them independently based on their respective counts. We implemented a diverse augmentation pipeline designed to simulate the harsh acoustic conditions of the target domain. We applied a range of augmentations to simulate physical variability, including random time shifting ( ±100 ms), sinu-soidal time warping, random gain ( ±3dB), and waveform reversal ( p = 0.5). Unlike standard Mixup, we employed a noise-injection strategy where training samples are mixed exclusively with noise from either the source (Mic-1) or target (Mic-2) domain with equal probability. The mixing coefficient 
+
+λ is capped at 0.3, and the original label is retained. This effec-tively synthesizes “low-SNR” examples, forcing the model to recognize drone signatures embedded in target-domain noise. Qualitative analysis revealed that baseline models often over-relied on the highest-energy segment of a clip. To counter this, we locate the 2-second region of maximum energy and randomly mask a sub-segment ( 0.3s– 1.0s) within it via a curriculum starting from epoch 5 linearly increasing the interval. This prevents early metric collapse while forcing the model to attend to weaker, redundant harmonic features once stable features have been learned. All models were implemented using PyTorch Lightning. We utilized a ConvNeXt-Tiny [18] backbone pretrained on ImageNet-1K. Audio inputs ( 32 kHz, 9 seconds) were con-verted to spectrograms using a hop length of 512 samples. For the Log-Mel Spectrogram baselines, we utilized a window size of 2048 samples and 128 Mel bands. For the PCEN/Log-Mel configuration, we employ a higher-resolution setup with a window size of 4096 samples and 256 bands. We utilized a PCEN frontend with fixed initialization parameters: smoothing 
+
+s = 0 .015 , gain α = 0 .8, bias δ = 2 .0, power r = 0 .5, and compression power of 2.0. Training was conducted for 100 
+
+epochs with a batch size of 64 using the AdamW optimizer (lr = 1 e-4, β = (0 .9, 0.999) , ϵ = 1 e-8). We employed a Cosine Annealing scheduler that decayed the learning rate to 
+
+1e-6 over the full training duration. Focal loss with parameters 
+
+α = 1 and γ = 2 is used as a loss function. 
+
+C. Experiments 
+
+We establish the baseline using the setup above without domain adaptation techniques. Training solely on the available target-domain data (Mic-2) resulted in model collapse, demon-strating that the limited data is insufficient for the model to generalize. The quantitative results of our incremental ablation study are presented in Table V. The inclusion of auxiliary aircraft classes serves two critical functions. These classes occupy similar frequency bands to small drones. By forcing the model to discriminate between overlapping harmonic structures, we prevent it from learning simple energy-based features. The auxiliary classes are also better represented in the training set, which provides a richer feature space during training. However, this strategy inherently assumes a beneficial spec-tral overlap. If this assumption fails, the model risks nega-tive transfer, which includes wasting representational capacity on unrelated features, diluting target confidence if auxiliary classes are too similar to the drone, and overfitting to domain-specific noise. We explicitly mitigate these risks through the representation and augmentation strategies detailed below. The introduction of noise-injection Mixup aligned the noise distributions of the two domains, preventing the model from memorizing the specific background texture of the source domain, while exposing the model to target domain scenarios. Curriculum RMS masking is utilized to address the model’s tendency to over-rely on the highest-energy segment by forcing TABLE V: Experiment results (best metric in category being semibold and the following one underlined)                                                                                                                          
+
+> Model Parameters Small drone metrics on validation Small drone metrics on test set (M) F1, % Precision, % Recall, % F1, % Precision, % Recall, %
+> Zvook [9] Baseline 37 96.35 99.21 93.66 69.10 81.59 59.92 Baseline on Mic2 28.22 17.00 88.00 0.094 17.40 87.70 0.097 Baseline on Mic2 + Mic1 28.22 91.40 100.00 84.10 49.80 88.80 34.60
+> + SWA 28.22 96.20 100.00 92.70 59.70 87.20 45.30
+> + Mixup 28.22 83.20 72.60 97.40 75.60 74.40 76.90
+> + RMS based masking 28.22 90.60 84.40 97.80 75.20 78.10 72.50
+> + Projector 30.97 96.10 95.80 96.40 77.80 92.70 67.10
+> + Using full dataset 30.97 97.70 98.10 97.30 77.10 90.90 67.00
+> + PCEN 28.22 97.50 97.90 97.10 74.60 87.30 65.10
+> + Projector 30.97 96.10 96.80 95.30 77.90 92.20 67.50
+> + Using full dataset 30.97 97.10 98.00 96.10 78.60 84.30 73.60 Ensemble (Small training set) 61.94 97.23 98.60 95.90 81.14 96.18 70.18 Ensemble (Full training set) 61.94 98.18 99.36 97.02 82.22 92.70 73.87
+> SAM-Audio-small [21] 5,807 10.60 5.72 72.67 4.45 2.38 34.05 AST-Drone [23] 86 42.82 32.40 63.11 55.36 49.02 63.58
+> TRIDENT [16] LeNet-Audio [37] 0.012 1.68 2.20 1.37 19.29 27.84 14.75
+
+attention to weaker harmonic features distributed throughout the clip. In low-SNR scenarios with strong low-frequency inter-ference, the fundamental drone frequency may be masked. Standard Global Average Pooling collapses all frequency in-formation into a single scalar, destroying the model’s ability to distinguish between the frequency bands for detection. The frequency projector applies learned 1D convolutions along the frequency axis, enabling the model to detect harmonic ratios even when the fundamental frequency is occluded, learn frequency-band-specific suppression of stationary noise, and preserve spectral topology for non-linear feature extraction. This is particularly critical for Mic-2 deployment, where ground-level recording introduces stronger low-frequency en-vironmental interference compared to tower-mounted Mic-1 sensors. Given the aggressive augmentation and sampling strategies, we observed high variance in validation metrics between epochs. Stochastic Weight Averaging [39] is applied to smooth that effect. We utilized a top-5 checkpoint selection strategy based on Macro-F1 to ensure the final model was robust. PCEN acted effectively as a background subtractor. In high-noise samples, PCEN suppressed stationary wind rumble, revealing spectral lines invisible in the Log-Mel spectrogram (Fig. 3). The distinct failure modes of PCEN (sensitive to tuning) and Mel-spectrograms (sensitive to gain) proved com-plementary. An ensemble of the two modalities on the full dataset yielded 82.22% F1. The model trained on small dataset achieved 81.14% F1, outperforming Zvook baseline model by a large margin, while utilizing 5x less target domain samples. Overall, we have achieved an F1 score increase from 55 .4% 
+
+(best score of the open-source AST-Drone model) up to 82 .2% 
+
+(score of our ensemble model on the full training set). 
+
+D. Detection Range Analysis 
+
+The original dataset contains a subdivision of the Small drone class based on perceived distance to the sensor, as 
+
+Fig. 8: ROC curves for different drone distance subgroups and the final ensemble model. annotated by human labelers. Although this perception can be influenced by physical obstacles, microphone characteristics, and drone type, it provides the only practical approximation of sensor-to-drone distance available in a real combat scenario. This subdivision was used to evaluate the final ensemble model performance across different distance ranges using ROC curves (Fig. 8) and the ROC AUC metric. As a result, 
+
+2304 recordings labeled as nearby or medium-distance flybys achieve an ROC AUC of 97 .2% , while 241 recordings labeled as far-distance flybys achieve an ROC AUC of 93 .8% .The performance drop for distant flybys is expected due to lower signal-to-noise ratios and weaker acoustic signatures at larger distances. Nevertheless, the model maintains high detection accuracy across both subgroups, indicating robust performance under varying detection ranges. IX. C ONCLUSION 
+
+Acoustic UAV detection across heterogeneous recording de-vices remains largely underexplored. We proposed a domain-aware acoustic classification framework combining PCEN rep-resentations, attention-based pooling, and noise-driven curricu-lum augmentations. Evaluations against multiple open-source and proprietary baselines have shown consistent improvements in cross-device generalization and detection accuracy. Despite these advancements, several avenues for refinement remain:  
+
+> •
+
+Current models treat UAVs as a monolithic class. De-veloping a fine-grained taxonomy (e.g., distinguishing between multi-rotors like DJI Mavics and high-speed FPV drones) is essential for facing tactical problems.  
+
+> •
+
+Our approach processes audio in independent segments. Integrating information from sequential predictions could improve detection stability and reduce false-positive rates.  
+
+> •
+
+The lack of explicit spatial data (distance and altitude) limits our ability to perform detailed error analysis and performance reporting. Consequently, future research should focus on:  
+
+> •
+
+Incorporating additional metadata into the dataset, in-cluding distance metrics, UAV type, and other relevant attributes.  
+
+> •
+
+Implementing memory modules or recurrent architectures to leverage long-term dependencies in acoustic streams.  
+
+> •
+
+Exploring Transformer-based backbones and self-supervised pre-training to better utilize large-scale unlabeled acoustic data.  
+
+> •
+
+Developing semi-supervised pipelines to rapidly adapt models to new frontline locations where labeled data is scarce. ACKNOWLEDGMENT 
+
+We are deeply grateful to Zvook [9] for providing the dataset and computational resources essential for this research. We are especially grateful to the Armed Forces of Ukraine - without their resilience and protection, this work would not have been possible. This work is part of the master’s research conducted by Vadym Vilhurin under the supervision of Volodymyr Sydorskyi at the Institute for Applied System Analysis, De-partment of Artificial Intelligence, National Technical Univer-sity of Ukraine ”Igor Sikorsky Kyiv Polytechnic Institute.” AI-assisted tools (ChatGPT and Gemini) were used exclu-sively to improve the clarity and grammar of this text; they did not contribute to the research design, experiments, or analysis. REFERENCES [1] Y. Dong, F. Wu, S. Zhang, G. Chen, Y. Hu, M. Yano, J. Sun, S. Huang, F. Liu, Q. Dai, and Z.-Q. Cheng, “Securing the skies: a comprehensive survey on anti-uav methods, benchmarking, and future directions,” 2025 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW) , pp. 6661–6675, 2025. [Online]. Available: https://arxiv.org/abs/2504.11967v3 [2] G. Zhu, C. Briso, Y. Liu, Z. Lin, K. Mao, S. Li, Y. He, and Q. Zhu, “An intelligent passive system for uav detection and identification in complex electromagnetic environments via deep learning,” Drones , vol. 9, no. 10, 2025. [Online]. Available: https://www.mdpi.com/2504-446X/9/10/702 [3] D. Kaur, N. Battish, A. Bhavsar, and S. Poddar, “Analysis of vision-based air-to-air uav detection using yolo based architectures,” 
+
+Robot. Auton. Syst. , vol. 193, no. C, Nov. 2025. [Online]. Available: https://doi.org/10.1016/j.robot.2025.105074 [4] I. Kurmashev, V. Semenyuk, A. Lupidi, D. Alyoshin, L. Kurmasheva, and A. Cantelli-Forti, “Study of the optimal yolo visual detector model for enhancing uav detection and classification in optoelectronic channels of sensor fusion systems,” Drones , 2025. [Online]. Available: https://api.semanticscholar.org/CorpusID:282345536 [5] A. Ali, R. Ali, and M. Baig, Vision Aided Drone Detection Using One-Shot Deep Learning-Based Detector—YOLOv8 , 10 2025, pp. 117–130. [6] Z. Shi and Z. Lei, “Small uav target detection algorithm using the yolov8n-rfl based on radar detection technology,” Sensors ,vol. 25, no. 16, 2025. [Online]. Available: https://www.mdpi.com/1424-8220/25/16/5140 [7] N. Aziz, M. Fodzi, K. K. Shariff, and M. Haron, “Analysis on drone detection and classification in lte-based passive forward scattering radar system,” International Journal of Integrated Engineering , vol. 15, 07 2023. [8] S. Al-Emadi, A. Al-Ali, and A. Al-Ali, “Audio-based drone detection and identification using deep learning techniques with dataset enhancement through generative adversarial networks,” Sensors ,vol. 21, no. 15, 2021. [Online]. Available: https://www.mdpi.com/1424-8220/21/15/4953 [9] (2025) Zvook website. [Online]. Available: https://www.zvook.tech/en [10] A. Bernardini, F. Mangiatordi, E. Pallotti, and L. Capodiferro, “Drone detection by acoustic signature identification,” electronic imaging ,vol. 29, pp. 60–64, 2017. [11] B. Yang, E. T. Matson, A. H. Smith, J. E. Dietz, and J. C. Gallagher, “Uav detection system with multiple acoustic nodes using machine learning models,” in 2019 Third IEEE international conference on robotic computing (IRC) . IEEE, 2019, pp. 493–498. [12] Z. Uddin, M. Altaf, M. Bilal, L. Nkenyereye, and A. K. Bashir, “Amateur drones detection: A machine learning approach utilizing the acoustic sig-nals in the presence of strong interference,” Computer Communications ,vol. 154, pp. 236–245, 2020. [13] S. Al-Emadi, A. Al-Ali, and A. Al-Ali, “Audio-based drone detection and identification using deep learning techniques with dataset enhance-ment through generative adversarial networks,” Sensors , vol. 21, no. 15, p. 4953, 2021. [14] Z. Liu, K. Fan, Y. Chen, L. Xiong, J. Ye, A. Fan, and H. Zhang, “Deep learning-based acoustic recognition of uavs in complex environments,” 
+
+Drones , vol. 9, no. 6, p. 389, 2025. [15] G. Jekatery´ nczuk and Z. Piotrowski, “Outdoor microphone range tests and spectral analysis of uav acoustic signatures for array development,” 
+
+Sensors , vol. 25, no. 22, p. 7057, 2025. [16] I. Alla, S. Yahia, and V. Loscr´ ı, “Trident: Tri-modal real-time intrusion detection engine for new targets,” Comput. Secur. , vol. 159, p. 104676, 2025. [Online]. Available: https://api.semanticscholar.org/CorpusID:277633940 [17] M. Tan and Q. Le, “Efficientnet: Rethinking model scaling for con-volutional neural networks,” in International conference on machine learning . PMLR, 2019, pp. 6105–6114. [18] Z. Liu, H. Mao, C.-Y. Wu, C. Feichtenhofer, T. Darrell, and S. Xie, “A convnet for the 2020s,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2022, pp. 11 976–11 986. [19] E. Cakır, G. Parascandolo, T. Heittola, H. Huttunen, and T. Virtanen, “Convolutional recurrent neural networks for polyphonic sound event detection,” IEEE/ACM Transactions on Audio, Speech, and Language Processing , vol. 25, no. 6, pp. 1291–1303, 2017. [20] Q. Kong, Y. Xu, W. Wang, and M. D. Plumbley, “Sound event detection of weakly labelled data with cnn-transformer and automatic threshold optimization,” IEEE/ACM Transactions on Audio, Speech, and Language Processing , vol. 28, pp. 2450–2460, 2020. [21] B. Shi, A. Tjandra, J. Hoffman, H. Wang, Y.-C. Wu, L. Gao, J. Richter, M. Le, A. Vyas, S. Chen, C. Feichtenhofer, P. Doll’ar, W.-N. Hsu, and A. Lee, “Sam audio: Segment anything in audio,” 2025. [Online]. Available: https://api.semanticscholar.org/CorpusID:284078546 [22] G. Gutierrez, J. P. Llerena, L. Usero, and M. A. Patricio, “A comparative study of convolutional neural network and transformer architectures for drone detection in thermal images,” Applied Sciences , vol. 15, no. 1, p. 109, 2024. [23] Zheng, “AST-drone: Drone audio detection model,” https://huggingface.co/preszzz/drone-audio-detection-05-17-trial-0, 2025, hugging Face model repository, model name: 
+
+drone-audio-detection-05-17-trial-0 .[24] T. Heittola, A. Mesaros, and T. Virtanen, “Acoustic scene classification in dcase 2020 challenge: generalization across devices and low com-plexity solutions,” arXiv preprint arXiv:2005.14623 , 2020. [25] J. Zhao, Q. Kong, X. Song, Z. Feng, and X. Wu, “Feature alignment for robust acoustic scene classification across devices,” IEEE signal processing letters , vol. 29, pp. 578–582, 2022. [26] S. Kacprzak and K. Kowalczyk, “Adversarial domain adaptation with paired examples for acoustic scene classification on different recording devices,” in 2021 29th European Signal Processing Conference (EU-SIPCO) . IEEE, 2021, pp. 1030–1034. [27] V. Lostanlen, J. Salamon, M. Cartwright, B. McFee, A. Farnsworth, S. Kelling, and J. P. Bello, “Per-channel energy normalization: Why and how,” IEEE Signal Processing Letters , vol. 26, no. 1, pp. 39–43, 2018. [28] V. Lostanlen, K. Palmer, E. Knight, C. Clark, H. Klinck, A. Farnsworth, T. Wong, J. Cramer, and J. P. Bello, “Long-distance detection of bioa-coustic events with per-channel energy normalization,” arXiv preprint arXiv:1911.00417 , 2019. [29] Y. Tokozume, Y. Ushiku, and T. Harada, “Learning from between-class examples for deep sound recognition,” arXiv preprint arXiv:1711.10282 ,2017. [30] H. Zhang, M. Cisse, Y. N. Dauphin, and D. Lopez-Paz, “mixup: Beyond empirical risk minimization,” arXiv preprint arXiv:1710.09412 , 2017. [31] D. S. Park, W. Chan, Y. Zhang, C.-C. Chiu, B. Zoph, E. D. Cubuk, and Q. V. Le, “Specaugment: A simple data augmentation method for automatic speech recognition,” arXiv preprint arXiv:1904.08779 , 2019. [32] Speka Media. (2023) Ukrainians Created a Technology That Determines Missile Location by Sound: Interview with ML Engineer Volodymyr Sydorskyi. [Online]. Available: https://speka.ua/news/ukrayinci-stvorili-texnologiyu-yaka-viznacaje-roztasuvannya-raketi-za-zvukom-intervyu-z-ml-inzenerom-volodimirom-sidorskim-polynp [33] G. C. Linderman, M. Rachh, J. G. Hoskins, S. Steinerberger, and Y. Kluger, “Fast interpolation-based t-sne for improved visualization of single-cell rna-seq data,” Nature methods , vol. 16, pp. 243 – 245, 2017. [Online]. Available: https://api.semanticscholar.org/CorpusID:34472149 [34] P. J. Rousseeuw, “Silhouettes: a graphical aid to the interpretation and validation of cluster analysis,” Journal of computational and applied mathematics , vol. 20, pp. 53–65, 1987. [35] J. Pan, V. Pham, M. Dorairaj, H. Chen, and J.-Y. Lee, “Adversarial validation approach to concept drift problem in automated machine learning systems,” ArXiv , vol. abs/2004.03045, 2020. [Online]. Available: https://api.semanticscholar.org/CorpusID:215238371 [36] V. Sydorskyi and F. Gonc ¸alves, “Tackling domain shift in bird audio classification via transfer learning and semi-supervised distillation: A case study on birdclef+ 2025,” 2025. [37] C. Szegedy, W. Liu, Y. Jia, P. Sermanet, S. E. Reed, D. Anguelov, D. Erhan, V. Vanhoucke, and A. Rabinovich, “Going deeper with convolutions,” 2015 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pp. 1–9, 2014. [Online]. Available: https://api.semanticscholar.org/CorpusID:206592484 [38] Y. Gong, Y.-A. Chung, and J. R. Glass, “Ast: Audio spectrogram transformer,” ArXiv , vol. abs/2104.01778, 2021. [Online]. Available: https://api.semanticscholar.org/CorpusID:233024831 [39] P. Izmailov, D. Podoprikhin, T. Garipov, D. Vetrov, and A. G. Wilson, “Averaging weights leads to wider optima and better generalization,” 
+
+arXiv preprint arXiv:1803.05407 , 2018.

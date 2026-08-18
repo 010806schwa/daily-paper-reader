@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-18",
+  "date": "2026-08-18",
+  "generated_at": "2026-08-18T19:19:53",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/18/2608.14287v1-acoustic-uav-detection-in-battlefield-scenarios-handling-noise-domain-shift-and-weak-labels",
+      "section": "quick",
+      "title_en": "Acoustic UAV Detection in Battlefield Scenarios: Handling Noise, Domain Shift, and Weak Labels",
+      "authors": "Vadym Vilhurin, Volodymyr Sydorskyi, Andrii Shevtsov",
+      "date": "2026-08-14",
+      "pdf": "https://arxiv.org/pdf/2608.14287v1",
+      "score": "6.0",
+      "evidence": "面向噪声与域偏移的鲁棒声学特征提取，可迁移至水下高频目标识别",
+      "tldr": "被动声学传感为战场小型无人机探测提供经济且隐蔽的手段，但极端环境噪声和异构硬件导致的域偏移严重限制实际部署。针对低信噪比场景，本文引入Per-Channel Energy Normalization与注意力池化增强特征提取；同时提出结合辅助类和多麦克风数据的域感知训练策略以缓解跨域性能衰退。在乌克兰前线作战录音数据集上，方法将F1分数从55.4%大幅提升至78.6%。该框架为实战条件下的声学无人机预警提供了鲁棒、可迁移的解决方案。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Passive acoustic sensing offers a critical, cost-efficient, and, crucially, passive alternative for detecting small unmanned aerial vehicles. However, the practical deployment of acoustic systems is discouraged by extreme environmental noise and sensor-induced domain shift caused by heterogeneous hardware. This paper addresses these challenges by introducing a robust framework optimized for real-world battlefield conditions. We propose the integration of Per-Channel Energy Normalization (PCEN) and attention-based pooling to enhance feature extraction under low signal-to-noise ratio scenarios. We further propose a domain-aware training strategy that leverages auxiliary classes and multi-microphone data to mitigate cross-domain performance degradation. Evaluated on a unique dataset of combat-zone recordings from the Ukrainian frontlines, our approach significantly outperforms existing baselines, increasing the F1 score from 55.4% to 78.6%. This paper was originally presented at the International Conference on Military Communication and Information Systems (ICMCIS), organized by the Information Systems Technology (IST) Scientific and Technical Committee, IST-224-RSY - the ICMCIS, held in Bath, United Kingdom, 12-13 May 2026.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
