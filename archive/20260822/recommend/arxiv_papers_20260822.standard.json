@@ -1,0 +1,95 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-22T19:53:25.423793+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.17108v1",
+      "source": "arxiv",
+      "title": "A Multiplication-Free Feature Extractor for Signal Classification: Keyword Spotting Case Study",
+      "abstract": "A very low complexity feature extractor called next iRDT is proposed and evaluated for the problem of keyword spotting (KWS). Unlike any other types of feature extractors including the widely used MFCC, or adaptive, CNN-based ones, our algorithm is multiplier-free and it employs only simple, energy-efficient arithmetic operators. Since keyword-spotting of speech commands (KWS) is a typical application for TinyML platforms requiring low complexity for the signal classification chain, we consider it as a case study to evaluate complexity and functional performance. If properly tuned, iRDT demonstrates similar accuracy to solutions based on MFCC or CNN-based extractors using baseline classifiers on Google's KWS 12-classes dataset. With a different classifier the system achieved 94.7% validation accuracy. Processing times on CPU for the proposed feature extractor, are at least one order of magnitude smaller than for the MFCC. The proposed algorithm has a very low hardware footprint, making it ideal for ultra-low power edge devices. Code and demo are available [18].",
+      "authors": [
+        "Radu Dogaru",
+        "Ioana Dogaru"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.HC",
+        "eess.AS"
+      ],
+      "published": "2026-08-17T20:36:03+00:00",
+      "link": "https://arxiv.org/pdf/2608.17108v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "low-complexity feature extractor for signal classification, transferable to acoustic target recognition",
+      "llm_evidence_cn": "提出低复杂度信号分类特征提取器，可迁移至水声目标识别",
+      "llm_evidence": "提出低复杂度信号分类特征提取器，可迁移至水声目标识别",
+      "canonical_evidence": "提出低复杂度信号分类特征提取器，可迁移至水声目标识别",
+      "llm_tldr_en": "A multiplication-free feature extractor (next iRDT) is proposed for signal classification, using only simple arithmetic operators. On keyword spotting it matches MFCC/CNN extractor accuracy, offering a low-complexity feature extraction tool transferable to acoustic target recognition.",
+      "llm_tldr_cn": "针对信号分类中的特征提取复杂度问题，提出了一种无乘法器特征提取器next iRDT，仅使用简单节能的算术运算。在Google关键词识别12类数据集上，与MFCC或CNN提取器配合基线分类器可获得相近精度。该方法为资源受限的声学信号分类链提供了低复杂度特征提取方案，可推广到水下目标识别等声学信号处理任务。",
+      "llm_tldr": "针对信号分类中的特征提取复杂度问题，提出了一种无乘法器特征提取器next iRDT，仅使用简单节能的算术运算。在Google关键词识别12类数据集上，与MFCC或CNN提取器配合基线分类器可获得相近精度。该方法为资源受限的声学信号分类链提供了低复杂度特征提取方案，可推广到水下目标识别等声学信号处理任务。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.18716v1",
+      "source": "arxiv",
+      "title": "Multi-Class Electrical and Mechanical Fault Classification Using Random Convolutional Kernels",
+      "abstract": "Diagnosing faults in rotating machinery is essential for ensuring the reliability of industrial processes. Random convolutional kernel-based Time Series Classification (TSC) methods, such as ROCKET and its variants, provide an attractive trade-off between predictive performance and computational efficiency. In this work, we evaluate SelF-Rocket for the multi-class diagnosis of both mechanical and electrical faults and introduce, as a new contribution, a multivariate extension of the original method. The proposed approach is compared with leading ROCKET-based methods on two public benchmark datasets, MaFaulDa (mechanical faults) and ITSC-UDG (stator inter-turn short circuits), under both univariate and multivariate settings. Experimental results show that SelF-Rocket achieves the best overall accuracy-latency trade-off among the evaluated methods, obtaining the highest classification performance on MaFaulDa while remaining highly competitive on the more challenging ITSC-UDG dataset.",
+      "authors": [
+        "Mouhamadou Mansour Lo",
+        "Mouad Talbaoui",
+        "Gildas Morvan",
+        "Mathieu Rossi",
+        "Fabrice Morganti",
+        "David Mercier"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-19T09:18:32+00:00",
+      "link": "https://arxiv.org/pdf/2608.18716v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "efficient time series classification method applicable to acoustic ship noise recognition",
+      "llm_evidence_cn": "高效时间序列分类方法，可应用于船舰噪声识别",
+      "llm_evidence": "高效时间序列分类方法，可应用于船舰噪声识别",
+      "canonical_evidence": "高效时间序列分类方法，可应用于船舰噪声识别",
+      "llm_tldr_en": "Random convolutional kernel TSC methods are evaluated for multi-class fault diagnosis; a multivariate extension of SelF-Rocket is introduced. On MaFaulDa and ITSC-UDG benchmarks it offers an efficient, accurate time series classification approach applicable to acoustic signal recognition.",
+      "llm_tldr_cn": "旋转机械故障诊断需要高效的时间序列分类方法。本文评估了基于随机卷积核的SelF-Rocket等TSC方法，并提出了新的多元扩展版本。在MaFaulDa和ITSC-UDG公共基准上，该方法在多分类任务中展现出良好的预测性能与计算效率，为船舰噪声等声学时间序列识别提供了可迁移的分类框架。",
+      "llm_tldr": "旋转机械故障诊断需要高效的时间序列分类方法。本文评估了基于随机卷积核的SelF-Rocket等TSC方法，并提出了新的多元扩展版本。在MaFaulDa和ITSC-UDG公共基准上，该方法在多分类任务中展现出良好的预测性能与计算效率，为船舰噪声等声学时间序列识别提供了可迁移的分类框架。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-22",
+  "date": "2026-08-22",
+  "generated_at": "2026-08-22T19:55:06",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/22/2608.17108v1-a-multiplication-free-feature-extractor-for-signal-classification-keyword-spotting-case-study",
+      "section": "quick",
+      "title_en": "A Multiplication-Free Feature Extractor for Signal Classification: Keyword Spotting Case Study",
+      "authors": "Radu Dogaru, Ioana Dogaru",
+      "date": "2026-08-17",
+      "pdf": "https://arxiv.org/pdf/2608.17108v1",
+      "score": "6.0",
+      "evidence": "提出低复杂度信号分类特征提取器，可迁移至水声目标识别",
+      "tldr": "边缘设备上的关键词识别等信号分类任务急需极低复杂度特征提取，而传统MFCC计算开销大。为此提出无乘法器特征提取器next iRDT，仅采用简单节能算术运算。在Google KWS 12类数据集上，经调优后准确率与MFCC/CNN提取器相当，采用不同分类器达到94.7%验证准确率，且CPU处理时间至少比MFCC低一个数量级。该方法硬件占用极低，非常适合超低功耗边缘设备。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "A very low complexity feature extractor called next iRDT is proposed and evaluated for the problem of keyword spotting (KWS). Unlike any other types of feature extractors including the widely used MFCC, or adaptive, CNN-based ones, our algorithm is multiplier-free and it employs only simple, energy-efficient arithmetic operators. Since keyword-spotting of speech commands (KWS) is a typical application for TinyML platforms requiring low complexity for the signal classification chain, we consider it as a case study to evaluate complexity and functional performance. If properly tuned, iRDT demonstrates similar accuracy to solutions based on MFCC or CNN-based extractors using baseline classifiers on Google's KWS 12-classes dataset. With a different classifier the system achieved 94.7% validation accuracy. Processing times on CPU for the proposed feature extractor, are at least one order of magnitude smaller than for the MFCC. The proposed algorithm has a very low hardware footprint, making it ideal for ultra-low power edge devices. Code and demo are available [18].",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/22/2608.18716v1-multi-class-electrical-and-mechanical-fault-classification-using-random-convolutional-kernels",
+      "section": "quick",
+      "title_en": "Multi-Class Electrical and Mechanical Fault Classification Using Random Convolutional Kernels",
+      "authors": "Mouhamadou Mansour Lo, Mouad Talbaoui, Gildas Morvan, Mathieu Rossi, Fabrice Morganti, David Mercier",
+      "date": "2026-08-19",
+      "pdf": "https://arxiv.org/pdf/2608.18716v1",
+      "score": "6.0",
+      "evidence": "高效时间序列分类方法，可应用于船舰噪声识别",
+      "tldr": "旋转机械故障诊断对工业过程可靠性至关重要，传统诊断方法往往计算成本高或精度不足。基于随机卷积核的时间序列分类方法（如ROCKET）提供了性能与效率的良好权衡。本文评估SelF-Rocket，并提出其多元扩展，用于机械与电气故障的多类诊断。在两个公开基准数据集MaFaulDa和ITSC-UDG上，SelF-Rocket在精度-延迟权衡上优于其他ROCKET变体，在MaFaulDa上取得最高精度，在ITSC-UDG上表现竞争力。该研究验证了随机卷积核在故障诊断中的价值，为工业应用提供了高效准确的方案。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Diagnosing faults in rotating machinery is essential for ensuring the reliability of industrial processes. Random convolutional kernel-based Time Series Classification (TSC) methods, such as ROCKET and its variants, provide an attractive trade-off between predictive performance and computational efficiency. In this work, we evaluate SelF-Rocket for the multi-class diagnosis of both mechanical and electrical faults and introduce, as a new contribution, a multivariate extension of the original method. The proposed approach is compared with leading ROCKET-based methods on two public benchmark datasets, MaFaulDa (mechanical faults) and ITSC-UDG (stator inter-turn short circuits), under both univariate and multivariate settings. Experimental results show that SelF-Rocket achieves the best overall accuracy-latency trade-off among the evaluated methods, obtaining the highest classification performance on MaFaulDa while remaining highly competitive on the more challenging ITSC-UDG dataset.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
