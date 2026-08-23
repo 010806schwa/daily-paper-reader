@@ -6,29 +6,22 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-22
-- 运行时间：2026-08-22 19:55:01 UTC
+- 最新运行日期：2026-08-23
+- 运行时间：2026-08-23 19:01:22 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：0
 - 精读区：0
-- 速读区：2
+- 速读区：0
 
 ### 今日简报（AI）
-今日速读2篇信号分类论文，均获6.0分，暂未精读。  
-最值得关注的方向：无乘法特征提取用于关键词识别，以及随机卷积核用于电气机械故障分类。  
-建议先精读这两篇，重点比较它们在不同信号场景下的特征提取效率与鲁棒性。
-- 详情：[/202608/22/README](/202608/22/README)
+> 今日无新推荐，系统未产出可展示论文。
+- 详情：[/202608/23/README](/202608/23/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [A Multiplication-Free Feature Extractor for Signal Classification: Keyword Spotting Case Study](/202608/22/2608.17108v1-a-multiplication-free-feature-extractor-for-signal-classification-keyword-spotting-case-study)  
-   标签：评分：6.0/10、query:shipnoise-hf
-   evidence：提出低复杂度信号分类特征提取器，可迁移至水声目标识别
-2. [Multi-Class Electrical and Mechanical Fault Classification Using Random Convolutional Kernels](/202608/22/2608.18716v1-multi-class-electrical-and-mechanical-fault-classification-using-random-convolutional-kernels)  
-   标签：评分：6.0/10、query:shipnoise-hf
-   evidence：高效时间序列分类方法，可应用于船舰噪声识别
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
