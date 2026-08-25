@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-25",
+  "date": "2026-08-25",
+  "generated_at": "2026-08-25T20:28:36",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/25/2608.19843v1-fourier-is-frontier-frequency-aware-autoencoding-for-high-fidelity-music-reconstruction",
+      "section": "quick",
+      "title_en": "Fourier is Frontier: Frequency-Aware Autoencoding for High-Fidelity Music Reconstruction",
+      "authors": "Kangdi Wang, Yusheng Dai, Jin Xu",
+      "date": "2026-08-20",
+      "pdf": "https://arxiv.org/pdf/2608.19843v1",
+      "score": "7.0",
+      "evidence": "显式关注频域自编码中的高频音频保持，对高频声学特征学习有借鉴意义",
+      "tldr": "潜在音乐生成器依赖连续潜在自编码器，但高压缩率下常丢失高频信息、相位失真并导致立体声崩塌，根因是缺少显式频率轴。为此提出基于复数谱的自编码器：每个频段学习周期激活，并按双耳感知原理矫正幅度与相位。在五百四十六轨公开数据上，七项重建指标中五项最优，梅尔距离降百分之十九点四且参数更省；下游生成器十二项自动指标全部领先。证明了显式频率轴与感知校正对保真重建的显著价值。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Continuous-latent audio autoencoders form the backbone of latent music generators, yet decoders at high compression rates commonly exhibit three failure modes: high-frequency loss, phase incoherence, and stereo-image collapse. These share a structural root: waveform autoencoders lack an explicit frequency axis, leaving no handle for targeted per-band correction. Among five matched-budget representations, the complex STFT achieves the lowest full-band and high-frequency spectral distances, providing direct access to magnitude and phase at every bin. Building on this, we present ear-VAE2, a complex-spectral autoencoder with cross-channel interaction. Spec-SnakeBeta learns a periodic activation per frequency bin with frequency-dependent initialization, outperforming other activation variants while using fewer parameters than the fully independent variant. Duplex-Aware Refiner applies band-specific corrections to magnitude and phase following duplex theory of sound localization. On the 546-track Song Describer Dataset, ear-VAE2 achieves the best point estimates on five of seven reconstruction metrics. The Duplex-Aware Refiner reduces Mel Distance by 19.4% and uses ~45% fewer residual-output dimensions than the Unconstrained Refiner, while also lowering spectral distances, spatial-cue errors, and receiving higher ratings from professional engineers. The downstream generator using ear-VAE2 latents achieves better point estimates on all 12 automatic metrics.Demo page is available at https://eps-acoustic-revolution-lab.github.io/EAR_VAE2/.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

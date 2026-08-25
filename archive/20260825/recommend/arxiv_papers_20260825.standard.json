@@ -1,0 +1,55 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-25T20:26:34.386118+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.19843v1",
+      "source": "arxiv",
+      "title": "Fourier is Frontier: Frequency-Aware Autoencoding for High-Fidelity Music Reconstruction",
+      "abstract": "Continuous-latent audio autoencoders form the backbone of latent music generators, yet decoders at high compression rates commonly exhibit three failure modes: high-frequency loss, phase incoherence, and stereo-image collapse. These share a structural root: waveform autoencoders lack an explicit frequency axis, leaving no handle for targeted per-band correction. Among five matched-budget representations, the complex STFT achieves the lowest full-band and high-frequency spectral distances, providing direct access to magnitude and phase at every bin. Building on this, we present ear-VAE2, a complex-spectral autoencoder with cross-channel interaction. Spec-SnakeBeta learns a periodic activation per frequency bin with frequency-dependent initialization, outperforming other activation variants while using fewer parameters than the fully independent variant. Duplex-Aware Refiner applies band-specific corrections to magnitude and phase following duplex theory of sound localization. On the 546-track Song Describer Dataset, ear-VAE2 achieves the best point estimates on five of seven reconstruction metrics. The Duplex-Aware Refiner reduces Mel Distance by 19.4% and uses ~45% fewer residual-output dimensions than the Unconstrained Refiner, while also lowering spectral distances, spatial-cue errors, and receiving higher ratings from professional engineers. The downstream generator using ear-VAE2 latents achieves better point estimates on all 12 automatic metrics.Demo page is available at https://eps-acoustic-revolution-lab.github.io/EAR_VAE2/.",
+      "authors": [
+        "Kangdi Wang",
+        "Yusheng Dai",
+        "Jin Xu"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.MM"
+      ],
+      "published": "2026-08-20T09:43:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.19843v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "explicit focus on high-frequency audio preservation in spectral autoencoder, useful for high-frequency acoustic feature learning",
+      "llm_evidence_cn": "显式关注频域自编码中的高频音频保持，对高频声学特征学习有借鉴意义",
+      "llm_evidence": "显式关注频域自编码中的高频音频保持，对高频声学特征学习有借鉴意义",
+      "canonical_evidence": "显式关注频域自编码中的高频音频保持，对高频声学特征学习有借鉴意义",
+      "llm_tldr_en": "Proposes ear-VAE2, a complex-spectral autoencoder with cross-channel interaction that explicitly preserves high-frequency components and phase, addressing high-frequency loss, phase incoherence, and stereo collapse in audio autoencoders.",
+      "llm_tldr_cn": "连续隐空间音频自编码器是潜在音乐生成器的核心，但在高压缩率下常出现高频丢失、相位不一致和立体声塌陷。该文发现波形自编码器缺乏显式频率轴，提出基于复STFT的ear-VAE2，通过跨通道交互和每频带的周期激活（Spec-SnakeBeta）直接保留各频段的幅度与相位。在多种同预算表示中，该模型取得最低的全频带和高频频谱距离，显著改善重构保真度。此频率感知方法可作为高频声学特征提取的参考，但面向音乐重建而非船舰噪声识别。",
+      "llm_tldr": "连续隐空间音频自编码器是潜在音乐生成器的核心，但在高压缩率下常出现高频丢失、相位不一致和立体声塌陷。该文发现波形自编码器缺乏显式频率轴，提出基于复STFT的ear-VAE2，通过跨通道交互和每频带的周期激活（Spec-SnakeBeta）直接保留各频段的幅度与相位。在多种同预算表示中，该模型取得最低的全频带和高频频谱距离，显著改善重构保真度。此频率感知方法可作为高频声学特征提取的参考，但面向音乐重建而非船舰噪声识别。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "high frequency acoustic features for ship noise recognition",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
