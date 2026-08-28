@@ -1,0 +1,69 @@
+{
+  "label": "2026-08-28",
+  "date": "2026-08-28",
+  "generated_at": "2026-08-28T03:40:58",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202608/28/2608.20943v1-sr-tl1-a-square-root-tl1-norm-framework-for-robust-smv-doa-estimation-under-highly-coherent-dictionaries",
+      "section": "quick",
+      "title_en": "SR-TL1: A Square-Root TL1-Norm Framework for Robust SMV DoA Estimation under Highly-Coherent Dictionaries",
+      "authors": "Youval Klioui",
+      "date": "2026-08-21",
+      "pdf": "https://arxiv.org/pdf/2608.20943v1",
+      "score": "6.0",
+      "evidence": "稀疏恢复波达方向估计在高相干字典下鲁棒，可应用于水声目标定位",
+      "tldr": "为应对高度相干字典及阵列缺陷下稀疏DoA估计性能退化，提出SR-TL1框架：结合平方根LASSO的噪声鲁棒性与非凸TL1范数的恢复优势，经DCA-ADMM获得闭式更新，利用Gram低秩性使迭代复杂度降为O(MN)。实验表明其对正则化超参数不敏感，恢复性能优于现有基线，为SMV DoA估计提供高效鲁棒方案。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "This paper proposes a Square-Root Transformed $L_1$-norm ($SR\\text{-}TL_{1}$) sparse recovery framework for single-measurement-vector (SMV) direction of arrival (DoA) estimation under highly-coherent overcomplete dictionaries with angular-dependent array imperfections. The proposed framework combines the square-root Least Absolute Shrinkage and Selection Operator (square-root LASSO) framework which is known to be robust against noise variance with the Transformed $L_1$-norm ($TL_1$-norm), a non-convex penalty that shows a stronger recovery performance than the classical convex $L_1$-norm under highly-coherent dictionaries. We use the Difference of Convex Algorithm (DCA) along with the Alternating Direction Method of Multipliers (ADMM) algorithm to obtain simple, closed-form update rules and provide an efficient implementation that leverages the low-rank nature of the Gram matrix of the dictionary so as to obtain a computational complexity of at most $\\mathcal{O}(MN)$ per iteration where $M$ is the array size and $N$ is the length of the dictionary. We additionally provide a convergence guarantee for the DCA iterates of $SR\\text{-}TL_{1}$. Experimental verification of the proposed framework shows a lower sensitivity of the regularization hyperparameter to the noise variance level and a competitive recovery performance compared to state-of-the-art baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/28/2608.24033v1-chorustic-training-free-multivariate-time-series-classification-via-chorus-in-context-learning",
+      "section": "quick",
+      "title_en": "ChorusTIC: Training-Free Multivariate Time Series Classification via Chorus In-Context Learning",
+      "authors": "Juntao Fang, Shifeng Xie, Ruichu Cai, Shengji Zheng, Zijian Li, Keli Zhang, Lujia Pan, Themis Palpanas, Zhifeng Hao",
+      "date": "2026-08-25",
+      "pdf": "https://arxiv.org/pdf/2608.24033v1",
+      "score": "6.0",
+      "evidence": "免训练的多元时间序列分类方法，可直接用于船舰噪声分类。",
+      "tldr": "时间序列分类常需为每个数据集训练专用分类器，且多变量通道常被独立编码，难以统一异构配置。ChorusTIC提出分类原生的上下文学习框架，通过随机子通道槽拼接与共享双轴编码器将可变通道映射为固定宽度表示，并在合成episodes上预训练后直接预测查询标签。在完整UEA-30和UCR-128上，无需目标参数更新即取得强全上下文与低标签性能，显著简化了多变量时间序列分类流程。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Time series classification underpins applications in healthcare, sensing, and industrial monitoring. Although time series foundation models support forecasting and transferable representation learning, classification still typically requires fitting a task-specific classifier on each target dataset, while individual channels of multivariate inputs are often encoded independently. We introduce ChorusTIC, a classification-native foundation model for in-context classification across heterogeneous channel configurations without target-task parameter updates. ChorusTIC combines episode-consistent Random Subchannel Slot Concatenation with a shared dual-axis encoder to model temporal and cross-channel interactions and map variable channel configurations into a fixed-width representation independent of the original channel count. It then calibrates feature axes using context-derived distributions and predicts query labels through leakage-protected in-context learning. We pretrain ChorusTIC solely on synthetic labeled episodes comprising context and query sets that share a task background, with classes distinguished by sparse temporal or cross-channel rules. Evaluations on the complete UEA-30 and UCR-128 archives show strong full-context and low-label performance without target-specific classifier fitting.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/28/2608.25054v1-spectra-subspace-preserving-embedding-calibration-transport-and-replay-for-fully-few-shot-class-incremental-audio-classification",
+      "section": "quick",
+      "title_en": "SPECTRA: Subspace-Preserving Embedding Calibration, Transport, and Replay for Fully Few-Shot Class-Incremental Audio Classification",
+      "authors": "Giries Abu Ayoub, Loay Mualem, Simon Korman",
+      "date": "2026-08-25",
+      "pdf": "https://arxiv.org/pdf/2608.25054v1",
+      "score": "6.0",
+      "evidence": "可适应舰船噪声识别的音频分类框架",
+      "tldr": "完全少样本类增量音频分类需在每个会话仅用少量样本识别新类且不遗忘旧类，现有冻结预训练编码器加原型的方法因特征泛化不足而性能严重下降。提出SPECTRA框架，在冻结编码器上添加轻量可训练适配器进行特征校准，利用低维子空间重放旧类特征实现免样本反遗忘，并在测试时用转导最优传输精炼原型。在三个基准上显著提升平均准确率并降低遗忘，消融实验验证各组件有效。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Fully few-shot class-incremental audio classification (FFCAC) requires recognizing new sound classes from only a handful of labeled examples per session, without forgetting previously learned classes and without any large base dataset. Existing methods typically freeze a pre-trained audio--language encoder and classify with point prototypes, but they suffer from significant performance degradation throughout the sessions due to generic feature representations.   We propose SPECTRA, a framework built on a frozen encoder which adds three components. (i) a lightweight trainable adapter that calibrates the generic embeddings to the task; (ii) subspace feature replay, an exemplar-free anti-forgetting scheme that replays old classes by sampling from the low-rank subspace of their stored features; and (iii) a transductive optimal-transport refinement of prototypes at test time. Our central finding is that the subspace structure of the replay diminishes forgetting and outperforms naive Gaussian replay of equal variance. On three FFCAC benchmarks (NSynth-100, FSC-89, LS-100), SPECTRA improves average accuracy and reduces forgetting over current state-of-the-art methods, and our ablations statistically validate each component.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/28/2608.26285v1-time-varying-spiky-wave-shape-functions-for-non-stationary-signal-decomposition",
+      "section": "quick",
+      "title_en": "Time-Varying Spiky Wave-Shape Functions for Non-Stationary Signal Decomposition",
+      "authors": "Marcelo A. Colominas, Hau-Tieng Wu",
+      "date": "2026-08-26",
+      "pdf": "https://arxiv.org/pdf/2608.26285v1",
+      "score": "6.0",
+      "evidence": "面向非平稳脉冲信号的分解方法，可用于提取船舰噪声高频分量。",
+      "tldr": "针对心电图、癫痫脑电等非平稳尖峰信号难以用经典AM-FM模型刻画的问题，提出Spiky Shape-adaptive Mode Decomposition（SSAMD）框架。该方法在傅里叶系数域进行局部回归估计，并结合PCA参数化与熵正则化，在保持波形形态一致性的同时允许结构化变异。在合成及多种真实生物医学信号上验证了去噪、波形跟踪、分解与分割的有效性，同时保留生理上有意义的形态变化。该框架灵活，克服了现有模型的局限。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "We propose a novel framework for decomposing nonstationary spiky signals. Unlike classical adaptive non-harmonic models, which represent signals as amplitude- and frequency-modulated (AM--FM) oscillations, the proposed model is designed for signals whose dominant structures are highly localized, impulsive, or spike-like, and contains physiological variability, which is challenging to be modeled as AM--FM representations. Representative examples include electrocardiogram (ECG) complexes, epileptic electroencephalogram (EEG) transients, and other pulse-like physiological signals.   We first introduce a fixed-waveform model for repetitive spiky structures and then extend it to accommodate cycle-to-cycle waveform variability. The resulting algorithm, termed \\emph{Spiky Shape-adaptive Mode Decomposition} (SSAMD), estimates waveforms in the Fourier coefficient domain. Fourier coefficients are first estimated via local regression and then regularized by exploiting their low-dimensional manifold structure. Specifically, we combine a PCA-based parametrization with an entropy regularization acting on the singular-value spectrum of the coefficient matrix, promoting morphological consistency while preserving structured waveform variability.   The proposed framework is flexible and overcomes the limitations of existing models. We validate the method on synthetic and real biomedical signals, including ECG with atrial fibrillation, epileptic EEG, and trans-abdominal maternal ECG. Experimental results demonstrate effective denoising, waveform tracking, decomposition, and segmentation, while preserving physiologically meaningful morphological variations.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,171 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-28T03:38:32.985918+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.20943v1",
+      "source": "arxiv",
+      "title": "SR-TL1: A Square-Root TL1-Norm Framework for Robust SMV DoA Estimation under Highly-Coherent Dictionaries",
+      "abstract": "This paper proposes a Square-Root Transformed $L_1$-norm ($SR\\text{-}TL_{1}$) sparse recovery framework for single-measurement-vector (SMV) direction of arrival (DoA) estimation under highly-coherent overcomplete dictionaries with angular-dependent array imperfections. The proposed framework combines the square-root Least Absolute Shrinkage and Selection Operator (square-root LASSO) framework which is known to be robust against noise variance with the Transformed $L_1$-norm ($TL_1$-norm), a non-convex penalty that shows a stronger recovery performance than the classical convex $L_1$-norm under highly-coherent dictionaries. We use the Difference of Convex Algorithm (DCA) along with the Alternating Direction Method of Multipliers (ADMM) algorithm to obtain simple, closed-form update rules and provide an efficient implementation that leverages the low-rank nature of the Gram matrix of the dictionary so as to obtain a computational complexity of at most $\\mathcal{O}(MN)$ per iteration where $M$ is the array size and $N$ is the length of the dictionary. We additionally provide a convergence guarantee for the DCA iterates of $SR\\text{-}TL_{1}$. Experimental verification of the proposed framework shows a lower sensitivity of the regularization hyperparameter to the noise variance level and a competitive recovery performance compared to state-of-the-art baselines.",
+      "authors": [
+        "Youval Klioui"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-08-21T10:05:42+00:00",
+      "link": "https://arxiv.org/pdf/2608.20943v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Sparse recovery DoA estimation robust to coherent dictionaries, applicable to underwater acoustic target localization",
+      "llm_evidence_cn": "稀疏恢复波达方向估计在高相干字典下鲁棒，可应用于水声目标定位",
+      "llm_evidence": "稀疏恢复波达方向估计在高相干字典下鲁棒，可应用于水声目标定位",
+      "canonical_evidence": "稀疏恢复波达方向估计在高相干字典下鲁棒，可应用于水声目标定位",
+      "llm_tldr_en": "This paper proposes a square-root TL1-norm sparse recovery framework for single-measurement-vector DoA estimation under highly-coherent dictionaries, combining square-root LASSO and non-convex TL1 penalty for robustness against noise variance and coherence, relevant to underwater acoustic target recognition.",
+      "llm_tldr_cn": "针对高相干字典下波达方向估计性能下降的问题，提出平方根TL1范数稀疏恢复框架（SR-TL1）。它结合平方根LASSO对噪声方差的鲁棒性与变换L1范数非凸惩罚的强恢复能力，并使用DCA和ADMM求解。该框架可提升阵列信号处理中的DoA估计精度，对水下声学目标识别中的方位估计有参考价值。",
+      "llm_tldr": "针对高相干字典下波达方向估计性能下降的问题，提出平方根TL1范数稀疏恢复框架（SR-TL1）。它结合平方根LASSO对噪声方差的鲁棒性与变换L1范数非凸惩罚的强恢复能力，并使用DCA和ADMM求解。该框架可提升阵列信号处理中的DoA估计精度，对水下声学目标识别中的方位估计有参考价值。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.24033v1",
+      "source": "arxiv",
+      "title": "ChorusTIC: Training-Free Multivariate Time Series Classification via Chorus In-Context Learning",
+      "abstract": "Time series classification underpins applications in healthcare, sensing, and industrial monitoring. Although time series foundation models support forecasting and transferable representation learning, classification still typically requires fitting a task-specific classifier on each target dataset, while individual channels of multivariate inputs are often encoded independently. We introduce ChorusTIC, a classification-native foundation model for in-context classification across heterogeneous channel configurations without target-task parameter updates. ChorusTIC combines episode-consistent Random Subchannel Slot Concatenation with a shared dual-axis encoder to model temporal and cross-channel interactions and map variable channel configurations into a fixed-width representation independent of the original channel count. It then calibrates feature axes using context-derived distributions and predicts query labels through leakage-protected in-context learning. We pretrain ChorusTIC solely on synthetic labeled episodes comprising context and query sets that share a task background, with classes distinguished by sparse temporal or cross-channel rules. Evaluations on the complete UEA-30 and UCR-128 archives show strong full-context and low-label performance without target-specific classifier fitting.",
+      "authors": [
+        "Juntao Fang",
+        "Shifeng Xie",
+        "Ruichu Cai",
+        "Shengji Zheng",
+        "Zijian Li",
+        "Keli Zhang",
+        "Lujia Pan",
+        "Themis Palpanas",
+        "Zhifeng Hao"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "stat.ML"
+      ],
+      "published": "2026-08-25T03:45:24+00:00",
+      "link": "https://arxiv.org/pdf/2608.24033v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Training-free multivariate time series classification method; directly usable for ship noise classification.",
+      "llm_evidence_cn": "免训练的多元时间序列分类方法，可直接用于船舰噪声分类。",
+      "llm_evidence": "免训练的多元时间序列分类方法，可直接用于船舰噪声分类。",
+      "canonical_evidence": "免训练的多元时间序列分类方法，可直接用于船舰噪声分类。",
+      "llm_tldr_en": "ChorusTIC is a classification-native time-series foundation model enabling training-free in-context classification across heterogeneous channels via random subchannel slot concatenation and a dual-axis encoder. It can serve as a generic classifier for ship-radiated noise feature sequences.",
+      "llm_tldr_cn": "时间序列分类通常需为每个数据集训练分类器，且多通道各自编码。本文提出ChorusTIC，一个面向分类的时间序列基础模型，通过随机子通道拼接和共享双轴编码器在异构通道上实现免训练上下文分类，无需目标任务参数更新。该模型可当作通用分类工具，直接用于船舰噪声等声学时间序列的目标识别，具有较强的方法可迁移性。",
+      "llm_tldr": "时间序列分类通常需为每个数据集训练分类器，且多通道各自编码。本文提出ChorusTIC，一个面向分类的时间序列基础模型，通过随机子通道拼接和共享双轴编码器在异构通道上实现免训练上下文分类，无需目标任务参数更新。该模型可当作通用分类工具，直接用于船舰噪声等声学时间序列的目标识别，具有较强的方法可迁移性。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "using high frequency acoustic features for underwater target classification",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.25054v1",
+      "source": "arxiv",
+      "title": "SPECTRA: Subspace-Preserving Embedding Calibration, Transport, and Replay for Fully Few-Shot Class-Incremental Audio Classification",
+      "abstract": "Fully few-shot class-incremental audio classification (FFCAC) requires recognizing new sound classes from only a handful of labeled examples per session, without forgetting previously learned classes and without any large base dataset. Existing methods typically freeze a pre-trained audio--language encoder and classify with point prototypes, but they suffer from significant performance degradation throughout the sessions due to generic feature representations.   We propose SPECTRA, a framework built on a frozen encoder which adds three components. (i) a lightweight trainable adapter that calibrates the generic embeddings to the task; (ii) subspace feature replay, an exemplar-free anti-forgetting scheme that replays old classes by sampling from the low-rank subspace of their stored features; and (iii) a transductive optimal-transport refinement of prototypes at test time. Our central finding is that the subspace structure of the replay diminishes forgetting and outperforms naive Gaussian replay of equal variance. On three FFCAC benchmarks (NSynth-100, FSC-89, LS-100), SPECTRA improves average accuracy and reduces forgetting over current state-of-the-art methods, and our ablations statistically validate each component.",
+      "authors": [
+        "Giries Abu Ayoub",
+        "Loay Mualem",
+        "Simon Korman"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI"
+      ],
+      "published": "2026-08-25T18:43:58+00:00",
+      "link": "https://arxiv.org/pdf/2608.25054v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Audio classification framework adaptable to vessel noise recognition",
+      "llm_evidence_cn": "可适应舰船噪声识别的音频分类框架",
+      "llm_evidence": "可适应舰船噪声识别的音频分类框架",
+      "canonical_evidence": "可适应舰船噪声识别的音频分类框架",
+      "llm_tldr_en": "SPECTRA boosts fully few-shot class-incremental audio classification using a trainable adapter for embedding calibration and exemplar-free subspace replay to prevent forgetting. Experiments show consistent gains across sessions, offering a reusable framework for ship-noise recognition.",
+      "llm_tldr_cn": "完全少样本类增量音频分类需在每会话仅少量标注样本下持续识别新声音类且不遗忘旧类，现有冻结编码器与点原型方法性能逐步退化。SPECTRA框架基于冻结编码器，新增轻量级可训练适配器校准任务嵌入，并通过子空间特征重放与传输实现无示例防遗忘。在多个增量会话中，SPECTRA显著缓解了性能下降，优于既有基线。该框架可迁移至舰船噪声等音频识别任务，为少样本持续学习提供通用方案。",
+      "llm_tldr": "完全少样本类增量音频分类需在每会话仅少量标注样本下持续识别新声音类且不遗忘旧类，现有冻结编码器与点原型方法性能逐步退化。SPECTRA框架基于冻结编码器，新增轻量级可训练适配器校准任务嵌入，并通过子空间特征重放与传输实现无示例防遗忘。在多个增量会话中，SPECTRA显著缓解了性能下降，优于既有基线。该框架可迁移至舰船噪声等音频识别任务，为少样本持续学习提供通用方案。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "vessel noise classification with high frequency cues",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.26285v1",
+      "source": "arxiv",
+      "title": "Time-Varying Spiky Wave-Shape Functions for Non-Stationary Signal Decomposition",
+      "abstract": "We propose a novel framework for decomposing nonstationary spiky signals. Unlike classical adaptive non-harmonic models, which represent signals as amplitude- and frequency-modulated (AM--FM) oscillations, the proposed model is designed for signals whose dominant structures are highly localized, impulsive, or spike-like, and contains physiological variability, which is challenging to be modeled as AM--FM representations. Representative examples include electrocardiogram (ECG) complexes, epileptic electroencephalogram (EEG) transients, and other pulse-like physiological signals.   We first introduce a fixed-waveform model for repetitive spiky structures and then extend it to accommodate cycle-to-cycle waveform variability. The resulting algorithm, termed \\emph{Spiky Shape-adaptive Mode Decomposition} (SSAMD), estimates waveforms in the Fourier coefficient domain. Fourier coefficients are first estimated via local regression and then regularized by exploiting their low-dimensional manifold structure. Specifically, we combine a PCA-based parametrization with an entropy regularization acting on the singular-value spectrum of the coefficient matrix, promoting morphological consistency while preserving structured waveform variability.   The proposed framework is flexible and overcomes the limitations of existing models. We validate the method on synthetic and real biomedical signals, including ECG with atrial fibrillation, epileptic EEG, and trans-abdominal maternal ECG. Experimental results demonstrate effective denoising, waveform tracking, decomposition, and segmentation, while preserving physiologically meaningful morphological variations.",
+      "authors": [
+        "Marcelo A. Colominas",
+        "Hau-Tieng Wu"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-08-26T18:11:02+00:00",
+      "link": "https://arxiv.org/pdf/2608.26285v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Signal decomposition method for nonstationary impulsive signals; applicable to extracting high-frequency ship noise components.",
+      "llm_evidence_cn": "面向非平稳脉冲信号的分解方法，可用于提取船舰噪声高频分量。",
+      "llm_evidence": "面向非平稳脉冲信号的分解方法，可用于提取船舰噪声高频分量。",
+      "canonical_evidence": "面向非平稳脉冲信号的分解方法，可用于提取船舰噪声高频分量。",
+      "llm_tldr_en": "Proposes a framework to decompose nonstationary spiky signals with time-varying wave-shape functions, overcoming AM-FM limitations. The method is designed for ECG/EEG-like impulses and could be transferred to extract transient high-frequency components from ship noise for recognition.",
+      "llm_tldr_cn": "针对心电图、脑电等生理信号中局部性强、脉冲式结构的非平稳信号难以用经典调幅-调频模型刻画的问题，本文提出一种基于时变尖峰波形函数的分解框架，先引入固定波形模型，再扩展到周期间波形变化，能够自适应地分解非平稳尖峰信号。算法在模拟和真实数据上展示了良好的分解效果。该信号分解方法可迁移用于船舰辐射噪声中瞬态高频分量的提取与识别，为水下目标识别提供新的处理工具。",
+      "llm_tldr": "针对心电图、脑电等生理信号中局部性强、脉冲式结构的非平稳信号难以用经典调幅-调频模型刻画的问题，本文提出一种基于时变尖峰波形函数的分解框架，先引入固定波形模型，再扩展到周期间波形变化，能够自适应地分解非平稳尖峰信号。算法在模拟和真实数据上展示了良好的分解效果。该信号分解方法可迁移用于船舰辐射噪声中瞬态高频分量的提取与识别，为水下目标识别提供新的处理工具。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "high frequency components in ship noise for recognition",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

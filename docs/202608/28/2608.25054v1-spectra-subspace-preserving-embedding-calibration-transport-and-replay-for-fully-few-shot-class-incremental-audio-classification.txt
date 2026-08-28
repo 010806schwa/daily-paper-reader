@@ -1,0 +1,283 @@
+Title: SPECTRA: Subspace-Preserving Embedding Calibration, Transport, and Replay for Fully Few-Shot Class-Incremental Audio Classification
+
+URL Source: https://arxiv.org/pdf/2608.25054v1
+
+Published Time: Thu, 27 Aug 2026 00:07:22 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# SPECTRA: SUBSPACE-PRESERVING EMBEDDING CALIBRATION, TRANSPORT, AND REPLAY FOR FULLY FEW-SHOT CLASS-INCREMENTAL AUDIO CLASSIFICATION 
+
+# Giries Abu Ayoub 1 Loay Mualem 2,3 Simon Korman 1
+
+> 1
+
+# Department of Computer Science, University of Haifa 
+
+> 2
+
+# Institute for AI, University of Stuttgart 3IMPRS-IS 
+
+ABSTRACT 
+
+Fully few-shot class-incremental audio classification (FFCAC) re-quires recognizing new sound classes from only a handful of labeled examples per session, without forgetting previously learned classes and without any large base dataset. Existing methods typically freeze a pre-trained audio–language encoder and classify with point pro-totypes, but they suffer from significant performance degradation throughout the sessions due to generic feature representations. We propose SPECTRA , a framework built on a frozen encoder which adds three components. (i) a lightweight trainable adapter that calibrates the generic embeddings to the task; (ii) subspace feature re-play , an exemplar-free anti-forgetting scheme that replays old classes by sampling from the low-rank subspace of their stored features; and (iii) a transductive optimal-transport refinement of prototypes at test time. Our central finding is that the subspace structure of the replay diminishes forgetting and outperforms naive Gaussian replay of equal variance. On three FFCAC benchmarks (NSynth-100, FSC-89, LS-100), SPECTRA improves average accuracy and reduces forgetting over current state-of-the-art methods, and our ablations statistically validate each component. 
+
+Index Terms — Few-shot class-incremental learning, audio clas-sification, feature replay, catastrophic forgetting, audio–language models 
+
+1. INTRODUCTION 
+
+Audio classification underpins applications from assisted driving [1] and medical monitoring [2] to wildlife sensing [3]. In realistic deploy-ments, the set of classes is not fixed, since new categories appear over time and must be learned from very few examples, without revisiting old data. Few-shot class-incremental audio classification (FCAC) for-malizes this, and its hardest variant, fully FCAC (FFCAC), removes the assumption of an abundant base session: every session, including the first, provides only N classes with K examples each. FFCAC therefore combines the two classic difficulties of few-shot overfitting 
+
+and incremental catastrophic forgetting .Pre-trained audio–language models (ALMs) such as CLAP [4] and PENGI [5] provide strong, transferable audio features. TAPE [6] is the first method to exploit an ALM for FFCAC and defines the current state of the art. It freezes the ALM encoder so representations stay stable across sessions, and adds two lightweight components: a 
+
+Task-Transform that maps features and prototypes into a task-adaptive metric space through a closed-form orthogonalising transformation, and a Prototype Evolution step that refines each class prototype using low-entropy query samples. 
+
+Related work. Classic few-shot class-incremental learning (FS-CIL) methods decouple a frozen backbone from an evolving classi-fier [7, 8]; in audio, prototype-refinement [9] and capacity-growing methods address FCAC and FFCAC, while SpurAudio [10] shows that few-shot audio classifiers readily latch onto spurious correlations, underscoring the need for task-specific representation calibration. A complementary line fights forgetting by replaying past data: rather than storing exemplars, generative and feature-replay methods syn-thesise old-class samples [11], which is attractive when raw data cannot be retained. On the inference side, transductive methods such as PT-MAP [12] exploit the joint statistics of the query set through Sinkhorn optimal transport [13]. SPECTRA brings exemplar-free, 
+
+subspace-structured feature replay and transductive transport to the frozen-ALM pipeline of TAPE [6], where the tiny support sets make both data-efficiency and forgetting acute. 
+
+Motivation. Prototype-based representations provide an effective summary of each class for classification. However, in FFCAC the feature representation must continue to adapt as new classes arrive, while samples from previous sessions are no longer available. This raises a fundamental question: how can we continue adapting the representation without losing knowledge of earlier classes? Our key insight is that a compact representation of each class’s feature geome-try can be used to synthesize representative feature embeddings for replay, providing continual supervision for previous classes without storing raw audio. 
+
+Contributions. Motivated by the need to continually adapt the fea-ture representation while preserving knowledge of previously learned classes, we propose SPECTRA, a prototype-based framework that augments each class with a compact subspace representation to en-able exemplar-free feature replay. Our main contributions are: (i) A trainable residual-FFN adapter that calibrates frozen ALM em-beddings to the target task (Sec. 2.3). (ii) Subspace feature replay ,an exemplar-free anti-forgetting mechanism that models each class using a compact low-rank subspace and synthesizes representative feature embeddings for continual rehearsal (Sec. 2.4). We show that preserving subspace geometry is crucial, significantly outperforming naive replay strategies. (iii) A transductive optimal-transport refine-ment procedure that improves prototype estimation during inference (Sec. 2.5). (iv) Extensive experiments on three FFCAC benchmarks demonstrating consistent improvements over TAPE in both accu-racy and forgetting, supported by per-session analyses and statistical significance tests (Sec. 3). 
+
+2. METHODOLOGY 2.1. Problem Setup 
+
+We consider the fully few-shot class-incremental audio classification (FFCAC) setting. An audio-language model (ALM) encoder f maps an audio clip to a d-dimensional embedding x ∈ Rd (d = 1024 ). Classes arrive incrementally across sessions, where each new class is observed through only K support examples and samples from arXiv:2608.25054v1 [cs.SD] 25 Aug 2026 Fig. 1 . (a) The FFCAC setting: sessions arrive over time, each introducing 5 new classes with K=5 shots and no base session; the model is evaluated on all classes seen so far (cumulative test set growing 5 → 25 ). (b) SPECTRA. An audio clip is embedded by a frozen audio–language encoder (PENGI f ), calibrated by a trainable residual-MLP adapter g, and mapped by TAPE’s closed-form orthogonalising transform Pt
+
+before a prototypical classifier. Green (training only): each class’s stored support features Mc give a low-rank SVD subspace from which synthetic old-class features ˜xc are sampled and passed through the same head, a rehearsal that counters forgetting without storing audio. Purple, dashed (inference only): a transductive Sinkhorn step refines the prototypes from the unlabelled query batch. previous sessions are no longer available. The goal is therefore to continually incorporate new classes while preserving knowledge of previously learned ones under strict exemplar-free constraints. For each class c, we maintain the support feature set Mc =
+
+{xi}Ki=1 together with its prototype μc = 1
+
+> K
+
+P 
+
+> i
+
+xi. Following TAPE [6], we employ its closed-form Task-Transform, which projects prototypes into an orthogonal metric space prior to classification. This component is kept unchanged throughout our method, allowing us to focus on improving representation adaptation, continual rehearsal, and inference. 
+
+2.2. Overview 
+
+Our framework consists of three complementary components. First, we introduce a lightweight embedding adapter that calibrates frozen ALM features to the target task without fine-tuning the backbone. Second, we preserve previous knowledge through subspace feature replay, which models each class by a compact low-dimensional sub-space and synthesizes representative feature embeddings for continual rehearsal. Finally, we refine class prototypes during inference using transductive optimal transport over the unlabeled test batch. Figure 1 illustrates the complete pipeline. 
+
+2.3. Embedding Adapter 
+
+Frozen ALM embeddings provide strong generic representations but are not optimized for the target taxonomy. Rather than fine-tuning the entire encoder, which is prone to overfitting in the fully few-shot regime, we introduce a lightweight residual adapter that calibrates the embedding space while preserving the stability of the frozen backbone. Specifically, we employ a transformer-style feed-forward residual block with LayerScale, g(x) = x + γ ⊙ W2 GELU  W1 LN( x),where W1 ∈ Rrd ×d, W2 ∈ Rd×rd , and γ is initialized with small values so that the adapter starts close to the identity mapping while remaining expressive throughout training. The adapter is applied to both support and query embeddings be-fore the Task-Transform, i.e., z = Ptg(x), ensuring that all features are represented in the same calibrated embedding space. It is the only substantial trainable component of our framework and is optimized end-to-end together with the classifier. 
+
+2.4. Subspace Feature Replay 
+
+As the embedding adapter evolves to accommodate newly introduced classes, previously learned classes become susceptible to forgetting. Since FFCAC prohibits storing past audio, rehearsal must operate entirely in feature space. Our key idea is to represent each class not only by its prototype, but also by a compact low-dimensional subspace that captures its intrinsic feature variation. This representation enables the synthesis of representative feature embeddings, allowing previous classes to be rehearsed throughout continual learning without retaining any raw audio. Empirically, the support embeddings of a class occupy only a small region of the feature space and are well approximated by a low-rank affine subspace. Let ˜Mc = [ x1 − μc, . . . , xK − μc]⊤
+
+with SVD ˜Mc = UΣV ⊤. The top-k singular vectors Uc = U:k
+
+define the principal directions of the class, while σj = Σ jj /√K − 1
+
+captures the variation along each direction. At session t > 0, we generate n pseudo embeddings for every previously seen class by sampling within this subspace, 
+
+˜xc = μc +
+
+> k
+
+X
+
+> j=1
+
+zj (Uc)j , zj ∼ N  0, σ 2
+
+> j
+
+, (1) Fig. 2 . Replay geometry across sessions. As more classes are added, low-rank subspace replay remains class-aligned, whereas Gaussian replay produces overlapping clouds. The synthesized embeddings are processed by the current adapter and classifier exactly as real samples. Consequently, replay regularizes the evolving representation by encouraging previously learned classes to remain discriminative as new classes are introduced. The overall training objective combines the standard cross-entropy loss on the current session with a replay loss over the synthesized embeddings, 
+
+L = Lnew + λ Lreplay , Lreplay = X 
+
+> c< 5t
+
+CE  head(˜ xc), c . (2) Unlike isotropic Gaussian replay, our approach preserves the principal directions of variation within each class, producing substantially more representative rehearsal samples. Section 3 compares subspace replay against Gaussian replay and replay-free training, and Figure 2 visualizes the difference between the two sampling strategies. 
+
+2.5. Transductive Prototype Refinement 
+
+Few-shot prototypes are estimated from only K support examples and therefore provide imperfect estimates of the underlying class centers. Instead of classifying each query independently, we refine the prototypes by exploiting the collective structure of the unlabeled test batch through entropy-regularized optimal transport. Given the cosine-distance cost Mjc = 1 − q⊤ 
+
+> j
+
+μc, Sinkhorn iterations [13] compute a soft transport plan R = Sinkhorn ε(M )
+
+under balanced row and column constraints. Each prototype is then updated using both its support embeddings and the softly assigned query embeddings, μc ←     
+
+> P
+> ixi+P
+> jRjc qj
+> K+P
+> jRjc
+
+,We repeat this refinement for T iterations before the final prediction. By jointly considering all unlabeled queries, the refined prototypes provide a more reliable estimate of the class centers than independent per-sample classification, leading to improved recognition perfor-mance in the few-shot setting. 
+
+2.6. SPECTRA Training: We update only the adapter g and the learned prototypes and reference anchors; the encoder f is frozen and the transform Pt
+
+is closed-form. The sole training objective is Eq. 2: the new-class support features and the synthetic replay features (1) are classified by cross-entropy. 
+
+Table 1 . Comparison of different methods on NSynth-100. Method S0 S1 S2 S3 S4 AA ↑ PD ↓
+
+iCaRL CVPR’20 [17] 71.70 53.51 53.66 49.07 49.48 55.48 40.08 PODNET ECCV’20 [18] 71.87 44.89 43.58 42.93 40.97 48.85 35.57 DER CVPR’21 [19] 74.40 61.42 60.06 53.73 44.42 58.81 38.95 CEC CVPR’21 [8] 76.13 58.15 53.80 48.26 44.34 56.14 37.49 FACT CVPR’22 [20] 74.97 51.94 51.43 46.54 43.45 53.27 38.65 PAN TMM’23 [21] 76.71 58.38 53.92 48.44 44.48 56.39 37.72 EDE Interspeech’24 [22] 76.16 70.18 63.46 59.16 58.02 65.40 18.14 AISP TASLP’25 [23] 63.84 60.32 58.62 54.30 52.90 57.99 10.94 CLAP ICASSP’23 [4] 43.80 22.14 16.15 12.69 12.31 21.42 31.49 COOP IJCV’22 [24] 78.35 44.45 30.99 23.23 17.91 38.98 60.45 COCOOP CVPR’22 [25] 69.60 39.79 27.24 21.53 16.67 34.96 52.94 PALM EMNLP’24 [26] 94.09 57.34 41.43 34.08 31.32 51.65 62.77 TAPE CVPR’26 [6] 96.64 94.53 93.44 91.72 91.05 93.48 5.58 
+
+SPECTRA (ours) 98.14 97.27 96.77 95.50 94.92 96.52 3.23 Table 2 . Comparison of different methods on FSC-89. Method S0 S1 S2 S3 S4 AA ↑ PD ↓
+
+PAN TMM’23 [21] 41.48 23.72 18.08 15.27 12.25 22.16 37.72 EDE Interspeech’24 [22] 53.25 37.65 35.59 32.69 27.60 37.36 30.05 AISP TASLP’25 [23] 62.66 48.92 43.81 37.73 33.43 45.31 29.23 CLAP ICASSP’23 [4] 49.64 37.73 28.55 25.42 23.70 33.01 25.94 COOP IJCV’22 [24] 63.32 37.75 27.50 22.07 18.64 33.86 44.69 COCOOP CVPR’22 [25] 64.65 37.62 26.63 21.22 16.85 33.39 47.80 PALM EMNLP’24 [26] 74.41 39.16 25.30 19.91 17.47 35.25 56.94 TAPE CVPR’26 [6] 81.24 72.65 67.07 63.93 61.29 69.24 19.96 
+
+SPECTRA (ours) 82.24 74.41 69.25 66.21 63.48 71.12 18.77 Inference (no gradients). Only at test time do we apply the transduc-tive optimal transport step (2.5): we push the query-set through the trained adapter and project it using the transform, run T iterations to refine the prototypes from the unlabelled queries, and classify. This step updates no parameters. Algorithm 1 summarises one session. 
+
+3. EXPERIMENTS Setup. We evaluate on NSynth-100 [14] (instrument notes), FSC-89 [15] (sound events), and LS-100 [16] (speaker identity) under the standard FFCAC protocol: 5 sessions, 5 classes per session, K=5 
+
+shots. We report average accuracy (AA, mean over sessions, ↑) and 
+
+performance drop (PD = first − last session accuracy, ↓); all numbers are means over 50 seeds. The encoder is the frozen PENGI ALM and we keep TAPE’s closed-form transform and training otherwise untouched, reproducing its pipeline as our baseline. Unless stated otherwise, the adapter expansion ratio is r=3 , the replay subspace rank is k=3 , the replay weight is λ=1 , and OT uses T =3 prototype-refinement iterations. 
+
+Main results. Tables 1–4 compare SPECTRA to various FFCAC baselines. SPECTRA improves average accuracy on all datasets while 
+
+also reducing forgetting (PD), confirming that task calibration plus exemplar-free replay help on top of a strong frozen-ALM classifier. 
+
+Per-session analysis. The per-session columns of Tables 1–4 show where the gains arise: SPECTRA leads at every session, and on NSynth-100 the margin grows over sessions (S0 +1 .5, S4 +3 .9 over Table 3 . Per-session accuracy (%) under harder protocols: 10 -way × 10 -session on NSynth-100 and LS-100, and 10 -way × 8-session on FSC-89 (FSC-89 has only 89 classes, capping it at 8 sessions); 30 seeds. Method S0 S1 S2 S3 S4 S5 S6 S7 S8 S9 AA ↑ PD ↓
+
+NSynth-100 (10 -way × 10 -session) TAPE 95.6 92.2 90.8 89.6 88.4 86.5 85.1 84.0 82.9 81.5 87.66 14.11 
+
+SPECTRA 97.6 95.6 94.3 93.4 92.7 91.5 90.8 90.1 89.6 88.9 92.45 8.77 LS-100 (10 -way × 10 -session) TAPE 90.1 85.4 80.7 77.9 75.2 73.4 70.7 69.0 67.2 65.7 75.53 24.43 
+
+SPECTRA 95.1 91.2 88.1 85.7 83.7 82.3 80.4 79.7 78.6 77.8 84.26 17.31 FSC-89 (10 -way × 8-session) TAPE 71.7 63.2 58.1 55.0 51.9 49.6 47.1 45.0 – – 55.22 26.66 
+
+SPECTRA 74.1 65.9 60.7 57.4 54.5 52.5 50.3 48.7 – – 58.02 25.44 Table 4 . Comparison of different methods on LS-100. Method S0 S1 S2 S3 S4 AA ↑ PD ↓
+
+PAN TMM’23 [21] 85.70 52.20 39.17 32.95 29.88 47.98 37.72 EDE Interspeech’24 [22] 91.90 70.23 54.21 46.97 45.94 61.85 45.96 AISP TASLP’25 [23] 91.20 70.26 53.71 47.08 45.15 61.48 46.05 CLAP ICASSP’23 [4] 18.96 9.06 5.91 4.75 3.37 8.41 15.59 COOP IJCV’22 [24] 49.14 27.64 18.48 14.48 11.01 24.15 38.14 COCOOP CVPR’22 [25] 46.90 24.32 15.75 10.86 7.84 21.14 39.06 PALM EMNLP’24 [26] 87.73 44.96 29.39 21.44 18.97 40.50 68.76 TAPE CVPR’26 [6] 92.34 87.41 84.64 82.24 80.84 85.49 11.50 
+
+SPECTRA (ours) 97.22 94.81 92.32 89.99 88.55 92.58 8.67 Table 5 . Component ablation (AA / PD, 50 seeds). Configuration NSynth-100 FSC-89 
+
+AA ↑ PD ↓ AA ↑ PD ↓
+
+TAPE (baseline) 93.5 5.6 69.2 20.0 + Adapter 95.5 4.3 70.0 19.0 + Transport (OT) 95.8 4.7 70.5 19.9 w/ Gaussian replay 95.8 4.6 70.8 19.3 w/ subspace replay 96.5 3.2 71.1 18.8 
+
+TAPE). The effect is largest on LS-100 ( +7 .1 AA). 
+
+Scaling to a harder protocol. To test generality beyond the standard 5-way protocol, we run a harder 10 -way × 10 -session setting on all datasets (all dataset classes over 10 incremental steps). Table 3 shows SPECTRA still beats TAPE by a wide margin. 
+
+Ablations. (i) Component contribution. Table 5 decomposes SPECTRA. Removing the adapter gives up the largest single drop in AA and already lowers PD, so calibrating the frozen embedding is the main driver; optimal transport then adds accuracy at a small PD cost (discussed below); subspace replay yields the best AA and the lowest PD. 
+
+(ii) Does the replay structure matter? We compare our low-rank replay (1) against (i) no replay and (ii) an isotropic Gaussian rehearsal of matched total variance, ˜xc = μc + ϵ, ϵ ∼ N (0 , τ 2Id), τ 2 =
+
+> 1
+> d
+
+P 
+
+> j
+
+σ2 
+
+> j
+
+. Subspace replay beats Gaussian replay on 2 datasets and both metrics. On NSynth-100 Gaussian replay barely improves over no replay, isolating the anisotropic, low-rank structure —not the act of replaying—as the source of the anti-forgetting effect. 
+
+Algorithm 1 SPECTRA: training and inference at session t
+
+Require: frozen ALM f ; adapter g; anchors A; memories {M c}
+
+Ensure: labels ˆy for queries of all classes seen so far 
+
+Training ▷ only g and the head get gradients  
+
+> 1:
+
+Mc ← { f (ai)}Ki=1 , μc ← 1
+
+> K
+
+P 
+
+> i
+
+xi ▷ new classes  
+
+> 2:
+
+for each old class c do  
+
+> 3:
+
+Uc, Σ ← SVD( Mc − μc), σj ← Σjj /√K −1 
+
+> 4:
+
+˜xc ← μc + P 
+
+> j≤k
+
+zj σj (Uc)j , zj ∼ N (0 , 1) ▷ Eq. 1  
+
+> 5:
+
+end for  
+
+> 6:
+
+L ← L new (x) + λLreplay (˜ x) ▷ Eq. 2  
+
+> 7:
+
+g, head ← SGD( L) 
+
+> 8:
+
+Pt ← pinv( C) A ▷ closed form 
+
+Inference ▷ no gradients  
+
+> 9:
+
+qj ← ℓ2(Pt g(f (aj ))) , μc ← ℓ2(Pt g(μc))  
+
+> 10:
+
+for Tot iterations do  
+
+> 11:
+
+Mjc ← 1 − q⊤ 
+
+> j
+
+μc, R ← Sinkhorn ε(M ) 
+
+> 12:
+
+μc ← ℓ2
+
+ μc + P 
+
+> j
+
+Rjc qj
+
+ ▷ Eq. 2.5  
+
+> 13:
+
+end for  
+
+> 14:
+
+return ˆyj = arg max c cos( qj , μc)
+
+(iii) Adapter capacity. Sweeping the expansion r ∈ { 2, 3, 4, 8} moves AA by less than the seed standard deviation on both datasets; we use 
+
+r=3 , the smallest value on this plateau. 
+
+(iv) Transport assignment. Optimal transport is the one component with a trade-off: across the chain it raises AA ( +0 .3/+0 .5) but in-creases PD ( +0 .4/+0 .9). Subspace replay more than compensates, yielding the best PD overall; we therefore retain OT for its accuracy gain while replay supplies the anti-forgetting. 
+
+4. CONCLUSION 
+
+We presented SPECTRA for fully few-shot class-incremental au-dio classification: a trainable adapter that calibrates frozen audio– language embeddings, exemplar-free subspace feature replay that fights forgetting by sampling old classes from their low-rank fea-ture subspaces, and a transductive optimal-transport refinement. On three FFCAC benchmarks SPECTRA improves average accuracy and reduces forgetting over TAPE the current state of the art, and our ablations statistically establish that the subspace structure of the replay—not replay alone—drives the gain. Future work includes cou-pling the transport plan with the replay subspaces to further stabilise noisier datasets. 5. REFERENCES 
+
+[1] Wenbo Li, Yaodong Cui, Yintao Ma, Xingxin Chen, Guofa Li, Guanzhong Zeng, Gang Guo, and Dongpu Cao, “A spontaneous driver emotion facial expression (defe) dataset for intelligent vehicles: Emotions triggered by video-audio clips in driving scenarios,” IEEE Transactions on Affective Computing , vol. 14, no. 1, pp. 747–760, 2021. [2] Bin Li, Xihe Qiu, Xiaoyu Tan, Long Yang, Jing Tao, Zhijun Fang, and Jingjing Huang, “An end-to-end audio classification framework with diverse features for obstructive sleep apnea-hypopnea syndrome diagnosis: B. li et al.,” Applied Intelligence ,vol. 55, no. 6, pp. 427, 2025. [3] PE Anuvind, CK Abhishek, CK Rahila, K Neethu, et al., “De-velopment and implementation of an animal intrusion detec-tion system using image and audio processing,” in 2023 14th International Conference on Computing Communication and Networking Technologies (ICCCNT) . IEEE, 2023, pp. 1–7. [4] Benjamin Elizalde, Soham Deshmukh, Mahmoud Al Ismail, and Huaming Wang, “Clap learning audio concepts from natural language supervision,” in ICASSP 2023-2023 IEEE Interna-tional Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2023, pp. 1–5. [5] Soham Deshmukh, Benjamin Elizalde, Rita Singh, and Huam-ing Wang, “Pengi: An audio language model for audio tasks,” 
+
+Advances in Neural Information Processing Systems , vol. 36, pp. 18090–18108, 2023. [6] Yunlong Gao, Wenxin Liang, Guanglu Wang, Senqi Guan, Lin-lin Zong, Dongyu Zhang, and Xinyue Liu, “Tape: Task-adaptive prototype evolution in audio-language models for fully few-shot class-incremental audio classification,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recog-nition , 2026, pp. 19570–19579. [7] Xiaoyu Tao, Xiaopeng Hong, Xinyuan Chang, Songlin Dong, Xing Wei, and Yihong Gong, “Few-shot class-incremental learn-ing,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2020, pp. 12183–12192. [8] Chi Zhang, Nan Song, Guosheng Lin, Yun Zheng, Pan Pan, and Yinghui Xu, “Few-shot incremental learning with contin-ually evolved classifiers,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2021, pp. 12455–12464. [9] Wei Xie, Yanxiong Li, Qianhua He, Wenchang Cao, and Tuo-mas Virtanen, “Few-shot class-incremental audio classifi-cation using adaptively-refined prototypes,” arXiv preprint arXiv:2305.18045 , 2023. [10] Giries Abu Ayoub, Morad Tukan, and Loay Mualem, “Spurau-dio: A benchmark for studying shortcut learning in few-shot audio classification,” arXiv preprint arXiv:2605.13672 , 2026. [11] Hanul Shin, Jung Kwon Lee, Jaehong Kim, and Jiwon Kim, “Continual learning with deep generative replay,” Advances in neural information processing systems , vol. 30, 2017. [12] Yuqing Hu, Vincent Gripon, and St´ ephane Pateux, “Leveraging the feature distribution in transfer-based few-shot learning,” in 
+
+International conference on artificial neural networks . Springer, 2021, pp. 487–499. [13] Marco Cuturi, “Sinkhorn distances: Lightspeed computation of optimal transport,” Advances in neural information processing systems , vol. 26, 2013. [14] Jesse Engel, Cinjon Resnick, Adam Roberts, Sander Dieleman, Mohammad Norouzi, Douglas Eck, and Karen Simonyan, “Neu-ral audio synthesis of musical notes with wavenet autoencoders,” in International conference on machine learning . PMLR, 2017, pp. 1068–1077. [15] Yu Wang, Nicholas J Bryan, Justin Salamon, Mark Cartwright, and Juan Pablo Bello, “Who calls the shots? rethinking few-shot learning for audio,” in 2021 IEEE Workshop on Applications of Signal Processing to Audio and Acoustics (WASPAA) . IEEE, 2021, pp. 36–40. [16] Vassil Panayotov, Guoguo Chen, Daniel Povey, and Sanjeev Khudanpur, “Librispeech: an asr corpus based on public do-main audio books,” in 2015 IEEE international conference on acoustics, speech and signal processing (ICASSP) . IEEE, 2015, pp. 5206–5210. [17] Sylvestre-Alvise Rebuffi, Alexander Kolesnikov, Georg Sperl, Christoph H Lampert, et al., “Incremental classifier and rep-resentation learning,” in Conference on Computer Vision and Pattern Recognition (CVPR) , 2024, pp. 5533–5542. [18] Arthur Douillard, Matthieu Cord, Charles Ollion, Thomas Robert, and Eduardo Valle, “Podnet: Pooled outputs distillation for small-tasks incremental learning,” in European conference on computer vision . Springer, 2020, pp. 86–102. [19] Shipeng Yan, Jiangwei Xie, and Xuming He, “Der: Dynami-cally expandable representation for class incremental learning,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2021, pp. 3014–3023. [20] Da-Wei Zhou, Fu-Yun Wang, Han-Jia Ye, Liang Ma, Shiliang Pu, and De-Chuan Zhan, “Forward compatible few-shot class-incremental learning,” in Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition , 2022, pp. 9046–9056. [21] Yanxiong Li, Wenchang Cao, Wei Xie, Jialong Li, and Em-manouil Benetos, “Few-shot class-incremental audio classifica-tion using dynamically expanded classifier with self-attention modified prototypes,” IEEE Transactions on Multimedia , vol. 26, pp. 1346–1360, 2023. [22] Yongjie Si, Yanxiong Li, Jialong Li, Jiaxin Tan, and Qian-hua He, “Fully few-shot class-incremental audio classification using expandable dual-embedding extractor,” arXiv preprint arXiv:2406.08122 , 2024. [23] Yongjie Si, Yanxiong Li, Jiaxin Tan, Guoqing Chen, Qianqian Li, and Mladen Russo, “Fully few-shot class-incremental au-dio classification with adaptive improvement of stability and plasticity,” IEEE Transactions on Audio, Speech and Language Processing , vol. 33, pp. 418–433, 2025. [24] Kaiyang Zhou, Jingkang Yang, Chen Change Loy, and Ziwei Liu, “Learning to prompt for vision-language models,” In-ternational journal of computer vision , vol. 130, no. 9, pp. 2337–2348, 2022. [25] Kaiyang Zhou, Jingkang Yang, Chen Change Loy, and Ziwei Liu, “Conditional prompt learning for vision-language models,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2022, pp. 16816–16825. [26] Asif Hanif, Maha Tufail Agro, Mohammad Areeb Qazi, and Hanan Aldarmaki, “Palm: Few-shot prompt learning for audio language models,” in Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing , 2024, pp. 18527–18536.
