@@ -1,0 +1,93 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-29T03:25:50.581756+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.26346v1",
+      "source": "arxiv",
+      "title": "Decay-Region Group Delay as a Forensic Cue for AI-Generated Impulsive Sounds",
+      "abstract": "We investigate whether AI-generated impulsive sounds can be distinguished from real ones through group delay analysis. Our central finding is that AI-generated impulsive sounds show near-identical onset-region group-delay distributions but exhibit measurably different group-delay behavior in the late decay region: decay-region KL divergence reaches $0.322$ compared to near-zero onset divergence ($0.022$). Cross-band GD variability achieves single-feature AUC~=~0.720, and a Random Forest (RF) over nine decay-region features reaches AUC~$=$~0.884 under sample-disjoint evaluation. A group delay map used as a standalone 2D input to CNN classifiers achieves 90--94\\% accuracy, demonstrating that group delay carries substantial discriminative information. Under generator hold-out, CNN and transformer classifiers show highly variable AUC (0.457--0.918). The group delay RF achieves the highest average hold-out accuracy among the evaluated methods ($66.7\\%$) and avoids extreme below-random collapse, although its average AUC (0.731) is lower than CNN avg (0.762) and AST (0.772). Parameter sensitivity analysis across 27 STFT configurations confirms that the RF AUC remains stable (0.700--0.847, std~=~0.035). These results suggest that decay-region group delay can serve as a physically interpretable forensic cue that complements magnitude-based classifiers, while broader validation remains necessary.",
+      "authors": [
+        "JaeHyeong Chang",
+        "Chengzhe Sun",
+        "Siwei Lyu"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI"
+      ],
+      "published": "2026-08-26T19:28:38+00:00",
+      "link": "https://arxiv.org/pdf/2608.26346v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decay-region group delay features discriminate sound classes; transferable acoustic feature method for recognition",
+      "llm_evidence_cn": "衰减区群延迟特征可区分声音类别，其声学特征方法可迁移至目标识别",
+      "llm_evidence": "衰减区群延迟特征可区分声音类别，其声学特征方法可迁移至目标识别",
+      "canonical_evidence": "衰减区群延迟特征可区分声音类别，其声学特征方法可迁移至目标识别",
+      "llm_tldr_en": "AI-generated and real impulsive sounds differ mainly in decay-region group delay; nine features with random forest reach AUC 0.884 and CNN on group-delay maps achieves 90-94% accuracy, showing group delay as a discriminative acoustic cue.",
+      "llm_tldr_cn": "AI生成的脉冲声音与真实声音在起始区群延迟分布几乎一致，但在衰减区表现出可区分的群延迟特征。论文通过衰减区九个特征与随机森林达到0.884的AUC，并将群延迟图送入CNN获得90%-94%的分类准确率。结果表明群延迟携带丰富的判别信息，可作为声音鉴别的有效声学特征。该方法虽面向AI声音取证，但其特征提取与分类框架可迁移至舰船噪声等声学识别任务。",
+      "llm_tldr": "AI生成的脉冲声音与真实声音在起始区群延迟分布几乎一致，但在衰减区表现出可区分的群延迟特征。论文通过衰减区九个特征与随机森林达到0.884的AUC，并将群延迟图送入CNN获得90%-94%的分类准确率。结果表明群延迟携带丰富的判别信息，可作为声音鉴别的有效声学特征。该方法虽面向AI声音取证，但其特征提取与分类框架可迁移至舰船噪声等声学识别任务。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.27332v1",
+      "source": "arxiv",
+      "title": "IDSD: Iterative Deep-Learning-Based Signal Decomposition",
+      "abstract": "Data-driven signal decomposition methods decompose a signal into its underlying components in a flexible and adaptive way, taking into account the signal characteristics. Here we focus on univariate signals, whose decomposition is ill-posed. Classical univariate approaches -- like variational mode decomposition -- constrain the solution space (e.g. through narrowband priors), and often require the number of components to be known in advance. These assumption, however, limit the algorithm's usage in certain real-life applications. Instead, we exploit the flexibility of neural networks to replace fixed (narrowband) priors with data-driven priors. Our model, called Iterative Deep-Learning-Based Signal Decomposition (IDSD), iteratively extracts an adaptive number of various types of components from a signal, with no restrictions on the bandwidth of a component. We show superior performance of IDSD both in a controlled setup with synthetic data, and on two real datasets concerning tidal waves and physiological measurements.",
+      "authors": [
+        "Iris Huijben",
+        "Joël Karel",
+        "Ralf Peeters",
+        "Pietro Bonizzi"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-08-27T16:33:53+00:00",
+      "link": "https://arxiv.org/pdf/2608.27332v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "generic signal decomposition method transferable to extracting high-frequency ship noise components for recognition",
+      "llm_evidence_cn": "通用的数据驱动信号分解方法，可用于舰船噪声高频分量提取与识别",
+      "llm_evidence": "通用的数据驱动信号分解方法，可用于舰船噪声高频分量提取与识别",
+      "canonical_evidence": "通用的数据驱动信号分解方法，可用于舰船噪声高频分量提取与识别",
+      "llm_tldr_en": "Proposes an iterative deep-learning-based signal decomposition method that adaptively extracts an arbitrary number of signal components without narrowband priors, offering a transferable tool for decomposing ship noise into high-frequency components for recognition.",
+      "llm_tldr_cn": "针对经典单变量信号分解方法受窄带先验和预先指定分量数限制的问题，提出迭代深度学习的IDSD方法，利用神经网络作为数据驱动先验，自适应地逐个提取信号分量，无需预设分量数量即可灵活分解复杂信号。该方法为舰船噪声中提取高频识别分量提供通用可迁移工具，有助于后续特征工程与目标识别，在真实数据实验上展现出较强的适应性。",
+      "llm_tldr": "针对经典单变量信号分解方法受窄带先验和预先指定分量数限制的问题，提出迭代深度学习的IDSD方法，利用神经网络作为数据驱动先验，自适应地逐个提取信号分量，无需预设分量数量即可灵活分解复杂信号。该方法为舰船噪声中提取高频识别分量提供通用可迁移工具，有助于后续特征工程与目标识别，在真实数据实验上展现出较强的适应性。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "high frequency components in ship noise for recognition",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
