@@ -6,26 +6,30 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-29
-- 运行时间：2026-08-29 22:34:08 UTC
+- 最新运行日期：2026-08-30
+- 运行时间：2026-08-30 22:49:07 UTC
 - 运行状态：成功
-- 本次总论文数：1
+- 本次总论文数：3
 - 精读区：0
-- 速读区：1
+- 速读区：3
 
 ### 今日简报（AI）
-今日速读1篇侧扫声纳视角不变表示论文，精读0篇。  
-重点看《BenthicDINO》（6.0分），其物理信息自蒸馏方法值得关注。  
-若对水下声纳表征感兴趣，可进一步了解该文的自蒸馏与视角不变设计。
-- 详情：[/202608/29/README](/202608/29/README)
+今日速读3篇论文，覆盖脉冲神经网络声呐目标检测、AI生成脉冲声取证与迭代信号分解。最值得关注：脉冲网络在低能耗前视声呐目标检测中的应用，以及基于衰减区群延迟识别AI生成脉冲声。建议优先精读声呐检测一文，其余两篇按兴趣泛读即可。
+- 详情：[/202608/30/README](/202608/30/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [BenthicDINO: Physics-Informed Self-Distillation for View-Invariant Side-Scan Sonar Representations](/202608/29/2608.23215v1-benthicdino-physics-informed-self-distillation-for-view-invariant-side-scan-sonar-representations)  
+1. [Spiking Neural Networks for Energy-Efficient Object Detection in Forward-Looking Sonar Imagery](/202608/30/2608.22072v1-spiking-neural-networks-for-energy-efficient-object-detection-in-forward-looking-sonar-imagery)  
+   标签：评分：7.0/10、query:shipnoise-hf
+   evidence：基于声呐的水下目标检测，与水下声学目标识别主题一致。
+2. [Decay-Region Group Delay as a Forensic Cue for AI-Generated Impulsive Sounds](/202608/30/2608.26346v1-decay-region-group-delay-as-a-forensic-cue-for-ai-generated-impulsive-sounds)  
    标签：评分：6.0/10、query:shipnoise-hf
-   evidence：物理信息自蒸馏学习侧扫声纳表征，支持水下目标分类
+   evidence：群延迟声学特征用于声音分类，可迁移至船舶噪声识别
+3. [IDSD: Iterative Deep-Learning-Based Signal Decomposition](/202608/30/2608.27332v1-idsd-iterative-deep-learning-based-signal-decomposition)  
+   标签：评分：6.0/10、query:shipnoise-hf
+   evidence：深度学习的信号分解方法，可提取单变量信号中的分量，适用于船噪声高频分量分析。
 
 
 <div class="dpr-home-promo-card">

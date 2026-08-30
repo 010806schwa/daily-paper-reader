@@ -1,0 +1,130 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-30T22:48:07.686318+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.22072v1",
+      "source": "arxiv",
+      "title": "Spiking Neural Networks for Energy-Efficient Object Detection in Forward-Looking Sonar Imagery",
+      "abstract": "Autonomous underwater vehicles (AUVs) are increasingly important tools in industries ranging from research, to energy, to defense. AUVs are power-constrained platforms operating in remote environments with fixed battery capacities, where propulsion competes with compute and sensors for power over lengthy mission durations. AUVs frequently operate in dark or turbid waters where optical sensing is of limited value, and rely on sonar as their primary sensing modality. Convolutional neural networks (CNNs) are the state-of-the-art solution for object detection in forward-looking sonar imagery, but are energy expensive (e.g. YOLOv8m: 322 mJ/inference). Spiking neural networks (SNNs) rely on binary spike activations and thus sparse accumulate-only operations, allowing them to be remarkably energy efficient, particularly when paired with dedicated neuromorphic hardware. The sparse, high-contrast structure of forward-looking sonar (FLS) returns is structurally matched to spike coding in a way that optical imagery is not. No prior work has assessed the suitability of SNNs for object detection in FLS imagery. SpikeYOLO, a fully spiking network trained with surrogate gradients, was benchmarked against state-of-the-art CNN baselines on three FLS object detection datasets. Key results: SpikeYOLO T=2 achieves 3.3$\\times$ lower theoretical compute energy on UATD (97 vs 322 mJ) at competitive accuracy (0.529 mAP@0.5:0.95 vs. YOLOv8m's 0.575); SpikeYOLO matches YOLOv8m on mAP@0.5 and outperforms YOLO-SONAR and Fast R-CNN baselines on the sparse Marine-Debris-FLS dataset at 4.4$\\times$ lower energy; SpikeYOLO demonstrates superior robustness to multiplicative speckle noise (3.0% degradation at $σ{=}0.4$ vs. 8.9% for YOLOv8m), outperforming YOLOv8m outright at $σ{=}0.6$, directly relevant to real-world FLS deployment.",
+      "authors": [
+        "Gwenevere Frank",
+        "Gert Cauwenberghs"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "eess.SP"
+      ],
+      "published": "2026-08-22T18:31:15+00:00",
+      "link": "https://arxiv.org/pdf/2608.22072v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Sonar-based underwater object detection with energy-efficient SNNs, aligned with underwater acoustic target recognition.",
+      "llm_evidence_cn": "基于声呐的水下目标检测，与水下声学目标识别主题一致。",
+      "llm_evidence": "基于声呐的水下目标检测，与水下声学目标识别主题一致。",
+      "canonical_evidence": "基于声呐的水下目标检测，与水下声学目标识别主题一致。",
+      "llm_tldr_en": "This paper proposes spiking neural networks for energy-efficient object detection in forward-looking sonar imagery. Binary spike activations enable sparse computation, reducing inference energy while maintaining detection accuracy, making underwater target recognition feasible on power-constrained AUVs.",
+      "llm_tldr_cn": "自主水下航行器在暗浊水域中常依赖前视声呐感知，然而基于CNN的声呐目标检测能耗较高，限制了长时间任务。该文提出基于脉冲神经网络（SNN）的节能检测方法，利用二进制脉冲激活和稀疏计算来降低推理能耗。实验结果显示，该方法在保持检测精度的同时大幅减少能耗，优于传统CNN方案。这项研究为能量受限水下平台的声呐目标识别提供了可行的低功耗技术路径。",
+      "llm_tldr": "自主水下航行器在暗浊水域中常依赖前视声呐感知，然而基于CNN的声呐目标检测能耗较高，限制了长时间任务。该文提出基于脉冲神经网络（SNN）的节能检测方法，利用二进制脉冲激活和稀疏计算来降低推理能耗。实验结果显示，该方法在保持检测精度的同时大幅减少能耗，优于传统CNN方案。这项研究为能量受限水下平台的声呐目标识别提供了可行的低功耗技术路径。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic target recognition using high frequency features",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.26346v1",
+      "source": "arxiv",
+      "title": "Decay-Region Group Delay as a Forensic Cue for AI-Generated Impulsive Sounds",
+      "abstract": "We investigate whether AI-generated impulsive sounds can be distinguished from real ones through group delay analysis. Our central finding is that AI-generated impulsive sounds show near-identical onset-region group-delay distributions but exhibit measurably different group-delay behavior in the late decay region: decay-region KL divergence reaches $0.322$ compared to near-zero onset divergence ($0.022$). Cross-band GD variability achieves single-feature AUC~=~0.720, and a Random Forest (RF) over nine decay-region features reaches AUC~$=$~0.884 under sample-disjoint evaluation. A group delay map used as a standalone 2D input to CNN classifiers achieves 90--94\\% accuracy, demonstrating that group delay carries substantial discriminative information. Under generator hold-out, CNN and transformer classifiers show highly variable AUC (0.457--0.918). The group delay RF achieves the highest average hold-out accuracy among the evaluated methods ($66.7\\%$) and avoids extreme below-random collapse, although its average AUC (0.731) is lower than CNN avg (0.762) and AST (0.772). Parameter sensitivity analysis across 27 STFT configurations confirms that the RF AUC remains stable (0.700--0.847, std~=~0.035). These results suggest that decay-region group delay can serve as a physically interpretable forensic cue that complements magnitude-based classifiers, while broader validation remains necessary.",
+      "authors": [
+        "JaeHyeong Chang",
+        "Chengzhe Sun",
+        "Siwei Lyu"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI"
+      ],
+      "published": "2026-08-26T19:28:38+00:00",
+      "link": "https://arxiv.org/pdf/2608.26346v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "group delay acoustic feature for sound classification, transferable to ship noise recognition",
+      "llm_evidence_cn": "群延迟声学特征用于声音分类，可迁移至船舶噪声识别",
+      "llm_evidence": "群延迟声学特征用于声音分类，可迁移至船舶噪声识别",
+      "canonical_evidence": "群延迟声学特征用于声音分类，可迁移至船舶噪声识别",
+      "llm_tldr_en": "Investigates decay-region group delay as a forensic cue to distinguish AI-generated impulsive sounds from real ones, achieving 0.884 AUC with random forest and 90-94% CNN accuracy on group delay maps, showing phase information carries strong discriminative power.",
+      "llm_tldr_cn": "本文研究利用衰减区群延迟特征区分AI生成脉冲声音与真实声音。结果表明，AI生成声音在起始区群延迟分布与真实声音几乎一致，但在后期衰减区呈现显著差异，衰减区KL散度达0.322；基于衰减区九维特征的随机森林分类AUC达0.884，群延迟图输入CNN可实现90-94%准确率。该工作证明群延迟携带可用于声学分类的判别信息，其特征提取思路可迁移至船舶噪声识别。",
+      "llm_tldr": "本文研究利用衰减区群延迟特征区分AI生成脉冲声音与真实声音。结果表明，AI生成声音在起始区群延迟分布与真实声音几乎一致，但在后期衰减区呈现显著差异，衰减区KL散度达0.322；基于衰减区九维特征的随机森林分类AUC达0.884，群延迟图输入CNN可实现90-94%准确率。该工作证明群延迟携带可用于声学分类的判别信息，其特征提取思路可迁移至船舶噪声识别。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.27332v1",
+      "source": "arxiv",
+      "title": "IDSD: Iterative Deep-Learning-Based Signal Decomposition",
+      "abstract": "Data-driven signal decomposition methods decompose a signal into its underlying components in a flexible and adaptive way, taking into account the signal characteristics. Here we focus on univariate signals, whose decomposition is ill-posed. Classical univariate approaches -- like variational mode decomposition -- constrain the solution space (e.g. through narrowband priors), and often require the number of components to be known in advance. These assumption, however, limit the algorithm's usage in certain real-life applications. Instead, we exploit the flexibility of neural networks to replace fixed (narrowband) priors with data-driven priors. Our model, called Iterative Deep-Learning-Based Signal Decomposition (IDSD), iteratively extracts an adaptive number of various types of components from a signal, with no restrictions on the bandwidth of a component. We show superior performance of IDSD both in a controlled setup with synthetic data, and on two real datasets concerning tidal waves and physiological measurements.",
+      "authors": [
+        "Iris Huijben",
+        "Joël Karel",
+        "Ralf Peeters",
+        "Pietro Bonizzi"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-08-27T16:33:53+00:00",
+      "link": "https://arxiv.org/pdf/2608.27332v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Deep-learning signal decomposition method that can extract components from univariate signals, applicable to ship noise high-frequency component analysis.",
+      "llm_evidence_cn": "深度学习的信号分解方法，可提取单变量信号中的分量，适用于船噪声高频分量分析。",
+      "llm_evidence": "深度学习的信号分解方法，可提取单变量信号中的分量，适用于船噪声高频分量分析。",
+      "canonical_evidence": "深度学习的信号分解方法，可提取单变量信号中的分量，适用于船噪声高频分量分析。",
+      "llm_tldr_en": "IDSD iteratively decomposes a univariate signal into an adaptive number of components using data-driven neural priors, replacing fixed narrowband assumptions and enabling flexible decomposition for downstream feature extraction.",
+      "llm_tldr_cn": "传统单变量信号分解方法依赖窄带先验且需预设分量数，限制了其在真实信号中的应用。为此提出IDSD迭代深度学习信号分解模型，利用神经网络学习数据驱动先验替代固定窄带约束，自适应地逐次提取可变数量的信号分量。该方法在多种信号上展示了良好的分解灵活性与适应性。作为通用分解工具，它可用于船辐射噪声的高频分量提取与后续识别任务。",
+      "llm_tldr": "传统单变量信号分解方法依赖窄带先验且需预设分量数，限制了其在真实信号中的应用。为此提出IDSD迭代深度学习信号分解模型，利用神经网络学习数据驱动先验替代固定窄带约束，自适应地逐次提取可变数量的信号分量。该方法在多种信号上展示了良好的分解灵活性与适应性。作为通用分解工具，它可用于船辐射噪声的高频分量提取与后续识别任务。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "high frequency components in ship noise for recognition",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
