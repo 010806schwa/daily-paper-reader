@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-01",
+  "date": "2026-09-01",
+  "generated_at": "2026-09-01T22:41:02",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/01/2608.29012v1-frequency-selective-neural-networks-as-a-foundation-architecture-for-time-series-learning",
+      "section": "quick",
+      "title_en": "Frequency Selective Neural Networks as a Foundation Architecture for Time Series Learning",
+      "authors": "Hui Huang, Ye Sun, Shiyan Hu",
+      "date": "2026-08-29",
+      "pdf": "https://arxiv.org/pdf/2608.29012v1",
+      "score": "7.0",
+      "evidence": "频率选择性神经网络用于时间序列学习，可迁移至水下声学识别",
+      "tldr": "时间序列数据由非平稳振荡模式驱动，但主流深度学习模型如CNN、RNN、Transformer缺乏频谱感知，导致频谱纠缠和物理可解释性缺失。FSNN通过将Wiener滤波器组作为可微组件嵌入神经网络，并采用复数域反向传播，自主发现并隔离任务相关的物理模态。在10个UEA数据集上平均准确率达77.0%，在PTX-XL ECG基准上领先所有指标，且直接收敛到QRS等物理频带。开创了兼具物理可解释性与深度学习表达力的基础架构，为复杂时间序列分析提供了可扩展的新范式。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Time-series data across physical and biological domains are fundamentally driven by complex, non-stationary oscillatory modes. While deep learning models, such as Convolutional Neural Networks (CNNs), Recurrent Neural Networks, and Transformers, have dominated sequential analysis, they remain fundamentally \"spectral-blind\". By mapping continuous physical waves into unconstrained spatial or discrete token spaces, these architectures suffer from severe spectral entanglement, acting as opaque black boxes that decouple predictive accuracy from physical reality. In this paper, we introduce the Frequency Selective Neural Network (FSNN), pioneering a foundation architecture guaranteeing physical interpretability without sacrificing expressive power of deep learning. FSNN addresses spectral entanglement by explicitly embedding the rigorous mathematics of advanced signal processing into its neural topology. Through a fully differentiable Wiener-like filter bank optimized via complex-domain backpropagation, FSNN autonomously discovers and isolates the precise physical modes of a given task. Extensive evaluations demonstrate that FSNN establishes state-of-the-art predictive performance, achieving $77.0\\%$ average accuracy on the standard 10 multivariate UEA datasets and leading across all major metrics on the highly imbalanced PTB-XL clinical ECG benchmark. Crucially, in contrast to yielding abstract feature maps, FSNN converges directly on physically meaningful frequency bands, such as isolating the cardiac QRS complex, providing a highly scalable, interpretable paradigm for robust pattern recognition in complex temporal domains. Our code is available at: https://github.com/ad6174hhhh/FSNN.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/01/2608.29214v1-sound-analysis-for-speed-estimation-of-induction-motors-under-non-stationary-conditions",
+      "section": "quick",
+      "title_en": "Sound Analysis for Speed Estimation of Induction Motors Under Non-Stationary Conditions",
+      "authors": "Tomas A. Garcia-Calva, Daniel Morinigo-Sotelo, Konstantinos N. Gyftakis",
+      "date": "2026-08-29",
+      "pdf": "https://arxiv.org/pdf/2608.29214v1",
+      "score": "6.0",
+      "evidence": "声学谐波提取与时频分析可迁移至舰船噪声识别",
+      "tldr": "针对非平稳工况下感应电机转速难以在线估计的问题，提出一种基于低成本麦克风声学信号分析的转速估计方法。该方法整合多速率信号处理与高级时频分析，从电机声学辐射中提取速度相关谐波分量，并有效抑制电气干扰和电磁噪声。实验涵盖稳态、缓慢斜坡及突然变速等多种工况，结果表明所估计的瞬时转速能快速准确地跟踪动态变化，与常规传感器测量高度一致。该声学技术为非侵入、低成本、可靠的电机转速监测提供了新方案。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "This paper presents a novel methodology for the estimation of the rotational speed of induction motors operating under non stationary conditions, using acoustic signals acquired by a low cost microphone. The proposed approach integrates multi rate digital signal processing with advanced time frequency analysis to extract speed dependent harmonic components from motor acoustic emissions, while effectively suppressing electrical interference and electromagnetic noise. Numerical simulations and experimental validations are conducted under both steady state and transient operating conditions, considering a wide variety of speed profiles, including slow ramps and abrupt speed variations. The experimental results demonstrate that the proposed method is capable of accurately tracking rapid and dynamic speed changes caused by load disturbances and mechanical irregularities. The estimated instantaneous speed exhibits a high degree of agreement with reference measurements obtained from a conventional speed sensor. The results confirm that the proposed acoustic based technique provides a reliable, noninvasive, and cost effective solution suitable for speed monitoring of induction motors.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/01/2608.29868v1-robust-model-order-selection-via-dithered-differential-step-down-thresholding",
+      "section": "quick",
+      "title_en": "Robust Model Order Selection via Dithered Differential Step-Down Thresholding",
+      "authors": "Aleksandr Kharin",
+      "date": "2026-08-30",
+      "pdf": "https://arxiv.org/pdf/2608.29868v1",
+      "score": "6.0",
+      "evidence": "在平稳噪声中稳健检测弱确定性分量以进行模型阶次选择",
+      "tldr": "针对平稳噪声中模型阶数选择对单阈值检测敏感、易受极端噪声干扰的问题，提出差分级联降阈值算法配合随机抖动阈值网格，利用极值理论检测噪声极值聚类作为停止准则。理论证明该算法在0-1损失下达到渐近精确阶数恢复，且在阈值降低或极端噪声下保持稳健。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "This paper studies the problem of model order selection in stationary noise. Single-threshold detection is sensitive to extreme noise excursions, particularly when the detection threshold is lowered to capture weak deterministic components. To augment single-threshold detection, we propose a differential step-down thresholding algorithm. We use a threshold grid in this algorithm. To overcome the threshold grid misalignment error induced by grid evaluation, we utilize randomized grid dithering. Using extreme value theory, we show the clustering of the noise extrema. The stopping rule of the proposed algorithm detects this clustering and stops the algorithm to prevent false alarms. By analytically bounding the threshold grid misalignment error, we prove that our algorithm achieves asymptotic exact order recovery under the 0-1 loss function. Moreover, the proposed algorithm remains robust even if the detection threshold in the original single-threshold algorithm is lowered or extreme noise excursions occur.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

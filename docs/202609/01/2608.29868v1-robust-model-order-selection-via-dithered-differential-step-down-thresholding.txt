@@ -1,0 +1,366 @@
+Title: Robust Model Order Selection via Dithered Differential Step-Down Thresholding
+
+URL Source: https://arxiv.org/pdf/2608.29868v1
+
+Published Time: Tue, 01 Sep 2026 01:30:21 GMT
+
+Number of Pages: 7
+
+Markdown Content:
+# Robust Model Order Selection via Dithered Differential Step-Down Thresholding 
+
+## Aleksandr Kharin 
+
+Abstract 
+
+This paper studies the problem of model order selection in stationary noise. Single-threshold detection is sensitive to extreme noise excursions, particularly when the detection threshold is lowered to capture weak deterministic components. To augment single-threshold detection, we propose a differential step-down thresholding algorithm. We use a threshold grid in this algorithm. To overcome the threshold grid misalignment error induced by grid evaluation, we utilize randomized grid dithering. Using extreme value theory, we show the clustering of the noise extrema. The stop-ping rule of the proposed algorithm detects this clustering and stops the algorithm to prevent false alarms. By analytically bounding the threshold grid misalignment error, we prove that our algorithm achieves asymptotic exact order recovery under the 0-1 loss function. Moreover, the proposed algorithm remains robust even if the detection threshold in the original single-threshold algorithm is lowered or extreme noise excursions occur. 
+
+# 1 Introduction 
+
+In this paper, we study the problem of model order selection (MOS). Single-threshold detection at a minimax detection threshold is sensitive to extreme noise excursions [1, 2, 3, 4]. Moreover, in practice, lowering the detection threshold to capture weak deterministic components introduces false alarms [5, 6]. Recent advances in statistical model selection focus heavily on robust adaptive procedures and oracle inequalities to control such false alarms (e.g., [7, 8, 9, 10, 11]). We propose a differential step-down thresholding algorithm to augment single-threshold detection. This algorithm evaluates a decreasing grid of thresholds down to the detec-tion threshold of the original single-threshold algorithm (we call this threshold the floor detection threshold ). The proposed algorithm uses the following stopping rule: ∆ˆ ν ≥ 2,
+
+where ∆ˆ ν is the difference between estimates of the number of deterministic components for sequential thresholds. Note that if noise extrema exceed the floor detection threshold, this rule detects their clustering and stops the algorithm, preventing their inclusion into the model. In this paper, we primarily use the minimax detection threshold as the floor detection threshold. However, we also study the case where the floor detection threshold is lowered below the minimax detection threshold. 1arXiv:2608.29868v1 [eess.SP] 30 Aug 2026 Under assumed detectability conditions, deterministic components are separated, whereas noise extrema cluster densely [12, 13]. We model the stationary noise via extreme value theory [14, 15]. In this case, the spacing between upper noise extrema converges in distribution [16]. Thus, for noise with sub-Gaussian tails, the expected spacing between upper noise extrema tends to zero [17, 2]. A significant part of this work is devoted to proving that the stopping rule ∆ˆ ν ≥ 2 detects the boundary between deterministic components and noise. Evaluating the noise over a grid of thresholds introduces a threshold grid misalignment error. By utilizing randomized grid dithering [18, 19] to analytically bound this threshold grid misalignment error, we show that the proposed algorithm achieves asymptotic exact order recovery. Finally we show that our algorithm provides robustness even if floor detection threshold exceedances occur. 
+
+# 2 Problem Formulation and Algorithm 
+
+## 2.1 Observation Model and Risk 
+
+Our objective is to estimate the true model order ν0 in stationary noise over a search grid of size M , where M ≫ ν0. Suppose the observed data are mapped onto the search grid, yielding statistics V = {V1, . . . , V M }:
+
+Vi = di(Θ0) + εi, i ∈ { 1, . . . , M }. (1) 
+
+Θ0 is a vector of continuous parameters; di(Θ0) ≥ 0 is a deterministic shift; and εi is the noise. We suppose that the noise satisfies Leadbetter’s D(un) mixing condition [14, Ch. 3]. We use the subscript 0 to indicate true parameter values. For brevity, di ≡ di(Θ0).Next, we partition V into a deterministic subset VS containing ν0 statistics with di > 0
+
+(deterministic components), and a noise subset VN containing M − ν0 statistics with 
+
+di = 0 (noise components) [20]. As mentioned above, we suppose that the majority of the search grid contains only noise ( di = 0 ), i.e., we consider sparse models [1, 5]. Define the estimator at a threshold T as ˆν(T ) = PMi=1 1{Vi≥T } . Note that, we consider a high-dimensional regime where the deterministic shift scales proportionally to √ln M [1]. The estimation risk is evaluated under the 0-1 loss L(ˆ ν, ν 0) = 1{ˆν̸ =ν0}. An estimator is consistent if E[L(ˆ ν, ν 0)] = Pr (ˆ ν̸ = ν0) −−−−→  
+
+> M→∞
+
+0 [1, 20]. 
+
+## 2.2 Algorithm 
+
+Suppose Vi ∈ V N have sub-Gaussian tails [2]. To control the family-wise error rate (FWER) over the search grid, we introduce a floor detection threshold Tfloor . In this paper, we mostly consider Tfloor as a minimax detection threshold: Tfloor = Ammx 
+
+√ln M , 
+
+for a sufficiently large constant Ammx > 0 [6]. This minimax detection threshold ensures that lim M →∞ FWER = 0 [1]. Unless otherwise specified, Tfloor is assumed to be the minimax detection threshold. However, we also consider the case where Tfloor is lowered below the minimax detection threshold. 2To ensure statistical uniformity over the threshold grid, we apply randomized grid dither-ing [18, 19]. Given a threshold step size ∆T > 0, we create a random variable ξ ∼
+
+Unif (0 , ∆T ) independently of the observed data. The threshold sequence is 
+
+Tk = Tmax − k∆T + ξ
+
+for all k ≥ 0 such that Tk ≥ T floor . Note that Tmax is chosen a priori (e.g., as C√ln M for a sufficiently large constant C [1]), i.e., Tmax is independent of the observed data. This guarantees that ξ preserves the unconditional uniformity of the grid alignment relative to the observed data [19]. At each step k ≥ 1, the algorithm computes ∆ˆ νk = ˆ ν(Tk)− ˆν(Tk−1)
+
+over [Tk, Tk−1). The stopping index is defined as 
+
+kstop = inf k ≥ 1 : ∆ˆ νk ≥ 2 or Tk ≤ T floor .
+
+The model order estimate is ˆνDSDT = ˆ ν(Tkstop −1).
+
+# 3 Theoretical Analysis 
+
+## 3.1 Detectability condition 
+
+Consider the set of non-zero deterministic shifts {dj }ν0
+
+> j=1
+
+. Without loss of generality, we assume that the non-zero deterministic shifts satisfy d1 > d 2 > · · · > d ν0 .
+
+Assumption 1. Assume that the non-zero deterministic shifts {dj }ν0 
+
+> j=1
+
+satisfy the de-tectability condition dν0 ≥ T floor + CD(M ) for CD(M ) = ω(1) , and are separated by 
+
+min 1≤i<ν 0 (di − di+1 ) ≥ CS (M ) for CS (M ) = ω(1) .
+
+Remark 1. Assumption 1 implies that the method cannot resolve deterministic compo-nents with identical shifts ( di = di+1 ). 
+
+Remark 2. The ω(1) scaling of CD(M ) and CS (M ) is a sufficient condition for exact asymptotic recovery. It ensures that the weakest deterministic component is asymptot-ically separated from Tfloor by more than ∆T and that the gaps between consecutive deterministic components asymptotically exceed the threshold step size ∆T .Denote the decreasing sequence of statistics from VN by V N 
+
+> (1)
+
+≥ V N 
+
+> (2)
+
+≥ . . . .
+
+Lemma 1. Suppose Assumption 1 holds. Define the events 
+
+ΩD =  min 
+
+> i≤ν0
+
+V Si > max( V N
+
+> (1)
+
+, Tfloor ) + ∆ T , ΩS =  min 
+
+> 1≤i<ν 0
+
+(V Si − V Si+1 ) > ∆T .
+
+Then, Pr(Ω D ∩ ΩS ) → 1 as M → ∞ .
+
+## 3.2 Extrema Asymptotics 
+
+Suppose the noise components Vi ∈ V N have a continuous distribution belonging to the Gumbel maximum domain of attraction (MDA) [14, 15] with sub-Gaussian tail decay 3[2]. Under these conditions, their maxima are characterized by a location sequence bM ∝√ln M and a scale sequence aM ∝ 1/√ln M → 0 [14, 16]. Denote the upper noise extrema spacing by S = V N 
+
+> (1)
+
+− V N
+
+> (2)
+
+. Let us consider two cases. First case: the local anti-clustering condition D′ [14] holds. In this case, the normalized upper noise extrema spacing converges in distribution as a−1 
+
+> M
+
+S d
+
+−→ Exp (1) [15]. Taking into account that the sub-Gaussian tail decay guarantees uniform integrability of the normalized spacings, this convergence in distribution implies convergence in mean [16, 17]. Since aM → 0 as M → ∞ : E[S] = O(aM ) −−−−→  
+
+> M→∞
+
+0.Second case: the local anti-clustering condition D′ [14] fails. On the one hand, condition 
+
+D′ typically fails if a local correlation is present in {εi}Mi=1 from (1) [14, 16]. On the other hand, this correlation causes the clustering of noise extrema [12, 13, 21]. Such clustering further shrinks the upper noise extrema spacings asymptotically. 
+
+## 3.3 Consistency Analysis 
+
+Lemma 2. Suppose that ΩS ∩ ΩD holds. If Tk > V N
+
+> (1)
+
+, then ∆ˆ νk ≤ 1.Proof. Since the distance between consecutive elements of VS exceeds ∆T on ΩS , one can conclude that an interval of width ∆T covers at most one element of VS , thus the stopping rule ∆ˆ νk ≥ 2 is not met. 
+
+Lemma 3. Pr( V N 
+
+> (1)
+
+≥ T floor ) → 0 as M → ∞ . If V N 
+
+> (1)
+
+< Tfloor , the proposed algorithm yields zero false alarms. Proof. Firstly, one can obtain [6] 
+
+Pr( V N 
+
+> (1)
+
+≥ T floor ) ≤ M exp( −cT 2
+
+> floor
+
+).
+
+Since Tfloor = Ammx 
+
+√ln M , if Ammx > 1/√c, then Pr( V N 
+
+> (1)
+
+≥ T floor ) tends to zero as 
+
+M → ∞ . Moreover, if V N 
+
+> (1)
+
+< Tfloor , the threshold decreases along the threshold grid until 
+
+Tk ≤ T floor . Thus, the proposed algorithm stops without false alarms. As discussed in the Introduction, practical applications frequently require lowering the detection threshold to detect weak deterministic components, which represents a well-known trade-off in detection theory [1, 5]. To demonstrate the limitations of the algorithm with deterministic threshold grid and lowered floor detection threshold in such high-sensitivity regimes, we provide the following result. 
+
+Theorem 1. Suppose that Assumption 1 is fulfilled. Suppose the threshold grid is de-terministic ( ξ ≡ 0). Assume that the floor detection threshold Tfloor is lowered such that 
+
+lim M →∞ Pr( V N 
+
+> (1)
+
+≥ T floor ) = 1 . Even if the deterministic components are separated from the noise ones, i.e., 
+
+Pr   min 
+
+> i≤ν0
+
+V Si > V N 
+
+> (1)
+
++ ∆ T  −−−−→  
+
+> M→∞
+
+1, (2) 
+
+differential step-down thresholding becomes inconsistent for noise distributions belonging to the Gumbel MDA with sub-Gaussian tails (see Section 3.2). 
+
+4Proof. First of all, to prove inconsistency, it is sufficient to evaluate the expected risk only for the case where the local anti-clustering condition D′ holds. Let Tk = Tmax −
+
+k∆T . The threshold grid misalignment event Emis occurs if S > (V N 
+
+> (1)
+
+− T max ) mod (∆ T ).
+
+Using [14], a−1 
+
+> M
+
+(V N 
+
+> (i)
+
+− bM ) converge in distribution to Qi, which are points of a Poisson process with intensity λ(x) = e−x. Consequently, a−1 
+
+> M
+
+S d
+
+−→ Q1 − Q2. Since bM → ∞ 
+
+and bM +1 − bM = o(aM ) (see Section 3.2), there exists a subsequence {Mj } such that 
+
+(bMj − T max ) mod (∆ T ) = o(aMj ). Thus, along {Mj } we obtain: 
+
+lim  
+
+> j→∞
+
+Pr( Emis ) = Pr( Q1 > 0, Q 2 < 0) = e−1,
+
+and since E[L] ≥ Pr( Emis ), the expected risk does not tend to zero. Now let us study the randomized threshold grid. It is important to note that the random-ized grid dithering decouples the threshold grid alignment from the random values of the noise extrema. This fact makes it possible to evaluate the threshold grid misalignment error analytically. 
+
+Lemma 4. If V N 
+
+> (1)
+
+≥ T floor , the probability of threshold grid misalignment is bounded by 
+
+E[S]/∆T .Proof. Suppose that V N 
+
+> (1)
+
+≥ T floor . Let k be such that V N 
+
+> (1)
+
+∈ [Tk, Tk−1). In this case, one of two disjoint events occurs. In the stop event Estop , V N 
+
+> (1)
+
+∈ [Tk, Tk−1) and V N 
+
+> (2)
+
+∈ [Tk, Tk−1).In the threshold grid misalignment event Emis , Tk ∈ (V N
+
+> (2)
+
+, V N
+
+> (1)
+
+].The event Emis occurs if and only if U = V N 
+
+> (1)
+
+− T k < S . Taking into account that the random variable ξ is generated independently of the observed data (see Section 2.2), one can conclude that U ∼ Unif (0 , ∆T ) and U is independent of S [18, 19]. Thus, the probability of threshold grid misalignment is bounded by: Pr( S > U | S) ≤ S 
+
+> ∆T
+
+. Finally, one can obtain: 
+
+Pr( Emis ) = E[Pr( S > U | S)] ≤ E[S]∆T .
+
+Theorem 2. Suppose that Assumption 1 is fulfilled. In this case, the proposed differential step-down thresholding achieves asymptotic exact order recovery: 
+
+E[L(ˆ νDSDT , ν 0)] −−−−→  
+
+> M→∞
+
+0.
+
+Proof. First of all, let us define ΩA = {V N 
+
+> (1)
+
+≥ T floor }. Next, we partition the expected risk as follows: 
+
+E[L(ˆ νDSDT , ν 0)] ≤ Pr(Ω cS ) + Pr(Ω cD) + Pr( Error ∩ ΩS ∩ ΩD). (3) Suppose that the event ΩS ∩ ΩD holds. In this case, the deterministic components are detected without meeting the stopping rule (see Lemma 2). Upon reaching the noise subset, if ΩcA holds, the algorithm stops at the Tfloor (see Lemma 3). Next, if ΩA holds, then an error occurs only if Emis occurs, thus using (3) one can write: 
+
+E[L(ˆ νDSDT , ν 0)] ≤ Pr(Ω cS ) + Pr(Ω cD) + Pr( Emis ∩ ΩA). (4) 5Using Lemma 1, we get Pr(Ω cS ) → 0 and Pr(Ω cD) → 0. Also, for a sufficiently high floor detection threshold (i.e., for a sufficiently large Ammx ), Pr(Ω A) −−−−→  
+
+> M→∞
+
+0 (see Lemma 3). Finally, E[L(ˆ νDSDT , ν 0)] −−−−→  
+
+> M→∞
+
+0.
+
+Theorem 3. Suppose that Assumption 1 is fulfilled. Assume that the floor detection threshold Tfloor is lowered below the minimax detection threshold such that 
+
+lim   
+
+> M→∞
+
+Pr( V N 
+
+> (1)
+
+≥ T floor ) = 1 .
+
+If condition (2) holds, then the proposed differential step-down thresholding achieves asymp-totic exact order recovery 
+
+E[L(ˆ νDSDT , ν 0)] −−−−→  
+
+> M→∞
+
+0.
+
+Proof. Let us define ΩA = {V N 
+
+> (1)
+
+≥ T floor }. From the same expected risk partition as in (3) and (4), we obtain: 
+
+E[L(ˆ νDSDT , ν 0)] ≤ Pr(Ω cS ) + Pr(Ω cD) + Pr( Emis ∩ ΩA). (5) Firstly, using Lemma 1, we get Pr(Ω cS ) −−−−→  
+
+> M→∞
+
+0. Secondly, from condition (2) one can conclude Pr(Ω cD) −−−−→  
+
+> M→∞
+
+0. Next, using Lemma 4, we get 
+
+Pr( Emis ∩ ΩA) ≤ Pr( Emis ) ≤ E[S]/∆T .
+
+Since E[S] −−−−→  
+
+> M→∞
+
+0, one can conclude that Pr( Emis ∩ ΩA) −−−−→  
+
+> M→∞
+
+0. Finally, from (5) we obtain E[L(ˆ νDSDT , ν 0)] −−−−→  
+
+> M→∞
+
+0.
+
+# 4 Conclusion 
+
+In this paper, we studied a differential step-down thresholding algorithm for model order selection. 
+
+# References 
+
+[1] D. L. Donoho, “De-noising by soft-thresholding,” IEEE Trans. Inf. Theory , vol. 41, no. 3, pp. 613–627, 1995. [2] V. I. Piterbarg, Asymptotic Methods in the Theory of Gaussian Processes and Fields .American Mathematical Society, 1996. [3] R. B. Davies, “Hypothesis testing when a nuisance parameter is present only under the alternative,” Biometrika , vol. 74, no. 1, pp. 33–43, 1987. [4] R. J. Adler and J. E. Taylor, Random Fields and Geometry . Springer, 2007. [5] F. Abramovich, Y. Benjamini, D. L. Donoho, and I. M. Johnstone, “Adapting to unknown sparsity by controlling the false discovery rate,” Ann. Statist. , vol. 34, no. 2, pp. 584–653, 2006. 6[6] P. Massart, Concentration Inequalities and Model Selection . Springer, 2007. [7] R. F. Barber and E. J. Candès, “Controlling the false discovery rate via knockoffs,” 
+
+Ann. Statist. , vol. 43, no. 5, pp. 2055–2085, 2015. [8] M. Bogdan, E. van den Berg, C. Sabatti, W. Su, and E. J. Candès, “SLOPE: adaptive variable selection via convex optimization,” Ann. Appl. Stat. , vol. 9, no. 3, pp. 1103– 1140, 2015. [9] W. Su, M. Bogdan, and E. J. Candès, “False discoveries occur early on the lasso path,” Ann. Statist. , vol. 45, no. 5, pp. 2133–2150, 2017. [10] V. V. Konev and S. M. Pergamenchtchikov, “Robust model selection for a semi-martingale continuous time regression from discrete data,” Stochastic Processes and their Applications , vol. 122, no. 1, pp. 114–143, 2012. [11] E. A. Pchelintsev and S. M. Pergamenchtchikov, “Oracle inequalities for the improved model selection procedures,” Mathematical Methods of Statistics , vol. 27, no. 4, pp. 297–315, 2018. [12] T. Hsing, J. Hüsler, and M. R. Leadbetter, “On the exceedance point process for a stationary sequence,” Probab. Theory Relat. Fields , vol. 78, no. 1, pp. 97–112, 1988. [13] D. Aldous, Probability Approximations via the Poisson Clumping Heuristic . Springer, 1989. [14] M. R. Leadbetter, G. Lindgren, and H. Rootzén, Extremes and Related Properties of Random Sequences and Processes . Springer, 1983. [15] L. de Haan and A. Ferreira, Extreme Value Theory: An Introduction . Springer, 2006. [16] P. Embrechts, C. Klüppelberg, and T. Mikosch, Modelling Extremal Events for In-surance and Finance . Springer, 1997. [17] S. I. Resnick, Extreme Values, Regular Variation, and Point Processes . Springer, 1987. [18] R. M. Gray and T. G. Stockham, “Dithered quantizers,” IEEE Trans. Inf. Theory ,vol. 39, no. 3, pp. 805–812, 1993. [19] B. Widrow and I. Kollár, Quantization Noise: Roundoff Error in Digital Computa-tion, Signal Processing, Control, and Communications . Cambridge University Press, 2008. [20] I. A. Ibragimov and R. Z. Khasminskii, Statistical Estimation: Asymptotic Theory .Springer, 1981. [21] M. Falk, J. Hüsler, and R. D. Reiss, Laws of Small Numbers: Extremes and Rare Events . Springer, 2010. 7

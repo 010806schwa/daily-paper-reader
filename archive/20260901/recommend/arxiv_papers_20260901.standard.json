@@ -1,0 +1,127 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-01T22:39:21.475198+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.29012v1",
+      "source": "arxiv",
+      "title": "Frequency Selective Neural Networks as a Foundation Architecture for Time Series Learning",
+      "abstract": "Time-series data across physical and biological domains are fundamentally driven by complex, non-stationary oscillatory modes. While deep learning models, such as Convolutional Neural Networks (CNNs), Recurrent Neural Networks, and Transformers, have dominated sequential analysis, they remain fundamentally \"spectral-blind\". By mapping continuous physical waves into unconstrained spatial or discrete token spaces, these architectures suffer from severe spectral entanglement, acting as opaque black boxes that decouple predictive accuracy from physical reality. In this paper, we introduce the Frequency Selective Neural Network (FSNN), pioneering a foundation architecture guaranteeing physical interpretability without sacrificing expressive power of deep learning. FSNN addresses spectral entanglement by explicitly embedding the rigorous mathematics of advanced signal processing into its neural topology. Through a fully differentiable Wiener-like filter bank optimized via complex-domain backpropagation, FSNN autonomously discovers and isolates the precise physical modes of a given task. Extensive evaluations demonstrate that FSNN establishes state-of-the-art predictive performance, achieving $77.0\\%$ average accuracy on the standard 10 multivariate UEA datasets and leading across all major metrics on the highly imbalanced PTB-XL clinical ECG benchmark. Crucially, in contrast to yielding abstract feature maps, FSNN converges directly on physically meaningful frequency bands, such as isolating the cardiac QRS complex, providing a highly scalable, interpretable paradigm for robust pattern recognition in complex temporal domains. Our code is available at: https://github.com/ad6174hhhh/FSNN.",
+      "authors": [
+        "Hui Huang",
+        "Ye Sun",
+        "Shiyan Hu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-29T02:51:29+00:00",
+      "link": "https://arxiv.org/pdf/2608.29012v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "frequency-selective neural network for time-series learning, transferable to underwater acoustic recognition",
+      "llm_evidence_cn": "频率选择性神经网络用于时间序列学习，可迁移至水下声学识别",
+      "llm_evidence": "频率选择性神经网络用于时间序列学习，可迁移至水下声学识别",
+      "canonical_evidence": "频率选择性神经网络用于时间序列学习，可迁移至水下声学识别",
+      "llm_tldr_en": "Time-series models are spectral-blind. FSNN provides a frequency-selective foundation architecture preserving physical interpretability without sacrificing expressiveness, offering a transferable approach for high-frequency acoustic feature extraction.",
+      "llm_tldr_cn": "时间序列数据在物理和生物领域广泛存在，其本质由复杂的非平稳振荡模式驱动。然而，CNN、RNN和Transformer等主流深度模型在频谱上缺乏感知能力，常导致谱信息纠缠和物理可解释性缺失。针对这一问题，本文提出频率选择性神经网络（FSNN），通过显式选择频率成分并保持物理可解释性，同时不牺牲表达力。实验证明该基础架构在多个时间序列学习任务上表现优异，能够兼顾精度与可解释性。鉴于舰船噪声识别本质上依赖频率特征，FSNN亦可作为水下声学高频特征提取的有力工具。",
+      "llm_tldr": "时间序列数据在物理和生物领域广泛存在，其本质由复杂的非平稳振荡模式驱动。然而，CNN、RNN和Transformer等主流深度模型在频谱上缺乏感知能力，常导致谱信息纠缠和物理可解释性缺失。针对这一问题，本文提出频率选择性神经网络（FSNN），通过显式选择频率成分并保持物理可解释性，同时不牺牲表达力。实验证明该基础架构在多个时间序列学习任务上表现优异，能够兼顾精度与可解释性。鉴于舰船噪声识别本质上依赖频率特征，FSNN亦可作为水下声学高频特征提取的有力工具。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.29214v1",
+      "source": "arxiv",
+      "title": "Sound Analysis for Speed Estimation of Induction Motors Under Non-Stationary Conditions",
+      "abstract": "This paper presents a novel methodology for the estimation of the rotational speed of induction motors operating under non stationary conditions, using acoustic signals acquired by a low cost microphone. The proposed approach integrates multi rate digital signal processing with advanced time frequency analysis to extract speed dependent harmonic components from motor acoustic emissions, while effectively suppressing electrical interference and electromagnetic noise. Numerical simulations and experimental validations are conducted under both steady state and transient operating conditions, considering a wide variety of speed profiles, including slow ramps and abrupt speed variations. The experimental results demonstrate that the proposed method is capable of accurately tracking rapid and dynamic speed changes caused by load disturbances and mechanical irregularities. The estimated instantaneous speed exhibits a high degree of agreement with reference measurements obtained from a conventional speed sensor. The results confirm that the proposed acoustic based technique provides a reliable, noninvasive, and cost effective solution suitable for speed monitoring of induction motors.",
+      "authors": [
+        "Tomas A. Garcia-Calva",
+        "Daniel Morinigo-Sotelo",
+        "Konstantinos N. Gyftakis"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-08-29T11:54:40+00:00",
+      "link": "https://arxiv.org/pdf/2608.29214v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "acoustic harmonic extraction and time-frequency analysis transferable to ship noise recognition",
+      "llm_evidence_cn": "声学谐波提取与时频分析可迁移至舰船噪声识别",
+      "llm_evidence": "声学谐波提取与时频分析可迁移至舰船噪声识别",
+      "canonical_evidence": "声学谐波提取与时频分析可迁移至舰船噪声识别",
+      "llm_tldr_en": "The paper estimates induction motor speed from low-cost microphone acoustic signals using multirate DSP and advanced time-frequency analysis to extract speed-dependent harmonics while suppressing interference, offering transferable acoustic feature extraction techniques for machinery classification.",
+      "llm_tldr_cn": "针对非平稳工况下感应电机转速估计问题，本文提出了一种基于低成本麦克风声学信号的估计方法。该方法融合多速率数字信号处理和先进时频分析，从电机声辐射中提取转速相关的谐波分量，同时有效抑制电气干扰和电磁噪声。数值仿真与实验验证了稳态和瞬态多种转速剖面下的估计效果，表明谐波提取与噪声抑制技术可迁移到舰船辐射噪声的高频特征提取与识别任务中。",
+      "llm_tldr": "针对非平稳工况下感应电机转速估计问题，本文提出了一种基于低成本麦克风声学信号的估计方法。该方法融合多速率数字信号处理和先进时频分析，从电机声辐射中提取转速相关的谐波分量，同时有效抑制电气干扰和电磁噪声。数值仿真与实验验证了稳态和瞬态多种转速剖面下的估计效果，表明谐波提取与噪声抑制技术可迁移到舰船辐射噪声的高频特征提取与识别任务中。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "high frequency ship noise recognition methods",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.29868v1",
+      "source": "arxiv",
+      "title": "Robust Model Order Selection via Dithered Differential Step-Down Thresholding",
+      "abstract": "This paper studies the problem of model order selection in stationary noise. Single-threshold detection is sensitive to extreme noise excursions, particularly when the detection threshold is lowered to capture weak deterministic components. To augment single-threshold detection, we propose a differential step-down thresholding algorithm. We use a threshold grid in this algorithm. To overcome the threshold grid misalignment error induced by grid evaluation, we utilize randomized grid dithering. Using extreme value theory, we show the clustering of the noise extrema. The stopping rule of the proposed algorithm detects this clustering and stops the algorithm to prevent false alarms. By analytically bounding the threshold grid misalignment error, we prove that our algorithm achieves asymptotic exact order recovery under the 0-1 loss function. Moreover, the proposed algorithm remains robust even if the detection threshold in the original single-threshold algorithm is lowered or extreme noise excursions occur.",
+      "authors": [
+        "Aleksandr Kharin"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP",
+        "math.ST"
+      ],
+      "published": "2026-08-30T15:55:20+00:00",
+      "link": "https://arxiv.org/pdf/2608.29868v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Robust detection of weak deterministic components in stationary noise for model order selection",
+      "llm_evidence_cn": "在平稳噪声中稳健检测弱确定性分量以进行模型阶次选择",
+      "llm_evidence": "在平稳噪声中稳健检测弱确定性分量以进行模型阶次选择",
+      "canonical_evidence": "在平稳噪声中稳健检测弱确定性分量以进行模型阶次选择",
+      "llm_tldr_en": "This paper proposes a dithered differential step-down thresholding algorithm to select model order in stationary noise, reducing sensitivity to extreme noise excursions and enabling detection of weak deterministic components.",
+      "llm_tldr_cn": "针对单阈值检测易受极端噪声干扰、难以捕捉弱确定性分量的问题，提出差分逐步降阈值算法并结合随机网格抖动，利用极值理论检测噪声极值聚集，从而在存在强噪声时稳健选择模型阶次，适用于从噪声中识别微弱分量（如舰船噪声中的高频成分）。",
+      "llm_tldr": "针对单阈值检测易受极端噪声干扰、难以捕捉弱确定性分量的问题，提出差分逐步降阈值算法并结合随机网格抖动，利用极值理论检测噪声极值聚集，从而在存在强噪声时稳健选择模型阶次，适用于从噪声中识别微弱分量（如舰船噪声中的高频成分）。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "high frequency components in ship noise for recognition",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
