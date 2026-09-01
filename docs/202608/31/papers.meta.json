@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-31",
+  "date": "2026-08-31",
+  "generated_at": "2026-09-01T00:26:30",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/31/2608.26346v1-decay-region-group-delay-as-a-forensic-cue-for-ai-generated-impulsive-sounds",
+      "section": "quick",
+      "title_en": "Decay-Region Group Delay as a Forensic Cue for AI-Generated Impulsive Sounds",
+      "authors": "JaeHyeong Chang, Chengzhe Sun, Siwei Lyu",
+      "date": "2026-08-26",
+      "pdf": "https://arxiv.org/pdf/2608.26346v1",
+      "score": "6.0",
+      "evidence": "使用群延迟作为声学特征区分真实与AI生成声音",
+      "tldr": "AI生成脉冲声音与真实声音的区分通常依赖幅度特征，而相位相关的群延迟线索尚未被充分挖掘。本研究发现，在起始区域两者群延迟分布几乎相同，但在衰减区表现显著差异。基于衰减区群延迟，跨频带变异性单特征AUC达0.720，九特征随机森林AUC达0.884；将群延迟图作为二维输入，CNN分类准确率90%-94%。该方法物理可解释，在27种STFT配置下AUC稳定于0.700-0.847，可补充幅度基分类器，但跨生成器泛化仍待验证。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "We investigate whether AI-generated impulsive sounds can be distinguished from real ones through group delay analysis. Our central finding is that AI-generated impulsive sounds show near-identical onset-region group-delay distributions but exhibit measurably different group-delay behavior in the late decay region: decay-region KL divergence reaches $0.322$ compared to near-zero onset divergence ($0.022$). Cross-band GD variability achieves single-feature AUC~=~0.720, and a Random Forest (RF) over nine decay-region features reaches AUC~$=$~0.884 under sample-disjoint evaluation. A group delay map used as a standalone 2D input to CNN classifiers achieves 90--94\\% accuracy, demonstrating that group delay carries substantial discriminative information. Under generator hold-out, CNN and transformer classifiers show highly variable AUC (0.457--0.918). The group delay RF achieves the highest average hold-out accuracy among the evaluated methods ($66.7\\%$) and avoids extreme below-random collapse, although its average AUC (0.731) is lower than CNN avg (0.762) and AST (0.772). Parameter sensitivity analysis across 27 STFT configurations confirms that the RF AUC remains stable (0.700--0.847, std~=~0.035). These results suggest that decay-region group delay can serve as a physically interpretable forensic cue that complements magnitude-based classifiers, while broader validation remains necessary.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
