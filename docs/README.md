@@ -6,30 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-01
-- 运行时间：2026-09-01 22:40:57 UTC
+- 最新运行日期：2026-09-02
+- 运行时间：2026-09-02 22:55:12 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：2
 - 精读区：0
-- 速读区：3
+- 速读区：2
 
 ### 今日简报（AI）
-今日速读3篇论文，精读0篇，聚焦时间序列与信号处理方向。最值得关注的是《Frequency Selective Neural Networks》一文，其频率选择性架构为时间序列学习提供了新思路；另两篇涉及感应电机转速估计与模型阶数选择，评分均为6.0。建议普通读者优先浏览第一篇的架构思想，后续可结合具体应用场景深入比较。
-- 详情：[/202609/01/README](/202609/01/README)
+- 今日共生成 2 篇推荐（精读 0 篇，速读 2 篇）
+- 速读：《Time-Window Noise2Noise: A Self-Supervised Method for Blind Denoising of Vibration and Impact Signals in Mechanical Systems》（6.0/10）, 《Robust Broad Learning System with Wave Loss for Classification under Data Uncertainty》（6.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202609/02/README](/202609/02/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Frequency Selective Neural Networks as a Foundation Architecture for Time Series Learning](/202609/01/2608.29012v1-frequency-selective-neural-networks-as-a-foundation-architecture-for-time-series-learning)  
-   标签：评分：7.0/10、query:shipnoise-hf
-   evidence：频率选择性神经网络用于时间序列学习，可迁移至水下声学识别
-2. [Sound Analysis for Speed Estimation of Induction Motors Under Non-Stationary Conditions](/202609/01/2608.29214v1-sound-analysis-for-speed-estimation-of-induction-motors-under-non-stationary-conditions)  
+1. [Time-Window Noise2Noise: A Self-Supervised Method for Blind Denoising of Vibration and Impact Signals in Mechanical Systems](/202609/02/2608.24443v1-time-window-noise2noise-a-self-supervised-method-for-blind-denoising-of-vibration-and-impact-signals-in-mechanical-systems)  
    标签：评分：6.0/10、query:shipnoise-hf
-   evidence：声学谐波提取与时频分析可迁移至舰船噪声识别
-3. [Robust Model Order Selection via Dithered Differential Step-Down Thresholding](/202609/01/2608.29868v1-robust-model-order-selection-via-dithered-differential-step-down-thresholding)  
+   evidence：时间窗自监督盲去噪方法，适用于船舰机械噪声等振动类信号的低信噪比预处理
+2. [Robust Broad Learning System with Wave Loss for Classification under Data Uncertainty](/202609/02/2608.29983v1-robust-broad-learning-system-with-wave-loss-for-classification-under-data-uncertainty)  
    标签：评分：6.0/10、query:shipnoise-hf
-   evidence：在平稳噪声中稳健检测弱确定性分量以进行模型阶次选择
+   evidence：提出波损失宽度学习鲁棒分类器，可提升含噪与离群数据下的分类稳定性，适用于水下目标识别分类器
 
 
 <div class="dpr-home-promo-card">

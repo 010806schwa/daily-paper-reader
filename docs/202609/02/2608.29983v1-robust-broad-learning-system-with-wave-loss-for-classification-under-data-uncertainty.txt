@@ -1,0 +1,438 @@
+Title: Robust Broad Learning System with Wave Loss for Classification under Data Uncertainty
+
+URL Source: https://arxiv.org/pdf/2608.29983v1
+
+Published Time: Tue, 01 Sep 2026 02:04:59 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Robust Broad Learning System with Wave Loss for Classification under Data Uncertainty 
+
+Mushir Akhtar 
+
+Department of Mathematics Indian Institute of Technology Indore 
+
+phd2101241004@iiti.ac.in 
+
+Abhishek Varshney 
+
+Department of Mathematics Indian Institute of Technology Indore 
+
+phd2401141003@iiti.ac.in 
+
+A. Quadir 
+
+Department of Mathematics Indian Institute of Technology Indore 
+
+mscphd2207141002@iiti.ac.in 
+
+A. Rahaman 
+
+Department of Mathematics Indian Institute of Technology Indore 
+
+phd2401141001@iiti.ac.in 
+
+M. Tanveer 
+
+Department of Mathematics Indian Institute of Technology Indore 
+
+mtanveer@iiti.ac.in 
+
+Mohd. Arshad 
+
+Department of Mathematics Indian Institute of Technology Indore 
+
+arshad@iiti.ac.in 
+
+Abstract —Broad Learning System (BLS) offers an efficient alternative to deep architectures by enabling fast learning through randomized feature mapping and closed-form solutions. However, its reliance on squared error loss makes it highly sensitive to noise, outliers, and corrupted labels, limiting its reliability in real-world scenarios. To address this limitation, we propose Wave-BLS, a robust broad learning framework that integrates the wave loss function, which is asymmetric, bounded, and smooth, enabling controlled penalization of large errors. The proposed formulation replaces the standard least-squares objective with a wave-loss-based optimization problem, solved efficiently using a Nesterov accelerated gradient (NAG)-based scheme without requiring matrix inversion, thereby improving scalability. Extensive experiments on 30 UCI benchmark datasets demonstrate that Wave-BLS consistently outperforms classical BLS and several robust variants. Statistical validation using Friedman and Nemenyi post-hoc tests confirms the significance of the observed improvements. Furthermore, robustness evaluations under controlled noise and outlier injection reveal that Wave-BLS exhibits substantially slower performance degradation compared to BLS, even in challenging contamination settings. These results establish Wave-BLS as a stable and robust alternative to existing broad learning models for learning under data uncertainty. 
+
+Index Terms —Randomized Neural Network, Broad Learning System, Wave Loss Function, Robust Classification, Noise and Outlier Robustness 
+
+I. I NTRODUCTION 
+
+# RANDOMIZED neural networks (RaNNs) have emerged as efficient alternatives to deep neural networks, offer-ing reduced computational complexity, fewer parameters, and less sensitivity to hyperparameter tuning while maintaining competitive performance [1]. By fixing randomly generated hidden-layer parameters and learning only the output weights in closed form, RaNNs enable fast training with reduced computational overhead. Among them, the random vector functional link (RVFL) network [2] has gained prominence due to its direct input-output connections, which allow simul-taneous modeling of linear and nonlinear relationships and yield strong generalization performance [3]. Despite these advantages, the shallow architecture of RVFL limits its representational capacity for complex data distribu-tions [4]. To overcome this limitation, the Broad Learning System (BLS) was introduced as a flat yet expressive ar-chitecture that expands network width instead of depth [5]. BLS constructs multiple groups of randomized feature and enhancement nodes whose outputs are concatenated to form a rich representation, while retaining fast training through a closed-form least-squares solution. This design avoids back-propagation, supports incremental learning, and performs well in limited-data regimes. Nevertheless, BLS suffers from two fundamental limita-tions: (i) its dependence on the squared-error loss makes it highly sensitive to noise and outliers, and (ii) the computation of output weights relies on matrix inversion, resulting in cubic-time complexity that limits scalability. A range of BLS variants have been proposed to improve robustness and mitigate sensitivity to noise. For example, Jin and Chen [6] introduced a regularized BLS (R-BLS) by incorporating ℓ1, ℓ2, and elastic-net penalties into the least-squares formulation, which helps control model complexity but remains sensitive to severe noise and outliers due to its reliance on the squared-error loss. To address uncertainty, Feng and Chen [7] proposed a neuro-fuzzy BLS (NF-BLS) that integrates fuzzy IF-THEN rules via k-means cluster-ing, improving interpretability and robustness at the cost of additional computational overhead. More recently, the SC-KSBLS framework [8] replaces the squared-error loss with a kernel risk-sensitive mean p-power loss and incorporates adaptive label correction. While effective under label noise, its collaborative structure and kernel-based optimization substan-tially increase computational cost. Additional extensions have addressed specific challenges such as imbalanced noisy data via graph-fuzzy embeddings [9], privacy-preserving multiparty learning [10], and fractional-order BLS formulations [11]. Re-cently, copula-aligned weight initialization (CAWI) has been proposed to incorporate dependency-aware copula modeling into weight initialization, aligning randomized weights with the intrinsic structure of the input data and thereby improving representation quality and learning performance [12]. arXiv:2608.29983v1 [cs.LG] 30 Aug 2026 Overall, existing BLS variants enhance robustness through regularization, fuzzy inference, kernelization, or collaborative correction mechanisms, often at the expense of increased architectural complexity or computational overhead. These limitations motivate the need for a robust yet computationally efficient BLS framework that improves noise tolerance while preserving the simplicity of the original architecture. The choice of loss function plays a central role in ro-bustness against noise and outliers [13], yet most BLS-based methods continue to rely on the conventional least-squares loss. While robustness can be improved through auxiliary structures such as clustering or fuzzy membership evaluation, these additions inevitably increase computational burden. In contrast, directly adopting a robust loss function within the BLS optimization framework offers a principled and efficient alternative. Recent advances demonstrate the effectiveness of this strategy across related learning settings. The RoBoSS loss combines boundedness, sparsity, and smoothness for robust supervised learning [14], while the HawkEye loss additionally incorporates an insensitive zone for noise-tolerant regression [15]. Integrating HawkEye with an RVFL network has also produced a robust classifier for noisy and outlier-prone data [16]. In the multiview setting, the wave loss has been used to improve robustness while jointly exploiting consensus and complementary information across views [17]. Motivated by this perspective, we consider the wave loss function [18], which has demonstrated strong robustness prop-erties due to its boundedness, smoothness, and controllable asymmetry. We investigate whether the wave loss can be effectively integrated into the BLS framework to address its sensitivity to noise and outliers. Building on this idea, we propose Wave-BLS, i.e., a broad learning system with wave loss function, which replaces the traditional least-squares loss while retaining the flat architecture of BLS. In addi-tion, we reformulate the parameter optimization process to eliminate the matrix inversion step required in conventional BLS, thereby significantly enhancing scalability. The resulting optimization problem is efficiently solved using a Nesterov accelerated gradient (NAG)-based algorithm, which ensures stable updates and fast convergence. In the following sections, we demonstrate that the proposed Wave-BLS model achieves improved generalization performance compared with existing baseline models. The key contributions of the work are as follows: 1) We propose Wave-BLS, a robust broad learning system that integrates the wave loss function to effectively mitigate the impact of noise and outliers. 2) We formulate the optimization framework in Wave-BLS to eliminate the matrix inversion step required in traditional BLS, significantly enhancing its scalability. 3) We employ a NAG-based optimization algorithm to solve the proposed Wave-BLS model, ensuring efficient parameter updates and faster convergence. 4) We extensively evaluate the proposed Wave-BLS on 30 UCI benchmark datasets using accuracy and rank metrics, and further establish its statistical significance through Friedman and Nemenyi post-hoc tests. 5) We further assess the robustness of Wave-BLS under controlled data corruption by injecting varying levels of noise and outliers. The experimental results confirm that Wave-BLS maintains superior performance compared to the standard BLS. The remainder of this paper is organized as follows. Sec-tion II reviews the architecture and formulation of BLS. Sec-tion III presents the proposed Wave-BLS model. Experimental evaluations are reported in Section IV. Finally, Section V concludes the paper. II. R ELATED WORK 
+
+This section introduces the notations and presents an overview of the architecture and formulation of BLS. 
+
+A. Notations 
+
+Let X ∈ Rm×d represent the input data matrix, where m
+
+is the number of samples and d is the number of features. The target matrix is denoted by Y ∈ Rm×nout , where nout is the number of classes. The outputs from the feature layer are represented by Z ∈ Rm×pq , where p and q denote the number of nodes per window and the number of feature node windows, respectively. Similarly, the outputs from the enhancement layer are represented by H ∈ Rm×rs , where r and s denote the number of nodes per window and the number of enhancement node windows, respectively. The combined representation ma-trix, obtained by concatenating the feature and enhancement layer outputs, is denoted as A ∈ Rm×(pq +rs ). Finally, the unknown weight matrix is denoted by W ∈ R(pq +rs )×nout .
+
+B. Broad Learning System (BLS): Architecture and Formula-tion [5] 
+
+BLS is a flat network architecture composed of three main components: a feature layer, an enhancement layer, and an out-put layer. Unlike deep architectures, BLS expands the network width by incrementally adding feature and enhancement nodes, enabling efficient learning via closed-form solutions. Fig. 1 illustrates the overall architecture of the BLS framework. 
+
+Feature Layer: Given an input data matrix X ∈ Rm×d, the feature layer generates q groups (windows) of feature nodes, each containing p nodes. The output of the ith feature window is computed as 
+
+Zfi = ϕ(XW i + Bi), (1) where Wi ∈ Rd×p and Bi ∈ Rm×p are randomly initialized weights and biases, respectively, and ϕ(·) denotes a nonlinear activation function. Concatenating all feature windows yields 
+
+Z = [ Zf1 , Z f2 , . . . , Z fq ] ∈ Rm×pq . (2) 
+
+Enhancement Layer: The enhancement layer further enriches the representation by applying random nonlinear transforma-tions to the feature output Z. Specifically, s enhancement windows are generated, each with r nodes: 
+
+Hej = ψ(ZW j + Bj ), (3) Fig. 1: Architecture of the standard BLS. where Wj ∈ Rpq ×r , Bj ∈ Rm×r , and ψ(·) is a nonlinear activation function. The overall enhancement output is 
+
+H = [ He1 , H e2 , . . . , H es ] ∈ Rm×rs . (4) 
+
+Output Layer: The final representation matrix is obtained by concatenating the feature and enhancement outputs: 
+
+A = [ Z, H ] ∈ Rm×(pq +rs ). (5) BLS determines the output weight matrix W ∈ R(pq +rs )×nout 
+
+by solving a regularized least squares problem: 
+
+arg min 
+
+> W
+
+12 ∥W ∥2 
+
+> F
+
++ C
+
+2 ∥AW − Y ∥2 
+
+> F
+
+, (6) where Y is the target matrix and C > 0 is the regularization parameter. The closed-form solution is given by 
+
+W =
+
+(
+
+(A⊤A + 1 
+
+> C
+
+I)−1A⊤Y, (pq + rs ) ≤ m, A⊤(AA ⊤ + 1 
+
+> C
+
+I)−1Y, m < (pq + rs ), (7) with I denoting the identity matrix of appropriate dimension. III. P ROPOSED WORK 
+
+In this section, we introduce Wave-BLS, i.e., the broad learning system based on the wave loss function. We first dis-cuss the wave loss function and provide its key characteristics. Subsequently, we detail the formulation and optimization of the proposed Wave-BLS model. 
+
+A. Wave Loss Function 
+
+The wave loss function [18] is a recently introduced asymmetric, bounded, and smooth loss designed to provide controlled error penalization. It is defined as 
+
+Lwave (u) = u2eau 
+
+1 + λu 2eau , (8) where u ∈ R denotes the prediction error, a ∈ R is a shape parameter governing the asymmetry and growth behavior of the loss, and λ ∈ R+ is a bounding parameter that limits the maximum penalty induced by large errors. Fig. 2 illustrates the behavior of the wave loss function under different values of a and λ.The key properties of the wave loss function, which are directly leveraged in the proposed Wave-BLS framework, are summarized below.  
+
+> •
+
+Asymmetry: The wave loss is asymmetric, enabling un-equal penalization of overestimation and underestimation errors through the shape parameter a. Positive values of a emphasize overpredictions, while negative values accentuate underpredictions; the loss becomes symmetric when a = 0 . 
+
+> •
+
+Boundedness: The wave loss is upper-bounded by 1/λ ,ensuring that large errors exert limited influence on the optimization process. This bounded nature prevents excessive domination by outliers and enhances robustness in noisy learning environments.  
+
+> •
+
+Smoothness: The wave loss is continuously differen-tiable, facilitating efficient and stable optimization. This smoothness enables the use of efficient gradient-based solvers. These properties enable the wave loss function to address the fundamental issues of traditional loss functions. 
+
+B. Formulation & Optimization: Broad Learning System with Wave Loss Function (Wave-BLS) 
+
+In this subsection, we incorporate the wave loss function into the BLS by replacing the conventional squared error loss, resulting in a robust learning framework termed broad learning system with wave loss function, i.e., Wave-BLS. The proposed formulation improves robustness against noise and outliers while enabling scalable optimization by avoiding explicit matrix inversion during parameter estimation. The optimization problem of Wave-BLS is formulated as 
+
+J(W ) = 12 ∥W ∥2 
+
+> F
+
++ C L wave (AW − Y ), (9) where C > 0 is the regularization parameter controlling the trade-off between model complexity and empirical risk, and 
+
+Lwave (AW − Y ) represents the aggregated wave loss over all training samples. The wave loss for the ith sample and jth class is defined as 
+
+Lwave (uij ) = u2 
+
+> ij
+
+eau ij 
+
+1 + λu 2 
+
+> ij
+
+eau ij , (10) where uij = ( AW )ij − Yij denotes the prediction error for sample i and class j.Accordingly, the total wave loss over the training set is computed as 
+
+Lwave (AW − Y ) = 
+
+> m
+
+X
+
+> i=1
+> nout
+
+X
+
+> j=1
+
+Lwave (uij ). (11) Hence, the objective function in (9) can be equivalently rewritten as 
+
+J(W ) = 12 ∥W ∥2 
+
+> F
+
++ C
+
+> m
+
+X
+
+> i=1
+> nout
+
+X
+
+> j=1
+
+Lwave (uij ). (12) The objective function in (12) consists of two components: 1) Regularization term   12 ∥W ∥2
+
+> F
+
+, which controls model complexity and promotes generalization in accordance with the principle of structural risk minimization. Fig. 2: Illustration of wave loss function, showing effect of asymmetry parameter a (positive, negative, and a = 0 ) and the bounding parameter λ.2) Empirical loss term   P mi=1 
+
+Pnout  
+
+> j=1
+
+Lwave (uij ), which aggregates the wave loss over all samples and classes, thereby enhancing robustness through its asymmetric, bounded, and smooth characteristics. To efficiently optimize the objective function in (12), we exploit its smoothness and use a gradient-based optimization strategy. This approach eliminates the need for explicit matrix inversion, which is a computational bottleneck in conventional BLS, thereby significantly improving scalability. Specifically, we adopt the Nesterov accelerated gradient (NAG) algorithm due to its fast convergence and stable update behavior. The look-ahead mechanism of NAG enables accurate gradient estimates, while its momentum-based formulation ef-fectively suppresses oscillations in ill-conditioned optimization landscapes. Further, to ensure stable and efficient convergence, the learning rate is dynamically adjusted using an exponential decay schedule. At iteration t, the learning rate is updated as μt = μ0 e−ηt , where μ0 is the initial learning rate and η
+
+controls the decay rate. This adaptive strategy balances con-vergence speed and stability, leading to reliable optimization of the proposed Wave-BLS model. To optimize the objective function in (12), we compute its gradient with respect to the output weight matrix W . The resulting gradient consists of contributions from the regular-ization term and the wave loss term and is used within the NAG-based optimization scheme. For a given class j ∈ { 1, 2, . . . , n out }, the gradient of the wave loss term with respect to W (: , j ) is given by 
+
+∇W (: ,j )Lwave =
+
+> m
+
+X
+
+> i=1
+
+uij 
+
+ 2 + au ij 
+
+eau ij 
+
+ 1 + λu 2 
+
+> ij
+
+eau ij 
+
+2 A(i, :) ⊤. (13) This gradient is subsequently used to update the model pa-rameters within the NAG optimization framework. The overall gradient of the objective function J(W ) is given by 
+
+∇J(W ) = W + C ∇W Lwave , (14) where the first term arises from the regularization component  
+
+> 12
+
+∥W ∥2 
+
+> F
+
+, and the second term corresponds to the contribution of the wave loss. At the tth iteration, the gradient is computed using the entire training dataset, ensuring stable and deterministic updates. 
+
+Algorithm 1 NAG-based optimization for Wave-BLS 
+
+Input: A ∈ Rm×(pq +rs ): representation matrix, Y ∈ Rm×nout :target matrix, C: regularization parameter, Imax : maximum number of iterations, μ(0) : initial learning rate, γ: momentum coefficient, η: learning rate decay factor, δ: convergence tol-erance. 
+
+Output: W ∈ R(pq +rs )×nout : output weight matrix.  
+
+> 1:
+
+Initialize t ← 0, W (0) , v(0) ← 0, μ(0) . 
+
+> 2:
+
+repeat  
+
+> 3:
+
+Compute: W look-ahead = W (t) + γv (t). 
+
+> 4:
+
+Compute stochastic gradient g(t) = ∇J(W look-ahead ). 
+
+> 5:
+
+Velocity update: 
+
+v(t+1) = γv (t) − μ(t)g(t). 
+
+> 6:
+
+Model parameters update: 
+
+W (t+1) = W (t) + v(t+1) . 
+
+> 7:
+
+Learning rate update: 
+
+μ(t+1) = μ(t)e−ηt . 
+
+> 8:
+
+t ← t + 1 . 
+
+> 9:
+
+until t ≥ Imax or ∥W (t) − W (t−1) ∥F ≤ δ 
+
+> 10:
+
+return W .Algorithm 1 provides the complete procedure for computing the output weight matrix W in the proposed Wave-BLS model using the NAG-based optimization scheme. The computational complexity of the proposed Wave-BLS model is detailed in Section S.I of the supplementary file. IV. E XPERIMENTS AND DISCUSSION 
+
+This section empirically evaluates the proposed Wave-BLS against baseline models on 30 UCI benchmark datasets under both clean and noisy conditions. The proposed Wave-BLS model is evaluated against several baseline methods, including RVFL [19], ELM, i.e., RVFL without direct link(RVFLwoDL) [20], BLS [5], Wave-RVFL [21], NF-BLS [7], F-BLS [22], IF-BLS [22], and KRP-BLS [8]. The detailed experimental setup is provided in Section S.II of the supplementary material. 
+
+A. Performance Evaluation 
+
+Table I summarizes the average accuracy and average rank of the proposed Wave-BLS and competing methods over 30 TABLE I: Comparison of average classification performance of the proposed Wave-BLS and baseline models 30 UCI benchmark datasets.                                
+
+> Model →RVFL [19] RVFLwoDL [20] BLS [5] Wave-RVFL [21] NF-BLS [7] F-BLS [22] IF-BLS [22] KRP-BLS [8] Wave-BLS †
+> Average Accuracy 79.8876 79.4376 82.0751 81.5155 80.0399 82.0376 83.9102 83.002 86.7448 Average Rank 6.5333 7.1833 4.8 4.0667 6.0833 5.2667 3.4833 4.8333 2.75
+> †indicates the proposed model; bold denotes the best performance, and underline denotes the second-best.
+
+UCI benchmark datasets. The detailed results are provided in Table S.I of the supplement file. Overall, Wave-BLS achieves the best performance in both criteria, indicating not only higher accuracy but also more consistent dominance across datasets. Among the classical randomized baselines, RVFL and RVFLwoDL obtain average accuracies of 79.8876% and 79.4376%, respectively. Moving to the broad-learning family, the standard BLS improves the average accuracy to 82.0751%. Several robust BLS variants further enhance performance: NF-BLS achieves 80.0399%, F-BLS reaches 82.0376%, IF-BLS attains the second-best average accuracy of 83.9102%, and KRP-BLS achieves 83.002%. In contrast, the proposed Wave-BLS yields the highest average accuracy of 86.7448%, providing a clear improvement over the strongest baselines. Specifically, Wave-BLS improves upon the best-performing baseline IF-BLS by 2.8346% (86.7448% vs. 83.9102%) and over KRP-BLS by 3.7428% (86.7448% vs. 83.002%). More-over, comparing wave-loss-based models highlights the benefit of embedding wave loss into the broader BLS architecture: Wave-BLS outperforms Wave-RVFL by a large margin of 5.2293% (86.7448% vs. 81.5155%), indicating that the pro-posed formulation leverages both the robustness of wave loss and the stronger representation capacity of BLS. While average accuracy provides a useful aggregate summary, it can hide dataset-wise variability: a method may perform extremely well on a subset of datasets and poorly on others while still achieving a competitive mean. Average rank complements this by measuring relative performance per dataset and then ag-gregating, thereby better reflecting how consistently a method performs across heterogeneous benchmarks. Lower average rank indicates that a model attains top performance more frequently across datasets, rather than relying on a few large gains. The rank results in Table I further confirm the advantage of Wave-BLS. RVFL and RVFLwoDL obtain average ranks of 6.5333 and 7.1833, respectively, whereas the standard BLS improves to 4.8. Among robust BLS variants, IF-BLS achieves the second-best average rank of 3.4833, while KRP-BLS yields 4.833. Wave-BLS achieves the best average rank of 2.75, demonstrating the most consistent superiority across datasets. Quantitatively, Wave-BLS improves over IF-BLS by 0.7333 (3.4833 → 2.75), and over KRP-BLS by 2.0833 (4.8333 
+
+→ 2.75). A similar trend is observed when comparing the wave-loss counterparts: Wave-BLS significantly improves over Wave-RVFL in rank (4.0667 → 2.75), confirming that the proposed integration of wave loss within the BLS framework not only boosts mean accuracy but also yields more consistent dataset-wise wins. Taken together, the lowest average rank and highest average accuracy indicate that Wave-BLS delivers TABLE II: Robustness comparison of BLS and Wave-BLS under outlier and noise contamination. Dataset Level Outliers Level Noise BLS Wave-BLS † BLS Wave-BLS †                                                                     
+
+> blood Clean 79.6272 82.9184 Clean 79.6272 82.9184
+> 5% 75.8421 80.4067 5% 77.1034 81.7749
+> 10% 72.5186 78.3925 10% 74.8652 79.9368
+> 15% 69.2847 75.8106 15% 71.4928 77.1053
+> 20% 66.0319 72.4678 20% 68.1074 74.6389
+> Avg. 72.6609 78.3992 Avg. 74.3398 79.2749
+> horse colic Clean 86.1422 85.7919 Clean 86.1422 85.7919 5% 82.6374 84.9563 5% 83.9046 85.1187
+> 10% 78.9421 82.4018 10% 80.2873 82.9365
+> 15% 75.6189 79.6674 15% 76.9548 80.3412
+> 20% 72.3046 76.1897 20% 73.6285 77.5403
+> Avg. 79.1290 81.8014 Avg. 80.1835 82.3457
+> Overall Average 75.8949 80.1003 77.2617 80.8103
+> Average Rank 2.0 1.0 1.75 1.25
+> Bold values denote the best performance for each row.
+
+both stronger predictive performance and better cross-dataset stability than existing baselines. This advantage is primarily driven by (i) replacing the squared-error criterion with the robust wave loss and (ii) coupling it with the richer feature-enhancement representation of BLS, yielding substantial gains over both the strongest BLS competitors (IF-BLS, KRP-BLS) and the wave-loss-based RVFL baseline (Wave-RVFL). To assess whether the observed differences in average ranks among the competing models are statistically significant, we employ the nonparametric Friedman test followed by Nemenyi post-hoc test. The detailed results are provided in Section S.III of the supplementary. The sensitivity analysis of the wave loss hyperparameters for the proposed Wave-BLS model is reported in Section S.IV of the supplementary material. 
+
+B. Robustness Analysis under Noise and Outliers 
+
+To evaluate the robustness of the proposed Wave-BLS, we conduct controlled experiments under outlier and noise contamination on two representative datasets. Specifically, artificial perturbations are introduced by contaminating 5% ,
+
+10% , 15% , and 20% of the training samples with outliers and label noise, respectively. The blood dataset is selected as a case where Wave-BLS consistently outperforms the standard BLS, while the horse colic dataset represents a complementary scenario where BLS exhibits slightly better performance on the clean data. This selection enables a balanced and unbiased assessment of robustness behavior. As reported in Table II, Wave-BLS demonstrates clear robustness advantages on the blood dataset across all contamination levels. Under both outlier and noise perturbations, Wave-BLS maintains higher classification accuracy than BLS, with performance degrada-tion occurring at a noticeably slower rate as contamination increases. This behavior highlights the effectiveness of the wave loss in bounding the influence of corrupted samples and mitigating the impact of extreme deviations. For the horse colic dataset, although BLS achieves marginally higher accuracy on the clean data, Wave-BLS consistently surpasses BLS once outliers or noise are introduced. As contamination levels increase, Wave-BLS preserves stronger performance stability, leading to higher average accuracy under both outlier and noise settings. This indicates that even in cases where the baseline model performs well on clean data, the proposed wave loss enhances resilience under adverse conditions. Over-all, Wave-BLS attains superior average accuracy and lower average rank across both datasets and contamination types. These results confirm that the proposed Wave-BLS framework offers improved robustness to data corruption, making it more suitable for real-world learning scenarios where noise and outliers are unavoidable. V. C ONCLUSIONS 
+
+In this work, we proposed Wave-BLS, a robust Broad Learning System that integrates the wave loss function into the BLS framework to address its inherent sensitivity to noise and outliers. By replacing the least-squares error formulation with a boundedand and asymmetric loss and optimizing the result-ing objective via NAG-based scheme, the proposed approach eliminates the need for matrix inversion while preserving the flat and efficient architecture of BLS. Extensive experiments on several benchmark datasets show that Wave-BLS achieves consistently higher classification performance than baseline variants. The superiority of the proposed model is further supported by Friedman and Nemenyi statistical tests. These results indicate that replacing the squared-error criterion with a bounded loss can substantially improve the reliability of BLS-based models. Robustness studies conducted under controlled noise and outlier injection provide additional insight into the behavior of Wave-BLS in adverse learning conditions. While standard BLS may perform competitively on clean data, its performance degrades rapidly as contamination increases. Moreover, sensitivity analysis with respect to the wave loss hyperparameters reveals a wide region of stable performance, indicating that Wave-BLS does not depend on finely tuned parameter settings. Overall, the empirical evidence suggests that Wave-BLS offers a robust enhancement to the BLS framework without introducing architectural complexity. REFERENCES 
+
+[1] L. Zhang and P. N. Suganthan, “A survey of randomized algorithms for training neural networks,” Information Sciences , vol. 364, pp. 146–155, 2016. [2] A. K. Malik et al. , “Random vector functional link network: recent developments, applications, and future directions,” Applied Soft Computing , vol. 143, p. 110377, 2023. [3] M. Akhtar, A. Kumari, M. Sajid, A. Quadir, M. Arshad, P. Suganthan, and M. Tanveer, “Towards robust and inversion-free randomized neural networks: The XG-RVFL framework,” Pattern Recognition , vol. 172, p. 112711, 2026. [Online]. Available: https://www.sciencedirect.com/science/article/ pii/S0031320325013743 [4] C. P. Chen and Z. Liu, “Broad learning system: An ef-fective and efficient incremental learning system without the need for deep architecture,” IEEE Transactions on Neural Networks and Learning Systems , vol. 29, no. 1, pp. 10–24, 2017. [5] ——, “Broad learning system: A new learning paradigm and system without going deep,” in 2017 32nd Youth Academic Annual Conference of Chinese Association of Automation (YAC) . IEEE, 2017, pp. 1271–1276. [6] J.-W. Jin and C. P. Chen, “Regularized robust broad learning system for uncertain data modeling,” Neurocom-puting , vol. 322, pp. 58–69, 2018. [7] S. Feng and C. P. Chen, “Fuzzy broad learning system: A novel neuro-fuzzy model for regression and classifica-tion,” IEEE Transactions on cybernetics , vol. 50, no. 2, pp. 414–424, 2018. [8] W. Deng et al. , “Robust dual-model collaborative broad learning system for classification under label noise en-vironments,” IEEE Internet of Things Journal , vol. 12, no. 12, pp. 21 055–21 067, 2025. [9] W. Chen et al. , “Adaptive broad network with graph-fuzzy embedding for imbalanced noise data,” IEEE Transactions on Fuzzy Systems , vol. 33, no. 6, pp. 1949– 1962, 2025. [10] X.-K. Cao et al. , “Multiparty secure broad learning system for privacy preserving,” IEEE Transactions on Cybernetics , vol. 53, no. 10, pp. 6636–6648, 2023. [11] S. Wu et al. , “Fractional approximation of broad learning system,” IEEE Transactions on Cybernetics , vol. 54, no. 2, pp. 811–824, 2024. [12] M. Akhtar, M. Tanveer, and M. Arshad, “CAWI: Copula-aligned weight initialization for randomized neural networks,” in The 29th International Conference on Artificial Intelligence and Statistics , 2026. [Online]. Available: https://openreview.net/forum?id=fwqydIjLn6 [13] Y. Tian et al. , “Recent advances on loss functions in deep learning for computer vision,” Neurocomputing , vol. 497, pp. 129–158, 2022. [14] M. Akhtar, M. Tanveer, and M. Arshad, “RoBoSS: A robust, bounded, sparse, and smooth loss function for supervised learning,” IEEE Transactions on Pattern Anal-ysis and Machine Intelligence , vol. 47, no. 1, pp. 149– 160, 2025. [15] ——, “HawkEye: A robust loss function for regression with bounded, smooth, and insensitive zone characteris-tics,” Applied Soft Computing , vol. 176, p. 113118, 2025. [16] M. Akhtar, R. Mishra, M. Tanveer, and M. Arshad, “Advancing RVFL networks: Robust classification with the HawkEye loss function,” in Neural Information Pro-cessing: 31st International Conference, ICONIP 2024, Proceedings, Part III , ser. Lecture Notes in Computer Science, vol. 15288. Singapore: Springer, 2025, pp. 226–240. [17] A. Quadir, M. Akhtar, and M. Tanveer, “Enhancing multiview synergy: Robust learning by exploiting the wave loss function with consensus and complementarity principles,” Neural Networks , vol. 188, p. 107433, 2025. [18] M. Akhtar et al. , “Advancing supervised learning with the wave loss function: A robust and smooth approach,” 
+
+Pattern Recognition , p. 110637, 2024. [19] Y.-H. Pao et al. , “Learning and generalization char-acteristics of the random vector functional-link net,” 
+
+Neurocomputing , vol. 6, no. 2, pp. 163–180, 1994. [20] G. B. Huang et al. , “Extreme learning machine: theory and applications,” Neurocomputing , vol. 70, no. 1-3, pp. 489–501, 2006. [21] M. Sajid et al. , “Wave-RVFL: A randomized neural network based on wave loss function,” in Neural Infor-mation Processing . Springer Nature Singapore, 2025, pp. 242–257. [22] ——, “Intuitionistic fuzzy broad learning system: En-hancing robustness against noise and outliers,” IEEE Transactions on Fuzzy Systems , 2024. Supplementary Material 
+
+Robust Broad Learning System with Wave Loss for Classification under Data Uncertainty 
+
+S.I. C OMPUTATIONAL COMPLEXITY 
+
+The computational complexity of the proposed Wave-BLS model optimized using the NAG framework is mainly de-termined by the gradient computation and parameter update steps. At each iteration, the gradient of the objective function 
+
+∇J(W ) is evaluated over the entire training set, requiring the processing of all m samples across nout output dimensions. For each sample, the computation involves a scalar weighting followed by a multiplication with the transformed feature vec-tor A(i, :) ∈ R(pq +rs ), resulting in a per-iteration complexity of O m n out (pq + rs ). The subsequent NAG operations, including the look-ahead step, velocity update, and parameter update, operate on matrices of size (pq + rs ) × nout and therefore contribute a lower-order cost of O (pq + rs ) nout 
+
+.Since the gradient computation dominates, the overall per-iteration complexity remains O m n out (pq + rs ). Over Imax 
+
+iterations, the total computational complexity of Wave-BLS is 
+
+O Imax m n out (pq + rs ). In contrast, the conventional BLS framework requires matrix inversion with a computational cost of O min  (pq + rs )3, m 3 , highlighting the improved scalability of the proposed Wave-BLS model. S.II. E XPERIMENTAL SETUP 
+
+All experiments are conducted using MATLAB R2023a on a workstation equipped with an 11th-generation Intel Core i7-11700 processor running at 2.50 GHz, 16 GB of RAM, and a Windows 11 operating system. To ensure a fair and reliable comparison, a 5-fold cross-validation strategy is employed in conjunction with grid search for hyperparameter tuning. Specifically, each dataset is partitioned into five mutually exclusive folds. For a given set of hyperparameters, the model is trained on four folds and evaluated on the remaining fold, repeating this process until each fold has served as the test set once. The testing accuracy obtained across the five folds is then averaged, and the highest average accuracy achieved over all hyperparameter configurations is reported as the final performance of each model. For all models, the regularization parameter C is selected from the range {10 −6, 10 −4, . . . , 10 6}. For RVFL and ELM, the number of hidden nodes is tuned within the range 5:10:205 .For BLS and the proposed Wave-BLS, the number of fea-ture node windows is chosen from 1:2:21 , the number of feature nodes per window from 5:5:50 , and the number of enhancement nodes from 5:10:105 . For NF-BLS, the number of fuzzy groups is selected from 1:2:21 , the number of fuzzy nodes per group from 5:5:50 , and the number of enhancement nodes from 5:10:105 . For IF-RVFL, the kernel hyperparam-eter is selected from the range {10 −6, 10 −4, . . . , 10 6}. For Wave-RVFL, hyperparameter settings are adopted from [21] to ensure a fair and consistent comparison. Similarly, the configurations for F-BLS and IF-BLS follow the settings reported in [22], while the parameters for KRP-BLS are set according to [8], maintaining consistency with their original implementations. For the proposed Wave-BLS model, the wave loss parameters are selected from a ∈ {− 5, −4, . . . , 5}
+
+and λ ∈ {0.1, 0.5, 1}. The parameters of the NAG-based optimization algorithm are fixed as follows: the initial weight matrix is set to W (0) = 0 .01 × 1, where 1 ∈ R(pq +rs )×nclass 
+
+denotes a matrix of ones; the initial velocity is initialized as 
+
+v(0) = 0; the initial learning rate is set to μ(0) = 0 .01 ; the learning rate decay factor is fixed to η = 0 .1; the momentum coefficient is set to γ = 0 .6; the convergence tolerance is set to δ = 10 −6; and the maximum number of iterations is fixed to Imax = 100 .S.III. S TATISTICAL SIGNIFICANCE ANALYSIS 
+
+To assess whether the observed differences in average ranks among the competing models are statistically significant, we first employ the nonparametric Friedman test. Let K
+
+denote the number of evaluated models and N denote the number of datasets. This test examines the null hypothesis that all K models exhibit equivalent performance across N
+
+datasets. The Friedman test statistic is defined as χ2 
+
+> F
+
+=
+
+> 12 NK(K+1)
+
+PK 
+
+> k=1
+
+ϱ(k, •)2 − K(K+1) 2
+
+> 4
+
+
+
+, where ϱ(k, •) denotes the average rank of the kth model. In the test, the statistic 
+
+FF = χ2
+
+> F
+
+ N − 1 
+
+> N(K− 1) −χ2
+> F
+
+
+
+is commonly used, which follows an F -distribution with (K − 1) and (K − 1)( N − 1) degrees of freedom. In our study, K = 9 models are evaluated on 
+
+N = 30 UCI benchmark datasets. As reported in Table S.II, the Friedman statistic is χ2 
+
+> F
+
+= 66 .6578 , yielding a corrected value of FF = 11 .1518 . The corresponding critical value at the 
+
+5% significance level is F (8 , 232) = 1 .9784 . As the computed statistic satisfies 11 .1518 > 1.9784 , the null hypothesis of equivalent model performance is rejected, confirming the pres-ence of statistically significant differences across the evaluated methods. Next, the Nemenyi post-hoc procedure is employed to conduct pairwise comparisons between the proposed Wave-BLS and the competing models. According to the Nemenyi test, two models are considered significantly different if the difference in their average ranks exceeds the critical difference (C.D.), given by C.D. = qα
+
+q K(K+1) 6N , where qα is the critical value corresponding to the two-tailed Nemenyi test. At α = 0 .1, the resulting critical difference is C.D. = 2 .0188 .The post-hoc comparison results are summarized in Table S.II. The proposed Wave-BLS achieves the best average rank of 
+
+2.75 an d shows statistically significant improvements over RVFL, RVFLwoDL, BLS, NF-BLS, F-BLS, and KRP-BLS, as the corresponding rank differences exceed the critical difference. In contrast, the rank differences between Wave-BLS and Wave-RVFL, as well as IF-BLS, do not exceed the critical threshold, indicating comparable performance among these top-performing methods. Overall, the Friedman and Nemenyi tests jointly confirm that the superior performance of TABLE S.I: Dataset wise results of the proposed wave-BLS model against the baseline models on 30 UCI datasets. 
+
+Dataset ↓ | Model → RVFL [19] RVFLwoDL [20] BLS [5] Wave-RVFL [21] NF-BLS [7] F-BLS [22] IF-BLS [22] KRP-BLS [8] Wave-BLS †
+
+acute inflammation 100 100 100 100 100 100 100 100 100 acute nephritis 100 100 100 100 100 100 100 100 100 bank 90.9051 89.4051 89.7366 88.1779 89.5817 89.7590 89.4051 87.7230 89.0202 blood 78.4056 76.9056 79.6272 80.7578 76.0807 78.5807 77.2451 76.7000 82.9184 breast cancer 68.1727 66.6727 69.8851 70.2179 70.1754 72.2868 83.1579 82.4947 90.8772 breast cancer wisc 89.4897 87.9897 88.4183 86.8050 90.7081 88.2775 88.9938 89.3240 97.8571 chess krvkp 73.5312 72.0312 84.3862 75.7371 70.4004 84.2921 84.9184 87.3718 88.7031 conn bench sonar mines rocks 62.0807 60.5807 69.2451 63.9431 60.6272 69.1521 80.2091 78.2049 93.6585 credit approval 86.8623 85.3623 87.5362 88.5995 84.4928 86.3768 88.5507 89.7797 87.1014 cylinder bands 67.7193 66.2193 69.9258 69.7509 69.5336 69.1338 72.8536 70.8109 70.3008 echocardiogram 85.4031 83.9031 83.9316 87.9652 80.9402 84.6724 88.4900 86.7202 86.2108 fertility 89.5000 90.0000 90.0000 86.8150 92.0000 91.0000 91.0000 89.1800 92.0000 haberman survival 74.9902 73.4902 70.2750 77.2399 73.4902 69.6563 75.4574 76.1937 78.7361 hepatitis 83.2258 83.2258 85.1613 85.7226 87.7419 84.5161 87.7419 85.1096 85.2258 hill valley 77.9706 77.9706 82.0185 80.3097 78.9583 81.6002 79.6249 78.6344 80.4570 horse colic 84.2098 84.7098 86.1422 86.7361 83.9726 86.1385 86.6938 84.0920 85.7919 mammographic 79.0889 79.0889 78.6712 81.4616 79.5040 78.6744 79.8192 79.8238 84.2870 molec biol promoter 68.9610 68.9610 83.9394 71.0298 75.1515 84.9351 88.7879 89.1241 96.1905 monks 1 83.2497 83.2497 75.3314 85.7472 86.1277 77.1396 77.6705 74.0404 74.1203 musk 1 67.8640 67.8640 75.8311 69.8999 67.8487 76.6754 78.9846 79.8523 96.6316 oocytes merluccius nucleus 4d 79.8407 79.8407 82.7776 82.2359 80.1420 81.8011 80.9201 79.3017 72.8541 oocytes trisopterus nucleus 2f 76.4211 76.4211 78.9371 78.7137 75.9911 78.6123 75.9899 74.2302 76.2815 pima 71.4888 71.4888 72.0958 73.6335 72.7918 71.4846 73.3079 74.1087 76.4341 pittsburg bridges T OR D 87.6429 88.1429 89.1095 90.2722 90.1429 88.1905 90.2381 87.0791 92.1429 spambase 87.1125 87.1125 89.0201 89.7259 83.2657 89.4582 90.7407 87.4741 93.9201 spect 67.9245 67.9245 69.4340 69.9622 67.9245 69.4340 72.4528 72.3517 73.9623 statlog heart 80.0000 80.0000 82.2222 82.4000 80.7407 82.2222 84.0741 85.0566 87.0370 tic tac toe 86.0068 86.0068 98.4315 88.5870 82.7623 97.8081 97.0768 94.1645 99.0201 titanic 77.9168 77.9168 77.9168 80.2543 78.0537 77.9168 79.9532 78.3541 94.6875 vertebral column 2clases 70.6452 70.6452 72.2453 72.7646 72.0465 71.3333 72.9479 72.7590 75.9168 
+
+Average Accuracy 79.8876 79.4376 82.0751 81.5155 80.0399 82.0376 83.9102 83.002 86.7448 Average Rank 6.5333 7.1833 4.8 4.0667 6.0833 5.2667 3.4833 4.8333 2.75  
+
+> †
+
+indicates the proposed model; bold denotes the best performance, and underline denotes the second-best. TABLE S.II: Statistical significance analysis using Friedman test and Nemenyi post-hoc test.                                              
+
+> Friedman Test
+> KNχ2
+> FFFF(( K − 1) ,(K − 1)( N − 1)) Significant difference 930 66.6578 11.1518 1.9784 Yes
+> Nemenyi Post-hoc Test (C.D. = 2.0188)
+> Model Avg. rank Rank diff. Significant difference RVFL [19] 6.5333 3.7833 Yes RVFLwoDL [20] 7.1833 4.4333 Yes BLS [5] 4.8000 2.0500 Yes Wave-RVFL [21] 4.0667 1.3167 No NF-BLS [7] 6.0833 3.3333 Yes F-BLS [22] 5.2667 2.5167 Yes IF-BLS [22] 3.4833 0.7333 No KRP-BLS [8] 4.8333 2.0833 Yes Wave-BLS †2.7500 –N/A
+
+Wave-BLS is not due to random variation, but is statistically significant across the considered benchmark datasets. S.IV. S ENSITIVITY ANALYSIS OF WAVE LOSS 
+
+HYPERPARAMETERS 
+
+In this subsection, we conduct a sensitivity analysis on the breast cancer dataset with respect to the wave loss hy-perparameters. Specifically, we analyze the influence of the bounding parameter λ, the shape parameter a, and their joint interaction on classification accuracy, while fixing all remaining model hyperparameters at their optimal values. Fig. S.1a shows the variation in classification accuracy on the breast cancer dataset as the bounding parameter λ is varied while fixing a. Although the exact accuracy trend may differ across datasets, the results clearly indicate that the choice of λ critically influences model performance. In particular, intermediate values of λ lead to improved accuracy, whereas very small or large values result in performance degradation. This observation highlights the role of λ in controlling the sat-uration behavior of the wave loss and regulating the influence of large errors, underscoring the importance of selecting an appropriate bounding parameter for stable and robust learning. Fig. S.1b depicts the sensitivity of accuracy with respect to the asymmetry parameter a while keeping λ fixed. For this dataset, Wave-BLS achieves consistently high accuracy over a broad range of both negative and positive values of 
+
+a, indicating that the model is not overly sensitive to the choice of the asymmetry parameter. A sharp degradation in performance is observed only at a specific intermediate value of a, suggesting that certain configurations may induce unfa-vorable skewness in loss penalization. Nevertheless, the rapid recovery of accuracy for neighboring values highlights that Wave-BLS remains largely stable with respect to variations in (a) (b) (c) 
+
+Fig. S.1: Sensitivity analysis of the wave loss hyperparameters in the proposed Wave-BLS model on the breast cancer dataset. (a) Effect of the bounding parameter λ, (b) effect of the shape parameter a, and (c) their joint influence on classification accuracy. 
+
+a when other hyperparameters are fixed. Fig. S.1c presents the joint sensitivity surface of accuracy with respect to a
+
+and λ. The surface reveals a broad region of relatively high accuracy, interspersed with localized valleys corresponding to unfavorable parameter combinations. This behavior indicates that, for this dataset, Wave-BLS does not require extremely precise tuning of a and λ to achieve competitive performance. At the same time, the presence of distinct low-accuracy regions highlights the importance of jointly selecting these parameters, as their interaction directly influences the balance between asymmetry and bounded error penalization. Overall, this sensitivity analysis demonstrates that the wave loss hyperparameters play a meaningful role in shaping the performance of Wave-BLS. While the model exhibits a rea-sonable degree of stability across wide ranges of both a and 
+
+λ, suboptimal parameter choices can still lead to noticeable performance degradation. These observations suggest that a careful and informed selection of the wave loss parameters is essential to fully exploit its robustness properties and achieve consistently strong performance across datasets.

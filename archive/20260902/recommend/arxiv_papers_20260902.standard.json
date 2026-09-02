@@ -1,0 +1,94 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-02T22:54:09.338210+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.24443v1",
+      "source": "arxiv",
+      "title": "Time-Window Noise2Noise: A Self-Supervised Method for Blind Denoising of Vibration and Impact Signals in Mechanical Systems",
+      "abstract": "Vibration and impact measurements in mechanical systems are invariably corrupted by noise, which degrades every quantity derived from them, such as modal parameters and contact forces. Classical filters attenuate noise only when its statistics are known a priori and often fail at very low signal-to-noise ratio (SNR) or under spectrally coloured noise. This work presents Time-Window Noise2Noise (TWN2N), a self-supervised method for blind denoising of signals produced by deterministic mechanical systems. The method requires neither a clean reference signal nor paired noisy observations, nor any prior characterization of the noise: by reconstructing each time instant from its temporal neighbourhood while masking the instant itself, a compact autoencoder is forced to learn the underlying dynamics rather than the noise. The formulation is general for any deterministic dynamical system, is computationally lightweight (a single feed-forward pass per sample at inference), and is assessed on two benchmarks with exactly known ground truth: the impulse response of a linear 3-degree-of-freedom system and a nonlinear Hunt-Crossley impact. Across white, pink, brown and quantization noise, and over repeated realizations, TWN2N yields statistically significant SNR gains (p < 0.001) without any prior noise information, and it is benchmarked against optimally-tuned Savitzky-Golay and wavelet (VisuShrink) filters. The benefit propagates to identification: at 15 dB input SNR, modal parameters that are unidentifiable from the raw signal are recovered within 4% of their reference values after denoising.",
+      "authors": [
+        "Vinicius S. Vianna",
+        "Tiago H. Machado",
+        "Ilmar F. Santos"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-08-25T11:57:30+00:00",
+      "link": "https://arxiv.org/pdf/2608.24443v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Self-supervised blind denoising for vibration and impact signals requiring no clean references or noise priors; relevant as preprocessing for noisy underwater acoustic signals",
+      "llm_evidence_cn": "时间窗自监督盲去噪方法，适用于船舰机械噪声等振动类信号的低信噪比预处理",
+      "llm_evidence": "时间窗自监督盲去噪方法，适用于船舰机械噪声等振动类信号的低信噪比预处理",
+      "canonical_evidence": "时间窗自监督盲去噪方法，适用于船舰机械噪声等振动类信号的低信噪比预处理",
+      "llm_tldr_en": "Time-Window Noise2Noise blindly denoises vibration and impact signals under low SNR and colored noise, reconstructing each time sample from neighbors without paired or clean references.",
+      "llm_tldr_cn": "机械系统的振动与冲击信号通常被噪声污染，传统滤波在低信噪比和谱色噪声下难以盲去噪。该文提出时间窗Noise2Noise自监督去噪方法，通过重建每个时刻的时间邻域实现盲去噪，无需干净参考、配对噪声观测及噪声先验。在低信噪比条件下可有效恢复确定性机械信号，克服了经典滤波器依赖噪声统计的不足。该策略可作为水下声学振动类信号进入目标识别前处理的稳健增强手段。",
+      "llm_tldr": "机械系统的振动与冲击信号通常被噪声污染，传统滤波在低信噪比和谱色噪声下难以盲去噪。该文提出时间窗Noise2Noise自监督去噪方法，通过重建每个时刻的时间邻域实现盲去噪，无需干净参考、配对噪声观测及噪声先验。在低信噪比条件下可有效恢复确定性机械信号，克服了经典滤波器依赖噪声统计的不足。该策略可作为水下声学振动类信号进入目标识别前处理的稳健增强手段。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.29983v1",
+      "source": "arxiv",
+      "title": "Robust Broad Learning System with Wave Loss for Classification under Data Uncertainty",
+      "abstract": "Broad Learning System (BLS) offers an efficient alternative to deep architectures by enabling fast learning through randomized feature mapping and closed-form solutions. However, its reliance on squared error loss makes it highly sensitive to noise, outliers, and corrupted labels, limiting its reliability in real-world scenarios. To address this limitation, we propose Wave-BLS, a robust broad learning framework that integrates the wave loss function, which is asymmetric, bounded, and smooth, enabling controlled penalization of large errors. The proposed formulation replaces the standard least-squares objective with a wave-loss-based optimization problem, solved efficiently using a Nesterov accelerated gradient (NAG)-based scheme without requiring matrix inversion, thereby improving scalability. Extensive experiments on 30 UCI benchmark datasets demonstrate that Wave-BLS consistently outperforms classical BLS and several robust variants. Statistical validation using Friedman and Nemenyi post-hoc tests confirms the significance of the observed improvements. Furthermore, robustness evaluations under controlled noise and outlier injection reveal that Wave-BLS exhibits substantially slower performance degradation compared to BLS, even in challenging contamination settings. These results establish Wave-BLS as a stable and robust alternative to existing broad learning models for learning under data uncertainty.",
+      "authors": [
+        "Mushir Akhtar",
+        "A. Varshney",
+        "A. Quadir",
+        "A. Rahaman",
+        "M. Tanveer",
+        "Mohd. Arshad"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-30T19:16:25+00:00",
+      "link": "https://arxiv.org/pdf/2608.29983v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Robust broad learning classifier with wave loss, improves classification under noise and outliers; applicable to target classifiers using acoustic features",
+      "llm_evidence_cn": "提出波损失宽度学习鲁棒分类器，可提升含噪与离群数据下的分类稳定性，适用于水下目标识别分类器",
+      "llm_evidence": "提出波损失宽度学习鲁棒分类器，可提升含噪与离群数据下的分类稳定性，适用于水下目标识别分类器",
+      "canonical_evidence": "提出波损失宽度学习鲁棒分类器，可提升含噪与离群数据下的分类稳定性，适用于水下目标识别分类器",
+      "llm_tldr_en": "Wave-BLS combines robust wave loss with broad learning and Nesterov accelerated optimization, yielding a noise-tolerant classifier for data with outliers or corrupted labels.",
+      "llm_tldr_cn": "针对宽度学习系统对噪声、离群点和错误标签敏感的问题，提出Wave-BLS框架，引入非对称、有界且平滑的波损失函数替换平方误差目标，并配合Nesterov加速梯度优化。该方法对大误差进行受控惩罚，在数据不确定场景下保持快速学习优势。实验表明其分类鲁棒性显著优于经典宽度学习系统。该框架可为带有噪声特征的水下高频目标识别分类器提供稳健的决策基础。",
+      "llm_tldr": "针对宽度学习系统对噪声、离群点和错误标签敏感的问题，提出Wave-BLS框架，引入非对称、有界且平滑的波损失函数替换平方误差目标，并配合Nesterov加速梯度优化。该方法对大误差进行受控惩罚，在数据不确定场景下保持快速学习优势。实验表明其分类鲁棒性显著优于经典宽度学习系统。该框架可为带有噪声特征的水下高频目标识别分类器提供稳健的决策基础。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "using high frequency acoustic features for underwater target classification",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

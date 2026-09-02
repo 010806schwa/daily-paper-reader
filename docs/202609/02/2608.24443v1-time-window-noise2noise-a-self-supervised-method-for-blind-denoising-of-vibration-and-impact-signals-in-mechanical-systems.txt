@@ -1,0 +1,381 @@
+Title: Time-Window Noise2Noise: A Self-Supervised Method for Blind Denoising of Vibration and Impact Signals in Mechanical Systems
+
+URL Source: https://arxiv.org/pdf/2608.24443v1
+
+Published Time: Wed, 26 Aug 2026 01:13:41 GMT
+
+Number of Pages: 20
+
+Markdown Content:
+# Time-Window Noise2Noise: A Self-Supervised Method for Blind Denoising of Vibration and Impact Signals in Mechanical Systems 
+
+# Vinicius S. Vianna 1, Tiago H. Machado 2 and Ilmar F. Santos 3
+
+University of Campinas, Brazil 1,2 and Technical University of Denmark, Denmark 3
+
+v178334@dac.unicamp.br 1, tiagomh@fem.unicamp.br 2 and ilsa@dtu.dk 3
+
+Abstract 
+
+Vibration and impact measurements in mechanical systems are invariably corrupted by noise, which degrades every quantity derived from them, such as modal parameters and contact forces. Classical filters attenuate noise only when its statistics are known a priori and often fail at very low signal-to-noise ratio (SNR) or under spectrally coloured noise. This work presents Time-Window Noise2Noise (TWN2N), a self-supervised method for blind denoising of signals produced by deterministic mechanical systems. The method requires neither a clean reference signal nor paired noisy observations, nor any prior characterization of the noise: by reconstructing each time instant from its temporal neighbourhood while masking the instant itself, a compact autoencoder is forced to learn the underlying dynamics rather than the noise. The formulation is general for any deterministic dynamical system, is computationally lightweight (a single feed-forward pass per sample at inference), and is assessed on two benchmarks with exactly known ground truth: the impulse response of a linear 3-degree-of-freedom system and a nonlinear Hunt–Crossley impact. Across white, pink, brown and quantization noise, and over repeated realizations, TWN2N yields statistically significant SNR gains ( p < 0.001) without any prior noise information, and it is benchmarked against optimally-tuned Savitzky–Golay and wavelet (VisuShrink) filters. The benefit propagates to identification: at 15 dB input SNR, modal parameters that are unidentifiable from the raw signal are recovered within 4% of their reference values after denoising. 
+
+Keywords: Blind denoising; Self-supervised learning; Mechanical vibration; Modal parameter identification; Contact dynamics; Autoencoder. 
+
+# 1 Introduction 
+
+The extraction of clean dynamic signals from noisy measurements is a recurring computational problem across structural dynamics, vibration analysis, and impact mechanics. In practice, the acquired signal is invariably corrupted by noise arising from sensor limitations, environmental interference, electronic disturbances, and analog-to-digital conversion. This corruption propagates to every quantity computed from the signal—modal frequencies, damping ratios, and contact forces—and can render their estimates unreliable or, at high noise levels, effectively unidentifiable. A robust, general-purpose denoising stage in the computational pipeline therefore directly improves the reliability of the downstream engineering analysis. Several methods have been proposed to remove noise and recover the true underlying signal. A wide class of these approaches shares the same fundamental premise: denoising is achieved by averaging, frequently performed locally, as established by the classical Gaussian smoothing model [1]. However, traditional techniques, including wavelet-based methods [2] and kernel-based filters [3, 4], often require assumptions about noise statistics or signal characteristics that may not hold in real-world applications. Moreover, they typically struggle with extremely low signal-to-noise ratios (SNRs), nonstationary noise conditions, and colored noises, commonly encountered in dynamic testing. Data-driven, learning-based methods have become a prominent computational alternative to model-based filtering across engineering; for instance, Fan et al. [5] employed residual convolutional networks to denoise vibration signals for structural health monitoring. Such supervised approaches, however, require large sets of clean reference signals for training—a requirement rarely met in practice, since the noise-free ground truth of an experimental signal is, in general, inaccessible. The advent of deep learning has offered data-driven alternatives, initially pioneered by Denoising Autoen-coders (DAEs) [6]. In the specific context of image denoising, Jain et al. [7] were among the first to apply Convolutional Neural Networks (CNNs) to this task, establishing a setup where denoising is treated as a re-gression problem to minimize the loss between the prediction and clean ground truth data. Building on this, Zhang et al. [8] set a new performance standard with a very deep convolutional architecture built on residual 1arXiv:2608.24443v1 [eess.SP] 25 Aug 2026 learning. Their residual learning approach predicts the noise component directly, rather than the clean signal itself, enabling a single network to handle a wide range of noise intensities. However, standard supervised models rely on clean ground truth signals, a requirement rarely satisfied in experimental mechanics. This constraint motivated the emergence of the blind denoising framework Noise2Noise (N2N) [9], which learns from paired noisy observations. However, since acquiring multiple independent realiza-tions of the same dynamic event is often prohibitive, research has pivoted toward Internal Statistics Methods 1.Although single-shot techniques within this category, such as Noise2Void [10] and Noise2Self [11], successfully eliminate the need for paired data, they predominantly target spatial dependencies in static images, thereby neglecting the temporal coherence inherent to dynamical systems. This work addresses this gap through an unprecedented application of blind-spot neural denoising to de-terministic dynamical systems, introducing Time-Window Noise2Noise, the first self-supervised architecture designed specifically to exploit temporal causality in mechanical systems. The core novelty lies in training networks to reconstruct states from neighboring observations while masking the current instant, forcing implicit learning of governing physical laws without clean targets or paired data. Unlike spatial denoising methods that rely on statistical redundancy, our approach leverages the unique temporal structure of deterministic systems, enabling robust signal recovery and accurate modal identification even at severe noise levels (15 dB SNR), where conventional techniques often fail. The remainder of this paper is organized as follows: Section 2 details the Time-Window Noise2Noise method-ology and the synthetic datasets used for validation. Section 3 presents the quantitative and statistical perfor-mance of the method across various noise levels. Finally, Section 4 discusses implications and future perspectives. 
+
+# 2 Method and dataset description 
+
+This section outlines the comprehensive methodology adopted in this study. First, the theoretical framework and the specific architecture of the proposed Time-Window Noise2Noise model are detailed, highlighting its distinct ability to exploit temporal correlations in dynamic signals compared to standard autoencoders. Subsequently, the generation of the synthetic datasets used for validation is described. These datasets, representing a linear multi-degree-of-freedom system and a nonlinear contact experiment, serve as ground truth baselines to rigorously evaluate the denoising performance under varying signal-to-noise ratios. 
+
+## 2.1 Autoencoder Based Architecture 
+
+An autoencoder is a self-supervised network that learns to reproduce its own input after forcing it through an information bottleneck [12, 13]. It is built from an encoder Fen , which maps the input onto a compact latent code of reduced dimensionality, and a decoder Fde , which reconstructs the original signal from that code. When such an architecture is employed for denoising, the conventional training scheme pairs a corrupted observation at the input with its uncorrupted counterpart as the regression target [6, 14, 15, 16]. Clean references of this kind are seldom available outside controlled environments. The stacked sparse denoising autoencoder (SSDA), for instance, attains its performance only after being exposed to large collections of clean samples [16], and a distinct model has to be retrained whenever the noise statistics or the signal type change. In experimental mechanics, where uncorrupted reference signals essentially never exist, this supervised paradigm becomes impractical. These limitations motivated the family of blind denoising strategies, which dispense with clean targets and require no prior knowledge of the noise type or intensity, making them considerably better suited to real measurements. Along this line, Majumdar [13] proposed a blind autoencoder that enforces sparsity in the latent representation through an L1-norm penalty, reporting improvements over denoising based on Singular Value Decomposition (SVD). More broadly, promoting sparsity in the latent features has repeatedly been found to benefit reconstruction quality [16]. Unlike standard autoencoders that process each time instant independently, our proposed architecture ex-ploits temporal context. By presenting sequential observations as input, the model captures the deterministic dependencies governing the system’s evolution. This temporal window acts as a structural prior, guiding the network toward solutions consistent with the physics of the data. For autonomous dynamical systems, the time evolution of the state vector X(t) is governed by a deterministic function F:˙X(ti) = ddt X(ti) = F(X(ti)) (1) The diagram of the proposed Time-Window Noise2Noise architecture is depicted in Figure 1. To estimate the state X(ti) at time ti the network input is defined as a vector Xi,p that includes only neighboring past and 
+
+> 1Internal Statistics Methods refer to a category of algorithms that do not require prior training on external ground truth data. Instead, they extract the required signal information directly from the internal statistical dependencies of the noisy test data itself.
+
+2future observations, explicitly excluding the current point X(ti): 
+
+Xi,p = [ X(ti−p), . . . , X (ti−1), X (ti+1 ), . . . , X (ti+p)] (2) where p represents the window size (lag and lead steps). This modeling approach is inspired by the Noise2Void framework [10] and its use of a ”blind-spot” archi-tecture. In Noise2Void, each pixel is estimated using only its spatial neighborhood while masking the central pixel itself, to prevent the network from learning a trivial identity mapping. Similarly, by explicitly excluding 
+
+X(ti) from the input, and utilizing a bottleneck dimension significantly smaller than the dimension of a single input frame, we prevent the model from learning the identity function. Consequently, the network must learn the system’s dynamics to predict X(ti). Distinct from image denoising, which exploits spatial redundancy, our method leverages the temporal determinism of physical dynamics. 
+
+Figure 1: Schematic representation of the Time-Window Noise2Noise architecture. Since the physical signal X0(t) adheres to this smooth, deterministic evolution rule, while the stochastic noise ε acts as an uncorrelated disturbance, the network effectively distinguishes between the two to predict the missing X(ti). The target output is the noisy signal at the specific instant ti, expressed as: 
+
+X(ti) = X0(ti) + ε (3) where X0(ti) is the clean data, and ε is additive random noise. The input vector Xi,p is flattened and compressed by the encoder into a latent code r:
+
+r = Fen (Xi,p ) (4) The latent dimension of the vector r is deliberately chosen to be smaller than the output dimension (e.g. dim( r) = 4 for a 6-dimension output). As mentioned, this compressed representation forces the encoder to suppress the high-dimensional noise. The decoder then expands this latent code r back to an estimate of the target instant: 
+
+Y (ti) = Fde (r) (5) In the training phase, we utilize the noisy observation at the present instant X(ti) as the target. The objective is to optimize the weights w of Fen and Fde to minimize the L1 error norm between the predicted output and the noisy target: 
+
+w = argmin 
+
+> w
+
+∥Y (ti) − X(ti)∥1 (6) A key observation is that the target X(ti) used during training is the noisy sample itself, not the underlying clean value X0(ti). As a consequence, driving the training loss to its absolute minimum does not coincide with optimal denoising; carried too far, the optimization would merely reproduce the noisy measurement. The gap between this noisy target and the desired clean output widens precisely as the noise level grows. 3The L2 loss squares errors, thereby amplifying the impact of outliers and increasing noise sensitivity. In contrast, the L1 norm has been shown to be more robust in previous studies [12, 13, 16]. By promoting sparsity in the error distribution, the L1 norm makes the model more resilient to noisy targets, allowing it to better tolerate discrepancies between noisy observations and the underlying clean signal. Finally, to mitigate the challenge of learning from noisy targets, training duration is regulated by early stopping. Since neural networks tend to learn simpler patterns (such as the deterministic system dynamics) before fitting complex random data (noise), prolonged training would eventually lead the model to ”memorize” the noise to further minimize the loss. In our experiments, this tendency to overfit the noise was the dominant failure mode, and it became markedly more pronounced as the noise level increased. Early stopping effectively prevents this overfitting, allowing the model to capture the deterministic signal structure without learning the noise distribution. 
+
+## 2.2 Algorithm and software implementation 
+
+The complete procedure is summarized in Algorithm 1. The method is deliberately architecture-light and framework-agnostic: it requires only a standard feed-forward autoencoder and a lagged (time-windowed) con-struction of the training set, and it is therefore straightforward to reproduce and to embed in existing compu-tational pipelines. 
+
+Algorithm 1 Time-Window Noise2Noise (TWN2N) 
+
+Require: noisy signal {X(ti)}ni=1 ; window size p; latent dimension r
+
+Ensure: denoised signal { ˆX(ti)}ni=1  
+
+> 1:
+
+for each instant ti do  
+
+> 2:
+
+assemble the blind-spot input Xi,p = [ X(ti−p), . . . , X (ti−1), X (ti+1 ), . . . , X (ti+p)] ▷ central instant masked  
+
+> 3:
+
+end for  
+
+> 4:
+
+standardize inputs Xi,p and targets X(ti) 
+
+> 5:
+
+initialize encoder Fen and decoder Fde with bottleneck r < dim(output)  
+
+> 6:
+
+while early-stopping criterion not met do  
+
+> 7:
+
+update weights to minimize P
+
+> i
+
+∥Fde (Fen (Xi,p )) − X(ti)∥1 ▷ Adam  
+
+> 8:
+
+monitor validation loss; keep best weights  
+
+> 9:
+
+end while  
+
+> 10:
+
+ˆX(ti) ← Fde (Fen (Xi,p )) for all i ▷ single feed-forward pass The reference implementation uses the Keras/TensorFlow framework; the encoder–decoder layer configura-tion and all training hyperparameters are reported in Appendix A. The method is computationally lightweight: the TWN2N network used for the 3-DOF benchmark has 17 ,218 trainable parameters, training is performed once per signal and converges within a few minutes on a standard desktop CPU (no GPU is required), and inference is a single feed-forward pass per time sample—linear in the signal length and free of the iterative thresholding or spectral estimation required by classical filters. 
+
+## 2.3 Datasets 
+
+The proposed method was evaluated on two synthetic datasets: a linear 3-DOF mass-spring-damper system and a nonlinear impact system. Subsequently, different background Gaussian noises were added to both datasets to simulate experimental conditions. The noisy signal X was generated from the clean reference X0 as follows: 
+
+X = X0 +
+
+r σ2(X0)
+
+SN R · N (0 , 1) (7) where σ2(·) denotes the variance operator, and N (0 , 1) represents a standard Gaussian noise vector with the same dimensions as the input data X. The Signal-to-Noise Ratio (SNR) determines the intensity of the corruption and is defined as: 
+
+SN R = σ2(X0)
+
+σ2(ε) (8) where ε represents the noise component ( X − X0). To evaluate the robustness of the Time-Window Noise2Noise model, varying SNR levels were introduced to both datasets. High SNR conditions ( > 25 dB) are typical of controlled laboratory tests such as impulse response characterization. Conversely, cases with lower SNR ( < 15 dB) are typical of measurements in challenging contact/impact tests, where high-frequency structural responses are frequently obscured by sensor limitations and nonlinear interactions. 4The use of synthetic benchmarks is a deliberate methodological choice, standard in computational engi-neering: an exactly known ground truth with precisely controlled noise levels is required to quantify denoising performance unambiguously and reproducibly, isolating the behaviour of the method from modelling assump-tions and experimental confounders. Validating novel data-driven architectures first on such controlled bench-marks is established practice [9, 10, 11, 13]. The experimental validation of the method on laboratory data (impact-hammer tests and operational modal analysis) is the subject of a dedicated companion study. 
+
+2.3.1 Linear 3-DOF Mass-Spring-Damper System 
+
+The first dataset comprises the impulse response of a linear 3-degree-of-freedom (3-DOF) mass-spring-damper system. The governing equation of motion is given by: 
+
+M¨x(t) + C ˙x(t) + Kx (t) = f (t) (9) The system matrices (Mass M, Stiffness K, and Damping C) are defined based on the physical connectivity of the masses, springs, and dampers. The mass matrix is diagonal: 
+
+M =
+
+
+
+m1 0 00 m2 00 0 m3
+
+ (10) The stiffness matrix K and damping matrix C are constructed as follows: 
+
+K =
+
+
+
+k1 + k2 −k2 0
+
+−k2 k2 + k3 −k3
+
+0 −k3 k3 + k4
+
+ (11) 
+
+C =
+
+
+
+c1 + c2 −c2 0
+
+−c2 c2 + c3 −c3
+
+0 −c3 c3 + c4
+
+ (12) For the numerical simulation and data generation, the following physical parameters were adopted: masses 
+
+m1 = m2 = m3 = 3 .0 kg; stiffness coefficients k1 = 100 N/m, k2 = 125 N/m, k3 = 150 N/m, and k4 = 200 N/m; and damping coefficients c1 = 5 .0 Ns/m, c2 = 3 .0 Ns/m, c3 = 2 .0 Ns/m, and c4 = 1 .0 Ns/m. The theoretical modal parameters (Natural Frequencies ωn, Damping Ratios ζ, and Mode Shapes) were cal-culated analytically by solving the generalized eigenvalue problem associated with the state-space representation of the system. These theoretical values serve as the ground truth for validation. The dataset was generated by computing the unit impulse response function (IRF). The system is formulated in the state-space form: ˙z(t) = Az (t) + Bu(t) (13) where the state vector is z(t) = {x(t), ˙x(t)}T , and the system matrices A and B are constructed using M, C,and K. The impulse response was obtained by setting u(t) = δ(t), where δ(t) is the Dirac delta function. Figure 2 shows the system schematic and its time-domain response to a unit impulse applied at m1.The system response was simulated, and varying levels of noise were superimposed on the output signals as described previously. This dataset specifically aims to test the method’s ability to preserve phase and amplitude relationships required for accurate modal analysis. 
+
+2.3.2 Nonlinear Impact Experiment (Hunt & Crossley Model) 
+
+The second dataset simulates an impact experiment. The contact force was modeled using the classic Hunt and Crossley model [17], which accounts for the energy dissipation during impact through a nonlinear damping term. The governing equation for the contact force FN is given by: 
+
+FN = Kδ 3/2 + χδ 3/2 ˙δ (14) The hysteretic coefficient χ is defined to ensure consistency with the energy loss during impact: 
+
+χ = 32 (1 − e) Kvapproach 
+
+(15) where K is the stiffness, δ is the indentation depth, ˙δ is the indentation velocity, and χ is dependent on the coefficient of restitution e and the initial impact velocity vapproach . Figure 3 illustrates the resulting nonlinear 5(a) Schematic representation of the discrete 3-DOF system. 
+
+> (b) Time-domain response of the three masses subject to impulse excitation.
+
+Figure 2: Simulated 3-DOF system: (a) Mechanical model and (b) its corresponding dynamic unit impulse response. force-displacement hysteresis for the Hunt-Crossley model ( K = 2 .46 × 10 8 N/m 1.5, e = 0 .76, vapproach =0.4m/s ). The enclosed area represents dissipated energy. The dataset comprises displacement, velocity, and force time-histories generated for various initial impact velocities and restitution coefficients based on parameters from real experiments [18]. Gaussian noise was added to these synthetic signals to emulate realistic sensor limitations. 
+
+Figure 3: Characteristic force-indentation hysteresis loops generated by the Hunt & Crossley model. 62.4 Numerical robustness evaluation 
+
+Because the two benchmarks provide an exactly known ground truth, the reliability of the method can be assessed directly and reproducibly, free of the confounders that hinder such quantification with real acquisitions. To this end, each noise condition is realized N = 10 times with independent noise samples and independent network initializations, and the quantities of interest are aggregated over the ensemble. This repeated-realization procedure is a Monte Carlo propagation of the input-noise distribution to the output quantities. For a given quantity q, the sample standard deviation over the N realizations is reported as its standard uncertainty u(q), from which an expanded uncertainty U = 2 u(q) (coverage factor k = 2) follows under the usual normal-coverage assumption. Denoising performance is thus expressed both as a signal-to-noise-ratio gain and as the run-to-run statistical dispersion of the signal and of the quantities derived from it. 
+
+# 3 Results 
+
+This section presents a comprehensive evaluation of the proposed Time-Window Noise2Noise (TWN2N) archi-tecture. Results are reported for two case studies: a linear 3-DOF system and a nonlinear impact system. First, a standard autoencoder baseline is evaluated to demonstrate the utility of temporal windowing. Subsequently, the efficacy of the proposed temporal windowing approach is demonstrated through quantitative signal-to-noise ratio (SNR) improvements and rigorous statistical hypothesis testing across multiple noise regimes. Finally, to verify the preservation of physical properties in the reconstructed signals, the analysis of the 3-DOF system is extended to include a practical assessment of modal parameter identification using classical time-domain estimators. 
+
+## 3.1 Noise Suppression Performance for linear 3DOF System dataset 
+
+A standard autoencoder without temporal windowing was first evaluated as a baseline on the 3-DOF dataset. The input layer processed the instantaneous positions and accelerations of the three masses at time ti, mapping them to an output of the same dimension, with a bottleneck (latent space) size of 4. The architecture of this standard model is detailed in the Appendix. When trained with noisy impulse response signals (SNR of 20 dB) and optimized using the ADAM algorithm, the model failed to effectively separate the dynamics from the stochastic noise. The output SNR (16.61 dB) was lower than the input, indicating performance degradation. This result suggests that without temporal context, the network either learns a trivial identity mapping or fails entirely, motivating the usefulness of the proposed window-based approach. The Time-Window Noise2Noise architecture was then evaluated. The temporal window size p = 2 was selected based on a physically grounded criterion rooted in the kinematics of mechanical systems. For a discrete-time signal with sampling interval h, the central-difference approximation of the instantaneous acceleration requires three consecutive position points: ¨x(ti) ≈ x(ti−1) − 2x(ti) + x(ti+1 )
+
+h2 (16) Since the central frame x(ti) is deliberately masked in the TWN2N input to prevent identity mapping, the network must infer it from neighboring observations. With p = 2, the input spans {x(ti−2), x (ti−1), x (ti+1 ), x (ti+2 )},providing the minimal symmetric context from which x(ti) can be reconstructed through the implicit physics of the differential equation governing the system. Setting p = 1 would reduce the input to only two neighboring frames—insufficient to capture the second-order dynamics encoded in the equations of motion. Thus, p = 2 represents the theoretical minimum for embedding the kinematic structure of second-order mechanical systems within a symmetric blind-spot architecture. This minimal choice deliberately prioritizes the demonstration of the method’s effectiveness at its foundational configuration; a systematic investigation of larger window sizes, and the performance gains they may yield, is identified as a key direction for future work (Section 4). The network input comprised these neighboring steps, yielding 24 features (2 state variables × 3 masses 
+
+× 4 time points), which were encoded into a latent vector of dimension r = 4 before reconstruction into a 6-dimensional output frame. This bottleneck dimension was selected based on the principles of information theory and autoencoder design: the latent dimension must be strictly smaller than the output dimension ( r < 6) to force compression. A bottleneck that matches or exceeds the output allows the network to learn a near-identity mapping, bypassing the need to extract physically meaningful features [6, 12, 13]. By setting r = 4, a deliberate compression is introduced relative to the output space, compelling the encoder to prioritize the dominant dynamical features while discarding the high-dimensional stochastic noise component, which, being temporally uncorrelated, cannot be compressed by any architecture that exploits temporal coherence. The adequacy of this choice is empirically supported by the consistent and statistically significant SNR improvements reported in Tables 1 and 2 across all tested noise regimes and noise frequency distributions. A rigorous ablation study characterizing the sensitivity of the architecture to both p and r across a broader parameter space is identified 7as a prioritized direction for future investigation (Section 4). Further details regarding the specific network architecture and training hyperparameters are provided in the Appendix. The qualitative performance of the method on the 3-DOF system can be assessed by comparing the ground truth with the input and output of the network. Figure 4 shows the clean reference signal; Figure 5 shows the same signal corrupted to 20 dB SNR; and Figure 6 presents the denoised signal output by the proposed model, with 25.25 dB SNR. Visual and quantitative inspection reveals that the Model Output closely follows the Clean Target, effectively filtering out high-frequency stochastic components. The model consistently improved SNR across all tested conditions. To validate the statistical robustness of the proposed architecture, the model was evaluated across varying input SNR levels ranging from 5 dB to 25 dB. For each noise level, 10 independent experiments were conducted to account for variations in random weight initialization and mini-batch selection. Table 1 summarizes the consolidated results, presenting the mean values and standard deviations for the actual input SNR, the output SNR, and the resulting SNR gain. All noise levels showed consistent SNR improvement. To confirm the statistical significance of these improvements, a one-tailed t-test was performed for each noise level, testing the null hypothesis H0 : μgain ≤ 0 against the alternative H1 : μgain > 0. As shown in Table 1, all obtained p-values ( p < 0.001) demonstrate statistically significant SNR improvements. The standard deviations listed in Table 1 characterize the run-to-run statistical dispersion of the output SNR over the ensemble of realizations, evidencing the stability and reproducibility of the method. 
+
+Figure 4: Theoretical clean unit impulse response (ground truth). 
+
+Figure 5: Noisy input signal with an SNR of 20 dB utilized as input for the denoised model. The distribution of the results can be further analyzed through histograms and boxplots. Figure 7 presents the histogram of the Output SNR for the 20 dB input case across the 10 trials. Furthermore, Figure 8 illustrates the boxplot of the SNR Gains for all tested noise levels. The method’s stability and reproducibility are evidenced by the compact interquartile ranges, which indicate consistent and effective filtering of high-frequency stochastic components at all initial noise intensities. 8Figure 6: Denoised signal output by the denoising model (SNR of 25.25 dB). Table 1: Statistical performance of the Time-Window Noise2Noise model (10 independent trials per noise level).                                                                           
+
+> Input SNR Mean Output Std Dev Mean Gain Median Gain Min Gain Max Gain T-Statistic P-Value (dB) (dB) (dB) (dB) (dB) (dB) (dB)
+> 25 26.38 0.95 1.38 1.37 -0.60 2.70 4.60 6.41 ×10 −4
+> 20 24.00 0.75 4.00 3.80 3.29 5.34 16.90 1.99 ×10 −8
+> 15 21.50 0.60 6.50 6.64 5.58 7.36 34.36 3.69 ×10 −11
+> 12 19.56 0.45 7.56 7.60 6.94 8.31 52.87 7.78 ×10 −13
+> 10 18.08 0.29 8.08 8.00 7.76 8.66 88.13 7.90 ×10 −15
+> 514.43 0.18 9.43 9.37 9.18 9.75 169.25 2.23 ×10 −17
+
+Figure 7: Histogram of the Output SNR for 10 independent runs with a target Input SNR of 20 dB. 
+
+3.1.1 Robustness to Different Noise Distributions 
+
+To further evaluate the robustness of the Time-Window Noise2Noise model, the model configured with a tem-poral window of p = 2 and a latent space bottleneck of dim( r) = 4 was subjected to testing against various noise distributions. While the primary training and validation phases assumed additive Gaussian white noise, physical sensor data is frequently corrupted by colored noise or digitization artifacts. Therefore, the model’s performance was assessed under three additional noise profiles: pink noise, brown noise, and quantization noise. The characteristics of these noise distributions are defined as follows: 
+
+• Pink Noise: Characterized by a power spectral density (PSD) that is inversely proportional to the 9Figure 8: Boxplot of the SNR Gain distributions obtained from 10 experiments for each input noise level (5 dB to 25 dB). frequency, i.e., S(f ) ∝ 1/f . In the time domain, pink noise exhibits long-range temporal correlations. It is ubiquitous in physical systems, often representing fluctuations in electronic devices and sensors. 
+
+• Brown Noise: Also known as Brownian or red noise, its PSD is inversely proportional to the square of the frequency, S(f ) ∝ 1/f 2. It is generated by the integration of white noise, representing low-frequency dominant processes such as thermal drift or random walk dynamics. 
+
+• Quantization Noise: Unlike the continuous stochastic processes above, quantization noise is a deter-ministic artifact arising from the Analog-to-Digital Conversion (ADC). It is mathematically modeled as the difference between the continuous input signal X and its quantized discrete representation Xq :
+
+εq = Xq − X = ∆ · round 
+
+ X
+
+∆
+
+
+
+− X (17) where ∆ represents the quantization step size (resolution). This noise typically behaves as a uniform distribution added to the signal. For this robustness assessment, 10 independent trials were conducted for each noise profile. The continuous noises (white, pink, and brown) were calibrated to a target Input SNR of roughly 15 dB. The quantization noise experiment utilized a resolution ∆ derived from an ADC configuration with a 12-bit resolution and a full-scale voltage range of 20 V (spanning from −10 V to +10 V). These specific acquisition characteristics inherently yielded a mean Input SNR of approximately 13.54 dB. Table 2 presents the aggregated statistical results. To confirm statistical significance, a one-tailed t-test was again applied ( H0 : μgain ≤ 0). Table 2: Statistical performance of the model ( p = 2 , dim( r) = 4) across different noise distributions (10 independent trials).                                                            
+
+> Noise Type Input SNR Mean Output Std Dev Mean Gain Median Gain Min Gain Max Gain T-Statistic P-Value (dB) (dB) (dB) (dB) (dB) (dB) (dB)
+> White 15.00 21.20 0.72 6.20 5.96 5.23 7.30 27.40 2.79 ×10 −10
+> Pink 15.00 17.50 0.31 2.49 2.64 1.99 2.92 25.64 5.03 ×10 −10
+> Brown 15.00 15.24 0.25 0.23 0.14 0.02 0.74 2.94 8.23 ×10 −3
+> Quantization 13.54 13.83 0.06 0.28 0.30 0.19 0.38 13.98 1.04 ×10 −7
+
+The results indicate that the Time-Window Noise2Noise model maintains strictly positive denoising gains across all tested noise distributions, without signal degradation in any case—a property that, as demonstrated 10 in Section 3.1.3, is not consistently guaranteed by classical filtering approaches under spectrally complex noise conditions. For pink noise, the TWN2N model yields a substantial enhancement (mean gain of +2 .49 dB, p < 0.001), consistent with the Gaussian white noise results reported in Table 1. The 1 /f spectral structure of pink noise introduces long-range temporal correlations that the temporal windowing mechanism naturally exploits, as neighboring frames share stronger statistical dependencies than under white noise, constituting a rigorous test for data-driven noise suppression techniques. For brown noise, the absolute SNR improvement is modest (+0 .23 dB), though statistically significant ( p ≈
+
+0.0082). This limited gain is physically expected: the 1 /f 2 power spectral density of brown noise concentrates energy predominantly in the low-frequency bands that directly overlap with the system’s natural frequencies (ω1 = 5 .24, ω2 = 9 .63, and ω3 = 12 .72 rad/s), rendering spectral separation between noise and deterministic dynamics inherently ambiguous. Critically, however, the model does not suppress valid dynamic content— the strictly positive gain confirms that the temporal learning mechanism correctly identifies and preserves the coherent signal structure even under this most challenging noise condition. For quantization noise, the improvement (+0 .28 dB, p < 0.01) reflects the deterministic and spectrally flat nature of ADC digitization artifacts, which, under standard ADC assumptions, are distributed approximately uniformly across all frequencies rather than concentrating in any particular band. While the gain is modest in absolute terms, its statistical significance confirms that the architecture generalizes beyond stochastic noise models to structured, hardware-induced artifacts representative of real experimental data acquisition conditions. Taken together, these results validate the robustness of the proposed approach across the primary categories of noise encountered in experimental vibration measurements: spectrally colored stochastic noise (pink, brown) and systematic digitization artifacts (quantization). The consistent absence of signal degradation across all conditions is particularly meaningful in the context of modal identification, as demonstrated in Section 3.1.2, where even modest SNR improvements proved sufficient to transform identification failure into reliable modal characterization. 
+
+3.1.2 Modal Parameter Identification 
+
+Modal parameter identification was performed to assess the practical impact of denoising on system charac-terization using the 3-DOF dataset. The identification was conducted on both raw noisy signals and signals reconstructed by the denoising model at two distinct noise levels (20 dB and 15 dB). For this purpose, a clas-sical time-domain technique was employed: the Ibrahim Time Domain (ITD) method [19]. The theoretical background for this estimator is detailed in Ewins [20]. First, the theoretical modal parameters of the simulated system were calculated to serve as the ground truth for validation. These target values are presented in Table 3. Table 3: Theoretical (Target) Modal Parameters of the 3-DOF System. 
+
+## Mode Natural Freq. (ωn) (rad/s) Damping Ratio (ζ)
+
+## 1 5.24 0.070 2 9.63 0.113 3 12.72 0.095 Table 4 presents the results obtained using the ITD method, where the benefits of the proposed denoising approach are pronounced. The ITD algorithm struggled with the raw noisy data. At 20 dB, it missed mode 3 and produced large errors for modes 1-2. At 15 dB, it failed to characterize the system, estimating the first mode at 14.00 rad/s (target 5.24 rad/s) with near-critical damping (0.97). Conversely, the signals processed by the Time-Window Noise2Noise model allowed the ITD method to successfully identify all three modes at both noise levels. At 15 dB, the denoised signals yielded mode estimates within 4% error: w1 = 5 .44 rad/s (target 5.24 rad/s), w2 = 9 .68 rad/s (target 9.63 rad/s), and w3 = 12 .72 rad/s (target 12.72 rad/s). The damping ratios were also significantly restored; for instance, at 20 dB, the mode 1 damping improved from 0.58 (noisy) to 0.13 (denoised), approaching the theoretical value of 0.07. These results demonstrate that the proposed method not only improves SNR but effectively recovers the physical dynamic properties of the system, enabling standard identification algorithms to function correctly in high-noise regimes. Beyond point accuracy, denoising also reduces the statistical uncertainty of the identified modal parameters, from a level at which they are effectively unidentifiable to estimates lying within 4% of their reference values. To quantify this improvement statistically, the identification was repeated over N = 10 independent Monte Carlo realizations at each input SNR, and each natural frequency was characterized by its ensemble mean and ex-panded uncertainty U = 2 u (coverage factor k = 2), following the procedure of Section 2.4. Table 5 reports the 11 Table 4: Comparative Modal Parameter Estimation using ITD (15 dB and 20 dB Input SNR). 
+
+# Input SNR Mode Noisy Input Denoised Output 
+
+# ωn (rad/s) ζ ωn (rad/s) ζ
+
+# 20 dB 1 6.01 0.58 5.28 0.13 2 11.25 0.77 9.66 0.14 3 - - 12.59 0.12 15 dB 1 14.00 0.97 5.44 0.32 2 - - 9.68 0.17 3 - - 12.72 0.20 
+
+Empty cells (-) indicate failure to identify the mode. 
+
+resulting uncertainty budget, and two effects are evident. First, denoising markedly reduces the random uncer-tainty of every identified frequency: at 20 dB, the expanded uncertainty of the first mode falls from U = 0 .17 to 0.04 rad/s, while the estimate moves from 6 .08 rad/s (a systematic overestimation of the 5 .24 rad/s reference) to 5 .30 rad/s. Second, and more critical for measurement, denoising restores detectability : modes that the ITD estimator fails to identify in any of the ten noisy realizations—mode 3 at 20 dB and modes 2–3 at 15 dB, all with a detection count of 0 /10—are recovered in all ten denoised realizations, each with an expanded uncertainty of only a few tenths of a rad/s. Each frequency thus transitions from being effectively unidentifiable in the raw signal to being estimated with a small, well-defined dispersion after denoising. Table 5: Statistical uncertainty of the ITD-identified natural frequencies ωn (rad/s) over N = 10 Monte Carlo realizations, before (noisy) and after (denoised) TWN2N, at 20 and 15 dB input SNR. Values are ensemble mean ± expanded uncertainty U = 2 u (coverage factor k = 2). Dashes denote modes that were not identified in any of the ten noisy realizations. 
+
+Input Mode Reference Noisy Denoised (TWN2N) SNR ωn [rad/s] ωn ± U [rad/s] ωn ± U [rad/s] 20 dB 1 5.24 6.08 ± 0.17 5.30 ± 0.04 2 9.62 11.29 ± 0.37 9.69 ± 0.13 3 12.72 – 12.69 ± 0.25 15 dB 1 5.24 14.15 ± 0.68 5.42 ± 0.13 2 9.62 – 9.80 ± 0.15 3 12.72 – 12.65 ± 0.39 
+
+3.1.3 State-of-the-Art Comparison 
+
+To fully contextualize the performance of the proposed Time-Window Noise2Noise (TWN2N) model, a compar-ative analysis was conducted against well-established and highly optimized classical filtering techniques. These benchmarks serve to evaluate the trade-offs between a self-supervised deep learning approach and traditional deterministic signal processing methods. 
+
+Savitzky-Golay Filter The Savitzky-Golay (SG) filter [4] is a widely adopted digital filter that smooths data by fitting successive sub-sets of adjacent data points with a polynomial from least squares optimization. For a direct comparison with the TWN2N model, the SG filter was configured with a window size of 5 and a polynomial order of 3. This window size yields a temporal receptive field comparable to the proposed method (p = 2, comprising 4 neighboring points). However, a crucial distinction must be highlighted: the SG filter utilizes the instantaneous central frame in its estimation process, whereas the TWN2N architecture is strictly blind to the central frame to prevent trivial identity mapping. Table 6 presents the performance of the SG filter against the TWN2N model for white noise, while Table 7 details the results for colored and quantization noises. The “TWN2N Gain” metric represents the difference in output SNR between the blind denoising model and the SG filter. While the TWN2N model demonstrates solid gains across various white noise levels, a compelling result emerges in the context of colored noise, particularly brown noise. As shown in Table 7, the SG filter completely fails to suppress brown noise, stagnating at 0 dB gain. The heavy concentration of brown noise in the low-frequency spectrum inherently overlaps with the deterministic physical dynamics of the target system, causing 12 this conventional filter to indiscriminately erase valid signal components alongside the noise. In contrast, the TWN2N architecture successfully decoupled these dynamics, registering a positive denoising gain. Table 6: Comparison between Savitzky-Golay filter and the TWN2N method (White Noise). 
+
+# Input SNR Filter Output Mean TWN2N Output TWN2N Gain (dB) (dB) (dB) (dB) 
+
+# 25 28.13 26.38 -1.75 20 23.13 24.00 0.87 15 18.16 21.50 3.34 12 15.13 19.56 4.43 10 13.15 18.08 4.93 5 8.17 14.43 6.26 Table 7: Comparison between Savitzky-Golay filter and the TWN2N method (Colored & Quantization Noise). 
+
+Noise Type Input SNR Filter Output Mean TWN2N Output TWN2N Gain (dB) (dB) (dB) (dB) 
+
+Pink 15.00 15.44 17.50 2.06 Brown 15.00 15.00 15.24 0.24 Quantization 13.54 13.59 13.83 0.24 
+
+Symlet VisuShrink Filter Wavelet-based denoising represents another cornerstone of state-of-the-art signal filtering. In conventional thresholding schemes, a global (universal) threshold is commonly used to filter small wavelet coefficients. However, this procedure can inadvertently remove high-frequency components, such as sharp transition edges. To improve upon simple coefficient truncation, soft-thresholding [21] reconstructs the signal by translating the empirical wavelet coefficients towards zero by a specific threshold amount, rather than simply discarding them. This approach effectively dampens the small coefficients considered to be noise while preserving the strength of active structural elements. Advanced multiscale implementations often expand on this by partitioning data to exploit local noise characteristics and compute subband-dependent thresholds for precise edge localization without undesirable boundary effects. For this evaluation, the highly optimized Symlet wavelet family [22] was employed in conjunction with the VisuShrink technique [2] using the foundational “soft” thresholding mode. The universal threshold T in VisuShrink is mathematically defined as: 
+
+T = ˆ σp2 ln( N ) (18) where ˆ σ is the estimated standard deviation of the noise and N is the number of samples in the signal. Asignificant practical limitation of this method is its heavy reliance on ˆ σ, an intrinsic noise property that is strictly unknown in real-world scenarios. Defining σtrue as the real standard deviation of the noise, practical applications inevitably require its estimation (ˆ σ ≈ σtrue ). To simulate this uncertainty, the TWN2N model was compared against the Symlet VisuShrink filter under two threshold estimation scenarios: the exact ideal value (ˆ σ = σtrue ), representing an unattainable theoretical ceiling that establishes the method’s upper performance bound, and a threefold overestimation (ˆ σ = 3 × σtrue ), emulating a practical condition where noise statistics are poorly characterized—the more consequential form of misestimation, as it leads to aggressive over-filtering that suppresses valid signal components alongside noise. Tables 8 and 9 summarize the results for white and colored noises, respectively. For pure white Gaussian noise with the exact ideal threshold, the Symlet VisuShrink filter achieves substantially higher output SNR than the TWN2N model across all tested levels (e.g., 36 .36 dB vs. 26 .38 dB at 25 dB input). This result is expected: VisuShrink is a mathematically proven method specifically derived under the assumption of zero-mean white Gaussian noise with known variance, and supplying the exact σtrue represents its operating optimum. However, this performance degrades significantly when the noise variance is overestimated: at low-to-moderate SNR regimes ( ≤ 15 dB), the TWN2N consistently outperforms the Symlet filter operating under 3 × σtrue (e.g., at 10 dB: 18 .08 dB vs. 16 .08 dB; at 5 dB: 14 .43 dB vs. 12 .70 dB), precisely the operating range of greatest practical interest in dynamic testing. This sensitivity to ˆ σ estimation reflects a fundamental limitation of threshold-based methods: their performance is inherently conditioned on prior statistical knowledge that is unavailable in real 13 experimental scenarios. The TWN2N architecture, by contrast, operates entirely blindly without requiring any characterization of the noise distribution, and its current results reflect an unoptimized structural baseline that holds substantial potential for future architectural improvements. Echoing the limitations observed with the Savitzky-Golay filter, the most compelling results emerge for colored noise (Table 9). The Symlet VisuShrink filter mathematically degrades the signal under brown noise even when supplied with the exact ideal threshold (output SNR of 14 .87 dB against an input of 15 .00 dB), and this degradation worsens further under overestimated σ (13 .87 dB). As discussed in Section 3.1.1, this failure is physically grounded: the 1 /f 2 spectral structure of brown noise overlaps directly with the system’s natural frequencies, causing the wavelet thresholding to indiscriminately suppress valid dynamic content. The TWN2N architecture, by contrast, maintains a strictly positive gain under both scenarios (15 .24 dB output), effectively decoupling the deterministic dynamics from the correlated noise without any prior statistical knowledge—a robustness that threshold-based methods fundamentally cannot achieve when spectral separation between noise and signal is unavailable. Table 8: Comparison between Symlet VisuShrink filter and the TWN2N method (White Noise). 
+
+Input SNR ˆσ Parameter Filter Output Mean TWN2N Output TWN2N Gain (dB) (dB) (dB) (dB) 
+
+25 Ideal 36.36 26.38 -9.98 3× Ideal 28.14 26.38 -1.76 20 Ideal 31.89 24.00 -7.89 3× Ideal 23.98 24.00 0.02 15 Ideal 27.27 21.50 -5.77 3× Ideal 19.82 21.50 1.68 12 Ideal 25.08 19.56 -5.52 3× Ideal 17.58 19.56 1.98 10 Ideal 23.24 18.08 -5.16 3× Ideal 16.08 18.08 2.00 5 Ideal 19.20 14.43 -4.77 3× Ideal 12.70 14.43 1.73 Table 9: Comparison between Symlet VisuShrink filter and the TWN2N method (Colored & Quantization Noise). 
+
+Noise Type Input SNR ˆσ Parameter Filter Output Mean TWN2N Output TWN2N Gain (dB) (dB) (dB) (dB) 
+
+Pink 15.00 Ideal 19.02 17.50 -1.52 3× Ideal 17.12 17.50 0.38 Brown 15.00 Ideal 14.87 15.24 0.37 3× Ideal 13.87 15.24 1.37 Quantization 13.54 Ideal 16.50 13.83 -2.67 3× Ideal 16.03 13.83 -2.20 
+
+## 3.2 Noise Suppression Performance for nonlinear Impact Experiment dataset 
+
+For the Impact Experiment dataset, the architecture was tested to handle the nonlinear force profile. The input vector X(ti) comprised vapproach , e, δ (ti), ˙δ(ti), and FN (ti), with window size p = 2 (Equation 2). The latent space dimension was set to 3. Training was regulated by early stopping based on validation loss to strictly prevent noise overfitting. Crucially, the performance in the impact dataset was evaluated not just by signal error, but by physical consistency and statistical significance across different noise regimes. Noise was added as a percentage of the signal’s standard deviation (3% to 15%), resulting in SNRs of 30.46, 26.02, 23.10, 20.00, and 16.48 dB. To quantify the proximity of the signals to the ground truth, we defined a state vector v(ti) = [ δ(ti), ˙δ(ti), F N (ti)] and calculated the Euclidean distance metric di for both the noisy input and the denoised output relative to the clean theoretical signal, as defined in Equation 19: 
+
+di = || vclean (ti) − vest (ti)|| 2 =
+
+q
+
+(δc − δest )2 + ( ˙δc − ˙δest )2 + ( FN,c − FN,est )2 (19) 14 where the subscript est refers to either the raw noisy measurement or the denoised model output. A one-tailed hypothesis test was conducted for the mean distances. The Null Hypothesis ( H0) posited that the mean distance of the noisy signal to the ground truth is less than or equal to that of the denoised signal (μdnoisy ≤ μddenoised ), implying no improvement in signal fidelity. The Alternative Hypothesis ( H1) posited that the mean distance of the noisy signal is strictly greater than that of the denoised signal ( μdnoisy > μ ddenoised ), indicating that the model output is statistically closer to the ground truth. Table 10 presents the results for the full state vector reconstruction. For all tested SNR levels, the Null Hypothesis was rejected ( p ≪ 0.05), confirming that the Time-Window Noise2Noise output is statistically significantly closer to the true physical states than the raw measurements. Table 10: Statistical comparison of Euclidean distance ( di) to the ground truth state vector. 
+
+## Input SNR Noisy Mean Dist. Output Mean Dist. T-Statistic P-Value (dB) (μdnoisy ) (μddenoised )
+
+## 30.46 0.0060 0.0040 -222.4 ∼ 4 × 10 −50 
+
+## 26.02 0.0100 0.0041 -398.1 ∼ 1 × 10 −57 
+
+## 23.10 0.0141 0.0052 -421.9 ∼ 2 × 10 −58 
+
+## 20.00 0.0201 0.0067 -444.7 ∼ 4 × 10 −59 
+
+## 16.48 0.0301 0.0086 -473.1 ∼ 6 × 10 −60 
+
+Additionally, a specific hypothesis test was performed solely on the contact force error ( |FN,clean − FN,est |)to evaluate physical consistency. As detailed in Table 11, the results yield the same conclusion: the denoised force profile provides a significantly more accurate representation of the contact dynamics, effectively recovering the nonlinear impact force profile. Table 11: Statistical comparison of Contact Force MAE (Physics Consistency). 
+
+## Input SNR Noisy MAE Force Output MAE Force T-Statistic P-Value (dB) (Physics Noise) (Physics Output) 
+
+## 30.46 0.0032 0.0021 -164.3 ∼ 3 × 10 −46 
+
+## 26.02 0.0054 0.0021 -285.4 ∼ 2 × 10 −53 
+
+## 23.10 0.0076 0.0035 -255.2 ∼ 6 × 10 −52 
+
+## 20.00 0.0109 0.0041 -297.7 ∼ 6 × 10 −54 
+
+## 16.48 0.0165 0.0056 -312.1 ∼ 2 × 10 −54 
+
+This restoration of signal fidelity is particularly relevant for data-driven discovery tasks. By reducing the variance associated with noise while preserving the underlying nonlinear correlations, the proposed method facilitates the application of algorithms such as Symbolic Regression to rediscover fundamental physical laws from raw measurements, as demonstrated by Lemos et al. [23]. The comprehensive validation across both datasets demonstrates that the Time-Window Noise2Noise ar-chitecture achieves robust denoising performance within a well-defined operational range. As evidenced in Table 1, the method is most effective in moderate-to-severe noise regimes (5–25 dB SNR), where conventional filtering techniques struggle but sufficient deterministic temporal structure remains detectable. Outside this range, fundamental limitations emerge. At high SNR levels ( > 25 dB), the marginal gains (+1 .38 dB for a 25 dB input, Table 1) do not justify the computational cost of deep learning—simpler classical filters provide comparable results. Conversely, at critically low SNR ( < 5 dB), the method yields significant enhancements in signal quality, recovering features previously obscured by noise; however, under extreme deterioration, even substantial SNR gains do not necessarily guarantee physical fidelity, as the signal may become so severely corrupted that stochastic noise dominates deterministic dynamics, thereby violating the temporal coherence assumption underlying self-supervised learning. This lower bound represents an information-theoretic barrier inherent to all blind denoising methods: when noise significantly overwhelms the signal, no purely data-driven approach can reliably distinguish systematic evolution from random fluctuations without physics-based priors. Additional operational requirements include adequate sampling density (Nyquist criterion) and predominantly deterministic governing equations. Systems with strong stochastic excitation, chaotic dynamics, or irregular sampling may exhibit degraded performance as they violate the smoothness assumptions underlying temporal windowing. 15 4 Conclusions 
+
+This work introduced the Time-Window Noise2Noise (TWN2N) architecture, a novel blind denoising strategy tailored for dynamic systems. By defining the network input as a temporal sequence rather than an isolated point, the model successfully learned to distinguish between the deterministic evolution of physical states and stochastic measurement noise. This was achieved in a fully self-supervised manner, relying solely on the noisy signal itself and the underlying physics of the data, thereby eliminating the constraints of previous methods that required clean ground truth or paired noisy observations. A further contribution of this study is the comprehensive validation of the model’s robustness against diverse noise distributions and its benchmarking against highly optimized classical filtering techniques. While state-of-the-art methods such as the Savitzky-Golay and Symlet VisuShrink filters excel under ideal white Gaussian noise conditions, they critically falter when confronted with strongly correlated low-frequency noise. Specifically, both classical filters degraded the signal under brown noise—indiscriminately suppressing valid signal components due to the spectral overlap between the 1 /f 2 noise profile and the system’s natural frequencies—even when supplied with the exact ideal noise statistics. In stark contrast, the TWN2N architecture maintained strictly positive, statistically significant denoising gains across all tested distributions (white, pink, brown, and quantization noise) without requiring any prior knowledge of the noise statistics, demonstrating a fundamental robustness advantage in realistic measurement environments where noise characteristics are unknown. The proposed method demonstrated robust and statistically significant performance across both a linear 3-DOF system and a nonlinear impact experiment, with one-tailed hypothesis testing confirming positive denoising gains at all tested noise levels ( p < 10 −3 in all cases, across 10 independent trials per condition). The practical impact of this improvement was most clearly demonstrated through modal parameter identification: at 15 dB input SNR, the Ibrahim Time Domain method applied to raw noisy signals failed to characterize the system, estimating the first mode at 14 .00 rad/s against a true value of 5 .24 rad/s with near-critical damping ( ζ = 0 .97). Applied to the TWN2N-denoised signals, the same algorithm successfully identified all three modes within 4% error—a qualitative transformation from identification failure to reliable characterization enabled solely by blind denoising. For the nonlinear impact experiment, the reconstruction of contact force profiles and full state vectors was statistically confirmed to be significantly closer to the ground truth than raw measurements at all tested SNR levels, demonstrating that the method preserves the underlying nonlinear correlations while suppressing stochastic interference. Taken together, these results establish that the TWN2N output provides a substantially more reliable basis for downstream physical analysis than raw noisy measurements, without requiring any prior knowledge of noise statistics or signal characteristics—positioning blind temporal self-supervision as a promising paradigm for signal conditioning in experimental mechanics. The primary contribution of this work is a self-supervised computational method that suppresses noise in signals from deterministic dynamical systems—and thereby stabilizes the modal parameters and contact forces derived from them—without any clean reference, paired data, or prior characterization of the noise. Following established practice in blind denoising research [9, 10, 11, 13], we validate the method using controlled syn-thetic benchmarks where ground truth is precisely known—enabling systematic exploration of noise regimes and quantitative assessment of physical property preservation. The consistent performance across linear and non-linear systems, validated through statistical hypothesis testing and modal identification, demonstrates that the Time-Window Noise2Noise architecture successfully captures the underlying dynamics from noisy observations alone. Extension to experimental data represents a natural subsequent phase and is currently underway, but the synthetic validation presented here constitutes a complete demonstration of the method’s core innovation: self-supervised denoising through temporal coherence exploitation. Future investigations should also optimize the architecture to further maximize the denoising gain. A rig-orous ablation study systematically varying the temporal window size ( p) and the latent space ( r) dimension across a broad parameter grid—including evaluation of multiple training seeds to account for optimization stochasticity—is identified as a prioritized next step. Such a study would establish principled guidelines for adapting the architecture to systems with different frequency content, damping characteristics, and dimension-ality. Additionally, alternative architectures incorporating attention mechanisms or adaptive windowing could further enhance the separation of deterministic signals from nonstationary stochastic noise. 
+
+# Declarations 
+
+Funding. This work was supported by the Center for Innovation on New Energies (CINE) and by the Coor-dena¸ c˜ ao de Aperfei¸ coamento de Pessoal de N´ ıvel Superior — Brasil (CAPES), Finance Code 001. 
+
+Conflict of interest. The authors declare that they have no conflict of interest. 
+
+Ethics approval. Not applicable. 
+
+Consent to participate / Consent for publication. Not applicable. 
+
+Data and code availability. The datasets generated in this study are fully reproducible from the models 16 and parameters reported in the manuscript. A reference implementation of the proposed method, together with the scripts that generate the numerical benchmarks and reproduce the reported results, is openly available at 
+
+https://github.com/viniciuserra/Time-Window_Noise2Noise .
+
+Author contributions. V. S. Vianna: conceptualization, methodology, software, investigation, formal analy-sis, writing — original draft. T. H. Machado: conceptualization, supervision, resources, writing — review and editing. I. F. Santos: conceptualization, supervision, funding acquisition, writing — review and editing. All authors read and approved the final manuscript. 
+
+# References 
+
+[1] M. Lindenbaum, M. Fischer, A. Bruckstein, On Gabor’s contribution to image enhancement, Pattern Recognition 27 (1) (1994) 1–8. doi:10.1016/0031-3203(94)90013-2 .[2] D. L. Donoho, I. M. Johnstone, Ideal spatial adaptation by wavelet shrinkage, Biometrika 81 (3) (1994) 425–455. doi:10.1093/biomet/81.3.425 .[3] A. Buades, B. Coll, J.-M. Morel, A non-local algorithm for image denoising, in: 2005 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR’05), Vol. 2, IEEE, 2005, pp. 60–65. doi:10.1109/CVPR.2005.38 .[4] A. Savitzky, M. J. Golay, Smoothing and differentiation of data by simplified least squares procedures., Analytical Chemistry 36 (8) (1964) 1627–1639. doi:10.1021/ac60214a047 .[5] G. Fan, J. Li, H. Hao, Vibration signal denoising for structural health monitoring by residual convolutional neural networks, Measurement 157 (2020) 107651. doi:10.1016/j.measurement.2020.107651 .[6] P. Vincent, H. Larochelle, Y. Bengio, P.-A. Manzagol, Extracting and composing robust features with denoising autoencoders, in: Proceedings of the 25th International Conference on Machine Learning, 2008, pp. 1096–1103. doi:10.1145/1390156.1390294 .[7] V. Jain, S. Seung, Natural image denoising with convolutional networks, Advances in Neural Information Processing Systems 21 (2008). [8] K. Zhang, W. Zuo, Y. Chen, D. Meng, L. Zhang, Beyond a Gaussian denoiser: Residual learning of deep CNN for image denoising, IEEE Transactions on Image Processing 26 (7) (2017) 3142–3155. doi: 10.1109/TIP.2017.2662206 .[9] J. Lehtinen, J. Munkberg, J. Hasselgren, S. Laine, T. Karras, M. Aittala, T. Aila, Noise2Noise: Learning image restoration without clean data, arXiv preprint arXiv:1803.04189 (2018). [10] A. Krull, T.-O. Buchholz, F. Jug, Noise2Void—learning denoising from single noisy images, in: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2019, pp. 2129–2137. doi: 10.1109/CVPR.2019.00223 .[11] J. Batson, L. Royer, Noise2Self: Blind denoising by self-supervision, in: International Conference on Machine Learning, PMLR, 2019, pp. 524–533. [12] I. Goodfellow, Y. Bengio, A. Courville, Deep learning (2016). [13] A. Majumdar, Blind denoising autoencoder, IEEE Transactions on Neural Networks and Learning Systems 30 (1) (2018) 312–317. doi:10.1109/TNNLS.2018.2838679 .[14] H.-T. Chiang, Y.-Y. Hsieh, S.-W. Fu, K.-H. Hung, Y. Tsao, S.-Y. Chien, Noise reduction in ECG signals using fully convolutional denoising autoencoders, IEEE Access 7 (2019) 60806–60813. doi: 10.1109/ACCESS.2019.2912036 .[15] A. Ashfahani, M. Pratama, E. Lughofer, Y.-S. Ong, DEVDAN: Deep evolving denoising autoencoder, Neurocomputing 390 (2020) 297–314. [16] K. Cho, Simple sparsification improves sparse denoising autoencoders in denoising highly corrupted images, in: International Conference on Machine Learning, PMLR, 2013, pp. 432–440. [17] K. H. Hunt, F. R. E. Crossley, Coefficient of restitution interpreted as damping in vibroimpact, Journal of Applied Mechanics 42 (2) (1975) 440–445. doi:10.1115/1.3423596 .[18] Y. Zhang, I. Sharf, Validation of nonlinear viscoelastic contact force models for low speed impact, Journal of Applied Mechanics 76 (5) (2009) 051002. doi:10.1115/1.3112739 .17 [19] S. R. Ibrahim, E. Mikulcik, A method for the direct identification of vibration parameters from the free response, The Shock and Vibration Bulletin 47 (4) (1977) 183–198. [20] D. J. Ewins, Modal testing: theory, practice and application, John Wiley & Sons, 2009. [21] D. L. Donoho, De-noising by soft-thresholding, IEEE Transactions on Information Theory 41 (3) (1995) 613–627. doi:10.1109/18.382009 .[22] I. Daubechies, Ten lectures on wavelets, SIAM, 1992. doi:10.1137/1.9781611970104 .[23] P. Lemos, N. Jeffrey, M. Cranmer, S. Ho, P. Battaglia, Rediscovering orbital mechanics with machine learning, Machine Learning: Science and Technology 4 (4) (2023) 045002. doi:10.1088/2632-2153/ acfa63 .18 Appendix A 
+
+# Neural Network Architecture and Training Details 
+
+This appendix specifies the network architectures and training procedures for both the 3-DOF mass-spring-damper system and the impact experiment dataset. The models were implemented using the Keras framework with a TensorFlow backend. 
+
+## 3-DOF System Models 
+
+For the 3-DOF dataset, two distinct architectures were evaluated: a standard baseline autoencoder and the proposed Time-Window Noise2Noise model. The baseline standard autoencoder processes a 6-dimensional input vector (positions and accelerations for 3 masses) through a 4-dimensional latent space. The Time-Window Noise2Noise model uses p = 2, yielding a 24-dimensional input vector (2 state variables × 3 masses × 4 neighboring time steps). This input is also mapped to a 4-dimensional latent space before being reconstructed into a single time-step output (6 dimensions). Regarding the nonlinear transformations, all hidden layers in both the encoder and decoder stages utilized the hyperbolic tangent (’tanh’) activation function. The output layer employed a linear activation function to allow for the reconstruction of the continuous dynamic signals without range constraints. The specific layer-wise configuration for both models is presented in Table 12. Table 12: Detailed architecture of the Dense layers for the 3-DOF system models. 
+
+Layer Type Baseline Autoencoder Time-Window Noise2Noise Activation 
+
+Input Dim: 6 / Output Dim: 6 Input Dim: 24 / Output Dim: 6 
+
+Input Layer 6 24 -Dense (Encoder) 114 114 tanh Dense (Encoder) 54 54 tanh Dense (Encoder) 54 54 tanh Dense (Encoder) 8 8 tanh 
+
+Latent Space 4 4 tanh 
+
+Dense (Decoder) 8 8 tanh Dense (Decoder) 24 24 tanh Dense (Decoder) 54 54 tanh Dense (Decoder) 54 54 tanh Output Layer 6 6 linear Total Parameters 15,360 17,218 -
+
+## Impact Experiment Model 
+
+For the nonlinear impact dataset (Hunt-Crossley model), the network was similarly designed with ‘tanh‘ acti-vation functions for all hidden layers to capture the nonlinearities of the contact force, while the output layer utilized a linear activation. The input dimension was Nin = 20, and the latent dimension was set to dim( r) = 3. The architecture follows a symmetric expansion-compression logic relative to the input size, as detailed in Table 13. 
+
+## Training Process and Hyperparameters 
+
+The optimization was performed using the Adam algorithm with a learning rate of α = 0 .001 and a mini-batch size of 32 samples. The Mean Absolute Error (MAE) was selected as the loss function to minimize the reconstruction error. The maximum number of epochs was set to 5000. 
+
+Custom Early Stopping Strategy 
+
+To prevent the model from memorizing the stochastic noise (overfitting) while ensuring sufficient learning of the underlying dynamics, a custom callback named StopAfterOverfitting was implemented. Unlike standard early stopping, this strategy requires two conditions for termination: 1. Stagnation: The validation loss has not improved for a defined number of epochs (patience). 2. Divergence: The validation loss is strictly greater than the training loss ( Loss val > Loss train ). 19 Table 13: Time-Window Noise2Noise configuration for the Impact Experiment dataset.                           
+
+> Layer Type Layer Size (Neurons) Activation
+> Input Layer 20 -Dense (Encoder) 50 tanh Dense (Encoder) 25 tanh Dense (Encoder) 25 tanh Dense (Encoder) 3tanh
+> Latent Space 3tanh
+> Dense (Decoder) 3tanh Dense (Decoder) 25 tanh Dense (Decoder) 25 tanh Dense (Decoder) 50 tanh Output Layer 5linear Total Parameters 5370 -
+
+The training halts only when both conditions are met, ensuring that the stopping point corresponds to a regime where generalization performance begins to degrade relative to training performance. Upon termination, the weights from the epoch with the lowest validation loss are restored. The patience parameter was set to 100 epochs for the both datasets. This strategy proved essential for obtaining the denoising results presented in the main text, acting as an implicit regularization mechanism. 20
