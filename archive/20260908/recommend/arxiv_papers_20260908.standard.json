@@ -1,0 +1,60 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-08T22:37:17.036087+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.01792v1",
+      "source": "arxiv",
+      "title": "Efficient Passive Acoustic Monitoring of Killer Whales Using a Two-Stage Detection and Ecotype Classification Cascade",
+      "abstract": "Passive acoustic monitoring of killer whales is particularly important for conservation of the endangered Southern Resident killer whale population, but requires accurate models that can operate in real time under severe class imbalance and deployment shift. We propose a lightweight ResNet-based two-stage cascade that first detects killer whale vocalizations and then classifies confident detections into five eastern North Pacific ecotypes, abstaining on ambiguous calls. We train and evaluate the pipeline on the DCLDE 2027 dataset, where the detector achieves 0.960 macro-F1 and the classifier 0.958, outperforming frozen Perch 2.0 embeddings on the five-ecotype benchmark. By separating detection from ecotype recognition, the end-to-end cascade improves seven-class macro-F1 from 0.919 for a single-stage model to 0.933, with the largest gain on the rare OKW ecotype. To assess transfer beyond the benchmark, we use active learning to adapt the Stage 1 to the acoustic environment of Puget Sound, WA, increasing killer whale detection F1 from 0.405 to 0.755 on manually verified detection windows. Finally, each stage processes a 3 s window in approximately 1.4 ms on an NVIDIA H100, enabling faster than real time inference. These results demonstrate that the proposed two-stage cascade pipeline enables reliable killer whale detection and classification, adaptation to new acoustic domains, and real-time monitoring for conservation applications.",
+      "authors": [
+        "Daniela Ruiz",
+        "Manuel Castellote",
+        "Zhongqi Miao",
+        "Carl Chalmers",
+        "Bruno Demuro",
+        "Rahul Dodhia",
+        "Pablo Arbelaez",
+        "Juan M. Lavista"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.CV"
+      ],
+      "published": "2026-09-01T19:03:10+00:00",
+      "link": "https://arxiv.org/pdf/2609.01792v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Passive underwater acoustic detection and ecotype classification; transferable classification cascade but not high-frequency ship-noise recognition",
+      "llm_evidence_cn": "水下被动声学虎鲸发声检测与生态型分类，方法可迁移但非高频船噪识别",
+      "llm_evidence": "水下被动声学虎鲸发声检测与生态型分类，方法可迁移但非高频船噪识别",
+      "canonical_evidence": "水下被动声学虎鲸发声检测与生态型分类，方法可迁移但非高频船噪识别",
+      "llm_tldr_en": "A lightweight ResNet cascade first detects killer whale vocalizations, then classifies confident calls into five ecotypes while abstaining on ambiguous samples; it attains 0.960/0.958 macro-F1 on DCLDE, offering a transferable passive acoustic classification approach beyond ship-noise high-frequency recognition.",
+      "llm_tldr_cn": "针对濒危虎鲸被动声学监测中样本不平衡与部署漂移等问题，提出轻量ResNet两阶段级联，先检测虎鲸发声，再对置信检测结果进行五个生态型分类并对模糊发声弃权。在DCLDE数据集上检测宏F1达到0.960，分类宏F1达到0.958，优于冻结的Perch 2.0嵌入。该工作证明将检测与分类解耦并允许弃权可提升被动声学识别性能，对水下声学目标识别方法设计具有迁移价值。",
+      "llm_tldr": "针对濒危虎鲸被动声学监测中样本不平衡与部署漂移等问题，提出轻量ResNet两阶段级联，先检测虎鲸发声，再对置信检测结果进行五个生态型分类并对模糊发声弃权。在DCLDE数据集上检测宏F1达到0.960，分类宏F1达到0.958，优于冻结的Perch 2.0嵌入。该工作证明将检测与分类解耦并允许弃权可提升被动声学识别性能，对水下声学目标识别方法设计具有迁移价值。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic target recognition using high frequency features",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
