@@ -6,24 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-08
-- 运行时间：2026-09-08 22:38:04 UTC
+- 最新运行日期：2026-09-09
+- 运行时间：2026-09-09 21:51:06 UTC
 - 运行状态：成功
 - 本次总论文数：1
 - 精读区：0
 - 速读区：1
 
 ### 今日简报（AI）
-今日仅速读1篇论文，聚焦虎鲸被动声学监测新方法。值得关注的方向：利用两阶段检测与生态型分类级联，提升虎鲸识别效率。建议普通读者可进一步了解声学监测在海洋哺乳动物保护中的应用。
-- 详情：[/202609/08/README](/202609/08/README)
+今日速读1篇：聚焦水下船舶辐射噪声的开集船只重识别，提出原始波形选择性核声学网络（SKANN）与跨通道评估协议（7.0/10）。  
+值得关注的方向：开集重识别在真实水下声学场景的泛化性，以及跨通道协议对传统评估的修正意义。  
+建议下一步：若关注水声信号身份识别，可细读该论文方法及对比基线，体会波形级特征与通道稳健性设计。
+- 详情：[/202609/09/README](/202609/09/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Efficient Passive Acoustic Monitoring of Killer Whales Using a Two-Stage Detection and Ecotype Classification Cascade](/202609/08/2609.01792v1-efficient-passive-acoustic-monitoring-of-killer-whales-using-a-two-stage-detection-and-ecotype-classification-cascade)  
-   标签：评分：6.0/10、query:shipnoise-hf
-   evidence：水下被动声学虎鲸发声检测与生态型分类，方法可迁移但非高频船噪识别
+1. [Open-Set Vessel Re-Identification from Underwater Ship-Radiated Noise with a Raw-Waveform Selective-Kernel Acoustic Neural Network (SKANN) and a Cross-Passage Evaluation Protocol](/202609/09/2609.07399v1-open-set-vessel-re-identification-from-underwater-ship-radiated-noise-with-a-raw-waveform-selective-kernel-acoustic-neural-network-skann-and-a-cross-passage-evaluation-protocol)  
+   标签：评分：7.0/10、query:shipnoise-hf
+   evidence：直接研究水下船辐射噪声的船只重识别；多尺度可学习滤波器可捕获高判别性高频线索。
 
 
 <div class="dpr-home-promo-card">

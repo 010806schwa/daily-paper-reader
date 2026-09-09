@@ -1,0 +1,53 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-09T21:49:42.027903+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.07399v1",
+      "source": "arxiv",
+      "title": "Open-Set Vessel Re-Identification from Underwater Ship-Radiated Noise with a Raw-Waveform Selective-Kernel Acoustic Neural Network (SKANN) and a Cross-Passage Evaluation Protocol",
+      "abstract": "Underwater acoustic target recognition has converged on closed-set classification by vessel type, a task that does not answer whether a monitoring system has heard this hull before. We formalise open-set, cross-passage vessel re-identification on public hydrophone data and specify a protocol that removes the two easiest routes to a high score: hull-disjoint splits keyed to MMSI/IMO, galleries and queries from disjoint passages of each hull, source-pure galleries, and an audio-adjudicated transit-deduplication gate. We describe SKANN, a raw-waveform encoder whose front end is a four-scale bank of learned filters fused by selective-kernel attention, trained with an angular-margin objective and an augmentation regime that perturbs recording chain, ambient noise and multipath while preserving the narrowband lines that carry identity. On a 40-hull IARA gallery (96 queries, 98 passage candidates), cross-passage rank-1 is 0.25 for the embedding and 0.26 for an automated narrowband-tonal comparator; the two are statistically indistinguishable at the top of the ranking, the embedding orders the rest of the list more reliably (AUC 0.82 vs 0.76), and their score fusion reaches rank-1 0.35 -- the only contrast that attains nominal significance, presented as evidence of partial complementarity, not as a recommendation. Transit deduplication alone removes a 16-21 point apparent rank-1 advantage, larger than any between-method difference. Two further findings delimit what public data can support: ShipsEar cannot separate hull identity from recording channel under an identity protocol, and cross-network fine-tuning helps vessels seen during fine-tuning but is a null result on unseen ones. The results support analyst triage over a ranked shortlist, not identification. Checkpoint, validation embeddings, transit map and per-query outputs are released under CC-BY-4.0 (doi:10.5281/zenodo.22160138).",
+      "authors": [
+        "Sunil Tyagi"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS",
+        "cs.SD"
+      ],
+      "published": "2026-09-07T12:13:43+00:00",
+      "link": "https://arxiv.org/pdf/2609.07399v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Underwater ship-radiated noise vessel re-identification with raw-waveform multiscale selective-kernel encoder; multiscale filters can learn high-frequency discriminative cues.",
+      "llm_evidence_cn": "直接研究水下船辐射噪声的船只重识别；多尺度可学习滤波器可捕获高判别性高频线索。",
+      "llm_evidence": "直接研究水下船辐射噪声的船只重识别；多尺度可学习滤波器可捕获高判别性高频线索。",
+      "canonical_evidence": "直接研究水下船辐射噪声的船只重识别；多尺度可学习滤波器可捕获高判别性高频线索。",
+      "llm_tldr_en": "Open-set vessel re-id from underwater ship-radiated noise is formalized with a leakage-resistant protocol; SKANN raw-waveform encoder uses four-scale learned filters and selective-kernel attention, enabling recognition from multiscale acoustic cues including high-frequency bands.",
+      "llm_tldr_cn": "现有水下声学目标识别多集中在按船型分类的闭集任务，无法回答监测系统是否曾听到该船体；本文形式化开放集跨通道船只重识别问题，并设计去除数据泄漏与重复经过捷径的评测协议。方法上提出SKANN，以四尺度学习滤波器组和选择性核注意力在原始波形上提取多频带判别特征。该工作在公开水听器数据上验证，为船辐射噪声在实际监测场景中的开放集身份再识别提供了新基准与可靠评测方法。",
+      "llm_tldr": "现有水下声学目标识别多集中在按船型分类的闭集任务，无法回答监测系统是否曾听到该船体；本文形式化开放集跨通道船只重识别问题，并设计去除数据泄漏与重复经过捷径的评测协议。方法上提出SKANN，以四尺度学习滤波器组和选择性核注意力在原始波形上提取多频带判别特征。该工作在公开水听器数据上验证，为船辐射噪声在实际监测场景中的开放集身份再识别提供了新基准与可靠评测方法。",
+      "llm_tags": [
+        "query:shipnoise-hf:composite"
+      ],
+      "matched_query_tag": "query:shipnoise-hf:composite",
+      "matched_query_text": "Papers central to 在水声信号如船舰噪声中利用高频信息做识别的文章, especially work that connects or combines: high frequency components in ship noise for recognition; underwater acoustic target recognition using high frequency features; vessel noise classification with high frequency cues; high frequency acoustic features for ship noise recognition; ship radiated noise high frequency recognition; underwater acoustic signal processing for high frequency target recognition; high frequency ship noise recognition methods; using high frequency acoustic features for underwater target classification; ship radiated noise high frequency components for identification.",
+      "matched_requirement_id": "req-composite-shipnoise-hf",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

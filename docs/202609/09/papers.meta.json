@@ -1,0 +1,24 @@
+{
+  "label": "2026-09-09",
+  "date": "2026-09-09",
+  "generated_at": "2026-09-09T21:51:11",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202609/09/2609.07399v1-open-set-vessel-re-identification-from-underwater-ship-radiated-noise-with-a-raw-waveform-selective-kernel-acoustic-neural-network-skann-and-a-cross-passage-evaluation-protocol",
+      "section": "quick",
+      "title_en": "Open-Set Vessel Re-Identification from Underwater Ship-Radiated Noise with a Raw-Waveform Selective-Kernel Acoustic Neural Network (SKANN) and a Cross-Passage Evaluation Protocol",
+      "authors": "Sunil Tyagi",
+      "date": "2026-09-07",
+      "pdf": "https://arxiv.org/pdf/2609.07399v1",
+      "score": "7.0",
+      "evidence": "直接研究水下船辐射噪声的船只重识别；多尺度可学习滤波器可捕获高判别性高频线索。",
+      "tldr": "传统水声目标识别一直局限于船型闭集分类，无法回答监控系统是否曾听过某具体船体。本文首次形式化开放集跨航次船舶重识别，提出基于原始波形的选择性核声学神经网络SKANN，并设计去除最易得分漏洞的评估协议。在四十艘船IARA公开数据上，跨航次首位命中率仅零点二五，与自动窄带比较器融合达零点三五；航次去重可消除十六至二十一个百分点的虚假优势。结果表明该系统仅适用于人工对排序短名单进行分诊，而不是全自动识别。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Underwater acoustic target recognition has converged on closed-set classification by vessel type, a task that does not answer whether a monitoring system has heard this hull before. We formalise open-set, cross-passage vessel re-identification on public hydrophone data and specify a protocol that removes the two easiest routes to a high score: hull-disjoint splits keyed to MMSI/IMO, galleries and queries from disjoint passages of each hull, source-pure galleries, and an audio-adjudicated transit-deduplication gate. We describe SKANN, a raw-waveform encoder whose front end is a four-scale bank of learned filters fused by selective-kernel attention, trained with an angular-margin objective and an augmentation regime that perturbs recording chain, ambient noise and multipath while preserving the narrowband lines that carry identity. On a 40-hull IARA gallery (96 queries, 98 passage candidates), cross-passage rank-1 is 0.25 for the embedding and 0.26 for an automated narrowband-tonal comparator; the two are statistically indistinguishable at the top of the ranking, the embedding orders the rest of the list more reliably (AUC 0.82 vs 0.76), and their score fusion reaches rank-1 0.35 -- the only contrast that attains nominal significance, presented as evidence of partial complementarity, not as a recommendation. Transit deduplication alone removes a 16-21 point apparent rank-1 advantage, larger than any between-method difference. Two further findings delimit what public data can support: ShipsEar cannot separate hull identity from recording channel under an identity protocol, and cross-network fine-tuning helps vessels seen during fine-tuning but is a null result on unseen ones. The results support analyst triage over a ranked shortlist, not identification. Checkpoint, validation embeddings, transit map and per-query outputs are released under CC-BY-4.0 (doi:10.5281/zenodo.22160138).",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
