@@ -1,0 +1,52 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-10T21:57:52.600832+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2609.07399v1",
+      "source": "arxiv",
+      "title": "Open-Set Vessel Re-Identification from Underwater Ship-Radiated Noise with a Raw-Waveform Selective-Kernel Acoustic Neural Network (SKANN) and a Cross-Passage Evaluation Protocol",
+      "abstract": "Underwater acoustic target recognition has converged on closed-set classification by vessel type, a task that does not answer whether a monitoring system has heard this hull before. We formalise open-set, cross-passage vessel re-identification on public hydrophone data and specify a protocol that removes the two easiest routes to a high score: hull-disjoint splits keyed to MMSI/IMO, galleries and queries from disjoint passages of each hull, source-pure galleries, and an audio-adjudicated transit-deduplication gate. We describe SKANN, a raw-waveform encoder whose front end is a four-scale bank of learned filters fused by selective-kernel attention, trained with an angular-margin objective and an augmentation regime that perturbs recording chain, ambient noise and multipath while preserving the narrowband lines that carry identity. On a 40-hull IARA gallery (96 queries, 98 passage candidates), cross-passage rank-1 is 0.25 for the embedding and 0.26 for an automated narrowband-tonal comparator; the two are statistically indistinguishable at the top of the ranking, the embedding orders the rest of the list more reliably (AUC 0.82 vs 0.76), and their score fusion reaches rank-1 0.35 -- the only contrast that attains nominal significance, presented as evidence of partial complementarity, not as a recommendation. Transit deduplication alone removes a 16-21 point apparent rank-1 advantage, larger than any between-method difference. Two further findings delimit what public data can support: ShipsEar cannot separate hull identity from recording channel under an identity protocol, and cross-network fine-tuning helps vessels seen during fine-tuning but is a null result on unseen ones. The results support analyst triage over a ranked shortlist, not identification. Checkpoint, validation embeddings, transit map and per-query outputs are released under CC-BY-4.0 (doi:10.5281/zenodo.22160138).",
+      "authors": [
+        "Sunil Tyagi"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS",
+        "cs.SD"
+      ],
+      "published": "2026-09-07T12:13:43+00:00",
+      "link": "https://arxiv.org/pdf/2609.07399v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Recognition of vessel identity from underwater ship-radiated noise",
+      "llm_evidence_cn": "从水下舰船辐射噪声中识别目标身份",
+      "llm_evidence": "从水下舰船辐射噪声中识别目标身份",
+      "canonical_evidence": "从水下舰船辐射噪声中识别目标身份",
+      "llm_tldr_en": "The paper formalises open-set cross-passage vessel re-identification from underwater ship-radiated noise and proposes SKANN, a raw-waveform encoder using a four-scale learned filter bank with selective-kernel attention, plus a rigorous evaluation protocol that removes trivial shortcuts.",
+      "llm_tldr_cn": "针对现有水声目标识别多局限于闭集舰型分类、无法判断是否听过同一船体的问题，本文将公开水听器数据上的跨航次开集舰船重识别形式化，并提出SKANN原始波形编码器，其前端为四尺度学习滤波器组经选择性核注意力融合。研究还设计了去除MMSI/IMO捷径的严格评测协议，为水声目标识别提供了更可靠的识别框架。",
+      "llm_tldr": "针对现有水声目标识别多局限于闭集舰型分类、无法判断是否听过同一船体的问题，本文将公开水听器数据上的跨航次开集舰船重识别形式化，并提出SKANN原始波形编码器，其前端为四尺度学习滤波器组经选择性核注意力融合。研究还设计了去除MMSI/IMO捷径的严格评测协议，为水声目标识别提供了更可靠的识别框架。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "ship radiated noise high frequency recognition",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
