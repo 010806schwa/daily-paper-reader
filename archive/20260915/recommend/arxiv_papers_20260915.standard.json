@@ -1,0 +1,57 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-15T21:57:59.824755+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.13659v1",
+      "source": "arxiv",
+      "title": "UniqueShip: Mitigating Data Leakage in Acoustic Ship Classification Benchmark Datasets",
+      "abstract": "Underwater Acoustic Target Recognition (UATR) of ships is well-suited for machine learning, yet its progress is hindered by the lack of large, diverse, and publicly available labeled datasets. In this work, we introduce UniqueShip, a machine learning-ready benchmark dataset for UATR applications sourced from the open Ocean Networks Canada (ONC) repository. Unlike previous datasets, we explicitly control for \"data leakage\" between the training and evaluation sets to ensure more reliable and generalizable model evaluation that does not encourage the model to memorize individual ships. We demonstrate that typical, random data partitioning in two prominent UATR datasets leads to falsely optimistic test performance, increasing accuracy by 10-48 percentage points compared to our more careful partitioning. Ablations on UniqueShip further show that doubling the number of unique vessels improves accuracy by 2.4-2.6 percentage points, while doubling total audio duration improves only by 0.8-1.3 points, indicating that vessel diversity should drive dataset curation more than total hours. We provide baselines with convolutional and transformer backbones, and analyze how ship metadata correlates with classification performance, finding that individual vessel characteristics predict classification difficulty far better than distance to the hydrophone alone. Overall, UniqueShip contains 2,460 hours of ship-radiated audio from 4,218 unique vessels (3,437 hours including background). We publish the dataset, code, and easy-to-download splits at uniqueshipdata.org to foster further UATR research.",
+      "authors": [
+        "Connor Hashemi",
+        "Trevor Stout",
+        "Anthony Hoogs",
+        "Jason Parham"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.CV",
+        "eess.AS"
+      ],
+      "published": "2026-09-12T02:31:38+00:00",
+      "link": "https://arxiv.org/pdf/2609.13659v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "underwater acoustic target recognition of ships",
+      "llm_evidence_cn": "船舶水下声学目标识别",
+      "llm_evidence": "船舶水下声学目标识别",
+      "canonical_evidence": "船舶水下声学目标识别",
+      "llm_tldr_en": "Underwater acoustic target recognition of ships lacks large public labeled datasets, and data leakage inflates results. UniqueShip, a benchmark from Ocean Networks Canada, explicitly controls train/eval leakage. Random partitioning inflates accuracy by over 10%, enabling more reliable evaluation.",
+      "llm_tldr_cn": "水下声学目标识别长期受限于缺乏大规模、多样化且公开的船舶标注数据集，且常用数据集存在训练与测试间的数据泄漏，导致评估过于乐观。本文提出 UniqueShip 基准数据集，数据取自 Ocean Networks Canada 开放库，并显式控制训练集与评估集之间的数据泄漏。实验表明，对两个主流 UATR 数据集采用随机划分会使测试精度虚高约 10%。该工作为船舶声学分类提供了更可靠的评测基准。",
+      "llm_tldr": "水下声学目标识别长期受限于缺乏大规模、多样化且公开的船舶标注数据集，且常用数据集存在训练与测试间的数据泄漏，导致评估过于乐观。本文提出 UniqueShip 基准数据集，数据取自 Ocean Networks Canada 开放库，并显式控制训练集与评估集之间的数据泄漏。实验表明，对两个主流 UATR 数据集采用随机划分会使测试精度虚高约 10%。该工作为船舶声学分类提供了更可靠的评测基准。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic target recognition using high frequency features",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

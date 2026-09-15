@@ -1,0 +1,24 @@
+{
+  "label": "2026-09-15",
+  "date": "2026-09-15",
+  "generated_at": "2026-09-15T21:59:09",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202609/15/2609.13659v1-uniqueship-mitigating-data-leakage-in-acoustic-ship-classification-benchmark-datasets",
+      "section": "quick",
+      "title_en": "UniqueShip: Mitigating Data Leakage in Acoustic Ship Classification Benchmark Datasets",
+      "authors": "Connor Hashemi, Trevor Stout, Anthony Hoogs, Jason Parham",
+      "date": "2026-09-12",
+      "pdf": "https://arxiv.org/pdf/2609.13659v1",
+      "score": "7.0",
+      "evidence": "船舶水下声学目标识别",
+      "tldr": "水下声学目标识别缺乏大型公开数据集，现有基准随机划分常致船只身份泄漏，使测试性能虚高。本文构建 UniqueShip 基准，来自 ONC，按独特船只显式划分以避免泄漏，并提供卷积与 Transformer 基线。实验显示随机划分虚高准确率 10–48 个百分点；船只数加倍提升 2.4–2.6 点，音频时长加倍仅提升 0.8–1.3 点。数据集含 4,218 艘船、2,460 小时音频，已公开，推动可靠 UATR 研究。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Underwater Acoustic Target Recognition (UATR) of ships is well-suited for machine learning, yet its progress is hindered by the lack of large, diverse, and publicly available labeled datasets. In this work, we introduce UniqueShip, a machine learning-ready benchmark dataset for UATR applications sourced from the open Ocean Networks Canada (ONC) repository. Unlike previous datasets, we explicitly control for \"data leakage\" between the training and evaluation sets to ensure more reliable and generalizable model evaluation that does not encourage the model to memorize individual ships. We demonstrate that typical, random data partitioning in two prominent UATR datasets leads to falsely optimistic test performance, increasing accuracy by 10-48 percentage points compared to our more careful partitioning. Ablations on UniqueShip further show that doubling the number of unique vessels improves accuracy by 2.4-2.6 percentage points, while doubling total audio duration improves only by 0.8-1.3 points, indicating that vessel diversity should drive dataset curation more than total hours. We provide baselines with convolutional and transformer backbones, and analyze how ship metadata correlates with classification performance, finding that individual vessel characteristics predict classification difficulty far better than distance to the hydrophone alone. Overall, UniqueShip contains 2,460 hours of ship-radiated audio from 4,218 unique vessels (3,437 hours including background). We publish the dataset, code, and easy-to-download splits at uniqueshipdata.org to foster further UATR research.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
