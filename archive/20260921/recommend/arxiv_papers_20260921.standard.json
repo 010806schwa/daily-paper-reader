@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-21T22:14:15.004564+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.21061v1",
+      "source": "arxiv",
+      "title": "LoRA Enhanced Contrastive Learning with SAS Vision Transformers",
+      "abstract": "Automatic target recognition (ATR) with synthetic aperture sonar (SAS) supports advanced naval capabilities, but deep learning is constrained by scarce target imagery, background clutter, and human-in-the-loop assessment. We adapt DINOv3 Vision Transformer (ViT) models to underwater SAS ATR using a three-stage parameter-efficient framework. Stage 1 uses Low-Rank Adaptation (LoRA) while freezing the ViT backbone, bridging the gap between natural-image pretraining and underwater acoustic propagation. Stage 2 uses hard-negative mining to strengthen the decision boundary against acoustic mimics, including rocks and sediment formations resembling man-made targets. Stage 3 uses Supervised Contrastive Learning (SupCon) to separate target and clutter representations. We evaluate at-sea SAS data using a mission-level geographic split, compare all arms at 85 percent test recall, and repeat each comparison over three random seeds. LoRA accounts for the primary effect, increasing area under the precision-recall curve (AUPRC) from 0.300 to 0.679 +/- 0.027 using the same frozen backbone. Rank 4 achieves this result while training only 0.26 percent of weights. Neither refinement stage exceeds its matched control: hard-negative mining changes AUPRC by -0.0045 +/- 0.0119 versus an equal-size random curriculum, and SupCon changes AUPRC by +0.0002 +/- 0.0096 versus the preceding stage. These null results indicate that mining occurred on data the encoder had already fit and that supervised stages had already imposed most target-clutter geometry. One efficient adaptation stage is sufficient; stacked refinement is not.",
+      "authors": [
+        "Dan Zimmerman",
+        "Frank E. Bobe",
+        "Amelia L. McCormack",
+        "Matthew Cook",
+        "Gregory D. Vetaw"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-17T20:30:22+00:00",
+      "link": "https://arxiv.org/pdf/2609.21061v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "underwater acoustic target recognition with sonar imagery and acoustic propagation",
+      "llm_evidence_cn": "水下声呐目标自动识别与声传播建模",
+      "llm_evidence": "水下声呐目标自动识别与声传播建模",
+      "canonical_evidence": "水下声呐目标自动识别与声传播建模",
+      "llm_tldr_en": "Adapts DINOv3 vision transformers to synthetic aperture sonar target recognition via LoRA fine-tuning, hard-negative mining against acoustic mimics, and supervised contrastive separation of targets from clutter.",
+      "llm_tldr_cn": "合成孔径声呐自动目标识别对海军能力很重要，但目标图像稀缺、背景杂波强，深度学习应用受限。该文基于DINOv3视觉Transformer提出三阶段参数高效框架：先用LoRA冻结主干完成自然图像预训练到水声传播的迁移，再用难负样本挖掘增强对岩石等声学伪目标的判别，最后用监督对比学习分离目标与杂波表征。该框架在数据稀缺条件下提升了水下目标识别性能。",
+      "llm_tldr": "合成孔径声呐自动目标识别对海军能力很重要，但目标图像稀缺、背景杂波强，深度学习应用受限。该文基于DINOv3视觉Transformer提出三阶段参数高效框架：先用LoRA冻结主干完成自然图像预训练到水声传播的迁移，再用难负样本挖掘增强对岩石等声学伪目标的判别，最后用监督对比学习分离目标与杂波表征。该框架在数据稀缺条件下提升了水下目标识别性能。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic target recognition using high frequency features",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

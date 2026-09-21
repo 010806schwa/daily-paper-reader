@@ -1,0 +1,240 @@
+Title: LoRA Enhanced Contrastive Learning with SAS Vision Transformers
+
+URL Source: https://arxiv.org/pdf/2609.21061v1
+
+Published Time: Mon, 21 Sep 2026 00:13:22 GMT
+
+Number of Pages: 7
+
+Markdown Content:
+# LoRA Enhanced Contrastive Learning with SAS Vision Transformers 
+
+Dan Zimmerman 
+
+Center for Connected Autonomy & AI Florida Atlantic University 
+
+Boca Raton, USA dzimmerman2021@fau.edu 
+
+Frank E. Bobe III 
+
+Naval Surface Warfare Center Panama City Division 
+
+Panama City, USA frank.e.bobe.civ@us.navy.mil 
+
+Amelia L. McCormack 
+
+Department of Computer Science Florida State University 
+
+Tallahassee, USA alm20h@fsu.edu 
+
+Matthew Cook 
+
+Naval Surface Warfare Center Panama City Division 
+
+Panama City, USA matthew.g.cook12.civ@us.navy.mil 
+
+Gregory D. Vetaw 
+
+Naval Surface Warfare Center Panama City Division 
+
+Panama City, USA gregory.d.vetaw.civ@us.navy.mil 
+
+Abstract —Automatic target recognition (ATR) with synthetic aperture sonar (SAS) enables advanced naval capabilities, but deep learning approaches remain constrained by human-in-the-loop assessment and by the extreme scarcity of imaged targets against background clutter. We present a three-stage parameter-efficient adaptation framework with contrastive re-finement, adapting self-DIstillation with NO labels v3 (DINOv3) Vision Transformer (ViT) models to underwater SAS ATR. Stage 1 applies a Low-Rank Adaptation (LoRA) workflow to bridge the gap between pretraining on natural images and the physics of underwater acoustic propagation while freezing the ViT backbone. Stage 2 implements a “Refiner” using hard negative mining to harden the decision boundary against acoustic mimics: naturally occurring seafloor features, such as rock outcrops and sediment formations, whose sonar signatures resemble man-made targets. Stage 3 applies Supervised Contrastive Learning (SupCon) to pull targets into a compact manifold away from clutter. We evaluate on at-sea SAS data under a mission-level geographic split, read every arm at a matched 85% test recall, and repeat each comparison over three random seeds. Adaptation accounts for the entire effect: LoRA raises the Area Under the Precision-Recall Curve (AUPRC) from 0.300 to 0.679 ± 0.027 
+
+over the identical frozen backbone, a +0 .38 gap an order of magnitude beyond any other effect we measure, and rank 4
+
+reaches the same result while training only 0.26% of its weights. Neither refinement stage separates from its matched control: mining is worth −0.0045 ± 0.0119 AUPRC against a random curriculum of equal size, and SupCon +0 .0002 ± 0.0096 against the stage it refines. We report both null results with their mechanisms, namely that the curriculum is mined on a split the encoder has already fit, and that the supervised stages impose most of the target–clutter geometry before the contrastive term is applied. One efficient adaptation stage is sufficient; the curriculum stacked on top of it is not. 
+
+I. I NTRODUCTION 
+
+Automatic target recognition (ATR) enables advanced naval capabilities for underwater and maritime applications [1]–[4], 
+
+This work was supported by the Office of Naval Research (N0001426GI00772) and their Internal Applied Research program. 
+
+including identification of objects that endanger littoral opera-tions [5]–[7]. Supervised deep learning has advanced synthetic aperture sonar (SAS) analysis, but it relies on massive human-verified datasets, and in operational environments target im-agery is scarce against a vast background of clutter. Much of that clutter consists of acoustic mimics : naturally occurring seafloor features, such as rock outcrops, boulders and sediment formations, whose highlight-and-shadow signatures resemble those of man-made targets. These features degrade standard classifiers and compound the underlying class imbalance [8]. To bypass this bottleneck we introduce a parameter-efficient domain adaptation framework for SAS ATR. The framework leverages a DINOv3 [9] Vision Transformer (ViT-L) foun-dation model pretrained on natural imagery, which does not capture the acoustic propagation physics of sonar. To bridge the gap between natural-image pretraining and the physics underlying underwater acoustic propagation, we propose a three-stage Low-Rank Adaptation (LoRA) [10] workflow com-prising: (1) an acoustic domain adaptation stage that aligns the ViT-L with foundational sonar features; (2) an active-learning “Refiner” that uses hard negative mining to map the decision boundaries of complex seafloor textures; and (3) a Supervised Contrastive Learning (SupCon) [11] stage that projects the data into a separable geometric feature space. Crucially, we evaluate each stage against a matched control :a run identical in curriculum size, optimizer, schedule and weight initialization, differing only in the single mechanism that stage contributes. Comparing a stage against its own control, rather than against the final end-to-end accuracy of the assembled pipeline, isolates the effect of the mechanism from the effect of longer training. Every arm is read at a matched 85% test recall, and we repeat every close comparison across three random seeds. This protocol changes the conclusion. Adapting the frozen backbone with LoRA raises the Area Under the Precision-Recall Curve (AUPRC) by more than a factor of two while arXiv:2609.21061v1 [cs.AI] 17 Sep 2026 Fig. 1. The parameter-efficient fine-tuning (PEFT) architecture used for adapting the DINOv3 ViT-L model. Dual-band (High-Frequency (HF) and Broadband (BB)) SAS imagery is passed through a trainable 2-to-3 channel stem. The frozen ViT-L backbone is augmented with trainable LoRA modules in its linear projection layers. 
+
+training at most 4.2% of the backbone’s weights, and as little as 0.26% suffices; neither subsequent stage separates from its control. We report those two null results in full rather than omitting them, because each is accompanied by a mechanism that explains it: the mined curriculum is selected on a split the encoder has already fit, and the supervised stages impose most of the target–clutter geometry before the contrastive term is applied. The practical consequence is that engineering effort belongs in the single adaptation step rather than in the multi-stage curriculum built on top of it. Our contributions are: (i) a parameter-efficient adaptation of DINOv3 to dual-band SAS recovering a +0 .38 AUPRC gap over the same frozen backbone; (ii) evidence that adapter ca-pacity saturates at very low rank and that low-rank adaptation is not separable from full fine-tuning at either backbone scale we tested; and (iii) a controlled, matched-control accounting of two widely assumed pipeline components, hard negative mining and supervised contrastive refinement, establishing that neither repays its cost at this data scale and supplying the mechanism behind each null result. II. R ELATED WORK 
+
+Deep learning for SAS ATR. SAS ATR has relied on supervised convolutional neural networks (CNNs) [12] to ex-tract spatial features from acoustic imagery [1], [7], extended to spectral partitioning [6], volumetric normalization [2], and seafloor classification [5]. Lightweight detectors, including optimized You Only Look Once (YOLO) variants [8], [13] and few-shot transformer detectors [4], have advanced real-time analysis. The extreme imbalance between targets and clutter nonetheless remains a persistent challenge. 
+
+Foundation models and parameter-efficient adaptation. 
+
+Vision Transformers [14] pretrained with the DINOv2 [15] and DINOv3 [9] self-supervised frameworks generalize strongly across optical imagery [16], but the shift to underwater acoustic propagation is challenging. Full fine-tuning at this size is prohibitive without distributed optimizations [17], [18]. Parameter-efficient fine-tuning [19] has emerged as an effec-tive strategy for adapting large ViTs to specialized domains such as SAS ATR. LoRA [10] freezes the pretrained weights and injects trainable low-rank updates that substantially reduce the computational budget. Later variants improve its flexibility by training nested ranks [20] or adjusting the rank during training [21] rather than fixing it in advance. 
+
+Contrastive learning and extreme class imbalance. Re-sampling [22] and cost-sensitive objectives [23] are limited at sonar imbalance ratios. Contrastive frameworks [24], [25] instead maximize agreement between augmented views, and SupCon [11] extends this with labels. Pairing SupCon with hard-negative mining [26] can enforce separability that cross-entropy struggles to achieve. This work builds on an earlier investigation of ViT-L backbones and contrastive loss for SAS [27], and reports the Matthews correlation coefficient (MCC) [28] as its imbalanced-data metric. III. M ETHODOLOGY 
+
+We adapt the DINOv3 ViT for SAS ATR in a three-stage pipeline , moving from broad feature alignment to adversarial refinement and finally to geometric contrastive regularization. 
+
+A. Stage 1: Foundational LoRA Domain Adaptation 
+
+To bridge the domain gap between pretraining a DINOv3 ViT-L backbone on massive amounts of optical imagery and dual-band acoustic physics, we implement the parameter-efficient fine-tuning (PEFT) architecture of Fig. 1. Because the backbone expects three channels, a trainable 1 × 1 con-volutional 2-to-3 channel “stem” projects the dual-band high frequency (HF) and broadband (BB) SAS magnitude channels into a compatible space. Trainable Low-Rank Adaptation (LoRA) modules are then injected into the query ( Q), key (K), value ( V ), and output ( O) linear projections of each self-attention block. The placement is attention-only ; that is, the feed-forward projections carry no adapter, so every result here is obtained by re-weighting attention alone. This architecture is trained in two ways that differ only in the objective and in the role of the Multilayer Perceptron (MLP). The supervised form is the pipeline’s Stage 1throughout this paper: it is what Stages 2 and 3 build upon and what appears in the Stage 1 rows of Table I. 
+
+There, the MLP is a binary classifier over the final Classify token (CLS) embedding, trained with the Asymmetric Loss of Ridnik et al. [29] over class-balanced batches, so labels enter both the objective and the sampler, and Stage 2 initializes from this encoder. The self-supervised form is a separate comparison module, which is never used as an input to a later stage. The same MLP acts instead as a projection head onto a 128-dimensional unit hypersphere optimized with the Contrastive Clustering objective [25] over two augmented views. That objective is not purely instance-level. It combines an instance Information Noise-Contrastive Estimation (InfoNCE) term, as in Simple Framework for Contrastive Learning of Visual Representations (SimCLR), with a cluster-assignment head ( K = 50 ) grouping the batch without labels, which are used only for sampling. Its frozen features are scored by a linear probe, appearing as the Contrastive Clustering Self-Supervised Learning (CC-SSL) row of Table I. 
+
+B. Stage 2: Adversarial Refinement 
+
+Performance after Stage 1 is limited by geometrically com-plex clutter. To harden the decision boundary against these “acoustic mimics,” we freeze the Stage 1 encoder, extract embeddings for the training set, train a lightweight linear probe on those frozen features to score each sample, and take the top K = 5 ,000 clutter samples by false-positive confidence as hard negatives. We then build a curriculum of all known target signatures plus those negatives, initializing from the Stage 1 adapters and band stem rather than at random so the network continues adapting its attention subspace, and fine-tune at 2 × 10 −5 with the same Asymmetric Loss [29]. Because this curriculum alters the class balance regardless of 
+
+which clutter is chosen, mining confounds the informativeness of the selected negatives with simple exposure rebalancing. We therefore pair every Stage 2 run with a random exposure control , identical but for drawing its 5,000 snippets uniformly rather than by score, so the difference between the arms isolates the mining signal. 
+
+C. Stage 3: Contrastive Geometric Regularization 
+
+To resolve the remaining ambiguity between targets and acoustic mimics, we introduce a Supervised Contrastive Learn-ing (SupCon) stage [11], treating the embedding space as a geometric problem that structurally enforces class separability. Initializing from the refined Stage 2 adapters, stem and classi-fier head, we continue training on the hard-negative curriculum with the dual-loss objective Ltotal = λsup Lsup + λcls Lcls ,where Lcls is the imbalance-aware asymmetric loss over the classification logits of two stochastically augmented views per sample, and Lsup is the Supervised Contrastive loss [11]. A temporary projection head maps representations to a 128-dimensional unit hypersphere, and for a batch of N samples stochastically doubled to a multiview batch of 2N views, 
+
+Lsup = X
+
+> i∈I
+
+−1
+
+|P (i)|
+
+X 
+
+> p∈P(i)
+
+log exp( zi · zp/τ )
+
+P 
+
+> a∈A(i)
+
+exp( zi · za/τ ) , (1) with I ≡ { 1, . . . , 2N } indexing the multiview batch, zi the projected anchor, P (i) the positive views sharing its class label, A(i) ≡ I \ { i} is the index set of all other views in the batch, and τ is the temperature parameter (set to 0.07 ). Crucially for the analysis that follows, Lsup is not minimized at zero: for a perfectly class-collapsed embedding it attains 
+
+Ei[log |P (i)|], a constant fixed by batch composition, so its distance above that floor, not its raw value, indicates how much geometric structure the objective still has to impose. IV. I MPLEMENTATION AND TRAINING DETAILS 
+
+A. Dataset and Splits 
+
+We evaluate on dual-band (High-Frequency and Broadband) SAS magnitude imagery from at-sea deployments, comprising 148 mission files partitioned at the mission level by geographic location, so no mission contributes to more than one split and the test set represents a genuine geographic shift rather than a random sample of the same surveys. Training comprises 106 missions and 336,298 snippets containing 2,791 targets, which equates to a severe 119:1 imbalance; validation and test contain 16 and 26 missions, at 36,327 snippets ( 99:1 ) and 67,083 snippets ( 155:1 ). 
+
+B. Preprocessing and Augmentation 
+
+Imagery is bilinearly resized to 224 × 224 to match the DINOv3 ViT-L input resolution and phase is discarded. Each band is standardized independently to zero mean and unit variance, clamped at ±8 standard deviations to tame the heavy tail from bright target returns, identically at every stage. For the contrastive phases we apply Rayleigh-distributed speckle noise, random resized cropping, flipping, photometric jitter and Gaussian blurring ( σ ∈ [0 .1, 2.0] ), so the loss is driven by target geometry rather than pixel similarity. 
+
+C. Optimization and Model Selection 
+
+The pipeline is implemented in PyTorch and trained us-ing distributed data-parallel processing across eight NVIDIA A6000 GPUs, giving a pooled batch of 1,024. DINOv3 ViT-L weights remain frozen throughout. LoRA modules use rank r = 64 with α = 2r, selected by a sweep over 
+
+r ∈ { 2, 4, 8, 16 , 32 , 64 } on validation AUPRC. 
+
+Stage 1 uses Adam at 1 × 10 −4, batch sizes of 128 per GPU, and the Asymmetric Loss [29] over class-balanced batches; the self-supervised comparison variant substitutes a Contrastive Clustering loss with instance temperature τi = 0 .5
+
+and a K = 50 cluster head. Stage 2 fine-tunes the 5,000-hard-negative curriculum with AdamW at 2 × 10 −5 over 30 epochs with cosine annealing, again under the Asymmetric Loss; the random-selection control is identical except that its 5,000 clutter snippets are drawn uniformly. Stage 3 initializes from Stage 2 and trains dual-view batches with AdamW at 2 × 10 −5, SupCon temperature τ = 0.07 and a 128-dimensional projection head. Both loss weights are unity, 
+
+λsup = λcls = 1 . Sweeping λsup over {0, 0.1, 0.3, 3, 10 } moves blind-test AUPRC by at most 0.0074 , inside the ±0.0096 
+
+paired seed interval, and disabling the term outright costs 
+
+0.0041 .Model selection at every stage uses validation AUPRC, with early stopping after ten checks without improvement and the best checkpoint restored before a frozen evaluation pass; Section V-G discusses the resulting selection bias. Every Fig. 2. Precision-recall on the blind test split, seed 42. The dotted rule marks the 85% recall anchor at which Table I is read. 
+
+comparison smaller than the seed-to-seed spread of roughly 
+
+±0.03 AUPRC was repeated at seeds 42, 100 and 999 and is reported as a mean with a 95% confidence interval, or as a paired per-seed difference where available. V. R ESULTS AND PERFORMANCE ANALYSIS 
+
+All results are on an unseen test split (67,083 snippets, 431 targets). No label from the validation or test missions reaches any arm at any stage; the one qualification, concerning unlabeled imagery, is in Section V-G. Every arm shares one backbone, one split and one evaluation harness, and all results are means over three seeds (42, 100 and 999) with 95% 
+
+confidence intervals. 
+
+A. Evaluation Protocol 
+
+All threshold-based metrics are read at a recall-matched operating point : the threshold is placed so each model reaches 85% recall on the blind test set. MCC and nFA are the threshold-based metrics reported here, and we quote the False Positive Rate at that anchor (FPR 85 ) as the headline false-positive rate, alongside the threshold-free AUPRC. Where a claim concerns the high-recall regime specifically, we report FPR 95 and say so. 
+
+B. Domain Adaptation is the Dominant Effect 
+
+Table I isolates each component’s contribution, and the largest effect by a wide margin is the domain adaptation itself. The frozen DINOv3 ViT-L, probed linearly over un-adapted features, reaches 0.300 ± 0.011 AUPRC, worse than a ResNet18 trained from scratch; injecting LoRA adapters into the same frozen backbone raises this to 0.679 ± 0.027 , a 
+
+2.3× improvement. This indicates that optical features do not transfer to acoustic imagery: the adaptation, not the backbone, carries the result. Comparing against the conventional baselines shows a dif-ferent picture. We pair results over the same seeds, since multi-seed results are not directly comparable to the single-seed numbers we reported previously. Paired this way, the adapted 
+
+> Fig. 3. False alarms against recall on the blind test split, seed 42, logarithmic ordinate. Derived from the same precision-recall data and verified against the tabulated counts at the operating point.
+
+ViT-L leads the strongest baseline, TinyViT-21M pretrained on ImageNet-22k with distillation, by +0 .046 ± 0.113 AUPRC at 
+
+r = 4 and +0 .039 ± 0.100 at r = 64 ; both intervals span zero, although the adapted arm is ahead at all three seeds. Pretraining behaves the same way, worth +0 .094 ± 0.098 
+
+for TinyViT and +0 .027 ± 0.035 for ResNet18 against their from-scratch counterparts, again positive at every seed and again not resolvable. We therefore claim only what separates: 
+
+the adapted foundation model is not distinguishable from a well-initialized conventional CNN at this sample size .The comparison is not like-for-like on pretraining either, with DINOv3 carrying 1.689 B web images against roughly 14 Mfor TinyViT and 1.28 M for ResNet18. That the frozen ViT-L nonetheless scores 0.300 is the sharper observation: two orders of magnitude more pretraining data buys nothing until it is adapted. 
+
+C. Adapter Capacity Saturates, and Matches Full Fine-Tuning 
+
+We swept the LoRA rank over r ∈ { 2, 4, 8, 16 , 32 , 64 } and selected r = 64 on validation AUPRC. On the blind test set performance is flat across this range: paired per-seed, r = 4 
+
+against r = 64 gives +0 .0061 ± 0.0465 AUPRC with r = 4 
+
+nominally ahead, and only r = 2 falls away, to 0.6229 . So 
+
+786 K trainable parameters, 0.26% of the backbone, match the 
+
+12 .58 M of r = 64 , an empirical confirmation of the low intrinsic rank hypothesis of Hu et al. [10] in the acoustic domain. An earlier reading of these experiments, drawn from single seeds, held that low-rank adaptation matches full fine-tuning only above some backbone size; replicating every arm at three seeds removes that condition. On the small architectural variant (ViT-S) ( 0.612 ± 0.050 at r = 64 ) a full fine-tune of all 21.6M parameters is worth a paired −0.001 ± 0.151 ; at the Large scale (ViT-L), fine-tuning all 300M gives 0.698 ± 0.046 
+
+against 0.679 ± 0.027 , a paired +0 .018 ± 0.060 . Neither scale separates, and the rank curve is flat at both. The apparent ViT-TABLE I BLIND -TEST PERFORMANCE . M EAN ± 95% CI OVER THREE SEEDS (42, 100, 999) FOR EVERY ARM . MCC ∗ AND nFA ARE READ AT A MATCHED 85%                                                                                                                                                             
+
+> TEST RECALL ; AUPRC AND AUROC ARE THRESHOLD -FREE . N O ENTRY IS EMBOLDENED :THE ADAPTED ARMS HAVE OVERLAPPING INTERVALS AND ARE NOT SEPARABLE .
+> Model AUPRC AUROC MCC ∗nFA
+> ResNet18, scratch 0.563 ±0.020 0.982 ±0.014 0.534 ±0.065 1141 ±207 ResNet18, IN-1k 0.590 ±0.053 0.981 ±0.007 0.570 ±0.051 841 ±218 TinyViT-21M, scratch 0.546 ±0.039 0.980 ±0.012 0.512 ±0.045 1539 ±271 TinyViT-21M, IN-22k distilled 0.640 ±0.085 0.991 ±0.007 0.605 ±0.064 712 ±235 ViT-L, frozen 0.300 ±0.011 0.975 ±0.001 0.350 ±0.010 3555 ±156 ViT-L, full fine-tune 0.698 ±0.046 0.989 ±0.008 0.640 ±0.065 615 ±304 ViT-L, CC-SSL linear probe 0.635 ±0.023 0.993 ±0.000 0.549 ±0.043 897 ±253 Stage 1, LoRA r= 4 0.686 ±0.033 0.990 ±0.003 0.641 ±0.039 631 ±201 Stage 1, LoRA r= 64 0.679 ±0.027 0.991 ±0.001 0.626 ±0.039 643 ±83 Stage 2, mined HNM 0.682 ±0.007 0.989 ±0.001 0.638 ±0.002 675 ±86 Stage 2, random control 0.686 ±0.017 0.990 ±0.001 0.632 ±0.028 637 ±203 Stage 3, SupCon 0.682 ±0.016 0.986 ±0.013 0.643 ±0.015 681 ±167
+
+S steepening we previously reported came from a single seed whose r = 4 draw was the lowest of its three. The LoRA-adapted ViT-L is stable across experiments: 
+
+adapting 0.26% of a ViT-L, or 0.7% of a ViT-S, is not distin-guishable from updating every weight , and rank beyond r=4 
+
+buys nothing at either size. One asymmetry emerges: full fine-tuning is the noisier regime, with a seed standard deviation of 
+
+0.019 against 0.011 at ViT-L and 0.042 against 0.020 at ViT-S, so equal expected performance at roughly half the variance is the practical case for the adapter. 
+
+D. Hard Negative Mining Does Not Separate From Random Selection 
+
+Stage 2 mines the K = 5 ,000 clutter snippets that the Stage 1 encoder scores as most target-like and fine-tunes on those plus all known targets; to test whether mining contributes anything beyond rebalancing exposure, we ran an otherwise identical control drawing its 5,000 snippets at random . The two arms do not separate. Across three seeds, the paired differ-ence between mined and random curricula is −0.0045 ±0.0119 
+
+AUPRC, −0.0017 ±0.0314 MCC and −12 ±139 false alarms, all spanning zero; the only difference clearing its interval is AUROC, at −0.0013 ± 0.0007 , and it favours the random control at all three seeds. Neither curriculum improves on Stage 1 ( +0 .0024 ±0.0253 mined, +0 .0069 ±0.0182 random). At this curriculum size the intelligence of the mining step is not measurable, and the curriculum’s effect comes from exposure balancing, which random selection supplies equally well. A plausible mechanism is that mining operates on the training split, where the Stage 1 encoder already achieves 
+
+99 .9% AUROC: the snippets that remain difficult under geo-graphic shift are, by construction, not the ones that are difficult on data the model has already fit. The obvious objection is that this null result reflects a limita-tion of the adapter rather than the absence of a mining signal: at 12 .58 M trainable parameters, the refiner may simply be unable to express what the curriculum encodes. We tested this by unfreezing the last four transformer blocks of the otherwise frozen backbone in both arms, a five-fold increase to 62 .97 Mtrainable parameters, while holding the curricula fixed so that capacity is the only thing that varies. The null does not move: the paired difference is −0.0045 ± 0.0061 AUPRC unfrozen against −0.0040 ±0.0117 frozen, a difference of differences of 
+
+−0.0005 ± 0.0080 . The added capacity buys nothing in either arm on its own either, worth +0 .0004 ± 0.0090 to the mined curriculum and +0 .0010 ±0.0010 to the random one, which is the rank saturation of Section V-C reached through a different lever. 
+
+E. Contrastive Regularization Has Little Left to Enforce 
+
+Stage 3 applies a supervised contrastive objective to Stage 2 representations. Across three seeds it changes little in either direction. Compared to the baseline runs, paired per-seed, the model achieves an AUPRC difference of +0 .0002 ± 0.0096 
+
+against the mined Stage 2 initialization, −0.0043 ± 0.0069 
+
+against the random control, and +0 .0026 ± 0.0250 against Stage 1. Its MCC ∗ of 0.643 ± 0.015 is nominally the highest in Table I, but it overlaps the r=4 arm. We previously reported that this stage degrades the high-recall regime. Replication does not support that claim: the stage is inert rather than harmful. Against Stage 2, AU-ROC changed by only −0.0033 ± 0.0127 and FPR 95 by 
+
++0 .0095 ± 0.0260 . The original claim was prompted by a single low outlier of 0.9795 , the lowest of three seeds, against a replicated mean of 0.9856 .One possible explanation lies in the training loss itself. The loss floor E[log |P (i)|] is 4.28 at our batch size and target fraction, while a structureless embedding scores 5.34 under the same projection. On the encoders it actually receives, Stage 3 begins at a loss between 4.40 and 4.62 . That is 75 
+
+to 91% of the distance from a structureless state to a class-collapsed one, and the loss barely changes thereafter, so the preceding supervised stages have already imposed most of the geometry the contrastive term exists to enforce. Because the random control begins at a similar value ( 4.55 ), this geometry is a property of supervised adaptation itself rather than of the mined curriculum. F. Operating Point, Calibration and Threshold Transfer 
+
+The 85% recall anchor is a reporting convention rather than an operational requirement, so Fig. 2 and Fig. 3 give the full trade-off. Fig. 3 uses a logarithmic ordinate because the unadapted control’s false-alarm load runs an order of mag-nitude above every adapted arm. The separation gained from domain adaptation holds across the entire recall range, while the individual adapted arms remain visually indistinguishable over most of the curve, the same conclusion the intervals of Table I reach. The false-alarm load rises sharply beyond about 
+
+0.9 recall, so the marginal cost of the last few points of recall is steep and worth quoting in any operational requirement. The later stages contribute one benefit invisible to the ranking metrics: expected calibration error falls from 0.0116 at Stage 1 to 0.0030 after Stage 2 and 0.0036 after Stage 3, and the random control does not reproduce this ( 0.0152 ), making calibration the one axis on which mining separates from ran-dom selection. Expected Calibration Error (ECE) is computed over 15 equal-width bins on the confidence max( p, 1−p), with no temperature scaling or isotonic regression at any stage, so these are properties of the trained classifier and not of a post-hoc correction. Threshold transfer is inexpensive in aggregate: the validation-tuned choice costs 1 to 20 false alarms more than an oracle threshold at the same recall, under 4% of the total in every arm. Per platform it is not. Decomposing the blind split by sensor serial across three platforms, carrying 244 , 135 
+
+and 52 of the 431 targets, the adapted model’s recall spans 
+
+0.692 to 0.906 about a global 0.828 , so a deployment requiring 
+
+85% recall on every platform would not obtain it from an operating point whose aggregate satisfies the requirement. The spread is not a property of our three-stage framework: the frozen control ranges 0.763 to 0.951 about 0.886 and TinyViT 
+
+0.635 to 0.873 about 0.773 , and the easiest platform is the same under all three architectures, which points at differences between the underlying surveys rather than at any model. Per-survey calibration is therefore worth its cost where a recall floor is contractual. We claim the spread and not a ranking: the ordering of the two weaker platforms reverses between the adapted and frozen arms, and the weakest carries only 52 
+
+targets. 
+
+G. Limitations of the Protocol 
+
+Two properties of the protocol above qualify the compar-isons we have drawn. Neither changes a reported number, and we state both because a reader cannot recover either from the results table. 
+
+The self-supervised arm sees more imagery than the arms it is compared against. Contrastive pretraining is label-free, so we follow standard practice and fit the CC-SSL encoder over all 148 mission files, validation and test included, whereas every other arm sees the training missions alone. No annotation from the blind missions reaches any model, but that encoder has seen the unlabeled imagery , so its row is transductive and not strictly like-for-like. A second asymmetry runs opposite, since it is scored through a linear probe on frozen features while the supervised arms are optimized end-to-end. The two are indistinguishable in AUPRC, and both asymmetries bear on that comparison in opposite directions. 
+
+The validation split is used for three successive selection decisions. Adapter rank is chosen on validation AUPRC, and Stages 2 and 3 each select their checkpoint by early stopping on the same split. Each is individually leakage-free with respect to the test missions, but they are not independent, they rest on only 362 validation targets, and the resulting optimism is not captured by the test metrics. The magnitude is not negligible: under a validation-tuned threshold, test recall drifted from 0.773 to 0.926 across arms, indicating substantial shift between validation and test missions before any selection is stacked on top. Reading our headline metrics at a recall-matched operating point insulates the false-alarm counts from this bias, but it does not protect the choice of rank or check-point. For replications, carve a dedicated selection partition out of the training missions and reserve the validation split solely for establishing the final operating point; rotating geographic folds between stages should be avoided, since doing so would confound stage effects with geographic variance. VI. D ISCUSSION 
+
+In this work we re-evaluated a three-stage parameter-efficient adaptation framework for SAS ATR, with every stage measured against its own matched control and every close comparison repeated across three seeds. The performance gains are dominated almost entirely by the initial domain-adaptation (LoRA) stage. That single step delivers a decisive 
+
++0 .38 AUPRC improvement over a frozen backbone, and as little as 0.26% of the model parameters is enough to obtain it. Neither downstream stage separates from its control: hard negative mining is worth −0.0045 ± 0.0119 AUPRC against a random curriculum of equal size, and supervised contrastive refinement +0 .0002 ± 0.0096 against the stage it refines. We report both null results in full, with the mechanisms established in Sections V-D and V-E; each follows from where the stage sits in the pipeline rather than from this dataset. The one axis on which mining does separate is calibration (Section V-F). Our replication also overturns an earlier reading of ours, that parameter efficiency requires backbone scale: no separation is resolved between low-rank adaptation and full fine-tuning at either scale we tested, and the rank curve is flat at both. Taken together, these results carry a concrete engineering implication. Effort is better spent optimizing the core adaptation step, and the operating point at which the system is evaluated, than on designing elaborate multi-stage training curricula, since the curriculum stacked on top of a well-adapted backbone did not repay its cost at this data scale. Future work will extend the framework to Cluster-Level Contrastive Learning [25] for unsupervised discovery of novel debris types, mine hard negatives from data the encoder has not already fit, and apply the contrastive objective earlier in training. REFERENCES [1] I. J. Sledge, M. S. Emigh, J. L. King, D. L. Woods, J. T. Cobb, and J. C. Príncipe, “Target detection and segmentation in circular-scan synthetic aperture sonar images using semisupervised convolutional encoder–decoders,” IEEE Journal of Oceanic Engineering , vol. 47, no. 4, pp. 1099–1128, 2022. [2] G. D. Vetaw, B. Cowen, D. C. Brown, D. P. Williams, and S. Jayasuriya, “Volumetric hadamard normalization for synthetic aperture sonar sub-bottom target classification,” IEEE Journal of Oceanic Engineering ,vol. 50, no. 4, pp. 3024–3038, 2025. [3] I. D. Gerg and V. Monga, “Real-time, deep synthetic aperture sonar (sas) autofocus,” in 2021 IEEE International Geoscience and Remote Sensing Symposium IGARSS , 2021, pp. 8684–8687. [4] S. Yang, X. Zhang, and P. Tan, “Fs2-detr: Transformer-based few-shot sonar object detection with enhanced feature perception,” Journal of Marine Science and Engineering , 2026. [5] D. Kohntopp, B. Lehmann, D. Kraus, and A. Birk, “Seafloor classifica-tion for mine countermeasures operations using synthetic aperture sonar images,” in OCEANS 2017 - Aberdeen , 2017, pp. 1–5. [6] D. P. Williams and D. C. Brown, “Spectral partitioning of synthetic aperture sonar imagery for improved atr,” IEEE Geoscience and Remote Sensing Letters , pp. 1–1, 2025. [7] D. P. Williams, “Underwater target classification in synthetic aperture sonar imagery using deep convolutional neural networks,” in 23rd International Conference on Pattern Recognition (ICPR) , 2016, pp. 2497–2502. [8] J. Zhang and B. Gao, “Rcdi-yolo: a target-detection method for com-plex environment side-scan sonar images based on improved yolov8,” 
+
+Frontiers in Marine Science , vol. 12, 2025. [9] O. Siméoni, H. V. Vo, M. Seitzer, F. Baldassarre, M. Oquab, C. Jose, V. Khalidov, M. Szafraniec, S. Yi, M. Ramamonjisoa, F. Massa, D. Haz-iza, L. Wehrstedt, J. Wang, T. Darcet, T. Moutakanni, L. Sentana, C. Roberts, A. Vedaldi, J. Tolan, J. Brandt, C. Couprie, J. Mairal, H. Jégou, P. Labatut, and P. Bojanowski, “Dinov3,” arXiv , vol. abs/2508.10104, 2025. [10] E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, L. Wang, and W. Chen, “Lora: Low-rank adaptation of large language models,” 
+
+arXiv , vol. abs/2106.09685, 2021. [11] P. Khosla, P. Teterwak, C. Wang, A. Sarna, Y. Tian, P. Isola, A. Maschinot, C. Liu, and D. Krishnan, “Supervised contrastive learn-ing,” arXiv , vol. 2004.11362, 2021. [12] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for image recognition,” in 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , 2016, pp. 770–778. [13] N. Yang, G. Li, S. Wang, Z. Wei, H. Ren, X. Zhang, and Y. Pei, “Ss-yolo: A lightweight deep learning model focused on side-scan sonar target detection,” Journal of Marine Science and Engineering , vol. 13, no. 1, 2025. [14] A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai, T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, J. Uszkoreit, and N. Houlsby, “An image is worth 16x16 words: Trans-formers for image recognition at scale,” ArXiv , vol. abs/2010.11929, 10 2020. [15] M. Oquab, T. Darcet, T. Moutakanni, H. Vo, M. Szafraniec, V. Khalidov, P. Fernandez, D. Haziza, F. Massa, A. El-Nouby, M. Assran, N. Ballas, W. Galuba, R. Howes, P.-Y. Huang, S.-W. Li, I. Misra, M. Rabbat, V. Sharma, G. Synnaeve, H. Xu, H. Jegou, J. Mairal, P. Labatut, A. Joulin, and P. Bojanowski, “Dinov2: Learning robust visual features without supervision,” arXiv , vol. abs/2304.07193, 2024. [16] O. Russakovsky, J. Deng, H. Su, J. Krause, S. Satheesh, S. Ma, Z. Huang, A. Karpathy, A. Khosla, M. Bernstein, A. C. Berg, and L. Fei-Fei, “ImageNet Large Scale Visual Recognition Challenge,” 
+
+International Journal of Computer Vision (IJCV) , vol. 115, no. 3, pp. 211–252, 2015. [17] J. Rasley, S. Rajbhandari, O. Ruwase, and Y. He, “Deepspeed: System optimizations enable training deep learning models with over 100 billion parameters,” Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining , 2020. [18] S. Rajbhandari, J. Rasley, O. Ruwase, and Y. He, “Zero: Memory optimizations toward training trillion parameter models,” arXiv , vol. abs/1910.02054, 2020. [19] S. Mangrulkar, S. Gugger, L. Debut, Y. Belkada, S. Paul, B. Bossan, and M. Tietz, “PEFT: State-of-the-art parameter-efficient fine-tuning methods,” https://github.com/huggingface/peft, 2022. [20] C. Lin, L. Li, D. Li, J. Zou, W. Xue, and Y. Guo, “NoRA: Nested low-rank adaptation for efficient fine-tuning large models,” arXiv , vol. abs/2408.10280, 2024. [21] M. Valipour, M. Rezagholizadeh, I. Kobyzev, and A. Ghodsi, “DyLoRA: Parameter-efficient tuning of pre-trained models using dynamic search-free low-rank adaptation,” in Proceedings of the 17th Conference of the European Chapter of the Association for Computational Linguistics (EACL) , 2023, pp. 3274–3287, arXiv:2210.07558. [22] N. Chawla, K. Bowyer, L. O. Hall, and W. P. Kegelmeyer, “Smote: Synthetic minority over-sampling technique,” ArXiv , vol. abs/1106.1813, 2002. [23] T.-Y. Lin, P. Goyal, R. Girshick, K. He, and P. Dollár, “Focal loss for dense object detection,” in 2017 IEEE International Conference on Computer Vision (ICCV) , 2017, pp. 2999–3007. [24] T. Chen, S. Kornblith, M. Norouzi, and G. Hinton, “A simple frame-work for contrastive learning of visual representations,” ArXiv , vol. abs/2002.05709, 2020. [25] Y. Li, P. Hu, Z. Liu, D. Peng, J. T. Zhou, and X. Peng, “Contrastive clustering,” arXiv , vol. abs/2009.09687, 2020. [26] G. Li, Y. Gao, X. Huang, and B. W.-K. Ling, “A hard negatives mining and enhancing method for multi-modal contrastive learning,” 
+
+Electronics , vol. 14, no. 4, 2025. [27] G. D. Vetaw, F. E. Bobe, III, and D. Bryner, “Contrastive learning for synthetic aperture sonar pattern recognition with vision transformers,” 
+
+Proceedings of the Institution of Acoustics , 2026. [28] B. Matthews, “Comparison of the predicted and observed secondary structure of t4 phage lysozyme,” Biochimica et Biophysica Acta (BBA) - Protein Structure , vol. 405, no. 2, pp. 442–451, 1975. [29] T. Ridnik, E. Ben-Baruch, N. Zamir, A. Noy, I. Friedman, M. Protter, and L. Zelnik-Manor, “Asymmetric loss for multi-label classification,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , 2021, arXiv:2009.14119.
