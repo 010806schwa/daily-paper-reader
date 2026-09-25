@@ -1,0 +1,99 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-25T22:20:34.389729+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2609.29179v1",
+      "source": "arxiv",
+      "title": "Towards Deployable Underwater Vessel Classification",
+      "abstract": "We propose a compact underwater acoustic classification framework combining multi-representation feature engineering, temporal statistical pooling, and compact convolutional architectures designed for acoustic time-frequency and cochlear representations. We investigate multiple conventional and auditory-inspired representations and first evaluate lightweight classifiers and Conventional Neural Networks (CNNs) on ShipsEar dataset. On the provided split, a two-layer CNN achieves a macro F1 of 0.9918, while a Radial Basis Function Support Vector Machine (RBF-SVM) reaches 0.9883. However, source-recording provenance cannot be reconstructed, preventing verification of recording-independent generalisation. We therefore evaluate on DeepShip dataset using recording-level partitioning before segmentation. Under this protocol, a 157K-parameter compact CNN achieves a test macro F1 of 0.7226, while an 11.17M-parameter ResNet18 provides no improvement in validation performance under the matched setting. These results demonstrate the importance of representation-aware feature and model design, together with rigorous recording-level evaluation, for classification performance and deployability in compact underwater acoustic systems.",
+      "authors": [
+        "Abishek Soti",
+        "Thura Pyae Sone",
+        "Naqib Ibnul",
+        "Htoo Htet Aung",
+        "Henry Zhong",
+        "Gregory Cohen",
+        "Ying Xu"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.LG"
+      ],
+      "published": "2026-09-24T07:50:50+00:00",
+      "link": "https://arxiv.org/pdf/2609.29179v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "underwater vessel noise classification with time-frequency and cochlear representations",
+      "llm_evidence_cn": "基于时频与耳蜗表示的水下船舶噪声分类",
+      "llm_evidence": "基于时频与耳蜗表示的水下船舶噪声分类",
+      "canonical_evidence": "基于时频与耳蜗表示的水下船舶噪声分类",
+      "llm_tldr_en": "A compact underwater acoustic framework combines multi-representation feature engineering, temporal pooling and small CNNs for vessel classification, reaching macro F1 0.9918 on ShipsEar and evaluating recording-level generalisation on DeepShip.",
+      "llm_tldr_cn": "水下船舶噪声识别受限于可部署性与跨录音泛化能力不足的问题。本文提出紧凑的水下声学分类框架，融合多种时频与听觉仿生表示、时间统计池化与轻量卷积网络，在ShipsEar上两层CNN取得0.9918的宏F1，RBF-SVM达0.9883。由于原始录音来源无法还原，作者转而在DeepShip上按录音级划分验证泛化性。该工作为船舰噪声分类提供了可落地的表示与模型组合方案。",
+      "llm_tldr": "水下船舶噪声识别受限于可部署性与跨录音泛化能力不足的问题。本文提出紧凑的水下声学分类框架，融合多种时频与听觉仿生表示、时间统计池化与轻量卷积网络，在ShipsEar上两层CNN取得0.9918的宏F1，RBF-SVM达0.9883。由于原始录音来源无法还原，作者转而在DeepShip上按录音级划分验证泛化性。该工作为船舰噪声分类提供了可落地的表示与模型组合方案。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "vessel noise classification with high frequency cues",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.29128v1",
+      "source": "arxiv",
+      "title": "Bio-inspired efficient cyclostationary analysis in machine and underwater acoustic recordings",
+      "abstract": "We propose a bio-inspired approach that uses the inner-hair-cell (IHC) response of the Cascade of Asymmetric Resonators with Fast-Acting Compression (CARFAC) model to efficiently extract cyclic modulation from acoustic signals. We further investigate the contribution of IHC processing by comparing the CARFAC-IHC response with the CARFAC basilar-membrane (BM) filtering. Furthermore, the CARFAC-IHC and CARFAC-BM approach are benchmarked against conventional FFT Accumulation Method (FAM), Integrated Cyclic Modulation Coherence (ICMC), and Detection of Envelope Modulation On Noise (DEMON) approaches using the Case Western Reserve University (CWRU) bearing dataset and a real ShipsEar work-vessel recording dataset. The results demonstrate reliable recovery of characteristic cyclic components while substantially reducing the computational burden of conventional cyclostationary analysis.",
+      "authors": [
+        "Thura Pyae Sone",
+        "Abishek Soti",
+        "Henry Zhong",
+        "Gregory Cohen",
+        "RunChun Mark Wang",
+        "Ying Xu"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-09-24T07:07:12+00:00",
+      "link": "https://arxiv.org/pdf/2609.29128v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "cyclostationary feature extraction on real ShipsEar vessel recordings",
+      "llm_evidence_cn": "在真实ShipsEar船舶录音上提取循环平稳特征",
+      "llm_evidence": "在真实ShipsEar船舶录音上提取循环平稳特征",
+      "canonical_evidence": "在真实ShipsEar船舶录音上提取循环平稳特征",
+      "llm_tldr_en": "A bio-inspired CARFAC inner-hair-cell approach efficiently extracts cyclic modulation from acoustic signals, benchmarked against FAM, ICMC and DEMON on bearing and real ShipsEar vessel recordings.",
+      "llm_tldr_cn": "传统循环平稳分析在提取声信号循环调制时计算成本高，难以高效处理机器与水下录音。本文提出一种仿生方法，利用CARFAC模型的内毛细胞响应来高效提取循环调制，并与FFT累积法、ICMC及DEMON等传统方法进行对比。在CWRU轴承数据集和真实ShipsEar工作船录音上的实验表明，该仿生方法性能具有竞争力。该工作为机器故障诊断与船舶噪声特征分析提供了高效的特征提取途径。",
+      "llm_tldr": "传统循环平稳分析在提取声信号循环调制时计算成本高，难以高效处理机器与水下录音。本文提出一种仿生方法，利用CARFAC模型的内毛细胞响应来高效提取循环调制，并与FFT累积法、ICMC及DEMON等传统方法进行对比。在CWRU轴承数据集和真实ShipsEar工作船录音上的实验表明，该仿生方法性能具有竞争力。该工作为机器故障诊断与船舶噪声特征分析提供了高效的特征提取途径。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "underwater acoustic signal processing for high frequency target recognition",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
