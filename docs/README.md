@@ -6,26 +6,22 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-25
-- 运行时间：2026-09-25 22:23:06 UTC
+- 最新运行日期：2026-09-26
+- 运行时间：2026-09-26 21:31:16 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
-- 速读区：1
+- 本次总论文数：0
+- 精读区：0
+- 速读区：0
 
 ### 今日简报（AI）
-今日精读1篇、速读
-- 详情：[/202609/25/README](/202609/25/README)
+> 今日无新推荐，系统未产出可展示论文。
+- 详情：[/202609/26/README](/202609/26/README)
 
 ### 精读区论文标签
-1. [Towards Deployable Underwater Vessel Classification](/202609/25/2609.29179v1-towards-deployable-underwater-vessel-classification)  
-   标签：评分：9.0/10、query:shipnoise-hf
-   evidence：基于时频与耳蜗表示的水下船舶噪声分类
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Bio-inspired efficient cyclostationary analysis in machine and underwater acoustic recordings](/202609/25/2609.29128v1-bio-inspired-efficient-cyclostationary-analysis-in-machine-and-underwater-acoustic-recordings)  
-   标签：评分：6.0/10、query:shipnoise-hf
-   evidence：在真实ShipsEar船舶录音上提取循环平稳特征
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
