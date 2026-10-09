@@ -1,16 +1,54 @@
 {
   "mode": "standard",
-  "generated_at": "2026-10-09T00:19:19.431212+00:00",
+  "generated_at": "2026-10-09T22:55:10.999880+00:00",
   "stats": {
     "mode": "standard",
     "tag_count": 1,
     "deep_divecandidates": 0,
     "deep_cap": 6,
     "deep_selected": 0,
-    "quick_candidates": 0,
+    "quick_candidates": 1,
     "quick_skim_target": 11,
-    "quick_selected": 0
+    "quick_selected": 1
   },
   "deep_dive": [],
-  "quick_skim": []
+  "quick_skim": [
+    {
+      "id": "2610.08850v1",
+      "source": "arxiv",
+      "title": "Unheard but Recognizable: Ultrasonic Signatures for Musical Instrument Recognition",
+      "abstract": "Musical-instrument recognition is a fundamental music information retrieval (MIR) task supporting transcription, source separation, and audio understanding. Despite significant algorithmic progress, there is still room for improvement in recognizing acoustically similar instruments, particularly in polyphonic mixtures. We examine the contribution of ultrasonic components, i.e., frequencies above the audible 0-20 kHz range. Although most of this content cannot be represented at conventional 44.1/48-kSPS sampling rates under the Nyquist criterion, it is available in high-quality 96-kSPS recordings. Using a 96-kSPS multitrack corpus covering 15 classes across performers, instruments, studios, and sessions, we compare full-band, low-pass, and ultrasonic-only inputs using classical machine-learning and deep-learning classifiers. Our results show that source-dependent ultrasonic extensions and broadband transients contain instrument-specific information that significantly improves isolated and polyphonic recognition and motivates wider-bandwidth studies of other MIR tasks.",
+      "authors": [
+        "Izhak Kapash",
+        "Uri Rom",
+        "Ram Zamir"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS"
+      ],
+      "published": "2026-10-03T00:25:36+00:00",
+      "link": "https://arxiv.org/pdf/2610.08850v1",
+      "tags": [
+        "keyword:shipnoise-hf",
+        "query:shipnoise-hf"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "ultrasonic high-frequency components used as acoustic features for recognition",
+      "llm_evidence_cn": "利用超声高频成分作为识别用声学特征",
+      "llm_evidence": "利用超声高频成分作为识别用声学特征",
+      "canonical_evidence": "利用超声高频成分作为识别用声学特征",
+      "llm_tldr_en": "Musical instrument recognition struggles with acoustically similar instruments; using 96-kSPS recordings, this work tests whether ultrasonic (>20 kHz) components add discriminative cues by comparing full-band, low-pass, and ultrasonic features across 15 classes.",
+      "llm_tldr_cn": "乐器识别中声学相似乐器与复音混合场景难以区分，常规44.1/48kSPS采样受奈奎斯特限制无法表征20kHz以上成分。作者利用96kSPS多轨语料，比较全频带、低通与超声频带特征在15类乐器识别中的表现。结果显示超声高频成分能提供额外判别线索，有助于区分声学相似乐器。该工作证明超出可听范围的高频声学特征可提升音频源识别性能，为高频特征利用提供依据。",
+      "llm_tldr": "乐器识别中声学相似乐器与复音混合场景难以区分，常规44.1/48kSPS采样受奈奎斯特限制无法表征20kHz以上成分。作者利用96kSPS多轨语料，比较全频带、低通与超声频带特征在15类乐器识别中的表现。结果显示超声高频成分能提供额外判别线索，有助于区分声学相似乐器。该工作证明超出可听范围的高频声学特征可提升音频源识别性能，为高频特征利用提供依据。",
+      "llm_tags": [
+        "query:shipnoise-hf"
+      ],
+      "matched_query_tag": "query:shipnoise-hf",
+      "matched_query_text": "high frequency acoustic features for ship noise recognition",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
 }

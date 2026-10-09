@@ -1,8 +1,24 @@
 {
   "label": "2026-10-09",
   "date": "2026-10-09",
-  "generated_at": "2026-10-09T00:19:19",
-  "count": 0,
-  "papers": [],
+  "generated_at": "2026-10-09T22:55:42",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202610/09/2610.08850v1-unheard-but-recognizable-ultrasonic-signatures-for-musical-instrument-recognition",
+      "section": "quick",
+      "title_en": "Unheard but Recognizable: Ultrasonic Signatures for Musical Instrument Recognition",
+      "authors": "Izhak Kapash, Uri Rom, Ram Zamir",
+      "date": "2026-10-03",
+      "pdf": "https://arxiv.org/pdf/2610.08850v1",
+      "score": "6.0",
+      "evidence": "利用超声高频成分作为识别用声学特征",
+      "tldr": "乐器识别是音乐信息检索的基础任务，但声学相似乐器及复音混合场景仍具挑战。本文利用96 kSPS多轨语料，考察20 kHz以上超声成分对识别的贡献，并对比全频带、低通与仅超声输入在传统机器学习与深度学习分类器上的表现。结果显示，依赖声源的超声延伸与宽带瞬态携带乐器特异性信息，能显著提升孤立音与复音识别性能。该工作凸显超越常规采样率的带宽价值，并推动其他MIR任务的宽频研究。",
+      "tags": "query:shipnoise-hf",
+      "abstract_en": "Musical-instrument recognition is a fundamental music information retrieval (MIR) task supporting transcription, source separation, and audio understanding. Despite significant algorithmic progress, there is still room for improvement in recognizing acoustically similar instruments, particularly in polyphonic mixtures. We examine the contribution of ultrasonic components, i.e., frequencies above the audible 0-20 kHz range. Although most of this content cannot be represented at conventional 44.1/48-kSPS sampling rates under the Nyquist criterion, it is available in high-quality 96-kSPS recordings. Using a 96-kSPS multitrack corpus covering 15 classes across performers, instruments, studios, and sessions, we compare full-band, low-pass, and ultrasonic-only inputs using classical machine-learning and deep-learning classifiers. Our results show that source-dependent ultrasonic extensions and broadband transients contain instrument-specific information that significantly improves isolated and polyphonic recognition and motivates wider-bandwidth studies of other MIR tasks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
   "errors": []
 }
